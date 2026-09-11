@@ -16,6 +16,7 @@ The SpiriCamera package provides camera functionality for video capture and fram
    :hidden:
 
    SpiriCamera.camera
+   SpiriCamera.exif
    SpiriCamera.sources
    SpiriCamera.cli
    SpiriCamera.main

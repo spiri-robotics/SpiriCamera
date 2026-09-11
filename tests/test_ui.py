@@ -133,3 +133,64 @@ class TestPage:
         """The meter renders even before anything has been served."""
         await user.open("/")
         await user.should_see("idle")
+
+
+class TestTagDisplay:
+    """Rendering the tags read off the current frame."""
+
+    def test_untagged_says_so(self) -> None:
+        """An empty display would read as a broken binding."""
+        assert camera_ui._format_tags({}) == "untagged"
+
+    def test_one_tag_per_line_sorted(self) -> None:
+        """Sorted, so a tag does not move around between frames."""
+        rendered = camera_ui._format_tags({"zulu": "1", "alpha": "2"})
+
+        assert rendered == "alpha: 2\nzulu: 1"
+
+
+class TestExtraTagEntry:
+    """Parsing the Extra Tags field onto the camera."""
+
+    @pytest.fixture
+    def cam(self) -> Camera:
+        """A camera that touches neither a device nor the network."""
+        return Camera("testimage://", synq_auto_start=False)
+
+    def test_parses_pairs(self, cam: Camera) -> None:
+        """Comma-separated name=value, whitespace forgiven."""
+        camera_ui._apply_extra_tags(cam, " mission=probe-1, operator = alex ")
+
+        assert cam.exif_extra == {"mission": "probe-1", "operator": "alex"}
+
+    def test_ignores_a_fragment_without_a_separator(self, cam: Camera) -> None:
+        """Typing is debounced, not atomic; half an entry is not a tag."""
+        camera_ui._apply_extra_tags(cam, "mission=probe-1, operat")
+
+        assert cam.exif_extra == {"mission": "probe-1"}
+
+    def test_empty_field_clears(self, cam: Camera) -> None:
+        """Deleting the text is how the tags are removed."""
+        camera_ui._apply_extra_tags(cam, "mission=probe-1")
+        camera_ui._apply_extra_tags(cam, "")
+
+        assert cam.exif_extra == {}
+
+    def test_an_empty_value_is_kept(self, cam: Camera) -> None:
+        """``name=`` is a tag being typed, not a tag being dropped."""
+        camera_ui._apply_extra_tags(cam, "mission=")
+
+        assert cam.exif_extra == {"mission": ""}
+
+
+class TestFrameAge:
+    """The frame age in the bandwidth readout."""
+
+    async def test_shown_once_a_frame_has_been_captured(self, user: User) -> None:
+        """Read out of the frame's own EXIF, not measured at the route."""
+        camera_ui.get_camera().start(background=False)
+        camera_ui.get_camera().read()
+
+        await user.open("/")
+
+        await user.should_see("ms old")

@@ -22,7 +22,10 @@ the fields the camera normally fills in for itself.  This is deliberate:
 no SpiriSynq property is truly read-only, a remote peer can write any of
 them already, and this page exists to debug that.  Use ``bind_value``,
 not ``bind_value_from``, unless a field genuinely has nowhere to write
-back to.
+back to.  Two things here qualify: the bandwidth meter, which is a
+measurement taken at the HTTP route, and the frame tags, which are read
+out of a frame that has already been encoded and sent.  Both have a
+writable counterpart nearby — the camera's own settings, and Extra Tags.
 """
 
 from __future__ import annotations
@@ -173,6 +176,45 @@ def serve_frame() -> Response:
     )
 
 
+def _format_tags(tags: dict[str, str]) -> str:
+    """Render frame tags one per line, for the read-only display.
+
+    Parameters
+    ----------
+    tags : dict[str, str]
+        The tags read out of the current frame.
+
+    Returns
+    -------
+    str
+        One ``name: value`` per line, or a placeholder when untagged.
+    """
+    if not tags:
+        return 'untagged'
+    return '\n'.join(f'{name}: {value}' for name, value in sorted(tags.items()))
+
+
+def _apply_extra_tags(camera: Camera, text: str) -> None:
+    """Parse ``name=value`` pairs from a text field onto the camera.
+
+    Ignores anything without an ``=``, so a half-typed entry does not
+    throw away the tags already set.
+
+    Parameters
+    ----------
+    camera : Camera
+        The camera to tag.
+    text : str
+        Comma-separated ``name=value`` pairs.
+    """
+    tags = {}
+    for pair in (text or '').split(','):
+        name, separator, value = pair.partition('=')
+        if separator and name.strip():
+            tags[name.strip()] = value.strip()
+    camera.exif_extra = tags
+
+
 @ui.page('/')
 def build_page():
     """Build the camera test UI page."""
@@ -221,6 +263,12 @@ def build_page():
                 parts.append(f'{cam.received_width}x{cam.received_height}')
                 parts.append(f'{cam.received_ratio:.3f}')
 
+            # Read out of the frame, so this is the age of the picture on
+            # screen rather than of the last request. Against a remote
+            # camera it is only as accurate as the two clocks agree.
+            if cam.exif_timestamp:
+                parts.append(f'{(time.time() - cam.exif_timestamp) * 1000:.0f} ms old')
+
             fps, bytes_per_second = frame_meter.rates()
             if fps:
                 parts.append(f'{bytes_per_second / 1024:.0f} KiB/s')
@@ -246,6 +294,7 @@ def build_page():
                 ui.number('Max Height').bind_value(cam, 'max_height').classes('w-full')
                 ui.number('Max Framerate').bind_value(cam, 'max_framerate').classes('w-full')
                 ui.input('Mimetype').bind_value(cam, 'mimetype').classes('w-full')
+                ui.switch('Tag frames').bind_value(cam, 'exif_enabled')
 
             with ui.card().classes('flex-1'):
                 ui.label('Device').classes('text-lg font-bold')
@@ -279,6 +328,23 @@ def build_page():
                 ui.input('Target').bind_value(cam.source, 'target').classes('w-full')
                 ui.input('Handler').bind_value(cam.source, 'handler').classes('w-full')
                 ui.input('Error').bind_value(cam.source, 'error').classes('w-full')
+
+                # Read out of the current frame's EXIF rather than synced
+                # as fields of their own, so they cannot disagree with the
+                # picture above. There is nowhere to write back to — the
+                # frame already happened — which makes this the second
+                # documented exception to the two-way binding rule, the
+                # writable counterpart being Extra Tags below.
+                ui.label('Frame Tags').classes('text-lg font-bold pt-2')
+                ui.label().bind_text_from(
+                    cam, 'exif_tags', backward=_format_tags
+                ).classes('w-full font-mono text-xs whitespace-pre-wrap')
+
+                ui.input(
+                    'Extra Tags',
+                    placeholder='mission=probe-1, operator=alex',
+                    on_change=lambda event: _apply_extra_tags(cam, event.value),
+                ).props('debounce=500').classes('w-full')
 
 
 if __name__ == '__main__':

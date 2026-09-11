@@ -21,6 +21,7 @@ import numpy as np
 from loguru import logger
 from SpiriSynq.syncable_objects import SyncableObject
 
+from SpiriCamera import exif
 from SpiriCamera.sources import (
     CaptureSettings,
     SourceBase,
@@ -31,7 +32,12 @@ from SpiriCamera.sources import (
 )
 
 #: Mimetypes the camera can encode to, mapped to an OpenCV extension.
-ENCODINGS: dict[str, str] = {"image/jpeg": ".jpg", "image/png": ".png"}
+#:
+#: JPEG only.  It is the format every consumer of this package already
+#: decodes, it is the only one the frame tags in :py:mod:`SpiriCamera.exif`
+#: are written for, and offering a second one bought nothing but a second
+#: path to test.
+ENCODINGS: dict[str, str] = {"image/jpeg": ".jpg"}
 
 #: :py:attr:`CameraBase.status` while frames are being captured.
 STATUS_RUNNING = "running"
@@ -89,7 +95,7 @@ class CameraBase(SyncableObject):
     remote peer.  :py:class:`Camera` adds the behaviour that reacts to
     those fields; this class is what a mirror on another node sees.
 
-    The fields fall into four groups:
+    The fields fall into five groups:
 
     ``source_str`` / ``source``
         What the camera is pointed at.  ``source_str`` is the request;
@@ -101,15 +107,30 @@ class CameraBase(SyncableObject):
         everything else here — nothing in SpiriSynq is truly read-only —
         though a value set by hand does not reconfigure the device and
         is overwritten the next time the source opens.
-    ``received_*``
-        The dimensions of the frame that actually arrived, measured off
-        the last frame rather than asked for or advertised.  A source
-        may legitimately return something smaller than ``max_width`` x
-        ``max_height``, or a different shape than either, so this is the
-        only group that says what is really being encoded.
-    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype``
-        The requested capture and encoding settings.  These are live:
-        changing them takes effect on the next frame.
+    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` / ``exif_enabled`` / ``exif_extra``
+        The requested capture, encoding and tagging settings.  These are
+        live: changing them takes effect on the next frame.
+    ``received_*`` / ``exif_tags`` / ``exif_timestamp``
+        What the current :py:attr:`image` turned out to be.  See
+        :py:data:`synq_skip_sync` — this is the one group that does not
+        go over the wire.
+
+    .. note::
+
+       The ``received_*`` and ``exif_*`` observations describe one
+       specific frame, so they must never be published as fields of
+       their own.  SpiriSynq syncs each field independently and promises
+       nothing about two of them arriving together or in order, so a
+       width published beside an image is a width a peer can read
+       against the wrong image.  They are instead written *into* the
+       encoded frame by :py:mod:`SpiriCamera.exif` and read back out of
+       it, on the authoritative node and on every mirror alike, by
+       :py:meth:`Camera._on_image_changed`.  A mirror therefore fills
+       these in for itself and stays exact by construction.
+
+       This is why they appear in ``synq_skip_sync`` rather than being
+       renamed with a leading underscore, which would also exclude them:
+       they are ordinary public attributes that a peer is meant to read.
 
     .. note::
 
@@ -140,8 +161,37 @@ class CameraBase(SyncableObject):
         open, or a capture that keeps failing.  ``running`` says whether
         frames are flowing; ``status`` says why not when they are not.
     image : bytes
-        The most recent encoded frame, in :py:attr:`mimetype` format.
+        The most recent encoded frame, in :py:attr:`mimetype` format,
+        carrying :py:attr:`exif_tags` in its EXIF.
+    exif_enabled : bool
+        Whether to tag encoded frames at all.  Turning it off gives byte
+        identical frames for an unchanging scene, which psygnal then
+        suppresses instead of republishing.
+    exif_extra : dict[str, str]
+        Tags to merge over the ones the camera derives for itself, for a
+        caller or a remote peer with something to add.
+    exif_tags : dict[str, str]
+        The tags on the current :py:attr:`image`, read back out of it.
+    exif_timestamp : float
+        Unix timestamp of when the current :py:attr:`image` was captured,
+        or ``0.0`` if it carried none.  Set by whichever node took the
+        frame, so comparing it against a local clock is only as good as
+        the agreement between the two.
     """
+
+    #: Fields excluded from SpiriSynq, on top of the base class's own.
+    #:
+    #: Every one of these describes the current :py:attr:`image`, and is
+    #: derived from its bytes wherever it is needed.  Publishing them
+    #: separately would let a peer pair an observation with the wrong
+    #: frame; see the class docstring.
+    synq_skip_sync = {
+        "received_width",
+        "received_height",
+        "received_ratio",
+        "exif_tags",
+        "exif_timestamp",
+    }
 
     source_str: str = ""
     source: SourceInfo = field(default_factory=SourceInfo)
@@ -163,6 +213,11 @@ class CameraBase(SyncableObject):
     max_framerate: int = 30
     quality: int = 80
     mimetype: str = "image/jpeg"
+
+    exif_enabled: bool = True
+    exif_extra: dict[str, str] = field(default_factory=dict)
+    exif_tags: dict[str, str] = field(default_factory=dict)
+    exif_timestamp: float = 0.0
 
     running: bool = False
     status: str = STATUS_STOPPED
@@ -267,6 +322,9 @@ class Camera(CameraBase):
         self._cached_frame: np.ndarray | None = None
         self._cached_encoding: tuple[str, int] | None = None
         self._cached_image: bytes = b""
+        # Last EXIF failure reported, so a source that cannot be tagged
+        # says so once rather than at the full framerate.
+        self._exif_complaint: str = ""
 
         self._resolve(source)
 
@@ -274,6 +332,9 @@ class Camera(CameraBase):
         # caller, a UI binding, or a remote peer over SpiriSynq.
         self.events.source_str.connect(self._on_source_str_changed)
         self.events.running.connect(self._on_running_changed)
+        # Frames arrive the same way on both sides: we set image, or the
+        # network does. Either way the observations come out of its bytes.
+        self.events.image.connect(self._on_image_changed)
 
         self.synq_auto_start = synq_auto_start
         if synq_auto_start:
@@ -549,8 +610,11 @@ class Camera(CameraBase):
     def read(self) -> bytes:
         """Capture, encode, and publish a single frame.
 
-        The encoded frame is assigned to :py:attr:`~CameraBase.image`,
-        which is what publishes it to SpiriSynq.
+        The encoded frame is tagged, then assigned to
+        :py:attr:`~CameraBase.image`, which is what publishes it to
+        SpiriSynq.  Assigning is also what fills in
+        :py:attr:`~CameraBase.received_width` and the rest, since those
+        are read back out of the frame rather than measured here.
 
         Returns
         -------
@@ -574,8 +638,7 @@ class Camera(CameraBase):
                 )
             return self.image
 
-        self._note_received(frame)
-        encoded = self._encode(frame)
+        encoded = self._tag(self._encode(frame), frame)
         self.image = encoded
         return encoded
 
@@ -643,20 +706,120 @@ class Camera(CameraBase):
         return encoded
 
     # ------------------------------------------------------------------
+    # Frame tagging
+    # ------------------------------------------------------------------
+
+    def exif_tags_for_frame(self, frame: np.ndarray) -> dict[str, str]:
+        """Build the tags to write into the next encoded frame.
+
+        The override point for tagging.  A subclass with a GPS fix, a
+        gimbal angle or a mission identifier to attach should extend what
+        this returns; a caller with something simpler to add can put it
+        in :py:attr:`~CameraBase.exif_extra`, which is merged over the
+        result here and so wins on a clash.
+
+        Dimensions are deliberately absent: the JPEG header already
+        states them, and :py:meth:`_on_image_changed` reads them from
+        there.  A tag saying something the container also says is a tag
+        that can disagree with it.
+
+        Parameters
+        ----------
+        frame : np.ndarray
+            The raw BGR frame about to be encoded.
+
+        Returns
+        -------
+        dict[str, str]
+            Tags to embed.  Empty means embed nothing.
+        """
+        del frame  # The defaults describe the camera, not the pixels.
+        # One clock reading for both tags, so the precise value and the
+        # human-readable one can never name different instants.
+        captured = time.time()
+        tags = {
+            exif.TIMESTAMP_TAG: f"{captured:.6f}",
+            exif.DATETIME_TAG: time.strftime("%Y:%m:%d %H:%M:%S", time.localtime(captured)),
+            "software": f"SpiriCamera {self.synq_topic}",
+            "source": self.source.url or self.source_str,
+        }
+        if self.vendor:
+            tags["make"] = self.vendor
+        if self.model:
+            tags["model"] = self.model
+        if self.serial_number:
+            tags["serial_number"] = self.serial_number
+
+        tags.update({str(k): str(v) for k, v in self.exif_extra.items()})
+        return {name: value for name, value in tags.items() if value}
+
+    def exif_update(self, **tags: str) -> None:
+        """Merge tags into :py:attr:`~CameraBase.exif_extra`.
+
+        A convenience for the common case of adding one tag without
+        disturbing the others.  Takes effect on the next encoded frame.
+
+        Parameters
+        ----------
+        **tags : str
+            Tags to add or replace.  A value of ``""`` drops the tag.
+        """
+        merged = dict(self.exif_extra)
+        merged.update({name: str(value) for name, value in tags.items()})
+        # Reassigned rather than mutated: psygnal watches the attribute,
+        # not the dict, so an in-place update would publish nothing.
+        self.exif_extra = {name: value for name, value in merged.items() if value}
+
+    def _tag(self, encoded: bytes, frame: np.ndarray) -> bytes:
+        """Write this frame's tags into encoded image data.
+
+        Kept apart from :py:meth:`_encode` so that the encode cache still
+        earns its keep.  Tags carry a capture timestamp, so every frame's
+        final bytes differ even when the pixels do not; splicing an EXIF
+        segment onto a cached encode is cheap, re-encoding is not.
+
+        A tagging failure is not worth dropping a frame over, so the
+        untagged frame is returned and the reason logged once.
+        """
+        if not self.exif_enabled:
+            return encoded
+
+        try:
+            tagged = exif.embed(encoded, self.exif_tags_for_frame(frame))
+        except exif.ExifError as error:
+            complaint = str(error)
+            if complaint != self._exif_complaint:
+                self._exif_complaint = complaint
+                logger.warning(f"{self.synq_topic}: frame not tagged, {complaint}")
+            return encoded
+
+        self._exif_complaint = ""
+        return tagged
+
+    # ------------------------------------------------------------------
     # Internals
     # ------------------------------------------------------------------
 
-    def _note_received(self, frame: np.ndarray) -> None:
-        """Record the dimensions of the frame that actually arrived.
+    def _on_image_changed(self, image: bytes) -> None:
+        """Read the observations back out of a newly assigned frame.
 
-        Assignments only publish when the value really changed, so a
-        steady stream at a fixed size costs nothing after the first
-        frame.
+        Fires wherever the frame came from: this camera encoding one, or
+        SpiriSynq delivering one to a mirror.  That is the whole point of
+        keeping these out of the sync set — there is one way to learn
+        what a frame is, and it works the same on both sides.
         """
-        height, width = frame.shape[:2]
-        self.received_width = int(width)
-        self.received_height = int(height)
+        size = exif.image_size(image) if image else None
+        width, height = size or (0, 0)
+        self.received_width = width
+        self.received_height = height
         self.received_ratio = round(width / height, 4) if height else 0.0
+
+        tags = exif.extract(image) if image else {}
+        self.exif_tags = tags
+        try:
+            self.exif_timestamp = float(tags.get(exif.TIMESTAMP_TAG, 0.0))
+        except ValueError:
+            self.exif_timestamp = 0.0
 
     def _apply(self, capabilities: SourceCapabilities) -> None:
         """Copy what the source reported into the synced state.

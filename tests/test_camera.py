@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 import pytest
 
+from SpiriCamera import exif
 from SpiriCamera.camera import (
     STATUS_RUNNING,
     STATUS_STOPPED,
@@ -397,8 +398,15 @@ class TestEncoding:
     def test_reuses_the_encode_for_an_unchanged_frame(
         self, camera: CameraFactory
     ) -> None:
-        """A static source is encoded once, not once per read."""
+        """A static source is encoded once, not once per read.
+
+        Tagging is off because a tag carries a capture time, which makes
+        every frame's final bytes differ on purpose; what is being
+        checked here is that the expensive step underneath did not run
+        again.
+        """
         cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_enabled = False
         cam.start(background=False)
 
         assert cam.read() is cam.read()
@@ -414,16 +422,17 @@ class TestEncoding:
 
         assert len(small) < len(large)
 
-    def test_png_encoding(self, camera: CameraFactory) -> None:
-        """The mimetype selects the container."""
-        cam = camera("testimage://", max_width=160, max_height=120, mimetype="image/png")
-        cam.start(background=False)
+    @pytest.mark.parametrize("mimetype", ["image/png", "image/gif"])
+    def test_unsupported_mimetype(
+        self, camera: CameraFactory, mimetype: str
+    ) -> None:
+        """An unencodable mimetype names what is supported.
 
-        assert cam.read().startswith(b"\x89PNG")
-
-    def test_unsupported_mimetype(self, camera: CameraFactory) -> None:
-        """An unencodable mimetype names what is supported."""
-        cam = camera("testimage://", max_width=160, max_height=120, mimetype="image/gif")
+        PNG is in here deliberately: the camera used to offer it and no
+        longer does, and a silent return to two containers would mean
+        frames the tagging in :py:mod:`SpiriCamera.exif` cannot touch.
+        """
+        cam = camera("testimage://", max_width=160, max_height=120, mimetype=mimetype)
         cam.start(background=False)
 
         with pytest.raises(CameraError, match="image/jpeg"):
@@ -677,3 +686,216 @@ class TestCapabilities:
         cam.start(background=False)
 
         assert cam.vendor == "hand written"
+
+
+class TestReceivedIsDerivedFromTheFrame:
+    """The dimensions of the frame that actually arrived."""
+
+    def test_measured_from_the_encoded_image(self, camera: CameraFactory) -> None:
+        """What the container declares, not what was asked for."""
+        cam = camera("testimage://", max_width=320, max_height=240)
+        cam.start(background=False)
+        cam.read()
+
+        assert (cam.received_width, cam.received_height) == (320, 240)
+        assert cam.received_ratio == pytest.approx(4 / 3, abs=1e-4)
+
+    def test_a_mirror_derives_them_from_bytes_alone(
+        self, camera: CameraFactory
+    ) -> None:
+        """A peer handed only the image works the rest out for itself.
+
+        This is what buys the guarantee: no separate field can arrive
+        late, out of order, or paired with the wrong picture.
+        """
+        source = camera("testimage://", max_width=320, max_height=240)
+        source.start(background=False)
+        frame = source.read()
+
+        mirror = camera("")
+        mirror.image = frame
+
+        assert (mirror.received_width, mirror.received_height) == (320, 240)
+        assert mirror.received_ratio == source.received_ratio
+
+    def test_cleared_when_the_image_is(self, camera: CameraFactory) -> None:
+        """No frame means no measurements of one."""
+        cam = camera("testimage://", max_width=320, max_height=240)
+        cam.start(background=False)
+        cam.read()
+
+        cam.image = b""
+
+        assert (cam.received_width, cam.received_height, cam.received_ratio) == (0, 0, 0.0)
+
+    def test_they_are_not_published(self) -> None:
+        """Frame observations stay off the wire; see CameraBase."""
+        skipped = {
+            "received_width",
+            "received_height",
+            "received_ratio",
+            "exif_tags",
+            "exif_timestamp",
+        }
+
+        assert not skipped & Camera.valid_sync_paths()
+
+    def test_settings_are_still_published(self) -> None:
+        """Only the observations were skipped, not the requests."""
+        paths = Camera.valid_sync_paths()
+
+        assert {"image", "max_width", "exif_enabled", "exif_extra"} <= paths
+
+
+class TestFrameTags:
+    """EXIF baked into the frame."""
+
+    def test_frames_carry_the_camera_identity(self, camera: CameraFactory) -> None:
+        """The defaults describe what took the picture."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.read()
+
+        assert cam.exif_tags["source"] == "testimage://"
+        assert cam.exif_tags["make"] == "SpiriCamera"
+        assert "spiricamera_testimage" in cam.exif_tags["software"]
+
+    def test_timestamp_is_read_back_off_the_frame(
+        self, camera: CameraFactory
+    ) -> None:
+        """The capture time is in the image, not beside it."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+
+        before = time.time()
+        cam.read()
+        after = time.time()
+
+        assert before <= cam.exif_timestamp <= after
+
+    def test_each_frame_is_newly_stamped(self, camera: CameraFactory) -> None:
+        """A static scene still yields a distinct frame every time.
+
+        Which is the point: a tagged frame is a frame plus when it was
+        taken, so two captures of the same picture are two frames.
+        """
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+
+        first = cam.read()
+        first_stamp = cam.exif_timestamp
+        second = cam.read()
+
+        assert first != second
+        assert cam.exif_timestamp > first_stamp
+
+    def test_extra_tags_are_merged(self, camera: CameraFactory) -> None:
+        """A caller's tags ride along with the camera's own."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_update(mission="probe-1")
+        cam.start(background=False)
+        cam.read()
+
+        assert cam.exif_tags["mission"] == "probe-1"
+        assert "timestamp" in cam.exif_tags
+
+    def test_extra_tags_win_on_a_clash(self, camera: CameraFactory) -> None:
+        """Merged over the defaults, so a caller can correct them."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_update(make="Somebody Else")
+        cam.start(background=False)
+        cam.read()
+
+        assert cam.exif_tags["make"] == "Somebody Else"
+
+    def test_update_reassigns_rather_than_mutating(
+        self, camera: CameraFactory
+    ) -> None:
+        """psygnal watches the attribute, so the dict must be replaced."""
+        cam = camera("testimage://")
+        seen: list[dict[str, str]] = []
+        cam.events.exif_extra.connect(seen.append)
+
+        cam.exif_update(mission="probe-1")
+
+        assert seen == [{"mission": "probe-1"}]
+
+    def test_update_drops_an_emptied_tag(self, camera: CameraFactory) -> None:
+        """An empty value is how a tag is removed."""
+        cam = camera("testimage://")
+        cam.exif_update(mission="probe-1", operator="alex")
+
+        cam.exif_update(mission="")
+
+        assert cam.exif_extra == {"operator": "alex"}
+
+    def test_disabling_leaves_frames_untagged(self, camera: CameraFactory) -> None:
+        """Off means byte-identical frames for an unchanging scene."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_enabled = False
+        cam.start(background=False)
+
+        assert cam.read() == cam.read()
+        assert cam.exif_tags == {}
+        assert cam.exif_timestamp == 0.0
+
+    def test_a_mirror_reads_the_tags(self, camera: CameraFactory) -> None:
+        """Tags reach a peer through the image, not as their own fields."""
+        source = camera("testimage://", max_width=160, max_height=120)
+        source.exif_update(mission="probe-1")
+        source.start(background=False)
+        frame = source.read()
+
+        mirror = camera("")
+        mirror.image = frame
+
+        assert mirror.exif_tags == source.exif_tags
+        assert mirror.exif_timestamp == source.exif_timestamp
+
+    def test_an_override_supplies_its_own_tags(self, camera: CameraFactory) -> None:
+        """exif_tags_for_frame is the extension point for a subclass."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_tags_for_frame = lambda frame: {"gps": "45.0,-63.0"}
+        cam.start(background=False)
+        cam.read()
+
+        assert cam.exif_tags == {"gps": "45.0,-63.0"}
+
+    def test_an_override_returning_nothing_disables_tagging(
+        self, camera: CameraFactory
+    ) -> None:
+        """No tags is a valid answer, and costs no EXIF segment."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_tags_for_frame = lambda frame: {}
+        cam.start(background=False)
+
+        assert cam.read() == cam.read()
+
+    def test_a_tagging_failure_does_not_drop_the_frame(
+        self, camera: CameraFactory, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A frame with no tags beats no frame at all."""
+
+        def explode(data: bytes, tags: dict[str, str]) -> bytes:
+            raise exif.ExifError("nope")
+
+        monkeypatch.setattr(exif, "embed", explode)
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+
+        frame = cam.read()
+
+        assert frame.startswith(b"\xff\xd8")
+        assert cam.exif_tags == {}
+
+    def test_an_unreadable_timestamp_is_not_fatal(
+        self, camera: CameraFactory
+    ) -> None:
+        """A peer can put anything in a tag; it must not break the frame."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+
+        cam.image = exif.embed(cam.read(), {"timestamp": "not a number"})
+
+        assert cam.exif_timestamp == 0.0
+        assert cam.exif_tags["timestamp"] == "not a number"

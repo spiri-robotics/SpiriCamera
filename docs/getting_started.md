@@ -138,6 +138,58 @@ cam.status                  # "Failed to open capture source: '/dev/video99'"
 `running` says whether frames are flowing; `status` says why not when
 they are not.
 
+### Frame Tags
+
+Each captured frame is a JPEG with its own metadata baked into its EXIF:
+when it was taken, what took it, and anything you care to add.
+
+```python
+cam = Camera("/dev/video0")
+cam.exif_update(mission="probe-1")
+cam.start()
+
+cam.exif_tags       # {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}
+cam.exif_timestamp  # Unix timestamp of the frame currently in cam.image
+```
+
+`exif_tags` and `exif_timestamp` are read back *out of* `cam.image`, and
+so are `received_width`, `received_height` and `received_ratio`. None of
+them is sent over SpiriSynq. That is on purpose: SpiriSynq publishes each
+field independently and promises nothing about two of them arriving
+together, so a timestamp sent beside an image is a timestamp a peer can
+read against the wrong image. Travelling inside the JPEG, they cannot
+come apart from it — a peer that receives a frame fills them in for
+itself, exactly:
+
+```python
+mirror.image = frame          # the only thing that crossed the network
+mirror.exif_timestamp         # when the far end took it
+mirror.received_width         # what it actually sent
+```
+
+To attach something the camera cannot know about, either set
+`exif_extra` (merged over the camera's own tags, so it wins on a clash)
+or override the method that builds them:
+
+```python
+class SurveyCamera(Camera):
+    def exif_tags_for_frame(self, frame):
+        tags = super().exif_tags_for_frame(frame)
+        tags["gps"] = f"{self.fix.latitude},{self.fix.longitude}"
+        return tags
+```
+
+Tag names are free-form; the whole set round-trips through the EXIF
+`UserComment` field. Names that have a real EXIF equivalent — `make`,
+`model`, `serial_number`, `software`, `description`, `datetime` — are
+also written to that tag, so ordinary image tools show something
+sensible.
+
+Because a tag records a capture time, two captures of an unchanging
+scene produce different bytes. Set `exif_enabled = False` for
+byte-identical frames, which psygnal then suppresses rather than
+republishing.
+
 ### Configuration
 
 Camera parameters are configured via environment variables:
