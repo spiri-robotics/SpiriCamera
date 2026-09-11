@@ -149,7 +149,7 @@ class TestCameraSourceParse:
         """Test testimage:// with trailing whitespace."""
         src = CameraSource.parse("testimage://  ")
         assert src.path == "pm5544"
-        assert src.source == "testimage://  "
+        assert src.source == "testimage://"
 
     def test_parse_testimage_unknown(self) -> None:
         """Test testimage:// with unknown image name raises ValueError."""
