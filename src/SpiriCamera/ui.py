@@ -240,7 +240,9 @@ def build_page():
             with ui.card().classes('flex-1'):
                 ui.label('Image Settings').classes('text-lg font-bold')
                 ui.label('Quality')
-                ui.slider(min=1, max=100).bind_value(cam, 'quality').classes('w-full')
+                with ui.row().classes('w-full items-center gap-2 flex-nowrap'):
+                    ui.slider(min=1, max=100).bind_value(cam, 'quality').classes('flex-1')
+                    ui.number(min=1, max=100).bind_value(cam, 'quality').classes('w-20')
                 ui.number('Max Width').bind_value(cam, 'max_width').classes('w-full')
                 ui.number('Max Height').bind_value(cam, 'max_height').classes('w-full')
                 ui.number('Max Framerate').bind_value(cam, 'max_framerate').classes('w-full')
