@@ -55,13 +55,7 @@ class TestImageSource(SourceBase):
         camera.events.max_width.connect(self._on_resize)
         camera.events.max_height.connect(self._on_resize)
 
-        logger.info(
-            "Test image started | source=%s image=%s render=%dx%d",
-            camera.synq_topic,
-            self._image_name,
-            camera.max_width,
-            camera.max_height,
-        )
+        logger.info(f"Test image started | source={camera.synq_topic} image={self._image_name} render={camera.max_width}x{camera.max_height}")
 
     def stop(self, camera: Camera) -> None:
         """Stop the test image source and disconnect events.
@@ -79,7 +73,7 @@ class TestImageSource(SourceBase):
             camera.events.max_height.disconnect(self._on_resize)
         except Exception:
             pass
-        logger.debug("Test image stopped on %s", camera.synq_topic)
+        logger.debug(f"Test image stopped on {camera.synq_topic}")
 
     def read(self, camera: Camera) -> bytes:
         """Read or render a test image frame as JPEG bytes.

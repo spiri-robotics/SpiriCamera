@@ -458,41 +458,53 @@ class Camera(CameraBase):
         and :py:attr:`max_supported_framerate`.
         """
         if self.running:
-            logger.info("Camera {} already running, skipping start", self.synq_topic)
+            logger.info(f"Camera {self.synq_topic} already running, skipping start")
             return
 
         # Check if source is already open (V4L / Network)
         capture = getattr(self._source, "_capture", None)
         if capture is not None and capture.isOpened():
-            logger.info("Camera {} already running, skipping start", self.synq_topic)
+            logger.info(f"Camera {self.synq_topic} already running, skipping start")
             return
 
         if not self.source.path:
             raise ValueError("No source path configured")
 
-        self._source.start(self)
+        logger.debug(f"Camera {self.synq_topic}: starting source {self.source.scheme}")
+
+        try:
+            self._source.start(self)
+        except Exception as e:
+            self.running = False
+            self._source.stop(self)
+            raise RuntimeError(f"Source start failed for {self.synq_topic}: {e}") from e
+
         self.running = True
+        logger.debug(f"Camera {self.synq_topic}: source start complete, running=True")
 
         # Start Zenoh sync if we disabled auto-start during init
         if not self.synq_auto_start:
             self.synq_auto_start = True
             self.sync()
 
-        logger.info(
-            "Camera {} started | source={} resolution={}x{} fps={}",
-            self.synq_topic,
-            self.source.scheme,
-            self.max_supported_width,
-            self.max_supported_height,
-            self.max_supported_framerate,
-        )
+        # Verify the source actually pushed a frame
+        try:
+            frame = self._source.read(self)
+            if frame:
+                logger.debug(f"Camera {self.synq_topic}: first frame read OK ({len(frame)} bytes)")
+            else:
+                logger.warning(f"Camera {self.synq_topic}: first frame read returned empty data")
+        except Exception as e:
+            logger.warning(f"Camera {self.synq_topic}: first frame read failed: {e}")
+
+        logger.info(f"Camera {self.synq_topic} started | source={self.source.scheme} resolution={self.max_supported_width}x{self.max_supported_height} fps={self.max_supported_framerate}")
 
     def stop(self) -> None:
         """Release the capture device and clean up the source."""
         if self._source is not None:
             self._source.stop(self)
         self.running = False
-        logger.debug("Camera {} stopped", self.synq_topic)
+        logger.debug(f"Camera {self.synq_topic} stopped")
 
     # ------------------------------------------------------------------
     # Frame reading

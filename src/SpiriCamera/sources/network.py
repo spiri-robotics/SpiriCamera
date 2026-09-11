@@ -46,8 +46,10 @@ class NetworkSource(SourceBase):
         RuntimeError
             If the network stream cannot be opened.
         """
+        logger.debug(f"Network start requested: {self._path}")
+
         if self._capture is not None and self._capture.isOpened():
-            logger.info("Network source already running %s", camera.synq_topic)
+            logger.info(f"Network source already running on {camera.synq_topic}")
             return
 
         self._capture = cv2.VideoCapture(self._path)
@@ -55,9 +57,12 @@ class NetworkSource(SourceBase):
 
         if not self._capture.isOpened():
             self._capture = None
+            logger.warning(f"Network failed to open: {self._path} (camera={camera.synq_topic})")
             raise RuntimeError(
                 f"Failed to open network camera source: {self._path!r}"
             )
+
+        logger.debug(f"Network capture opened: {self._path} (scheme={self._scheme})")
 
         # Apply user-requested caps
         if camera.max_width > 0:
@@ -69,15 +74,9 @@ class NetworkSource(SourceBase):
 
         # Detect capabilities
         self._detect_capabilities(camera)
+        logger.debug(f"Network capabilities detected for {camera.synq_topic}: {camera.max_supported_width}x{camera.max_supported_height}@{camera.max_supported_framerate}")
 
-        logger.info(
-            "Network camera started | source=%s scheme=%s resolution=%dx%d fps=%s",
-            self._path,
-            self._scheme,
-            camera.max_supported_width,
-            camera.max_supported_height,
-            camera.max_supported_framerate,
-        )
+        logger.info(f"Network camera started | source={self._path} scheme={self._scheme} resolution={camera.max_supported_width}x{camera.max_supported_height} fps={camera.max_supported_framerate}")
 
     def stop(self, camera: Camera) -> None:
         """Release the capture device.
@@ -90,7 +89,7 @@ class NetworkSource(SourceBase):
         if self._capture is not None:
             self._capture.release()
         self._capture = None
-        logger.debug("Network camera stopped on %s", camera.synq_topic)
+        logger.debug(f"Network camera stopped on {camera.synq_topic}")
 
     def read(self, camera: Camera) -> bytes:
         """Read a single frame from the network stream and encode as JPEG.

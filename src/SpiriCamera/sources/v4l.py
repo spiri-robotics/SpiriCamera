@@ -45,8 +45,10 @@ class V4LSource(SourceBase):
         RuntimeError
             If the capture device cannot be opened.
         """
+        logger.debug(f"V4L start requested: {self._path}")
+
         if self._capture is not None and self._capture.isOpened():
-            logger.info("V4L source already running on %s", camera.synq_topic)
+            logger.info(f"V4L source already running on {camera.synq_topic}")
             return
 
         self._capture = cv2.VideoCapture(self._path)
@@ -54,7 +56,10 @@ class V4LSource(SourceBase):
 
         if not self._capture.isOpened():
             self._capture = None
+            logger.warning(f"V4L failed to open: {self._path} (camera={camera.synq_topic})")
             raise RuntimeError(f"Failed to open V4L2 camera source: {self._path!r}")
+
+        logger.debug(f"V4L capture opened: {self._path}")
 
         # Apply user-requested caps (OpenCV will clamp silently)
         if camera.max_width > 0:
@@ -66,17 +71,12 @@ class V4LSource(SourceBase):
 
         # Detect capabilities
         self._detect_capabilities(camera)
+        logger.debug(f"V4L capabilities detected for {camera.synq_topic}: {camera.max_supported_width}x{camera.max_supported_height}@{camera.max_supported_framerate}")
 
         # Attempt to populate vendor/model/serial
         self._extract_device_info(camera)
 
-        logger.info(
-            "V4L camera started | source=%s resolution=%dx%d fps=%s",
-            self._path,
-            camera.max_supported_width,
-            camera.max_supported_height,
-            camera.max_supported_framerate,
-        )
+        logger.info(f"V4L camera started | source={self._path} resolution={camera.max_supported_width}x{camera.max_supported_height} fps={camera.max_supported_framerate}")
 
     def stop(self, camera: Camera) -> None:
         """Release the capture device.
@@ -89,7 +89,7 @@ class V4LSource(SourceBase):
         if self._capture is not None:
             self._capture.release()
         self._capture = None
-        logger.debug("V4L camera stopped on %s", camera.synq_topic)
+        logger.debug(f"V4L camera stopped on {camera.synq_topic}")
 
     def read(self, camera: Camera) -> bytes:
         """Read a single frame from the V4L2 device and encode as JPEG.

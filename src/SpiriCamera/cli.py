@@ -108,8 +108,7 @@ def run(
         typer.echo("Error: No source specified. Use --source or set SPIRICAMERA_SOURCE.", err=True)
         raise typer.Exit(1)
 
-    logger.info("Starting camera: %s | quality=%d | %dx%d @ %dfps",
-                 source, settings.quality, settings.frame_width, settings.frame_height, settings.framerate)
+    logger.info(f"Starting camera: {source} | quality={settings.quality} | {settings.frame_width}x{settings.frame_height} @ {settings.framerate}fps")
 
     cam = Camera(
         source=source,
@@ -122,7 +121,7 @@ def run(
     frame_count = 0
     try:
         cam.start()
-        logger.info("Camera started: %s", cam.synq_topic)
+        logger.info(f"Camera started: {cam.synq_topic}")
 
         # Read frames in a loop
         while cam.running:
@@ -130,7 +129,7 @@ def run(
                 cam.read()
                 frame_count += 1
             except RuntimeError as e:
-                logger.error("Frame read failed: %s", e)
+                logger.error(f"Frame read failed: {e}")
 
     except KeyboardInterrupt:
         pass
@@ -171,10 +170,10 @@ def capture(
         fh = None
         if output:
             fh = open(output, "wb")
-            logger.info("Writing %d frames to file: %s", frames, output)
+            logger.info(f"Writing {frames} frames to file: {output}")
         else:
             fh = sys.stdout.buffer
-            logger.info("Writing %d frames to stdout", frames)
+            logger.info(f"Writing {frames} frames to stdout")
 
         while captured < frames and cam.running:
             try:
@@ -182,12 +181,12 @@ def capture(
                 fh.write(data)
                 captured += 1
             except RuntimeError as e:
-                logger.error("Frame read failed: %s", e)
+                logger.error(f"Frame read failed: {e}")
                 break
 
         if fh and fh is not sys.stdout.buffer:
             fh.close()
-        logger.info("Captured %d frames", captured)
+        logger.info(f"Captured {captured} frames")
 
     except KeyboardInterrupt:
         pass

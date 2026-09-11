@@ -1,10 +1,10 @@
 # SpiriCamera Docker Compose - Test Environment
 #
 # Run tests inside the container to catch environment differences:
-#   docker compose -f templates/compose.yaml -f templates/compose.test.yaml run --rm test
+#   docker compose -f docker/compose.yaml -f docker/compose.test.yaml run --rm test
 #
 # In CI with full integration:
-#   docker compose -f templates/compose.yaml -f templates/compose.dev.yaml -f templates/compose.test.yaml run test
+#   docker compose -f docker/compose.yaml -f docker/compose.dev.yaml -f docker/compose.test.yaml run test
 
 services:
   test:

@@ -98,15 +98,10 @@ def main() -> None:
     settings = get_settings()
     setup_logging(level="DEBUG" if settings.debug else settings.log_level)
 
-    logger.info(
-        "Starting {} v{} [environment: {}]",
-        settings.app_name,
-        settings.version,
-        settings.environment,
-    )
+    logger.info(f"Starting {settings.app_name} v{settings.version} [environment: {settings.environment}]")
 
     # Add your main application logic here
-    logger.info("{} is running", settings.app_name)
+    logger.info(f"{settings.app_name} is running")
 
 
 if __name__ == "__main__":

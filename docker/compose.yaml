@@ -1,7 +1,7 @@
 # SpiriCamera Docker Compose - Production
 #
 # Deployed form: pulls image from registry.
-# Start with: docker compose -f templates/compose.yaml up -d
+#   Start with: docker compose -f docker/compose.yaml up -d
 #
 # Deployed as SpiriConfig plugin (when spiri_config_plugin=true):
 #   - Registers with SpiriConfig for management
