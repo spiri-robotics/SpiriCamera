@@ -448,6 +448,77 @@ class TestRetargeting:
         cam.start()
         assert cam.running is True
 
+    def test_resumes_once_a_typed_source_works(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """A source typed a character at a time picks itself back up.
+
+        Reproduces typing "/dev/video10" into the UI: the intermediate
+        "/dev/vi" resolves, because the V4L handler claims any /dev path,
+        but fails to open. The camera must resume on its own once the
+        full path arrives rather than waiting for a manual start.
+        """
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start()
+        assert cam.running is True
+
+        fake_capture(opened=False)
+        cam.source_str = "/dev/vi"
+        assert cam.running is False
+
+        fake_capture(opened=True)
+        cam.source_str = "/dev/video10"
+
+        assert cam.running is True
+        assert cam.source.target == "/dev/video10"
+
+    def test_resumes_after_an_unresolvable_source(
+        self, camera: CameraFactory
+    ) -> None:
+        """The same holds when the half-typed string does not resolve."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start()
+
+        cam.source_str = "testimag"
+        assert cam.running is False
+        assert cam.handler is None
+
+        cam.source_str = "testimage://pm5544"
+
+        assert cam.running is True
+
+    def test_does_not_resume_when_stopped_by_hand(
+        self, camera: CameraFactory
+    ) -> None:
+        """Editing the source of a stopped camera leaves it stopped."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start()
+        cam.stop()
+
+        cam.source_str = "testimage://pm5544"
+
+        assert cam.running is False
+
+    def test_never_started_does_not_resume(self, camera: CameraFactory) -> None:
+        """A camera that was never started stays stopped when retargeted."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+
+        cam.source_str = "testimage://pm5544"
+
+        assert cam.running is False
+
+    def test_resumes_without_a_thread_when_scripted(
+        self, camera: CameraFactory
+    ) -> None:
+        """A camera started with background=False resumes the same way."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+
+        cam.source_str = "testimage://pm5544"
+
+        assert cam.running is True
+        assert cam._thread is None
+
     def test_source_info_identity_is_stable(self, camera: CameraFactory) -> None:
         """Retargeting mutates the description rather than replacing it.
 

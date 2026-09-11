@@ -243,6 +243,11 @@ class Camera(CameraBase):
         self._lock = threading.RLock()
         self._in_lifecycle = False
         self._active = False
+        # Intent, as opposed to _active's fact. A camera retargeted from a
+        # half-typed source string stops running but still wants to, so it
+        # can resume by itself once the string resolves and opens.
+        self._wants_running = False
+        self._background = True
         self._handler: SourceBase | None = None
         self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
@@ -296,15 +301,29 @@ class Camera(CameraBase):
         logger.debug(f"{self.synq_topic}: resolved {source_str!r} to {handler!r}")
 
     def _on_source_str_changed(self, source_str: str) -> None:
-        """Retarget the camera when the source string changes."""
-        was_running = self._active
+        """Retarget the camera when the source string changes.
+
+        Resuming is driven by intent rather than by whether the camera
+        happens to be running.  A source string typed a character at a
+        time goes through states that neither resolve (``/dev/vi``
+        resolves but will not open, ``testimag`` does not resolve at
+        all) nor run, and the camera must pick itself back up when the
+        string finally works instead of waiting to be started by hand.
+        """
+        wanted = self._wants_running
         self.stop()
         self._resolve(source_str)
-        if was_running and self._handler is not None:
-            try:
-                self.start()
-            except CameraError as exc:
-                logger.warning(f"{self.synq_topic}: restart after retarget failed: {exc}")
+        self._wants_running = wanted
+
+        if not wanted or self._handler is None:
+            return
+
+        try:
+            self.start(background=self._background)
+        except CameraError as exc:
+            # Still wanted, just not yet: the next edit gets another go.
+            self._wants_running = True
+            logger.info(f"{self.synq_topic}: not running yet, {exc}")
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -340,6 +359,11 @@ class Camera(CameraBase):
             refused to open.
         """
         with self._lifecycle():
+            # Recorded before the attempt, so a camera that was asked to run
+            # but could not open yet resumes on the next workable source.
+            self._wants_running = True
+            self._background = background
+
             if self._active:
                 logger.debug(f"{self.synq_topic}: already running")
                 return
@@ -382,6 +406,7 @@ class Camera(CameraBase):
         joined.
         """
         with self._lifecycle():
+            self._wants_running = False
             if not self._active and self._thread is None and not self._is_source_open():
                 return
             self._stop_event.set()
