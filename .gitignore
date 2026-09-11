@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Distribution / packaging
+dist/
+*.whl
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+*.coverage
+
+# Compiled deps
+uv.lock
+
+# OS
+.DS_Store
+Thumbs.db

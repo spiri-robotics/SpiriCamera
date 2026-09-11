@@ -1,0 +1,21 @@
+# SpiriCamera Docker Compose - Test Environment
+#
+# Run tests inside the container to catch environment differences:
+#   docker compose -f templates/compose.yaml -f templates/compose.test.yaml run --rm test
+#
+# In CI with full integration:
+#   docker compose -f templates/compose.yaml -f templates/compose.dev.yaml -f templates/compose.test.yaml run test
+
+services:
+  test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: SpiriCamera:test
+    command: ["python", "-m", "pytest", "tests/", "-v", "--tb=short"]
+    volumes:
+      - ../tests:/app/tests:ro
+    environment:
+      - ENVIRONMENT=test
+      - LOG_LEVEL=DEBUG
+      - PYTEST_ADDOPTS=--color=yes

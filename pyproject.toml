@@ -1,0 +1,43 @@
+[project]
+name = "SpiriCamera"
+version = "0.1.0"
+description = "Work with Cameras in SpiriSynq"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [{name = "Alex Davies", email = "alex.davies@spirirobotics.com"}]
+license = "GPL-3.0-or-later"
+dependencies = [
+    "loguru>=0.7.3",
+    "numpy>=1.26.0",
+    "opencv-python-headless>=4.8.0",
+    "pydantic-settings>=2.14.2",
+    "resvg-py>=0.5.0",
+    "typer>=0.26.8",
+    "SpiriSynq>=0.1.0",
+]
+[project.optional-dependencies]
+docs = ["sphinx>=9.1.0", "furo>=2024.0", "myst-parser>=5.1.0"]
+ui = ["nicegui>=2.0.0"]
+
+[project.scripts]
+SpiriCamera = "SpiriCamera.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/SpiriCamera"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
+    "coverage>=7.0.0",
+]

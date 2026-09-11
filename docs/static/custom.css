@@ -1,0 +1,114 @@
+/* Spiri house style, layered over Furo.
+ *
+ * Deliberately light: the theme is a decision for the creative director, and
+ * this file is the seam where that decision lands. Keep it to variables and a
+ * handful of rules so replacing it later is a small diff.
+ *
+ * Two things about Furo shape what follows. It declares its light palette on
+ * `body`, not `:root` -- since custom properties inherit, anything we set on
+ * `:root` would lose to it. And it *redeclares* the brand colours inside its
+ * dark blocks, which outrank a bare `body`; that is why the brand mapping is
+ * repeated in each palette block below rather than stated once.
+ *
+ * -- Where the hazard colours went ------------------------------------------
+ *
+ * They used to live here, and deliberately do not any more. A signal word panel
+ * answers to ANSI Z535, not to a house style, and it has to keep answering to it
+ * for the life of the document -- which a file the project owns and can edit
+ * cannot promise. They now ship from the spiri-docs extension, in
+ * `spiri-safety.css`, loaded after this file so that nothing here can repaint a
+ * DANGER panel by accident.
+ *
+ * That is the same reasoning that puts the PDF footer in the extension: things
+ * that must hold on every build do not belong in a file whose whole purpose is
+ * to be edited. If you need a hazard colour changed, change it there and every
+ * manual picks it up on a dependency bump.
+ */
+
+/* -- Palette ------------------------------------------------------------- */
+/* Brand palette, from the design-assets repo:
+ *
+ *   yellow #fac529   blue #9edfec   orange #dd5935   grey #899ca3
+ *
+ * Those are the four dots in the logo. None of them can be used as a text or
+ * link colour on white -- measured against #fff they run 1.48:1 (blue), 1.61:1
+ * (yellow), 2.86:1 (grey), 3.78:1 (orange), where AA wants 4.5:1. They are
+ * display colours, and the logo is where they appear.
+ *
+ * So the accent is the brand blue held at its hue (190 degrees) and darkened
+ * until it passes: #006c82, 6.06:1 on white. In dark mode no such adjustment is
+ * needed -- #9edfec sits at 12.48:1 on Furo's near-black, so dark mode gets the
+ * literal brand colour and light mode gets the same hue made legible. */
+body {
+  --spiri-accent: #006c82;
+
+  --color-brand-primary: var(--spiri-accent);
+  --color-brand-content: var(--spiri-accent);
+}
+
+/* Furo's own dark selectors, matched exactly: an explicit toggle, and a
+ * system-preference fallback for readers who have not toggled. Both stay out of
+ * print, so a printed page always uses the light palette. */
+@media not print {
+  body[data-theme="dark"] {
+    --spiri-accent: #9edfec; /* brand blue, unmodified -- 12.48:1 here */
+
+    --color-brand-primary: var(--spiri-accent);
+    --color-brand-content: var(--spiri-accent);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --spiri-accent: #9edfec;
+
+      --color-brand-primary: var(--spiri-accent);
+      --color-brand-content: var(--spiri-accent);
+    }
+  }
+}
+/* -- Logo ---------------------------------------------------------------- */
+
+/* The lockup is a square with the dots sitting right on the viewBox edges, so
+ * the file carries no clearspace of its own. The guidelines (p.9) ask for two
+ * dot-diameters kept free of type, graphics *and edges* on every side. A dot is
+ * 24.77 units of the 222.32-unit box, so that clearspace is 22.3% of whatever
+ * width the logo is drawn at -- 27px once the box is capped at 120px.
+ *
+ * 120px is a judgement call between two constraints: the same page sets a hard
+ * floor of 0.5in (48px at 96dpi), and left at its natural size the lockup takes
+ * over 200px of sidebar before the reader reaches the navigation.
+ *
+ * Scaling the lockup as a whole is allowed; scaling the dots and the logotype
+ * independently is not (p.10). Hence a width and nothing else -- no stroke, no
+ * shadow, no filter. That last one is also why the dark variant is a separate
+ * file rather than this one inverted. */
+.sidebar-logo {
+  max-width: 120px;
+  /* Furo centres the image inside its container with `margin: 0 auto`. */
+  margin-left: 0;
+}
+
+/* Left-justified, but the clearspace still has to clear the sidebar edge. Furo
+ * pads .sidebar-brand by --sidebar-item-spacing-horizontal, so ask only for the
+ * remainder rather than hardcoding what that padding happens to be today. */
+.sidebar-logo-container {
+  max-width: 120px;
+  margin: 27px auto 27px
+    max(0px, calc(27px - var(--sidebar-item-spacing-horizontal)));
+}
+/* -- Content ------------------------------------------------------------- */
+
+/* Revision history: dense, tabular, readable at a glance. */
+table.spiri-revision-history {
+  font-size: 0.9em;
+}
+
+table.spiri-revision-history td,
+table.spiri-revision-history th {
+  vertical-align: top;
+}
+
+/* Numbered chapters read better with a little more room between sections. */
+article h2 {
+  margin-top: 1.6em;
+}

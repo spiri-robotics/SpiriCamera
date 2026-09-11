@@ -1,0 +1,8 @@
+# Requirements for building documentation
+# Install with: pip install -r docs/requirements.txt
+
+sphinx>=9.0
+furo>=2024.0
+myst-parser>=5.0
+
+

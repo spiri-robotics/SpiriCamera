@@ -1,0 +1,22 @@
+# SpiriCamera Docker Compose - Production
+#
+# Deployed form: pulls image from registry.
+# Start with: docker compose -f templates/compose.yaml up -d
+#
+# Deployed as SpiriConfig plugin (when spiri_config_plugin=true):
+#   - Registers with SpiriConfig for management
+#   - Label-based discovery
+#   - Port 8337
+#
+# Deployed as standalone app (default):
+#   - Regular docker compose service
+
+services:
+  app:
+    image: ${COMPONENT_IMAGE:-SpiriCamera:latest}
+    restart: unless-stopped
+    environment:
+      - GREETING=${GREETING:-Hello from SpiriCamera}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+

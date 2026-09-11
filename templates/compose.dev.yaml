@@ -1,0 +1,24 @@
+# SpiriCamera Docker Compose - Development Override
+#
+# Dev override: builds from local source with src/ mounted for hot-reloading.
+# Start with: docker compose -f templates/compose.yaml -f templates/compose.dev.yaml up --build
+#
+# Local development without SpiriConfig:
+#   docker compose -f templates/compose.yaml -f templates/compose.dev.yaml up --build
+#
+# Local development with SpiriConfig:
+#   docker compose -f templates/compose.yaml -f templates/compose.dev.yaml up --build
+#   docker compose -f templates/compose.yaml -f templates/compose.dev.yaml ps
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: SpiriCamera:dev
+    volumes:
+      - ./src:/app/src:ro
+    environment:
+      - GREETING=${GREETING:-Hello from SpiriCamera}
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
