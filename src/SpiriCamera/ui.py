@@ -38,7 +38,7 @@ from collections import deque
 from fastapi import Response
 from nicegui import app, ui
 
-from SpiriCamera import Camera
+from SpiriCamera import Camera, exif
 from SpiriCamera.main import get_settings
 
 #: Route the browser pulls frames from.
@@ -49,7 +49,7 @@ METER_WINDOW = 3.0
 
 
 class RateMeter:
-    """Rolling-window meter for frames and bytes actually served.
+    """Rolling-window meter for what the frame route actually serves.
 
     Measured at the HTTP route, so it reports what the browsers are
     really pulling rather than what the camera hoped to publish.  Shared
@@ -69,20 +69,23 @@ class RateMeter:
             Seconds of history to average over.
         """
         self._window = window
-        self._samples: deque[tuple[float, int]] = deque()
+        self._samples: deque[tuple[float, int, float]] = deque()
         self._lock = threading.Lock()
 
-    def record(self, size: int) -> None:
+    def record(self, size: int, age: float = 0.0) -> None:
         """Record one served frame.
 
         Parameters
         ----------
         size : int
             Size of the served frame in bytes.
+        age : float
+            Seconds between the frame being captured and being served.
+            Zero for an untagged frame, which is not counted.
         """
         now = time.monotonic()
         with self._lock:
-            self._samples.append((now, size))
+            self._samples.append((now, size, age))
             self._prune(now)
 
     def rates(self) -> tuple[float, float]:
@@ -99,11 +102,33 @@ class RateMeter:
             if len(self._samples) < 2:
                 return 0.0, 0.0
             span = now - self._samples[0][0]
-            total = sum(size for _, size in self._samples)
+            total = sum(size for _, size, _ in self._samples)
             count = len(self._samples)
         if span <= 0:
             return 0.0, 0.0
         return count / span, total / span
+
+    def mean_age(self) -> float:
+        """Return the mean capture-to-serve age over the window.
+
+        Averaged rather than sampled.  A frame's age sweeps from zero to
+        a full frame interval as it waits to be fetched, so reading it at
+        one arbitrary instant measures the phase between the capture loop
+        and whatever clock did the reading — a number that slides and
+        wraps and says nothing about latency.
+
+        Returns
+        -------
+        float
+            Seconds, or ``0.0`` if no tagged frame has been served.
+        """
+        now = time.monotonic()
+        with self._lock:
+            self._prune(now)
+            ages = [age for _, _, age in self._samples if age]
+        if not ages:
+            return 0.0
+        return sum(ages) / len(ages)
 
     def _prune(self, now: float) -> None:
         """Drop samples older than the window; caller holds the lock."""
@@ -152,6 +177,33 @@ def get_camera() -> Camera:
     return _camera
 
 
+def _frame_age(frame: bytes) -> float:
+    """Seconds since ``frame`` was captured, per its own EXIF.
+
+    Read off the bytes in hand rather than from ``camera.exif_timestamp``,
+    which by the time it is read may already describe a later frame.
+    An untagged frame, or one whose timestamp is not a number, has no
+    knowable age rather than an age of zero.
+
+    Parameters
+    ----------
+    frame : bytes
+        The encoded frame about to be served.
+
+    Returns
+    -------
+    float
+        Seconds since capture, or ``0.0`` if the frame does not say.
+    """
+    try:
+        captured = float(exif.extract(frame).get(exif.TIMESTAMP_TAG, ''))
+    except ValueError:
+        return 0.0
+    # Clamped: a remote camera whose clock is ahead of ours would
+    # otherwise report a frame from the future.
+    return max(0.0, time.time() - captured)
+
+
 @app.get(FRAME_ROUTE)
 def serve_frame() -> Response:
     """Serve the most recent frame as an image response.
@@ -162,11 +214,11 @@ def serve_frame() -> Response:
         The latest encoded frame, or a placeholder if none exists yet.
     """
     camera = get_camera()
-    if not camera.image:
+    frame = camera.image
+    if not frame:
         return PLACEHOLDER
 
-    frame = camera.image
-    frame_meter.record(len(frame))
+    frame_meter.record(len(frame), _frame_age(frame))
     return Response(
         content=frame,
         media_type=camera.mimetype,
@@ -263,11 +315,12 @@ def build_page():
                 parts.append(f'{cam.received_width}x{cam.received_height}')
                 parts.append(f'{cam.received_ratio:.3f}')
 
-            # Read out of the frame, so this is the age of the picture on
-            # screen rather than of the last request. Against a remote
-            # camera it is only as accurate as the two clocks agree.
-            if cam.exif_timestamp:
-                parts.append(f'{(time.time() - cam.exif_timestamp) * 1000:.0f} ms old')
+            # Mean capture-to-serve age, taken at the route where frames
+            # actually leave. Against a remote camera it is only as
+            # accurate as the two machines' clocks agree.
+            age = frame_meter.mean_age()
+            if age:
+                parts.append(f'{age * 1000:.0f} ms old')
 
             fps, bytes_per_second = frame_meter.rates()
             if fps:

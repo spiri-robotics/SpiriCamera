@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import time
 
+import cv2
+import numpy as np
 import pytest
 from nicegui.testing.user import User
 
+from SpiriCamera import exif
 from SpiriCamera import ui as camera_ui
 from SpiriCamera.camera import Camera
 
@@ -184,12 +187,67 @@ class TestExtraTagEntry:
 
 
 class TestFrameAge:
-    """The frame age in the bandwidth readout."""
+    """Capture-to-serve age, measured where frames leave."""
 
-    async def test_shown_once_a_frame_has_been_captured(self, user: User) -> None:
-        """Read out of the frame's own EXIF, not measured at the route."""
-        camera_ui.get_camera().start(background=False)
-        camera_ui.get_camera().read()
+    def test_untagged_frames_have_no_knowable_age(self) -> None:
+        """Absent a timestamp, zero means unknown, not instantaneous."""
+        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
+
+        assert camera_ui._frame_age(jpeg) == 0.0
+
+    def test_measured_from_the_frame(self) -> None:
+        """The age is whatever the frame's own EXIF says it is."""
+        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
+        tagged = exif.embed(jpeg, {"timestamp": f"{time.time() - 0.25:.6f}"})
+
+        assert camera_ui._frame_age(tagged) == pytest.approx(0.25, abs=0.05)
+
+    def test_a_clock_ahead_of_ours_is_clamped(self) -> None:
+        """A remote camera must not report a frame from the future."""
+        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
+        tagged = exif.embed(jpeg, {"timestamp": f"{time.time() + 60:.6f}"})
+
+        assert camera_ui._frame_age(tagged) == 0.0
+
+    def test_an_unreadable_timestamp_is_not_fatal(self) -> None:
+        """A tag is free-form text and may hold anything at all."""
+        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
+        tagged = exif.embed(jpeg, {"timestamp": "soon"})
+
+        assert camera_ui._frame_age(tagged) == 0.0
+
+    def test_the_meter_averages_rather_than_samples(self) -> None:
+        """The reported age must not depend on when it is read.
+
+        A frame's age sweeps across a whole frame interval while it waits
+        to be fetched, so a single reading beats against the capture loop
+        and slides instead of settling.
+        """
+        meter = camera_ui.RateMeter(window=5.0)
+        for age in (0.010, 0.020, 0.030):
+            meter.record(1000, age)
+
+        assert meter.mean_age() == pytest.approx(0.020)
+
+    def test_untagged_frames_do_not_drag_the_mean_down(self) -> None:
+        """An unknown age is excluded, not counted as zero."""
+        meter = camera_ui.RateMeter(window=5.0)
+        meter.record(1000, 0.020)
+        meter.record(1000)
+
+        assert meter.mean_age() == pytest.approx(0.020)
+
+    def test_nothing_served_has_no_age(self) -> None:
+        """No frames means no reading, not a division by zero."""
+        assert camera_ui.RateMeter().mean_age() == 0.0
+
+    async def test_shown_once_a_frame_has_been_served(self, user: User) -> None:
+        """The readout appears alongside the bandwidth figures."""
+        cam = camera_ui.get_camera()
+        cam.start(background=False)
+        cam.read()
+        camera_ui.serve_frame()
+        camera_ui.serve_frame()
 
         await user.open("/")
 

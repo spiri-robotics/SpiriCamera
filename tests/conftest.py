@@ -1,7 +1,11 @@
 """Shared fixtures.
 
-Two rules keep this suite fast and hardware-independent:
+Three rules keep this suite fast, hardware-independent, and off the
+network:
 
+* Everything a test builds lives in its own zenoh namespace, on a peer
+  that talks to nobody.  See :py:data:`SYNQ_NAMESPACE` and
+  :py:func:`synq_session`.
 * Cameras are built with ``synq_auto_start=False`` so no test declares
   zenoh resources it does not need.  The handful of tests that care
   about sync opt in explicitly.
@@ -12,14 +16,74 @@ Two rules keep this suite fast and hardware-independent:
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator, Callable, Iterator
+import json
+import os
+import uuid
 
-import numpy as np
-import pytest
-from nicegui.testing.user import User
-from nicegui.testing.user_simulation import user_simulation
+#: Topic prefix for everything this test run publishes.
+#:
+#: SpiriSynq prefixes authoritative topics with the hostname, so an
+#: unnamespaced run publishes to the very topics a real camera on this
+#: machine would — and two developers on one network write over each
+#: other.  A fresh name per run also means a crashed run leaves nothing
+#: behind for the next one to trip over.
+#:
+#: This has to be set before SpiriSynq is imported, which is why it sits
+#: above the imports: the module-level default session is constructed at
+#: import time and reads the environment exactly once.
+SYNQ_NAMESPACE = f"spiricamera-test-{uuid.uuid4().hex[:12]}"
+os.environ["SPIRI_SYNQ_BASE_TOPIC"] = SYNQ_NAMESPACE
 
-from SpiriCamera.camera import Camera
+from collections.abc import AsyncGenerator, Callable, Iterator  # noqa: E402
+
+import numpy as np  # noqa: E402
+import pytest  # noqa: E402
+import zenoh  # noqa: E402
+from nicegui.testing.user import User  # noqa: E402
+from nicegui.testing.user_simulation import user_simulation  # noqa: E402
+from SpiriSynq.session import Session, current_session  # noqa: E402
+
+from SpiriCamera.camera import Camera  # noqa: E402
+
+#: Zenoh config for the test peer: no discovery, no endpoints, no peers.
+#:
+#: Namespacing alone keeps the topics apart, but a scouting peer still
+#: joins whatever multicast group the developer's machine is on and
+#: announces itself to every node there.  A test suite has no business
+#: on the network at all, and an isolated peer also means the suite
+#: behaves the same on a laptop, in a container, and on a build machine
+#: with no network to scout.
+ISOLATED_ZENOH_CONFIG = {
+    "mode": "peer",
+    "scouting": {"multicast": {"enabled": False}, "gossip": {"enabled": False}},
+    "listen": {"endpoints": []},
+    "connect": {"endpoints": []},
+}
+
+
+@pytest.fixture(scope="session", autouse=True)
+def synq_session() -> Iterator[Session]:
+    """Make an isolated, namespaced session the default for every test.
+
+    ``SyncableObject`` takes its session from a context variable at
+    construction, so setting it here covers every object a test builds
+    without any test having to pass ``synq_session=``.
+
+    Yields
+    ------
+    Session
+        The session under test, for the rare test that asserts on it.
+    """
+    session = Session(
+        config=zenoh.Config.from_json5(json.dumps(ISOLATED_ZENOH_CONFIG)),
+        base_topic=SYNQ_NAMESPACE,
+    )
+    token = current_session.set(session)
+    try:
+        yield session
+    finally:
+        current_session.reset(token)
+        session.close()
 
 
 class FakeCapture:

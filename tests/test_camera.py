@@ -758,7 +758,18 @@ class TestFrameTags:
 
         assert cam.exif_tags["source"] == "testimage://"
         assert cam.exif_tags["make"] == "SpiriCamera"
-        assert "spiricamera_testimage" in cam.exif_tags["software"]
+        assert cam.exif_tags["software"].startswith("SpiriCamera ")
+
+    def test_frames_name_the_camera_on_the_network(
+        self, camera: CameraFactory
+    ) -> None:
+        """The SpiriSynq path, so a stray frame can be traced back."""
+        cam = camera("testimage://", synq_topic="probe")
+        cam.start(background=False)
+        cam.read()
+
+        assert cam.exif_tags["topic"] == cam.synq_absolute_path
+        assert "probe" in cam.exif_tags["topic"]
 
     def test_timestamp_is_read_back_off_the_frame(
         self, camera: CameraFactory

@@ -15,6 +15,7 @@ import time
 from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from importlib.metadata import PackageNotFoundError, version
 
 import cv2
 import numpy as np
@@ -51,6 +52,16 @@ _STOP_TIMEOUT = 5.0
 #: Log every Nth consecutive capture failure, so a dead source does not
 #: fill the log at the full framerate.
 _ERROR_LOG_INTERVAL = 60
+
+#: Package version, stamped into every frame's EXIF ``Software`` tag.
+#:
+#: Read from the installed distribution rather than from
+#: ``SpiriCamera.__version__``, which is not bound yet while this module
+#: is being imported.
+try:
+    _VERSION = version("SpiriCamera")
+except PackageNotFoundError:  # pragma: no cover - only when run from a tree
+    _VERSION = "unknown"
 
 
 class CameraError(RuntimeError):
@@ -740,8 +751,12 @@ class Camera(CameraBase):
         tags = {
             exif.TIMESTAMP_TAG: f"{captured:.6f}",
             exif.DATETIME_TAG: time.strftime("%Y:%m:%d %H:%M:%S", time.localtime(captured)),
-            "software": f"SpiriCamera {self.synq_topic}",
+            "software": f"SpiriCamera {_VERSION}",
             "source": self.source.url or self.source_str,
+            # The full SpiriSynq path, which is what names this camera on
+            # the network. Falls back to the bare topic until the object
+            # syncs and learns its base topic.
+            "topic": self.synq_absolute_path,
         }
         if self.vendor:
             tags["make"] = self.vendor
