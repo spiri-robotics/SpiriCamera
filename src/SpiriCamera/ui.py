@@ -70,22 +70,27 @@ class RateMeter:
         """
         self._window = window
         self._samples: deque[tuple[float, int, float]] = deque()
+        self._newest_capture = 0.0
         self._lock = threading.Lock()
 
-    def record(self, size: int, age: float = 0.0) -> None:
+    def record(self, size: int, captured: float = 0.0) -> None:
         """Record one served frame.
 
         Parameters
         ----------
         size : int
             Size of the served frame in bytes.
-        age : float
-            Seconds between the frame being captured and being served.
-            Zero for an untagged frame, which is not counted.
+        captured : float
+            Unix timestamp the frame was captured at, from its own EXIF.
+            Zero for an untagged frame, whose age is unknowable.
         """
         now = time.monotonic()
+        # Clamped: a camera whose clock is ahead of ours must not produce
+        # a frame from the future.
+        age = max(0.0, time.time() - captured) if captured else 0.0
         with self._lock:
             self._samples.append((now, size, age))
+            self._newest_capture = max(self._newest_capture, captured)
             self._prune(now)
 
     def rates(self) -> tuple[float, float]:
@@ -120,7 +125,8 @@ class RateMeter:
         Returns
         -------
         float
-            Seconds, or ``0.0`` if no tagged frame has been served.
+            Seconds, or ``0.0`` if no tagged frame has been served in the
+            window.
         """
         now = time.monotonic()
         with self._lock:
@@ -129,6 +135,30 @@ class RateMeter:
         if not ages:
             return 0.0
         return sum(ages) / len(ages)
+
+    def age(self) -> float:
+        """Return the age to report for the frame currently on screen.
+
+        The larger of two readings of the same thing, because a displayed
+        age must never claim the picture is fresher than it is:
+
+        * the mean over the window, which is the stable answer while
+          frames are flowing and the only one that does not slide about;
+        * the true age of the newest frame seen, which is what the mean
+          decays away from once frames stop arriving.  A camera that
+          stopped ten minutes ago is still showing a ten-minute-old
+          picture, and that is the useful thing to say about it.
+
+        Returns
+        -------
+        float
+            Seconds, or ``0.0`` if no tagged frame has ever been served.
+        """
+        with self._lock:
+            newest = self._newest_capture
+        if not newest:
+            return 0.0
+        return max(self.mean_age(), max(0.0, time.time() - newest))
 
     def _prune(self, now: float) -> None:
         """Drop samples older than the window; caller holds the lock."""
@@ -177,13 +207,13 @@ def get_camera() -> Camera:
     return _camera
 
 
-def _frame_age(frame: bytes) -> float:
-    """Seconds since ``frame`` was captured, per its own EXIF.
+def _frame_timestamp(frame: bytes) -> float:
+    """The Unix timestamp ``frame`` was captured at, per its own EXIF.
 
     Read off the bytes in hand rather than from ``camera.exif_timestamp``,
     which by the time it is read may already describe a later frame.
     An untagged frame, or one whose timestamp is not a number, has no
-    knowable age rather than an age of zero.
+    knowable capture time rather than a capture time of zero.
 
     Parameters
     ----------
@@ -193,15 +223,44 @@ def _frame_age(frame: bytes) -> float:
     Returns
     -------
     float
-        Seconds since capture, or ``0.0`` if the frame does not say.
+        Unix seconds, or ``0.0`` if the frame does not say.
     """
     try:
-        captured = float(exif.extract(frame).get(exif.TIMESTAMP_TAG, ''))
+        return float(exif.extract(frame).get(exif.TIMESTAMP_TAG, ''))
     except ValueError:
         return 0.0
-    # Clamped: a remote camera whose clock is ahead of ours would
-    # otherwise report a frame from the future.
-    return max(0.0, time.time() - captured)
+
+
+def _format_age(seconds: float) -> str:
+    """Render a frame age at a resolution that suits its size.
+
+    A stopped camera's frame keeps ageing, and milliseconds stop being
+    a readable unit long before it is interesting again.
+
+    Parameters
+    ----------
+    seconds : float
+        The age to render.
+
+    Returns
+    -------
+    str
+        Something like ``26 ms old`` or ``4.2 s old``.
+    """
+    if seconds < 1:
+        return f'{seconds * 1000:.0f} ms old'
+    if seconds < 60:
+        return f'{seconds:.1f} s old'
+    return f'{seconds / 60:.0f} min old'
+
+
+#: The frame object last counted by the meter, to recognise a re-serve.
+#:
+#: Compared by identity, not equality: the camera binds a fresh ``bytes``
+#: to ``image`` for every frame it captures, so two captures that happen
+#: to encode identically are still two frames, while the same object
+#: handed out twice is one.
+_last_counted: bytes | None = None
 
 
 @app.get(FRAME_ROUTE)
@@ -213,12 +272,21 @@ def serve_frame() -> Response:
     Response
         The latest encoded frame, or a placeholder if none exists yet.
     """
+    global _last_counted
+
     camera = get_camera()
     frame = camera.image
     if not frame:
         return PLACEHOLDER
 
-    frame_meter.record(len(frame), _frame_age(frame))
+    # Only new frames are metered. A stopped camera keeps its last frame
+    # in `image`, and any browser still polling would otherwise have that
+    # one frame counted over and over -- reporting a busy 30fps for a
+    # camera that has produced nothing since it was stopped.
+    if frame is not _last_counted:
+        _last_counted = frame
+        frame_meter.record(len(frame), _frame_timestamp(frame))
+
     return Response(
         content=frame,
         media_type=camera.mimetype,
@@ -301,7 +369,7 @@ def build_page():
         with ui.card().classes('w-full p-0 overflow-hidden'):
             frame = ui.interactive_image(FRAME_ROUTE).classes('camera-frame w-full')
 
-        bandwidth = ui.label('idle').classes('w-full px-2 font-mono text-sm opacity-70')
+        bandwidth = ui.label().classes('w-full px-2 font-mono text-sm opacity-70')
 
         def refresh_frame() -> None:
             """Pull the next frame, tracking the camera's current framerate."""
@@ -309,31 +377,48 @@ def build_page():
             frame.force_reload()
 
         def refresh_bandwidth() -> None:
-            """Show the frame that arrived, and what the route is delivering."""
+            """Show the frame that arrived, and what the route is delivering.
+
+            Three kinds of number share this line, and they part company
+            when the camera stops.  The rates are rolling averages, so
+            they fall to zero once no new frames are arriving — a stopped
+            camera reads 0 fps even while a browser keeps polling and
+            being handed the frame it already has.  The size and shape
+            are an account of the last frame, which does not stop being
+            true just because no frame followed it, so they stay put.
+            The age is neither: the frame on screen really is getting
+            older, so it keeps counting up.
+            """
             parts = []
             if cam.received_width and cam.received_height:
                 parts.append(f'{cam.received_width}x{cam.received_height}')
                 parts.append(f'{cam.received_ratio:.3f}')
 
-            # Mean capture-to-serve age, taken at the route where frames
-            # actually leave. Against a remote camera it is only as
-            # accurate as the two machines' clocks agree.
-            age = frame_meter.mean_age()
+            # Age of the frame on screen, measured at the route where
+            # frames actually leave. Against a remote camera it is only
+            # as accurate as the two machines' clocks agree.
+            age = frame_meter.age()
             if age:
-                parts.append(f'{age * 1000:.0f} ms old')
+                parts.append(_format_age(age))
 
             fps, bytes_per_second = frame_meter.rates()
-            if fps:
-                parts.append(f'{bytes_per_second / 1024:.0f} KiB/s')
-                parts.append(f'{fps:.1f} fps')
-                parts.append(f'{bytes_per_second / fps / 1024:.0f} KiB/frame')
-                parts.append(f'requested {int(cam.max_framerate or 0)} fps')
-            else:
-                parts.append('idle')
+            parts.append(f'{bytes_per_second / 1024:.0f} KiB/s')
+            parts.append(f'{fps:.1f} fps')
+
+            # Off the frame in hand, not off the rates: bytes-per-second
+            # divided by frames-per-second is nothing at all once both are
+            # zero, but the last frame is still exactly this big.
+            if cam.image:
+                parts.append(f'{len(cam.image) / 1024:.0f} KiB/frame')
+
+            parts.append(f'requested {int(cam.max_framerate or 0)} fps')
 
             bandwidth.set_text(' · '.join(parts))
 
         timer = ui.timer(1 / max(1, int(cam.max_framerate or 1)), refresh_frame)
+        # Filled in before the first tick, so the line reads 0 fps rather
+        # than being blank for half a second on every page load.
+        refresh_bandwidth()
         ui.timer(0.5, refresh_bandwidth)
 
         with ui.row().classes('w-full gap-2 flex-shrink-0'):

@@ -14,6 +14,18 @@ from SpiriCamera import ui as camera_ui
 from SpiriCamera.camera import Camera
 
 
+@pytest.fixture(autouse=True)
+def fresh_meter(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Give every test its own meter and de-duplication state.
+
+    Both are process-wide, matching the one-camera-per-process model, so
+    without this a test reads whatever frames earlier tests happened to
+    serve and the order of the file decides whether it passes.
+    """
+    monkeypatch.setattr(camera_ui, "frame_meter", camera_ui.RateMeter())
+    monkeypatch.setattr(camera_ui, "_last_counted", None)
+
+
 class TestRateMeter:
     """The bandwidth meter behind the readout under the image."""
 
@@ -87,18 +99,15 @@ class TestFrameRoute:
     def test_serving_feeds_the_meter(self, served_camera: Camera) -> None:
         """The readout measures real bytes leaving the route."""
         served_camera.start(background=False)
-        served_camera.read()
-        meter = camera_ui.RateMeter()
-        monkey = camera_ui.frame_meter
-        camera_ui.frame_meter = meter
-        try:
-            camera_ui.serve_frame()
-            camera_ui.serve_frame()
-        finally:
-            camera_ui.frame_meter = monkey
 
-        frames_per_second, _ = meter.rates()
+        for _ in range(3):
+            served_camera.read()
+            camera_ui.serve_frame()
+            time.sleep(0.01)
+
+        frames_per_second, bytes_per_second = camera_ui.frame_meter.rates()
         assert frames_per_second > 0
+        assert bytes_per_second > 0
 
 
 class TestSharedCamera:
@@ -135,7 +144,7 @@ class TestPage:
     async def test_shows_the_bandwidth_readout(self, user: User) -> None:
         """The meter renders even before anything has been served."""
         await user.open("/")
-        await user.should_see("idle")
+        await user.should_see("0.0 fps")
 
 
 class TestTagDisplay:
@@ -189,32 +198,65 @@ class TestExtraTagEntry:
 class TestFrameAge:
     """Capture-to-serve age, measured where frames leave."""
 
-    def test_untagged_frames_have_no_knowable_age(self) -> None:
-        """Absent a timestamp, zero means unknown, not instantaneous."""
-        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
+    @staticmethod
+    def _jpeg(**tags: str) -> bytes:
+        """A tiny JPEG carrying the given tags."""
+        raw = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
+        return exif.embed(raw, tags) if tags else raw
 
-        assert camera_ui._frame_age(jpeg) == 0.0
+    def test_untagged_frames_have_no_knowable_capture_time(self) -> None:
+        """Absent a timestamp, zero means unknown, not the epoch."""
+        assert camera_ui._frame_timestamp(self._jpeg()) == 0.0
 
-    def test_measured_from_the_frame(self) -> None:
-        """The age is whatever the frame's own EXIF says it is."""
-        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
-        tagged = exif.embed(jpeg, {"timestamp": f"{time.time() - 0.25:.6f}"})
+    def test_read_from_the_frame(self) -> None:
+        """The capture time is whatever the frame's own EXIF says."""
+        captured = time.time() - 0.25
 
-        assert camera_ui._frame_age(tagged) == pytest.approx(0.25, abs=0.05)
-
-    def test_a_clock_ahead_of_ours_is_clamped(self) -> None:
-        """A remote camera must not report a frame from the future."""
-        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
-        tagged = exif.embed(jpeg, {"timestamp": f"{time.time() + 60:.6f}"})
-
-        assert camera_ui._frame_age(tagged) == 0.0
+        assert camera_ui._frame_timestamp(
+            self._jpeg(timestamp=f"{captured:.6f}")
+        ) == pytest.approx(captured)
 
     def test_an_unreadable_timestamp_is_not_fatal(self) -> None:
         """A tag is free-form text and may hold anything at all."""
-        jpeg = cv2.imencode(".jpg", np.zeros((4, 4, 3), np.uint8))[1].tobytes()
-        tagged = exif.embed(jpeg, {"timestamp": "soon"})
+        assert camera_ui._frame_timestamp(self._jpeg(timestamp="soon")) == 0.0
 
-        assert camera_ui._frame_age(tagged) == 0.0
+    def test_a_clock_ahead_of_ours_is_clamped(self) -> None:
+        """A remote camera must not show a frame from the future."""
+        meter = camera_ui.RateMeter()
+        meter.record(1000, time.time() + 60)
+
+        assert meter.age() == 0.0
+
+    def test_an_untagged_frame_has_no_age_at_all(self) -> None:
+        """Nothing to measure against means no reading, not zero seconds."""
+        meter = camera_ui.RateMeter()
+        meter.record(1000)
+
+        assert meter.age() == 0.0
+
+    def test_the_age_keeps_counting_up_after_frames_stop(self) -> None:
+        """The picture on screen really is getting older.
+
+        The window mean decays to nothing once nothing is arriving, so on
+        its own it would claim a long-stopped camera was showing a fresh
+        frame.
+        """
+        meter = camera_ui.RateMeter(window=0.2)
+        meter.record(1000, time.time() - 5)
+
+        first = meter.age()
+        time.sleep(0.3)
+        second = meter.age()
+
+        assert first >= 5
+        assert second > first
+
+    def test_the_age_never_understates_the_frame_on_screen(self) -> None:
+        """Whichever reading is larger wins; neither may hide the other."""
+        meter = camera_ui.RateMeter(window=5.0)
+        meter.record(1000, time.time() - 10)
+
+        assert meter.age() == pytest.approx(10, abs=0.5)
 
     def test_the_meter_averages_rather_than_samples(self) -> None:
         """The reported age must not depend on when it is read.
@@ -224,22 +266,41 @@ class TestFrameAge:
         and slides instead of settling.
         """
         meter = camera_ui.RateMeter(window=5.0)
+        now = time.time()
         for age in (0.010, 0.020, 0.030):
-            meter.record(1000, age)
+            meter.record(1000, now - age)
 
-        assert meter.mean_age() == pytest.approx(0.020)
+        assert meter.mean_age() == pytest.approx(0.020, abs=0.005)
 
     def test_untagged_frames_do_not_drag_the_mean_down(self) -> None:
         """An unknown age is excluded, not counted as zero."""
         meter = camera_ui.RateMeter(window=5.0)
-        meter.record(1000, 0.020)
+        meter.record(1000, time.time() - 0.020)
         meter.record(1000)
 
-        assert meter.mean_age() == pytest.approx(0.020)
+        assert meter.mean_age() == pytest.approx(0.020, abs=0.005)
 
     def test_nothing_served_has_no_age(self) -> None:
         """No frames means no reading, not a division by zero."""
         assert camera_ui.RateMeter().mean_age() == 0.0
+        assert camera_ui.RateMeter().age() == 0.0
+
+    @pytest.mark.parametrize(
+        ("seconds", "rendered"),
+        [
+            (0.026, "26 ms old"),
+            (0.9994, "999 ms old"),
+            (4.25, "4.2 s old"),
+            (59.9, "59.9 s old"),
+            (61, "1 min old"),
+            (3600, "60 min old"),
+        ],
+    )
+    def test_age_is_rendered_at_a_readable_resolution(
+        self, seconds: float, rendered: str
+    ) -> None:
+        """A stopped camera ages out of milliseconds fairly quickly."""
+        assert camera_ui._format_age(seconds) == rendered
 
     async def test_shown_once_a_frame_has_been_served(self, user: User) -> None:
         """The readout appears alongside the bandwidth figures."""
@@ -252,3 +313,62 @@ class TestFrameAge:
         await user.open("/")
 
         await user.should_see("ms old")
+
+
+class TestStaleFrames:
+    """A camera that has stopped must not read as a busy one."""
+
+    def test_re_serving_one_frame_counts_once(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Polling a stopped camera hands out the same frame repeatedly.
+
+        Counting each response would report a busy framerate for a camera
+        that has produced nothing since it was stopped.
+        """
+        cam = Camera("testimage://", max_width=160, max_height=120,
+                     synq_auto_start=False)
+        monkeypatch.setattr(camera_ui, "_camera", cam)
+        cam.start(background=False)
+        cam.read()
+        cam.stop()
+
+        for _ in range(20):
+            camera_ui.serve_frame()
+
+        assert camera_ui.frame_meter.rates() == (0.0, 0.0)
+
+    def test_distinct_frames_are_all_counted(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """De-duplication is by identity, so real frames still count."""
+        cam = Camera("testimage://", max_width=160, max_height=120,
+                     synq_auto_start=False)
+        monkeypatch.setattr(camera_ui, "_camera", cam)
+        cam.start(background=False)
+
+        for _ in range(5):
+            cam.read()
+            camera_ui.serve_frame()
+            time.sleep(0.01)
+
+        frames_per_second, bytes_per_second = camera_ui.frame_meter.rates()
+        assert frames_per_second > 0
+        assert bytes_per_second > 0
+        cam.stop()
+
+    async def test_the_readout_reports_zero_not_idle(self, user: User) -> None:
+        """Rates fall to zero; the last frame's own figures stay put."""
+        cam = camera_ui.get_camera()
+        cam.start(background=False)
+        cam.read()
+        cam.stop()
+
+        await user.open("/")
+
+        # Rolling averages, so they decay to nothing.
+        await user.should_see("0 KiB/s")
+        await user.should_see("0.0 fps")
+        # An account of the last frame, which is still exactly this big.
+        await user.should_see("KiB/frame")
+        await user.should_see("160x120")
