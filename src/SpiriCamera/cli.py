@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import sys
+import time
 from typing import Annotated
 
 import typer
 from loguru import logger
 
 from SpiriCamera import __version__
-from SpiriCamera.camera import Camera
-from SpiriCamera.main import Settings, get_settings
+from SpiriCamera.camera import Camera, CameraError
+from SpiriCamera.sources import SourceError, describe_source, known_schemes
+from SpiriCamera.main import get_settings
 
 app = typer.Typer(
     name="SpiriCamera",
@@ -18,6 +20,8 @@ app = typer.Typer(
     no_args_is_help=True,
     pretty_exceptions_short=True,
 )
+
+SourceArgument = Annotated[str, typer.Argument(help="Camera source")]
 
 
 @app.callback(invoke_without_command=True)
@@ -32,83 +36,84 @@ def main_callback(
         typer.echo(ctx.get_help())
         ctx.exit()
 
-    log_level = "DEBUG" if verbose else "INFO"
     logger.remove()
-    logger.add(sys.stderr, level=log_level)
+    logger.add(sys.stderr, level="DEBUG" if verbose else "INFO")
+
+
+def _resolve_source(source: str) -> str:
+    """Fall back to the configured source, or exit with a usage error."""
+    source = source or get_settings().source
+    if not source:
+        typer.echo(
+            "Error: no source given. Pass one as an argument or set "
+            f"SPIRICAMERA_SOURCE. Supported: {', '.join(known_schemes())}, "
+            "/dev/videoN, or a bare camera index.",
+            err=True,
+        )
+        raise typer.Exit(1)
+    return source
 
 
 @app.command()
 def version() -> None:
     """Show version information."""
-    typer.echo(f"SpiriCamera v0.1.0")
+    typer.echo(f"SpiriCamera v{__version__}")
     typer.echo(f"Python {sys.version.split()[0]}")
 
 
 @app.command()
-def validate(
-    source: Annotated[str, typer.Argument(help="Camera source to validate")] = "",
-) -> None:
-    """Validate a camera source without starting capture.
+def sources() -> None:
+    """List the registered source handlers and the schemes they claim."""
+    from SpiriCamera.sources import registered_sources
 
-    Parses the source, attempts to open the capture device, reports
-    its capabilities, and exits.
-    """
-    # Load settings, allow CLI source to override env var
-    settings = get_settings()
-    if not source:
-        source = settings.source
-
-    if not source:
-        typer.echo("Error: No source specified. Use --source or set SPIRICAMERA_SOURCE.", err=True)
-        raise typer.Exit(1)
-
-    try:
-        source_obj = Camera.validate_source(source)
-    except ValueError as e:
-        typer.echo(f"Invalid source: {e}", err=True)
-        raise typer.Exit(1)
-
-    typer.echo(f"Source type:  {source_obj.source_type}")
-    typer.echo(f"Scheme:       {source_obj.scheme}")
-    typer.echo(f"Path:         {source_obj.path}")
-    typer.echo(f"Camera index: {source_obj.camera_index}")
-    typer.echo(f"Valid:        {source_obj.is_valid}")
-
-    # Attempt to open and read capabilities
-    cam = Camera(source=source)
-    try:
-        cam.start()
-        typer.echo(f"Resolution:   {cam.max_supported_width}x{cam.max_supported_height}")
-        typer.echo(f"Framerate:    {cam.max_supported_framerate} fps")
-        typer.echo(f"Connected:    {cam.running}")
-    except RuntimeError as e:
-        typer.echo(f"Connected:    False")
-        typer.echo(f"Error:        {e}")
-
-    cam.stop()
-    typer.echo("Source validation complete.")
+    for handler in registered_sources():
+        schemes = ", ".join(f"{scheme}://" for scheme in handler.schemes) or "-"
+        typer.echo(f"{handler.__name__:<18} {schemes}")
 
 
 @app.command()
-def run(
-    source: Annotated[str, typer.Argument(help="Camera source to capture from")] = "",
-    verbose: Annotated[bool, typer.Option("-v", "--verbose")] = False,
-) -> None:
-    """Run SpiriCamera with source from environment or argument."""
-    settings = get_settings()
-    if not verbose:
-        logger.remove()
-        logger.add(sys.stderr, level="INFO")
+def validate(source: SourceArgument = "") -> None:
+    """Validate a camera source, then report what the device can do."""
+    source = _resolve_source(source)
 
-    # Merge CLI source with env var
-    if not source:
-        source = settings.source
-
-    if not source:
-        typer.echo("Error: No source specified. Use --source or set SPIRICAMERA_SOURCE.", err=True)
+    try:
+        info = describe_source(source)
+    except SourceError as exc:
+        typer.echo(f"Invalid source: {exc}", err=True)
         raise typer.Exit(1)
 
-    logger.info(f"Starting camera: {source} | quality={settings.quality} | {settings.frame_width}x{settings.frame_height} @ {settings.framerate}fps")
+    typer.echo(f"Source:       {info.url}")
+    typer.echo(f"Scheme:       {info.scheme}")
+    typer.echo(f"Target:       {info.target}")
+    typer.echo(f"Handler:      {info.handler}")
+
+    cam = Camera(source=source)
+    try:
+        cam.start(background=False)
+    except CameraError as exc:
+        typer.echo(f"Connected:    False")
+        typer.echo(f"Error:        {exc}")
+        raise typer.Exit(1)
+
+    typer.echo(f"Connected:    True")
+    typer.echo(f"Capture:      {cam.describe_capabilities()}")
+    if cam.vendor or cam.model:
+        typer.echo(f"Device:       {cam.vendor} {cam.model}".strip())
+    if cam.serial_number:
+        typer.echo(f"Serial:       {cam.serial_number}")
+    cam.stop()
+
+
+@app.command()
+def run(source: SourceArgument = "") -> None:
+    """Capture continuously and publish frames to SpiriSynq until interrupted."""
+    source = _resolve_source(source)
+    settings = get_settings()
+
+    logger.info(
+        f"Starting camera: {source} | quality={settings.quality} | "
+        f"{settings.frame_width}x{settings.frame_height} @ {settings.framerate}fps"
+    )
 
     cam = Camera(
         source=source,
@@ -118,19 +123,17 @@ def run(
         max_framerate=settings.framerate,
     )
 
-    frame_count = 0
     try:
         cam.start()
-        logger.info(f"Camera started: {cam.synq_topic}")
+    except CameraError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1)
 
-        # Read frames in a loop
+    logger.info(f"Publishing on {cam.synq_topic}, press Ctrl-C to stop")
+    try:
+        # The camera captures on its own thread; just stay alive.
         while cam.running:
-            try:
-                cam.read()
-                frame_count += 1
-            except RuntimeError as e:
-                logger.error(f"Frame read failed: {e}")
-
+            time.sleep(0.5)
     except KeyboardInterrupt:
         pass
     finally:
@@ -140,59 +143,60 @@ def run(
 
 @app.command()
 def capture(
-    source: Annotated[str, typer.Argument(help="Camera source to capture from")] = "",
-    frames: Annotated[int, typer.Option("-f", "--frames", help="Number of frames to capture")] = 1,
-    quality: Annotated[int, typer.Option("-q", "--quality", help="JPEG quality")] = 80,
-    output: Annotated[str, typer.Option("-o", "--output", help="Output filename (default: stdout)")] = "",
+    source: SourceArgument = "",
+    frames: Annotated[
+        int, typer.Option("-f", "--frames", help="Number of frames to capture")
+    ] = 1,
+    quality: Annotated[
+        int, typer.Option("-q", "--quality", help="JPEG quality")
+    ] = 80,
+    output: Annotated[
+        str,
+        typer.Option("-o", "--output", help="Output file (default: stdout)"),
+    ] = "",
 ) -> None:
-    """Capture a specific number of frames from a camera source.
-
-    Writes JPEG frames to the specified output file, or to stdout
-    if no output path is given.
-    """
+    """Capture a fixed number of frames and write them out."""
+    source = _resolve_source(source)
     settings = get_settings()
-    if not source:
-        source = settings.source
 
-    if not source:
-        typer.echo("Error: No source specified. Use --source or set SPIRICAMERA_SOURCE.", err=True)
+    cam = Camera(
+        source=source,
+        quality=quality or settings.quality,
+        max_width=settings.frame_width,
+        max_height=settings.frame_height,
+        max_framerate=settings.framerate,
+    )
+
+    try:
+        # No capture thread: this command drives the frames itself.
+        cam.start(background=False)
+    except CameraError as exc:
+        typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(1)
 
-    final_quality = quality if quality else settings.quality
-
-    cam = Camera(source=source, quality=final_quality)
-
     captured = 0
+    handle = open(output, "wb") if output else sys.stdout.buffer
+    logger.info(f"Writing {frames} frame(s) to {output or 'stdout'}")
+
     try:
-        cam.start()
-
-        # Open output file or use stdout
-        fh = None
-        if output:
-            fh = open(output, "wb")
-            logger.info(f"Writing {frames} frames to file: {output}")
-        else:
-            fh = sys.stdout.buffer
-            logger.info(f"Writing {frames} frames to stdout")
-
-        while captured < frames and cam.running:
+        while captured < frames:
             try:
-                data = cam.read()
-                fh.write(data)
+                handle.write(cam.read())
                 captured += 1
-            except RuntimeError as e:
-                logger.error(f"Frame read failed: {e}")
+            except CameraError as exc:
+                logger.error(f"Frame capture failed: {exc}")
                 break
-
-        if fh and fh is not sys.stdout.buffer:
-            fh.close()
-        logger.info(f"Captured {captured} frames")
-
+        handle.flush()
     except KeyboardInterrupt:
         pass
     finally:
+        if output:
+            handle.close()
         cam.stop()
-        logger.info("Camera stopped")
+
+    logger.info(f"Captured {captured} frame(s)")
+    if captured < frames:
+        raise typer.Exit(1)
 
 
 if __name__ == "__main__":

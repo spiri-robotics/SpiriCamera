@@ -1,144 +1,43 @@
-"""Network camera source handler (RTSP, RTMP, HTTP, HTTPS)."""
+"""Network camera source (RTSP, RTMP, HTTP, HTTPS)."""
 
 from __future__ import annotations
 
-import cv2
-from loguru import logger
-
-from SpiriCamera.camera import Camera
-from SpiriCamera.sources.base import SourceBase
+from SpiriCamera.sources.base import SourceError, SourceURL
+from SpiriCamera.sources.capture import OpenCVSource
 
 
-class NetworkSource(SourceBase):
-    """Network camera source handler.
+class NetworkSource(OpenCVSource):
+    """Remote video stream opened through OpenCV's FFmpeg backend.
 
-    Handles RTSP, RTMP, HTTP, and HTTPS URLs. These are all opened
-    via ``cv2.VideoCapture`` and share the same capability detection
-    and frame reading logic.
+    RTSP, RTMP, and plain HTTP(S) streams share the same capture
+    lifecycle; only the URL differs, so one handler covers all four.
     """
 
-    protocols = ("rtsp://", "rtmp://", "http://", "https://")
+    schemes = ("rtsp", "rtmp", "http", "https")
 
-    def __init__(self, path: str, scheme: str) -> None:
-        """Create a network camera source handler.
-
-        Parameters
-        ----------
-        path : str
-            The full network URL.
-        scheme : str
-            The protocol scheme (rtsp, rtmp, http, https).
-        """
-        self._path = path
-        self._scheme = scheme
-        self._capture: cv2.VideoCapture | None = None
-
-    def start(self, camera: Camera) -> None:
-        """Open the network capture and detect capabilities.
+    @classmethod
+    def from_url(cls, url: SourceURL) -> NetworkSource:
+        """Reject stream URLs with no host part.
 
         Parameters
         ----------
-        camera : Camera
-            Camera instance to configure and populate.
-
-        Raises
-        ------
-        RuntimeError
-            If the network stream cannot be opened.
-        """
-        logger.debug(f"Network start requested: {self._path}")
-
-        if self._capture is not None and self._capture.isOpened():
-            logger.info(f"Network source already running on {camera.synq_topic}")
-            return
-
-        self._capture = cv2.VideoCapture(self._path)
-        assert self._capture is not None
-
-        if not self._capture.isOpened():
-            self._capture = None
-            logger.warning(f"Network failed to open: {self._path} (camera={camera.synq_topic})")
-            raise RuntimeError(
-                f"Failed to open network camera source: {self._path!r}"
-            )
-
-        logger.debug(f"Network capture opened: {self._path} (scheme={self._scheme})")
-
-        # Apply user-requested caps
-        if camera.max_width > 0:
-            self._capture.set(cv2.CAP_PROP_FRAME_WIDTH, camera.max_width)
-        if camera.max_height > 0:
-            self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera.max_height)
-        if camera.max_framerate > 0:
-            self._capture.set(cv2.CAP_PROP_FPS, camera.max_framerate)
-
-        # Detect capabilities
-        self._detect_capabilities(camera)
-        logger.debug(f"Network capabilities detected for {camera.synq_topic}: {camera.max_supported_width}x{camera.max_supported_height}@{camera.max_supported_framerate}")
-
-        logger.info(f"Network camera started | source={self._path} scheme={self._scheme} resolution={camera.max_supported_width}x{camera.max_supported_height} fps={camera.max_supported_framerate}")
-
-    def stop(self, camera: Camera) -> None:
-        """Release the capture device.
-
-        Parameters
-        ----------
-        camera : Camera
-            Camera instance to clean up.
-        """
-        if self._capture is not None:
-            self._capture.release()
-        self._capture = None
-        logger.debug(f"Network camera stopped on {camera.synq_topic}")
-
-    def read(self, camera: Camera) -> bytes:
-        """Read a single frame from the network stream and encode as JPEG.
-
-        Parameters
-        ----------
-        camera : Camera
-            Camera instance providing quality and other settings.
+        url : SourceURL
+            The parsed source string.
 
         Returns
         -------
-        bytes
-            JPEG-encoded frame data.
+        NetworkSource
+            A handler for the stream.
 
         Raises
         ------
-        RuntimeError
-            If no frame could be grabbed.
+        SourceError
+            If the URL carries no host.
         """
-        if self._capture is None:
-            raise RuntimeError(
-                "Network source not started. Call start() before read()."
-            )
+        if not url.target:
+            raise SourceError(f"No host given in stream URL {url.raw!r}")
+        return cls(url)
 
-        ret, frame = self._capture.read()
-        if not ret or frame is None:
-            raise RuntimeError("Failed to grab frame from network camera")
-
-        _, encoded = cv2.imencode(
-            ".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, camera.quality]
-        )
-        camera.image = bytes(encoded.tobytes())
-        return camera.image
-
-    def _detect_capabilities(self, camera: Camera) -> None:
-        """Read device-supported resolution and framerate.
-
-        Parameters
-        ----------
-        camera : Camera
-            Camera instance to populate max_supported_* fields.
-        """
-        if self._capture is None:
-            return
-
-        w = self._capture.get(cv2.CAP_PROP_FRAME_WIDTH) or 0
-        h = self._capture.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0
-        fps = self._capture.get(cv2.CAP_PROP_FPS) or 0
-
-        camera.max_supported_width = int(w)
-        camera.max_supported_height = int(h)
-        camera.max_supported_framerate = int(fps)
+    def capture_target(self) -> str:
+        """Hand OpenCV the full stream URL, scheme included."""
+        return self.url.raw

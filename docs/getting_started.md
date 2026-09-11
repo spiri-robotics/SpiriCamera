@@ -30,7 +30,7 @@ Or create a `.env` file in your project root. See the {ref}`api-reference` for a
 
 ## Camera Usage
 
-SpiriCamera provides a :py:class:`~SpiriCamera.Camera` class for live frame capture from video sources, and a :py:class:`~SpiriCamera.CameraSource` class for parsing and validating source strings.
+SpiriCamera provides a :py:class:`~SpiriCamera.Camera` class for live frame capture. A camera owns the capture lifecycle, encoding, and publication; the protocol detail of reaching a device lives in the source handlers under :py:mod:`SpiriCamera.sources`.
 
 ### Basic Usage
 
@@ -40,18 +40,44 @@ from SpiriCamera import Camera
 # Create a camera reader
 cam = Camera("/dev/video0", quality=85)
 
-# Start capture (opens device, detects capabilities)
+# Start capture: opens the device and begins a background capture
+# thread that publishes each frame to cam.image
 cam.start()
 
-# Read frames as JPEG bytes
-frame_jpeg = cam.read()
+# The most recent encoded frame, updated in the background
+frame_jpeg = cam.image
 
-# Or read as numpy arrays (BGR format)
-frame_bgr = cam.read_numpy()
+# Or drive frames yourself
+frame_jpeg = cam.read()          # capture, encode, publish, return bytes
+frame_bgr = cam.read_frame()     # the raw BGR numpy array
 
 # Stop when done
 cam.stop()
 ```
+
+A camera is also a context manager:
+
+```python
+with Camera("testimage://", max_width=1280, max_height=720) as cam:
+    frame_jpeg = cam.read()
+```
+
+Pass `background=False` to `start()` to open the device without a capture thread, when you want to drive `read()` yourself.
+
+### Inspecting a Source
+
+Source strings are resolved by handlers that register themselves. To inspect one without opening any hardware:
+
+```python
+from SpiriCamera import describe_source, known_schemes
+
+info = describe_source("rtsp://host/stream")
+print(info.scheme, info.target, info.handler)
+
+print(known_schemes())
+```
+
+A camera whose source string cannot be resolved does not raise on construction; the reason lands in `cam.source.error` and `start()` is what refuses. This keeps a camera safe to bind to a live-edited input field.
 
 ### Network Streams
 
@@ -91,23 +117,31 @@ cam = Camera(
 
 ### CLI Usage
 
-Validate a source without capturing:
+List the registered source handlers and the schemes they claim:
 
 ```console
-SpiriCamera validate --source "/dev/video0"
+SpiriCamera sources
+```
+
+Validate a source and report what the device can do:
+
+```console
+SpiriCamera validate /dev/video0
 ```
 
 Capture frames to a file:
 
 ```console
-SpiriCamera capture --source "rtsp://host/stream" --frames=10 -o frames.jpg
+SpiriCamera capture "rtsp://host/stream" --frames=10 -o frames.jpg
 ```
 
-Run live capture:
+Run live capture, publishing to SpiriSynq until interrupted:
 
 ```console
-SpiriCamera run --source "/dev/video0"
+SpiriCamera run /dev/video0
 ```
+
+The source argument is optional everywhere; without it, `SPIRICAMERA_SOURCE` is used.
 
 ## Quick Start
 
