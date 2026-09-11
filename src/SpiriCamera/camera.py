@@ -33,6 +33,12 @@ from SpiriCamera.sources import (
 #: Mimetypes the camera can encode to, mapped to an OpenCV extension.
 ENCODINGS: dict[str, str] = {"image/jpeg": ".jpg", "image/png": ".png"}
 
+#: :py:attr:`CameraBase.status` while frames are being captured.
+STATUS_RUNNING = "running"
+
+#: :py:attr:`CameraBase.status` while idle with nothing wrong.
+STATUS_STOPPED = "stopped"
+
 #: How long :py:meth:`Camera.stop` waits for the capture thread to exit.
 _STOP_TIMEOUT = 5.0
 
@@ -127,6 +133,12 @@ class CameraBase(SyncableObject):
     running : bool
         Whether capture is active.  Assigning to it starts or stops the
         camera, including from a remote peer.
+    status : str
+        What the camera is doing, in words: :py:data:`STATUS_RUNNING`,
+        :py:data:`STATUS_STOPPED`, or the reason it is not running —
+        a source string that would not resolve, a device that would not
+        open, or a capture that keeps failing.  ``running`` says whether
+        frames are flowing; ``status`` says why not when they are not.
     image : bytes
         The most recent encoded frame, in :py:attr:`mimetype` format.
     """
@@ -153,6 +165,7 @@ class CameraBase(SyncableObject):
     mimetype: str = "image/jpeg"
 
     running: bool = False
+    status: str = STATUS_STOPPED
     image: bytes = b""
 
 
@@ -286,6 +299,7 @@ class Camera(CameraBase):
             self.source.update(
                 SourceInfo.unresolved(source_str, "No source configured")
             )
+            self.status = "no source configured"
             return
 
         try:
@@ -293,11 +307,13 @@ class Camera(CameraBase):
         except SourceError as exc:
             self._handler = None
             self.source.update(SourceInfo.unresolved(source_str, str(exc)))
+            self.status = str(exc)
             logger.warning(f"{self.synq_topic}: cannot resolve {source_str!r}: {exc}")
             return
 
         self._handler = handler
         self.source.update(handler.describe())
+        self.status = STATUS_RUNNING if self._active else STATUS_STOPPED
         logger.debug(f"{self.synq_topic}: resolved {source_str!r} to {handler!r}")
 
     def _on_source_str_changed(self, source_str: str) -> None:
@@ -369,21 +385,22 @@ class Camera(CameraBase):
                 return
 
             if self._handler is None:
-                raise CameraError(
-                    f"{self.synq_topic}: cannot start, "
-                    f"{self.source.error or 'no source configured'}"
-                )
+                reason = self.source.error or "no source configured"
+                self.status = reason
+                raise CameraError(f"{self.synq_topic}: cannot start, {reason}")
 
             try:
                 capabilities = self._handler.open(self.capture_settings())
             except SourceError as exc:
                 self._handler.close()
+                self.status = str(exc)
                 raise CameraError(f"{self.synq_topic}: {exc}") from exc
 
             self._apply(capabilities)
             self._stop_event.clear()
             self._active = True
             self.running = True
+            self.status = STATUS_RUNNING
 
             if background:
                 self._thread = threading.Thread(
@@ -413,6 +430,7 @@ class Camera(CameraBase):
             thread, self._thread = self._thread, None
             self._active = False
             self.running = False
+            self.status = STATUS_STOPPED
 
         # Joining outside the lock: the capture thread never takes it,
         # but the source must not be closed while a read is in flight.
@@ -572,9 +590,12 @@ class Camera(CameraBase):
             started = time.monotonic()
             try:
                 self.read()
+                if failures:
+                    self.status = STATUS_RUNNING
                 failures = 0
             except Exception as exc:
                 failures += 1
+                self.status = f"capture failing: {exc}"
                 if failures == 1 or failures % _ERROR_LOG_INTERVAL == 0:
                     logger.warning(
                         f"{self.synq_topic}: capture failed "

@@ -190,9 +190,8 @@ def build_page():
                 ui.input('Source string').bind_value(cam, 'source_str').props(
                     'debounce=500'
                 ).classes('flex-1')
-                ui.label().bind_text_from(
-                    cam, 'running', backward=lambda on: 'running' if on else 'stopped'
-                ).classes('px-2 font-mono')
+                # Says "running", "stopped", or why it is neither.
+                ui.label().bind_text_from(cam, 'status').classes('px-2 font-mono')
 
         ui.label().bind_text_from(cam.source, 'error').bind_visibility_from(
             cam.source, 'error'
@@ -275,6 +274,7 @@ def build_page():
 
             with ui.card().classes('flex-1'):
                 ui.label('Resolved Source').classes('text-lg font-bold')
+                ui.input('Status').bind_value(cam, 'status').classes('w-full')
                 ui.input('Scheme').bind_value(cam.source, 'scheme').classes('w-full')
                 ui.input('Target').bind_value(cam.source, 'target').classes('w-full')
                 ui.input('Handler').bind_value(cam.source, 'handler').classes('w-full')

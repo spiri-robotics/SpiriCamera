@@ -91,6 +91,53 @@ cam = Camera("http://10.0.0.5/image.jpg")
 cam.start()
 ```
 
+### Files
+
+A video file or a still image can stand in for a camera. Files are just
+paths — absolute or relative, no scheme needed:
+
+```python
+cam = Camera("/srv/clips/approach.mp4")   # loops at the end
+cam = Camera("./pattern.png")             # a steady picture
+```
+
+Use `file://` when a path would otherwise read as a URL. POSIX collapses
+repeated slashes, so `rtsp://clip.mp4` is a real path to `clip.mp4`
+inside a directory named `rtsp:` — and a stream URL. The stream wins;
+`file://rtsp://clip.mp4` says you meant the file.
+
+### Local Devices
+
+A camera index, a device node, or an explicit scheme:
+
+```python
+cam = Camera("0")                 # camera index, the OpenCV convention
+cam = Camera("/dev/video0")       # device node
+cam = Camera("v4l:///dev/video5") # not plugged in yet
+```
+
+A schemeless path is matched by asking the filesystem what it is, not by
+how it is spelled, so `/dev/video0` is recognised as a camera and
+`/dev/null` is not. That check needs the device to exist; write
+`v4l://` if you are configuring one that will appear later.
+
+### Knowing What It Is Doing
+
+`camera.status` says what the camera is doing in words — `running`,
+`stopped`, or the reason it is neither:
+
+```python
+cam = Camera("/dev/vi")     # half-typed
+cam.status                  # "Unrecognised source: '/dev/vi'. Supported: ..."
+
+cam = Camera("v4l:///dev/video99")
+cam.start()                 # raises CameraError
+cam.status                  # "Failed to open capture source: '/dev/video99'"
+```
+
+`running` says whether frames are flowing; `status` says why not when
+they are not.
+
 ### Configuration
 
 Camera parameters are configured via environment variables:

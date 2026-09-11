@@ -23,7 +23,7 @@ from SpiriCamera.sources.base import (
 from SpiriCamera.sources.capture import OpenCVSource
 
 # Importing these modules is what registers their handlers.
-from SpiriCamera.sources import network, testimage, v4l  # noqa: F401
+from SpiriCamera.sources import file, network, testimage, v4l  # noqa: F401
 
 
 def registered_sources() -> list[type[SourceBase]]:
@@ -92,7 +92,8 @@ def resolve_source(source_str: str) -> SourceBase:
 
     raise UnknownSourceError(
         f"Unrecognised source: {source_str!r}. Supported: "
-        f"{', '.join(known_schemes())}, /dev/videoN, or a bare camera index"
+        f"{', '.join(known_schemes())}, a camera index, a video device, "
+        "or the path of an existing file"
     )
 
 

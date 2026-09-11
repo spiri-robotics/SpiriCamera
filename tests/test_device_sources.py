@@ -21,17 +21,72 @@ SETTINGS = CaptureSettings(max_width=1280, max_height=720, max_framerate=25)
 class TestV4LClaims:
     """Which strings the V4L2 handler takes."""
 
+    @pytest.fixture
+    def sysfs_knows_null(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Make sysfs report /dev/null as a video device.
+
+        /dev/null is a character device on every system, which makes it
+        a portable stand-in for a camera node: tests cannot create one,
+        since mknod needs root.
+        """
+        (tmp_path / "null").mkdir()
+        monkeypatch.setattr("SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path)
+
     @pytest.mark.parametrize(
-        "source", ["/dev/video0", "/dev/video10", "0", "12", "v4l://0", "v4l2:///dev/video1"]
+        "source", ["0", "12", "v4l://0", "v4l2:///dev/video1", "v4l:///dev/video10"]
     )
     def test_claims(self, source: str) -> None:
-        """Device paths, bare indices, and explicit schemes all match."""
+        """Bare indices and explicit schemes match without a filesystem."""
         assert V4LSource.handles(SourceURL.parse(source))
+
+    def test_claims_a_device_node(self, sysfs_knows_null: None) -> None:
+        """A schemeless path is claimed when Linux calls it a camera."""
+        assert V4LSource.handles(SourceURL.parse("/dev/null"))
 
     @pytest.mark.parametrize("source", ["rtsp://host/s", "testimage://", "http://host/f"])
     def test_declines_other_schemes(self, source: str) -> None:
         """A URL belonging to another scheme is left alone."""
         assert not V4LSource.handles(SourceURL.parse(source))
+
+    def test_declines_a_character_device_that_is_not_a_camera(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Being a character device is not enough; sysfs has to agree.
+
+        Otherwise /dev/null and friends would be claimed and then fail
+        to open.
+        """
+        monkeypatch.setattr("SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path)
+        assert not V4LSource.handles(SourceURL.parse("/dev/null"))
+
+    def test_declines_a_regular_file(self, tmp_path: Path) -> None:
+        """A file is a file, even one named like a device."""
+        path = tmp_path / "video0"
+        path.write_bytes(b"")
+        assert not V4LSource.handles(SourceURL.parse(str(path)))
+
+    def test_declines_a_half_typed_path(self) -> None:
+        """A path that does not exist is not claimed and then failed.
+
+        Claiming it would leave the camera stopped with nothing to
+        report but a failure to open.
+        """
+        assert not V4LSource.handles(SourceURL.parse("/dev/vi"))
+
+    def test_trusts_the_device_node_without_sysfs(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Where sysfs is not mounted, a character device is enough.
+
+        Consulting it is then impossible rather than merely unhelpful,
+        which is the situation inside a container without /sys.
+        """
+        monkeypatch.setattr(
+            "SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path / "absent"
+        )
+        assert V4LSource.handles(SourceURL.parse("/dev/null"))
 
     def test_bare_index_opens_by_number_not_filename(
         self, fake_capture: Callable[..., CaptureHolder]
@@ -51,7 +106,7 @@ class TestV4LClaims:
     ) -> None:
         """A device path is passed through as a string."""
         holder = fake_capture()
-        resolve_source("/dev/video0").open(SETTINGS)
+        resolve_source("v4l:///dev/video0").open(SETTINGS)
 
         assert holder.capture is not None
         assert holder.capture.target == "/dev/video0"
@@ -80,7 +135,7 @@ class TestV4LMetadata:
 
     def test_reads_usb_identity(self, sysfs: Path) -> None:
         """Vendor, model, and serial come from the owning USB device."""
-        metadata = resolve_source("/dev/video0").device_metadata()
+        metadata = resolve_source("v4l:///dev/video0").device_metadata()
 
         assert metadata["vendor"] == "Acme Optics"
         assert metadata["model"] == "HD Webcam C1"
@@ -94,14 +149,14 @@ class TestV4LMetadata:
         """Without USB attributes, the V4L2 node name is the model."""
         (sysfs / "video0" / "device").unlink()
 
-        metadata = resolve_source("/dev/video0").device_metadata()
+        metadata = resolve_source("v4l:///dev/video0").device_metadata()
 
         assert metadata["model"] == "Integrated Camera"
         assert "vendor" not in metadata
 
     def test_missing_node_reports_nothing(self, sysfs: Path) -> None:
         """An unknown device yields no metadata rather than an error."""
-        assert resolve_source("/dev/video9").device_metadata() == {}
+        assert resolve_source("v4l:///dev/video9").device_metadata() == {}
 
     def test_metadata_reaches_capabilities(
         self, sysfs: Path, fake_capture: Callable[..., CaptureHolder]
@@ -109,7 +164,7 @@ class TestV4LMetadata:
         """Identity is reported through the capabilities record."""
         fake_capture()
 
-        capabilities = resolve_source("/dev/video0").open(SETTINGS)
+        capabilities = resolve_source("v4l:///dev/video0").open(SETTINGS)
 
         assert capabilities.vendor == "Acme Optics"
         assert capabilities.serial_number == "SN-12345"
@@ -123,7 +178,7 @@ class TestOpenCVSourceLifecycle:
     ) -> None:
         """The bounds are pushed onto the device at open time."""
         holder = fake_capture()
-        resolve_source("/dev/video0").open(SETTINGS)
+        resolve_source("v4l:///dev/video0").open(SETTINGS)
 
         assert holder.capture is not None
         assert holder.capture.properties[cv2.CAP_PROP_FRAME_WIDTH] == 1280
@@ -136,7 +191,7 @@ class TestOpenCVSourceLifecycle:
         """Capabilities reflect the device, not the request."""
         fake_capture(width=640, height=480, framerate=15)
 
-        capabilities = resolve_source("/dev/video0").open(SETTINGS)
+        capabilities = resolve_source("v4l:///dev/video0").open(SETTINGS)
 
         assert capabilities.max_supported_width == 640
         assert capabilities.max_supported_height == 480
@@ -149,12 +204,12 @@ class TestOpenCVSourceLifecycle:
         fake_capture(opened=False)
 
         with pytest.raises(SourceError, match="Failed to open"):
-            resolve_source("/dev/video0").open(SETTINGS)
+            resolve_source("v4l:///dev/video0").open(SETTINGS)
 
     def test_open_is_idempotent(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """Opening twice does not replace a working capture."""
         holder = fake_capture()
-        source = resolve_source("/dev/video0")
+        source = resolve_source("v4l:///dev/video0")
         source.open(SETTINGS)
         first = holder.capture
 
@@ -165,7 +220,7 @@ class TestOpenCVSourceLifecycle:
     def test_close_releases(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """Closing releases the device and clears is_open."""
         holder = fake_capture()
-        source = resolve_source("/dev/video0")
+        source = resolve_source("v4l:///dev/video0")
         source.open(SETTINGS)
 
         source.close()
@@ -176,18 +231,18 @@ class TestOpenCVSourceLifecycle:
 
     def test_close_without_open_is_harmless(self) -> None:
         """Closing a source that never opened does nothing."""
-        resolve_source("/dev/video0").close()
+        resolve_source("v4l:///dev/video0").close()
 
     def test_read_before_open_raises(self) -> None:
         """Reading an unopened source is a programming error."""
         with pytest.raises(SourceError, match="not open"):
-            resolve_source("/dev/video0").read(SETTINGS)
+            resolve_source("v4l:///dev/video0").read(SETTINGS)
 
     def test_read_returns_frame(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """A successful grab returns the device's array."""
         frame = np.full((480, 640, 3), 7, np.uint8)
         fake_capture(frames=[frame])
-        source = resolve_source("/dev/video0")
+        source = resolve_source("v4l:///dev/video0")
         source.open(SETTINGS)
 
         assert source.read(SETTINGS) is frame
@@ -197,7 +252,7 @@ class TestOpenCVSourceLifecycle:
     ) -> None:
         """A failed grab is a transient None, not an exception."""
         fake_capture(frames=[None])
-        source = resolve_source("/dev/video0")
+        source = resolve_source("v4l:///dev/video0")
         source.open(SETTINGS)
 
         assert source.read(SETTINGS) is None

@@ -11,6 +11,8 @@ import numpy as np
 import pytest
 
 from SpiriCamera.camera import (
+    STATUS_RUNNING,
+    STATUS_STOPPED,
     Camera,
     CameraError,
     CameraNotStartedError,
@@ -206,6 +208,92 @@ class TestRunningField:
         assert cam.running is False
 
 
+class TestStatus:
+    """The status field: what the camera is doing, in words."""
+
+    def test_starts_stopped(self, camera: CameraFactory) -> None:
+        """A resolvable source that has not been started is just stopped."""
+        assert camera("testimage://").status == STATUS_STOPPED
+
+    def test_running(self, camera: CameraFactory) -> None:
+        """Capturing says so."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start()
+        assert cam.status == STATUS_RUNNING
+
+    def test_stopped_again(self, camera: CameraFactory) -> None:
+        """Stopping clears any earlier complaint."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start()
+        cam.stop()
+        assert cam.status == STATUS_STOPPED
+
+    def test_reports_an_empty_source(self, camera: CameraFactory) -> None:
+        """A camera with nowhere to look says so."""
+        assert camera("").status == "no source configured"
+
+    def test_reports_why_a_source_will_not_resolve(
+        self, camera: CameraFactory
+    ) -> None:
+        """The resolution failure is carried in full."""
+        cam = camera("testimage://nope")
+        assert "Unknown test image" in cam.status
+
+    def test_reports_why_a_device_will_not_open(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """A source that resolves but will not open explains itself.
+
+        Without this the UI could only say "stopped", since the source
+        string itself was perfectly valid.
+        """
+        fake_capture(opened=False)
+        cam = camera("v4l:///dev/video0")
+
+        with pytest.raises(CameraError):
+            cam.start()
+
+        assert "Failed to open" in cam.status
+        assert cam.source.error == ""
+
+    def test_clears_once_a_source_works(self, camera: CameraFactory) -> None:
+        """Fixing the source string clears the complaint."""
+        cam = camera("testimage://nope")
+        assert "Unknown test image" in cam.status
+
+        cam.source_str = "testimage://pm5544"
+
+        assert cam.status == STATUS_STOPPED
+
+    def test_reports_a_failing_capture(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """A camera that opened but cannot produce frames says why."""
+        fake_capture(frames=[None])
+        cam = camera("v4l:///dev/video0", max_framerate=30)
+        cam.start()
+
+        assert wait_for(lambda: "capture failing" in cam.status)
+
+    def test_recovers_after_a_failing_capture(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """Once frames flow again the complaint goes away."""
+        frame = np.full((480, 640, 3), 5, np.uint8)
+        # Fails once, then recovers.
+        fake_capture(frames=[None, frame])
+        cam = camera("v4l:///dev/video0", max_framerate=30)
+        cam.start()
+
+        assert wait_for(lambda: cam.status == STATUS_RUNNING)
+
+    def test_is_writable(self, camera: CameraFactory) -> None:
+        """Status is a synced field like any other, not a read-only view."""
+        cam = camera("testimage://")
+        cam.status = "poked"
+        assert cam.status == "poked"
+
+
 class TestReading:
     """Producing frames."""
 
@@ -245,7 +333,7 @@ class TestReading:
         """A momentary drop re-serves the previous frame."""
         good = np.full((480, 640, 3), 9, np.uint8)
         fake_capture(frames=[good, None])
-        cam = camera("/dev/video0")
+        cam = camera("v4l:///dev/video0")
         cam.start(background=False)
 
         first = cam.read()
@@ -258,7 +346,7 @@ class TestReading:
     ) -> None:
         """With nothing to fall back on, the caller is told."""
         fake_capture(frames=[None])
-        cam = camera("/dev/video0")
+        cam = camera("v4l:///dev/video0")
         cam.start(background=False)
 
         with pytest.raises(FrameUnavailableError):
@@ -295,7 +383,7 @@ class TestReceivedDimensions:
     ) -> None:
         """A device that ignores the request still reports honestly."""
         fake_capture(width=640, height=480)
-        cam = camera("/dev/video0", max_width=1920, max_height=1080)
+        cam = camera("v4l:///dev/video0", max_width=1920, max_height=1080)
         cam.start(background=False)
 
         cam.read()
@@ -407,7 +495,7 @@ class TestRetargeting:
         """A new source is resolved but not started."""
         cam = camera("testimage://")
 
-        cam.source_str = "/dev/video0"
+        cam.source_str = "v4l:///dev/video0"
 
         assert cam.source.scheme == "v4l"
         assert cam.source.handler == "V4LSource"
@@ -421,7 +509,7 @@ class TestRetargeting:
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start()
 
-        cam.source_str = "/dev/video0"
+        cam.source_str = "v4l:///dev/video0"
 
         assert cam.running is True
         assert cam.source.handler == "V4LSource"
@@ -528,7 +616,7 @@ class TestRetargeting:
         cam = camera("testimage://")
         info = cam.source
 
-        cam.source_str = "/dev/video0"
+        cam.source_str = "v4l:///dev/video0"
 
         assert cam.source is info
         assert info.scheme == "v4l"
@@ -542,7 +630,7 @@ class TestCapabilities:
     ) -> None:
         """max_supported_* comes from the source at open time."""
         fake_capture(width=1920, height=1080, framerate=60)
-        cam = camera("/dev/video0")
+        cam = camera("v4l:///dev/video0")
 
         cam.start(background=False)
 
@@ -583,7 +671,7 @@ class TestCapabilities:
         # An empty sysfs root means the source can report no identity.
         monkeypatch.setattr("SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path)
         fake_capture()
-        cam = camera("/dev/video0")
+        cam = camera("v4l:///dev/video0")
         cam.vendor = "hand written"
 
         cam.start(background=False)

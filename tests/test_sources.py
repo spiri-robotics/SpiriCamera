@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from SpiriCamera.sources import (
@@ -14,6 +16,7 @@ from SpiriCamera.sources import (
     resolve_source,
 )
 from SpiriCamera.sources.base import SourceBase, SourceInfo
+from SpiriCamera.sources.file import FileSource
 from SpiriCamera.sources.network import NetworkSource
 from SpiriCamera.sources.testimage import TestImageSource as ImageSource
 from SpiriCamera.sources.v4l import V4LSource
@@ -56,13 +59,12 @@ class TestResolution:
         [
             ("testimage://", ImageSource),
             ("testimage://pm5544", ImageSource),
-            ("/dev/video0", V4LSource),
-            ("/dev/video10", V4LSource),
-            ("/dev/v4l/by-id/usb-camera", V4LSource),
             ("0", V4LSource),
             ("3", V4LSource),
+            ("12", V4LSource),
             ("v4l://0", V4LSource),
             ("v4l2:///dev/video2", V4LSource),
+            ("v4l:///dev/video10", V4LSource),
             ("rtsp://host/stream", NetworkSource),
             ("rtmp://host/live", NetworkSource),
             ("http://host/feed.mjpg", NetworkSource),
@@ -82,11 +84,19 @@ class TestResolution:
             ("testimage://missing", "Unknown test image"),
             ("rtsp://", "No host given"),
             ("v4l://", "No V4L2 device"),
-            ("v4l://not-a-device", "Not a V4L2 device"),
+            ("file://", "No file given"),
+            ("file:///no/such/clip.mp4", "No such file"),
+            ("/dev/vi", "Unrecognised source"),
+            ("/dev/null", "Unrecognised source"),
+            ("/tmp", "Unrecognised source"),
         ],
     )
     def test_rejects(self, source: str, match: str) -> None:
-        """Bad sources fail at resolution with a usable message."""
+        """Bad sources fail at resolution with a usable message.
+
+        A half-typed path is rejected outright rather than claimed and
+        then failing to open, which is what lets the UI say why.
+        """
         with pytest.raises(SourceError, match=match):
             resolve_source(source)
 
@@ -98,9 +108,26 @@ class TestResolution:
 
     def test_explicit_scheme_wins_over_pattern_match(self) -> None:
         """A claimed scheme beats a handler that matches schemeless forms."""
-        # V4LSource claims any /dev path, but an rtsp:// URL is the
-        # network handler's regardless of what the target looks like.
         assert isinstance(resolve_source("rtsp:///dev/video0"), NetworkSource)
+
+    def test_file_scheme_disambiguates_a_path(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A path that reads as a URL can be forced to mean the file.
+
+        POSIX collapses repeated slashes, so the relative path
+        ``rtsp://clip.mp4`` really does name ``clip.mp4`` inside a
+        directory called ``rtsp:``.  It is indistinguishable from a
+        stream URL, and the stream wins; ``file://`` is how you say you
+        meant the file.
+        """
+        directory = tmp_path / "rtsp:"
+        directory.mkdir()
+        (directory / "clip.mp4").write_bytes(b"not really a video")
+        monkeypatch.chdir(tmp_path)
+
+        assert isinstance(resolve_source("rtsp://clip.mp4"), NetworkSource)
+        assert isinstance(resolve_source("file://rtsp://clip.mp4"), FileSource)
 
     def test_error_message_lists_supported_forms(self) -> None:
         """The failure tells the user what they could have typed."""
@@ -108,15 +135,16 @@ class TestResolution:
             resolve_source("nope")
         message = str(caught.value)
         assert "testimage://" in message
-        assert "/dev/videoN" in message
+        assert "camera index" in message
 
 
 class TestRegistry:
     """The registry of handlers."""
 
     def test_finds_concrete_handlers(self) -> None:
-        """All three shipped handlers are registered by import alone."""
+        """Every shipped handler is registered by import alone."""
         registered = registered_sources()
+        assert FileSource in registered
         assert ImageSource in registered
         assert V4LSource in registered
         assert NetworkSource in registered
@@ -151,7 +179,7 @@ class TestDescribe:
 
     def test_fills_in_scheme_for_schemeless_source(self) -> None:
         """A bare device path still reports the scheme it resolved to."""
-        info = describe_source("/dev/video0")
+        info = describe_source("v4l:///dev/video0")
         assert info.scheme == "v4l"
         assert info.target == "/dev/video0"
 

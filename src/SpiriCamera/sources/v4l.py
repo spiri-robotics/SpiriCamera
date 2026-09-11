@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import re
+import stat
 from pathlib import Path
 
 from loguru import logger
@@ -10,10 +10,6 @@ from loguru import logger
 from SpiriCamera.sources.base import SourceError, SourceURL
 from SpiriCamera.sources.capture import OpenCVSource
 
-#: ``/dev/videoN`` and friends.
-_DEVICE_PATH = re.compile(r"^/dev/")
-#: Trailing index of a ``/dev/videoN`` node.
-_DEVICE_INDEX = re.compile(r"^/dev/video(\d+)$")
 #: Where Linux exposes V4L2 device identity.
 _SYSFS_ROOT = Path("/sys/class/video4linux")
 
@@ -21,15 +17,23 @@ _SYSFS_ROOT = Path("/sys/class/video4linux")
 class V4LSource(OpenCVSource):
     """Local V4L2 camera.
 
-    Accepts an explicit ``v4l://`` or ``v4l2://`` URL, a device path
-    such as ``/dev/video0``, or a bare camera index such as ``0``.
+    Accepts a bare camera index (``0``), a device node (``/dev/video0``,
+    or a ``/dev/v4l/by-id/...`` symlink to one), or an explicit
+    ``v4l://`` or ``v4l2://`` URL.
+
+    A schemeless path is claimed by asking the filesystem whether it is
+    a character device, rather than by matching its spelling.  That is
+    what distinguishes a camera from a video file, and it means a
+    half-typed path is reported as unrecognised instead of being claimed
+    and then failing to open.  The explicit scheme skips the check, so a
+    device that is not plugged in yet can still be configured.
     """
 
     schemes = ("v4l", "v4l2")
 
     @classmethod
     def handles(cls, url: SourceURL) -> bool:
-        """Claim explicit V4L URLs, ``/dev`` paths, and bare indices.
+        """Claim explicit V4L URLs, camera indices, and device nodes.
 
         Parameters
         ----------
@@ -45,11 +49,16 @@ class V4LSource(OpenCVSource):
             return True
         if url.scheme:
             return False
-        return bool(_DEVICE_PATH.match(url.target)) or url.target.isdigit()
+        return url.target.isdigit() or _is_video_device(url.target)
 
     @classmethod
     def from_url(cls, url: SourceURL) -> V4LSource:
         """Validate the target before constructing the handler.
+
+        An explicit ``v4l://`` URL is taken at face value: the caller has
+        said what they mean, and the device may appear later.  A
+        schemeless target has to prove itself, since it was claimed by
+        inspection rather than by intent.
 
         Parameters
         ----------
@@ -64,19 +73,23 @@ class V4LSource(OpenCVSource):
         Raises
         ------
         SourceError
-            If the target is neither a device path nor a camera index.
+            If no device was given, or a schemeless target is neither a
+            camera index nor a character device.
         """
-        target = url.target
-        if not target:
+        if not url.target:
             raise SourceError(f"No V4L2 device given in {url.raw!r}")
-        if not _DEVICE_PATH.match(target) and not target.isdigit():
-            raise SourceError(
-                f"Not a V4L2 device path or camera index: {target!r}"
-            )
+
+        if not url.scheme and not url.target.isdigit():
+            if not _is_video_device(url.target):
+                raise SourceError(f"Not a video device: {url.target!r}")
         return cls(url)
 
     def capture_target(self) -> str | int:
-        """Return a camera index for bare digits, else the device path."""
+        """Return a camera index for bare digits, else the device path.
+
+        A bare index must reach OpenCV as an ``int``; passed as a string
+        it is treated as a filename.
+        """
         if self.target.isdigit():
             return int(self.target)
         return self.target
@@ -112,19 +125,70 @@ class V4LSource(OpenCVSource):
 
     def _sysfs_node(self) -> Path | None:
         """Locate this device's ``/sys/class/video4linux`` entry."""
-        if self.target.isdigit():
-            name = f"video{self.target}"
-        elif match := _DEVICE_INDEX.match(self.target):
-            name = f"video{match.group(1)}"
-        else:
-            # Symlinks such as /dev/v4l/by-id/... resolve to a real node.
-            try:
-                name = Path(self.target).resolve().name
-            except OSError:
-                return None
+        return _sysfs_node_for(self.target)
 
-        node = _SYSFS_ROOT / name
-        return node if node.is_dir() else None
+
+def _sysfs_node_for(target: str) -> Path | None:
+    """Find the sysfs entry for a camera index or device path.
+
+    Symlinks such as ``/dev/v4l/by-id/...`` are resolved first, so the
+    node is found by what it points at rather than how it was spelled.
+
+    Parameters
+    ----------
+    target : str
+        A camera index or device path.
+
+    Returns
+    -------
+    Path | None
+        The device's sysfs directory, or ``None`` if it has none.
+    """
+    if target.isdigit():
+        name = f"video{target}"
+    else:
+        try:
+            name = Path(target).resolve().name
+        except OSError:
+            return None
+
+    node = _SYSFS_ROOT / name
+    return node if node.is_dir() else None
+
+
+def _is_video_device(path: str) -> bool:
+    """Whether a path is a character device Linux knows as a camera.
+
+    The character-device check alone would also claim ``/dev/null`` and
+    friends, so it is confirmed against sysfs.  Where sysfs is not
+    mounted at all the device node is trusted on its own, since
+    consulting it is then impossible rather than merely unhelpful.
+
+    Parameters
+    ----------
+    path : str
+        The path to inspect.
+
+    Returns
+    -------
+    bool
+        True if the path is a usable video device node.
+    """
+    if not _is_character_device(path):
+        return False
+    if not _SYSFS_ROOT.is_dir():
+        return True
+    return _sysfs_node_for(path) is not None
+
+
+def _is_character_device(path: str) -> bool:
+    """Whether a path resolves to a character device, without raising."""
+    if not path:
+        return False
+    try:
+        return stat.S_ISCHR(Path(path).stat().st_mode)
+    except (OSError, ValueError):
+        return False
 
 
 def _read_text(path: Path) -> str:

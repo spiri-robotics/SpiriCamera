@@ -80,9 +80,19 @@ class TestValidate:
         assert result.exit_code == 1
         assert "Invalid source" in result.output
 
-    def test_reports_a_device_that_will_not_open(self) -> None:
-        """A resolvable but unopenable device is a failure, not a crash."""
+    def test_rejects_a_path_that_is_not_a_device(self) -> None:
+        """A path that is neither a camera nor a file fails to resolve."""
         result = runner.invoke(app, ["validate", "/dev/video-does-not-exist"])
+        assert result.exit_code == 1
+        assert "Invalid source" in result.output
+
+    def test_reports_a_device_that_will_not_open(self) -> None:
+        """A resolvable but unopenable device is a failure, not a crash.
+
+        The explicit scheme is taken at face value, so this gets as far
+        as trying to open the device.
+        """
+        result = runner.invoke(app, ["validate", "v4l:///dev/video-does-not-exist"])
         assert result.exit_code == 1
         assert "Connected:    False" in result.output
 
@@ -111,6 +121,6 @@ class TestCapture:
         """Capture exits non-zero rather than writing an empty file."""
         result = runner.invoke(
             app,
-            ["capture", "/dev/video-does-not-exist", "-o", str(tmp_path / "x.jpg")],
+            ["capture", "v4l:///dev/video-does-not-exist", "-o", str(tmp_path / "x.jpg")],
         )
         assert result.exit_code == 1
