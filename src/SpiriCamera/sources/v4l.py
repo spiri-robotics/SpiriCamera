@@ -128,6 +128,38 @@ class V4LSource(OpenCVSource):
         return _sysfs_node_for(self.target)
 
 
+def list_devices() -> list[dict[str, str]]:
+    """Enumerate local V4L2 camera devices.
+
+    Existence in ``/sys/class/video4linux`` is what is trusted here, the
+    same test :py:func:`_is_video_device` uses for a schemeless source
+    string -- a device that has not been plugged in, or that sysfs is
+    not mounted to describe, simply does not appear.
+
+    Returns
+    -------
+    list[dict[str, str]]
+        One entry per usable device node, each with ``path`` (a
+        ``/dev/videoN`` node, usable directly as a source string) and
+        ``label`` (its USB identity where sysfs reports one, else just
+        the device node).
+    """
+    if not _SYSFS_ROOT.is_dir():
+        return []
+
+    devices = []
+    for node in sorted(_SYSFS_ROOT.glob("video*"), key=lambda p: p.name):
+        path = f"/dev/{node.name}"
+        if not _is_character_device(path):
+            continue
+        metadata = V4LSource(SourceURL.parse(path)).device_metadata()
+        identity = " ".join(
+            filter(None, (metadata.get("vendor"), metadata.get("model")))
+        )
+        devices.append({"path": path, "label": f"{identity} ({path})" if identity else path})
+    return devices
+
+
 def _sysfs_node_for(target: str) -> Path | None:
     """Find the sysfs entry for a camera index or device path.
 

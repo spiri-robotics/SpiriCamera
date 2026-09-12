@@ -40,6 +40,8 @@ from nicegui import app, ui
 
 from SpiriCamera import Camera, exif
 from SpiriCamera.main import get_settings
+from SpiriCamera.sources.testimage import test_images
+from SpiriCamera.sources.v4l import list_devices
 
 #: Route the browser pulls frames from.
 FRAME_ROUTE = '/camera/frame'
@@ -183,6 +185,40 @@ PLACEHOLDER = Response(
 _camera: Camera | None = None
 
 
+def _make_authoritive(source_str: str) -> Camera:
+    """Build a fresh authoritative camera pointed at ``source_str``.
+
+    Encode settings are read from the process's own configuration, not
+    carried over from whatever camera this replaces -- an authoritative
+    camera is this process actually running a device, and that device's
+    settings come from how the process was configured, not from
+    whatever a mirror happened to be showing a moment ago.
+
+    Parameters
+    ----------
+    source_str : str
+        Source URL or device path to open.
+
+    Returns
+    -------
+    Camera
+        A new, authoritative camera.
+    """
+    settings = get_settings()
+    return Camera(
+        source_str,
+        quality=settings.quality,
+        max_width=settings.frame_width,
+        max_height=settings.frame_height,
+        max_framerate=settings.framerate,
+        # This process actually runs the device; Camera already defaults
+        # to this for a normal construction, but it is spelled out here
+        # because getting it wrong silently drops the hostname prefix on
+        # its topic and disables its RPCs.
+        synq_authoritive=True,
+    )
+
+
 def get_camera() -> Camera:
     """Return the process-wide camera, creating it on first use.
 
@@ -197,20 +233,88 @@ def get_camera() -> Camera:
     global _camera
     if _camera is None:
         settings = get_settings()
-        _camera = Camera(
-            settings.source or 'testimage://',
-            quality=settings.quality,
-            max_width=settings.frame_width,
-            max_height=settings.frame_height,
-            max_framerate=settings.framerate,
-            # This process actually runs the device; Camera already
-            # defaults to this for a normal construction, but it is
-            # spelled out here because this is the one real camera this
-            # page shows, and getting it wrong silently drops the
-            # hostname prefix on its topic and disables its RPCs.
-            synq_authoritive=True,
-        )
+        _camera = _make_authoritive(settings.source or 'testimage://')
     return _camera
+
+
+def _replace_camera(new_camera: Camera) -> Camera:
+    """Install ``new_camera`` as the process-wide one, closing the old.
+
+    Parameters
+    ----------
+    new_camera : Camera
+        The camera to install.
+
+    Returns
+    -------
+    Camera
+        ``new_camera``, for chaining.
+    """
+    global _camera
+    old, _camera = _camera, new_camera
+    if old is not None:
+        old.close()
+    return new_camera
+
+
+def set_authoritive(source_str: str = '') -> Camera:
+    """Switch to running a device ourselves, replacing any mirror.
+
+    Parameters
+    ----------
+    source_str : str
+        Source to open.  Defaults to the test image when switching out
+        of mirror mode, which never has a local source string of its
+        own to fall back to.
+
+    Returns
+    -------
+    Camera
+        The new authoritative camera.
+    """
+    return _replace_camera(_make_authoritive(source_str or 'testimage://'))
+
+
+def set_mirror(topic: str = '') -> Camera:
+    """Switch to mirroring another node's camera, replacing any device.
+
+    Parameters
+    ----------
+    topic : str
+        Absolute SpiriSynq topic of the camera to mirror, as reported by
+        :py:func:`discover_cameras`.  Empty to drop into mirror mode
+        without yet picking one, e.g. to browse what is available.
+
+    Returns
+    -------
+    Camera
+        The new, non-authoritative camera.  A stopped device with
+        nothing to show until a topic is given: its fields sit at their
+        defaults rather than mirroring anything.
+    """
+    new_camera = Camera.from_topic(topic) if topic else Camera('', synq_authoritive=False)
+    return _replace_camera(new_camera)
+
+
+def discover_cameras(cam: Camera) -> list[dict]:
+    """List Camera objects other nodes are currently advertising.
+
+    Parameters
+    ----------
+    cam : Camera
+        Any camera on the session to query from -- discovery is a
+        property of the SpiriSynq session, not of a particular camera.
+
+    Returns
+    -------
+    list[dict]
+        One metadata dict per discovered camera, each with at least
+        ``topic`` and ``authoritive_node``.  Only authoritative cameras
+        ever answer this query, so a mirror never lists itself.
+    """
+    if not cam.synq_session:
+        return []
+    return list(cam.synq_session.list_topics(type_filter='Camera'))
 
 
 def _frame_timestamp(frame: bytes) -> float:
@@ -363,23 +467,80 @@ def _apply_extra_tags(camera: Camera, text: str) -> None:
     camera.exif_set_tags(_UI_EXIF_PROVIDER, tags)
 
 
+def _source_options() -> dict[str, str]:
+    """Map each known source string to a human label, for the picker.
+
+    Returns
+    -------
+    dict[str, str]
+        ``source_str -> label``, covering every bundled test pattern and
+        every V4L2 device currently plugged in.
+    """
+    options = {
+        f'testimage://{name}': f'Test pattern: {name}' for name in sorted(test_images())
+    }
+    for device in list_devices():
+        options[device['path']] = device['label']
+    return options
+
+
 @ui.page('/')
 def build_page():
     """Build the camera test UI page."""
-    cam = get_camera()
 
-    # Natural height, not h-screen: the frame is sized by width and the page
-    # scrolls, rather than the frame being squeezed into whatever vertical
-    # space the controls leave over.
-    with ui.column().classes('w-full gap-2 p-2'):
+    def refresh_all() -> None:
+        """Rebuild both camera-bound panels after the camera is swapped."""
+        top_controls.refresh()
+        settings_panels.refresh()
+
+    def toggle_authoritive(value: bool) -> None:
+        """Rebuild the process-wide camera as a device, or as a mirror."""
+        if value:
+            set_authoritive(get_camera().source_str)
+        else:
+            set_mirror()
+        refresh_all()
+
+    def pick_source(source_str: str) -> None:
+        """Retarget the current camera at a source picked from the list."""
+        if source_str:
+            get_camera().source_str = source_str
+
+    def mirror(topic: str) -> None:
+        """Start mirroring a camera, discovered or typed in by hand."""
+        if not topic.strip():
+            return
+        set_mirror(topic.strip())
+        refresh_all()
+
+    @ui.refreshable
+    def top_controls() -> None:
+        """The device/mirror switch and whatever it puts above the frame.
+
+        Split out from :py:func:`settings_panels` only so the frame
+        viewer can sit between the two, matching where it always has --
+        both panels are rebuilt together, by :py:func:`refresh_all`,
+        whenever the camera is swapped out from under the page.
+        """
+        cam = get_camera()
+
         with ui.card().classes('w-full flex-shrink-0'):
             with ui.row().classes('w-full items-center'):
-                ui.button('Start', on_click=cam.start).classes('bg-green-600 text-white')
-                ui.button('Stop', on_click=cam.stop).classes('bg-red-600 text-white')
-                # Debounced: every keystroke would otherwise retarget the camera.
-                ui.input('Source string').bind_value(cam, 'source_str').props(
-                    'debounce=500'
-                ).classes('flex-1')
+                ui.switch(
+                    'Authoritative', value=cam.synq_authoritive,
+                    on_change=lambda e: toggle_authoritive(e.value),
+                )
+                if cam.synq_authoritive:
+                    ui.button('Start', on_click=cam.start).classes('bg-green-600 text-white')
+                    ui.button('Stop', on_click=cam.stop).classes('bg-red-600 text-white')
+                    # Debounced: every keystroke would otherwise retarget the camera.
+                    ui.input('Source string').bind_value(cam, 'source_str').props(
+                        'debounce=500'
+                    ).classes('flex-1')
+                    ui.select(
+                        _source_options(), label='Known sources',
+                        on_change=lambda e: pick_source(e.value),
+                    ).classes('w-64')
                 # Says "running", "stopped", or why it is neither.
                 ui.label().bind_text_from(cam, 'status').classes('px-2 font-mono')
 
@@ -387,67 +548,50 @@ def build_page():
             cam.source, 'error'
         ).classes('w-full text-red-600 px-2')
 
-        # interactive_image's inner <img> is width:100%;height:100% with no
-        # object-fit, so it stretches to whatever shape its box is. Letterbox
-        # rather than warp, and let the wrapper's own aspect-ratio set the
-        # height so the frame fills the available width instead of being
-        # bounded by a short card.
-        ui.add_css('.camera-frame img { object-fit: contain; }')
+        if not cam.synq_authoritive:
+            # A mirror has no device of its own to start, and retargeting
+            # its source_str would try to resolve it against *this*
+            # machine's devices -- what mirroring means here is picking
+            # someone else's camera, not editing this one's fields.
+            with ui.card().classes('w-full flex-shrink-0'):
+                with ui.row().classes('w-full items-center justify-between'):
+                    ui.label('Cameras on the network').classes('text-lg font-bold')
+                    ui.button(icon='refresh', on_click=top_controls.refresh).props('flat round')
 
-        with ui.card().classes('w-full p-0 overflow-hidden'):
-            frame = ui.interactive_image(FRAME_ROUTE).classes('camera-frame w-full')
+                # Discovery is best-effort -- it relies on zenoh scouting
+                # reaching the other node, which multicast-free networks,
+                # routed links, and simple timing all defeat. Typing the
+                # topic by hand is not a fallback for rare cases; it is
+                # the one path that always works, so it is offered
+                # alongside the list rather than hidden behind it.
+                with ui.row().classes('w-full items-center gap-2'):
+                    topic_input = ui.input(
+                        'Topic', placeholder='hostname/spiricamera_testimage'
+                    ).classes('flex-1')
+                    ui.button('Mirror', on_click=lambda: mirror(topic_input.value))
 
-        bandwidth = ui.label().classes('w-full px-2 font-mono text-sm opacity-70')
+                discovered = discover_cameras(cam)
+                if not discovered:
+                    ui.label(
+                        'No other camera is currently advertising itself.'
+                    ).classes('opacity-70')
+                for meta in discovered:
+                    topic = str(meta.get('topic', ''))
+                    with ui.row().classes('w-full items-center gap-2'):
+                        ui.label(topic).classes('font-mono flex-1')
+                        ui.label(str(meta.get('authoritive_node', ''))).classes(
+                            'opacity-70 text-xs'
+                        )
+                        ui.button('Mirror', on_click=lambda topic=topic: mirror(topic))
 
-        def refresh_frame() -> None:
-            """Pull the next frame, tracking the camera's current framerate."""
-            timer.interval = 1 / max(1, int(cam.max_framerate or 1))
-            frame.force_reload()
+    @ui.refreshable
+    def settings_panels() -> None:
+        """The three detail cards below the frame, bound to the camera.
 
-        def refresh_bandwidth() -> None:
-            """Show the frame that arrived, and what the route is delivering.
-
-            Three kinds of number share this line, and they part company
-            when the camera stops.  The rates are rolling averages, so
-            they fall to zero once no new frames are arriving — a stopped
-            camera reads 0 fps even while a browser keeps polling and
-            being handed the frame it already has.  The size and shape
-            are an account of the last frame, which does not stop being
-            true just because no frame followed it, so they stay put.
-            The age is neither: the frame on screen really is getting
-            older, so it keeps counting up.
-            """
-            parts = []
-            if cam.received_width and cam.received_height:
-                parts.append(f'{cam.received_width}x{cam.received_height}')
-                parts.append(f'{cam.received_ratio:.3f}')
-
-            # Age of the frame on screen, measured at the route where
-            # frames actually leave. Against a remote camera it is only
-            # as accurate as the two machines' clocks agree.
-            age = frame_meter.age()
-            if age:
-                parts.append(_format_age(age))
-
-            fps, bytes_per_second = frame_meter.rates()
-            parts.append(f'{bytes_per_second / 1024:.0f} KiB/s')
-            parts.append(f'{fps:.1f} fps')
-
-            # Off the frame in hand, not off the rates: bytes-per-second
-            # divided by frames-per-second is nothing at all once both are
-            # zero, but the last frame is still exactly this big.
-            if cam.image:
-                parts.append(f'{len(cam.image) / 1024:.0f} KiB/frame')
-
-            parts.append(f'requested {int(cam.max_framerate or 0)} fps')
-
-            bandwidth.set_text(' · '.join(parts))
-
-        timer = ui.timer(1 / max(1, int(cam.max_framerate or 1)), refresh_frame)
-        # Filled in before the first tick, so the line reads 0 fps rather
-        # than being blank for half a second on every page load.
-        refresh_bandwidth()
-        ui.timer(0.5, refresh_bandwidth)
+        Kept out of :py:func:`top_controls` only so the frame viewer can
+        sit between the two; see that function's docstring.
+        """
+        cam = get_camera()
 
         with ui.row().classes('w-full gap-2 flex-shrink-0'):
             with ui.card().classes('flex-1'):
@@ -512,9 +656,88 @@ def build_page():
                     on_change=lambda event: _apply_extra_tags(cam, event.value),
                 ).props('debounce=500').classes('w-full')
 
+    # Natural height, not h-screen: the frame is sized by width and the page
+    # scrolls, rather than the frame being squeezed into whatever vertical
+    # space the controls leave over.
+    with ui.column().classes('w-full gap-2 p-2'):
+        top_controls()
+
+        # interactive_image's inner <img> is width:100%;height:100% with no
+        # object-fit, so it stretches to whatever shape its box is. Letterbox
+        # rather than warp, and let the wrapper's own aspect-ratio set the
+        # height so the frame fills the available width instead of being
+        # bounded by a short card.
+        ui.add_css('.camera-frame img { object-fit: contain; }')
+
+        with ui.card().classes('w-full p-0 overflow-hidden'):
+            frame = ui.interactive_image(FRAME_ROUTE).classes('camera-frame w-full')
+
+        bandwidth = ui.label().classes('w-full px-2 font-mono text-sm opacity-70')
+
+        def refresh_frame() -> None:
+            """Pull the next frame, tracking the camera's current framerate."""
+            timer.interval = 1 / max(1, int(get_camera().max_framerate or 1))
+            frame.force_reload()
+
+        def refresh_bandwidth() -> None:
+            """Show the frame that arrived, and what the route is delivering.
+
+            Three kinds of number share this line, and they part company
+            when the camera stops.  The rates are rolling averages, so
+            they fall to zero once no new frames are arriving — a stopped
+            camera reads 0 fps even while a browser keeps polling and
+            being handed the frame it already has.  The size and shape
+            are an account of the last frame, which does not stop being
+            true just because no frame followed it, so they stay put.
+            The age is neither: the frame on screen really is getting
+            older, so it keeps counting up.
+            """
+            cam = get_camera()
+            parts = []
+            if cam.received_width and cam.received_height:
+                parts.append(f'{cam.received_width}x{cam.received_height}')
+                parts.append(f'{cam.received_ratio:.3f}')
+
+            # Age of the frame on screen, measured at the route where
+            # frames actually leave. Against a remote camera it is only
+            # as accurate as the two machines' clocks agree.
+            age = frame_meter.age()
+            if age:
+                parts.append(_format_age(age))
+
+            fps, bytes_per_second = frame_meter.rates()
+            parts.append(f'{bytes_per_second / 1024:.0f} KiB/s')
+            parts.append(f'{fps:.1f} fps')
+
+            # Off the frame in hand, not off the rates: bytes-per-second
+            # divided by frames-per-second is nothing at all once both are
+            # zero, but the last frame is still exactly this big.
+            if cam.image:
+                parts.append(f'{len(cam.image) / 1024:.0f} KiB/frame')
+
+            parts.append(f'requested {int(cam.max_framerate or 0)} fps')
+
+            bandwidth.set_text(' · '.join(parts))
+
+        timer = ui.timer(1 / max(1, int(get_camera().max_framerate or 1)), refresh_frame)
+        # Filled in before the first tick, so the line reads 0 fps rather
+        # than being blank for half a second on every page load.
+        refresh_bandwidth()
+        ui.timer(0.5, refresh_bandwidth)
+
+        settings_panels()
+
 
 if __name__ == '__main__':
     ui.run(title='SpiriCamera Test UI', reload=False, show=False, dark=None)
 
 
-__all__ = ['FRAME_ROUTE', 'build_page', 'get_camera', 'serve_frame']
+__all__ = [
+    'FRAME_ROUTE',
+    'build_page',
+    'discover_cameras',
+    'get_camera',
+    'serve_frame',
+    'set_authoritive',
+    'set_mirror',
+]

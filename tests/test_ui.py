@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import threading
 import time
+from collections.abc import Iterator
 
 import cv2
 import numpy as np
 import pytest
+from nicegui import ui as nicegui_ui
 from nicegui.testing.user import User
 
 from SpiriCamera import exif
@@ -136,6 +138,132 @@ class TestSharedCamera:
         cam = camera_ui.get_camera()
 
         assert cam.synq_authoritive is True
+
+
+class TestSourceOptions:
+    """The known-sources picker's contents."""
+
+    def test_includes_bundled_test_patterns(self) -> None:
+        """Every shipped test pattern is offered, not just the default."""
+        options = camera_ui._source_options()
+
+        assert 'testimage://pm5544' in options
+
+    def test_includes_local_v4l_devices(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A plugged-in USB camera shows up alongside the test patterns."""
+        monkeypatch.setattr(
+            camera_ui,
+            'list_devices',
+            lambda: [{'path': '/dev/video0', 'label': 'Some Webcam (/dev/video0)'}],
+        )
+
+        options = camera_ui._source_options()
+
+        assert options['/dev/video0'] == 'Some Webcam (/dev/video0)'
+
+
+class TestModeSwitching:
+    """Toggling between running a device ourselves and mirroring one."""
+
+    @pytest.fixture(autouse=True)
+    def clean_up(self, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+        """Every test starts from no camera and closes whatever it built.
+
+        ``monkeypatch`` only restores the ``_camera`` attribute; it does
+        not close the zenoh resources a real ``Camera`` opened, so that
+        is done by hand.
+        """
+        monkeypatch.setattr(camera_ui, '_camera', None)
+        yield
+        if camera_ui._camera is not None:
+            camera_ui._camera.close()
+
+    def test_set_authoritive_builds_a_real_camera(self) -> None:
+        """Switching to authoritative mode makes an ordinary camera."""
+        cam = camera_ui.set_authoritive('testimage://')
+
+        assert cam.synq_authoritive is True
+        assert cam is camera_ui.get_camera()
+
+    def test_set_authoritive_closes_the_camera_it_replaces(self) -> None:
+        """The old camera must not keep running in the background."""
+        old = camera_ui.set_authoritive('testimage://')
+        old.start(background=False)
+
+        camera_ui.set_authoritive('testimage://pm5544')
+
+        assert old.running is False
+
+    def test_set_mirror_with_no_topic_is_inert(self) -> None:
+        """Dropping into mirror mode without picking one shows nothing."""
+        cam = camera_ui.set_mirror()
+
+        assert cam.synq_authoritive is False
+        assert cam.image == b''
+
+    def test_set_mirror_fetches_the_given_topic(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A topic (typed by hand or picked from discovery) is mirrored.
+
+        ``Camera.from_topic`` performs a real RPC round trip over zenoh;
+        that path is exercised in ``test_camera.py``'s rehydrate tests.
+        Here it is stubbed so this test stays a fast, hermetic check of
+        the wiring in :py:func:`SpiriCamera.ui.set_mirror`.
+        """
+        built = Camera('testimage://', synq_auto_start=False)
+        monkeypatch.setattr(Camera, 'from_topic', classmethod(lambda cls, topic: built))
+
+        cam = camera_ui.set_mirror('some/topic')
+
+        assert cam is built
+        assert cam is camera_ui.get_camera()
+
+    async def test_toggling_off_shows_the_discovery_panel(self, user: User) -> None:
+        """Switching off authoritative mode replaces the device controls."""
+        await user.open('/')
+        await user.should_see('Start')
+
+        user.find(kind=nicegui_ui.switch).click()
+
+        await user.should_see('Cameras on the network')
+        await user.should_not_see('Start')
+
+    async def test_toggling_back_on_restores_device_controls(self, user: User) -> None:
+        """The device controls come back when authoritative mode returns.
+
+        The switch is re-found after the first click rather than reused:
+        toggling mode rebuilds the whole panel the switch lives in, so
+        the element from before that rebuild no longer has a parent.
+        """
+        await user.open('/')
+
+        user.find(kind=nicegui_ui.switch).click()
+        await user.should_see('Cameras on the network')
+        user.find(kind=nicegui_ui.switch).click()
+
+        await user.should_see('Start')
+        await user.should_not_see('Cameras on the network')
+
+    async def test_typing_a_topic_and_clicking_mirror(
+        self, monkeypatch: pytest.MonkeyPatch, user: User
+    ) -> None:
+        """A hand-typed topic is not limited to what discovery found."""
+        built = Camera('testimage://', synq_auto_start=False)
+        monkeypatch.setattr(Camera, 'from_topic', classmethod(lambda cls, topic: built))
+
+        await user.open('/')
+        user.find(kind=nicegui_ui.switch).click()
+        await user.should_see('Cameras on the network')
+
+        topic_field = next(
+            element
+            for element in user.find(kind=nicegui_ui.input).elements
+            if element.props.get('label') == 'Topic'
+        )
+        topic_field.value = 'otherhost/spiricamera_testimage'
+
+        user.find('Mirror').click()
+
+        assert camera_ui.get_camera() is built
 
 
 class TestPage:
