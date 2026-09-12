@@ -33,6 +33,9 @@ class OpenCVSource(SourceBase):
     def __init__(self, url) -> None:  # noqa: ANN001 - inherited signature
         super().__init__(url)
         self._capture: cv2.VideoCapture | None = None
+        #: Settings last pushed onto the device, so :py:meth:`read` can
+        #: tell a live change from a repeat of the same request.
+        self._applied: CaptureSettings | None = None
 
     # ------------------------------------------------------------------
     # Subclass hooks
@@ -102,6 +105,7 @@ class OpenCVSource(SourceBase):
 
         self._capture = capture
         self._apply(settings)
+        self._applied = settings
 
         capabilities = self._negotiated_capabilities()
         logger.info(
@@ -116,16 +120,24 @@ class OpenCVSource(SourceBase):
         if self._capture is not None:
             self._capture.release()
             self._capture = None
+            self._applied = None
             logger.debug(f"{self!r} closed")
 
     def read(self, settings: CaptureSettings) -> np.ndarray | None:
         """Grab a single BGR frame from the device.
 
+        Re-applies ``settings`` first if they differ from what is
+        currently on the device, so a live change to ``max_width`` and
+        friends takes effect on the next frame rather than only at the
+        next ``open()``.  Most devices accept a resolution change
+        mid-stream; one that does not simply keeps delivering its
+        current size, which :py:attr:`CameraBase.received_width` and
+        friends will still report correctly.
+
         Parameters
         ----------
         settings : CaptureSettings
-            Requested capture settings; unused here because the device
-            was configured at open time.
+            Requested capture settings.
 
         Returns
         -------
@@ -139,6 +151,11 @@ class OpenCVSource(SourceBase):
         """
         if self._capture is None:
             raise SourceError(f"{self!r} is not open; call open() before read()")
+
+        if settings != self._applied:
+            logger.debug(f"{self!r} re-applying {settings}")
+            self._apply(settings)
+            self._applied = settings
 
         ok, frame = self._capture.read()
         if not ok or frame is None:

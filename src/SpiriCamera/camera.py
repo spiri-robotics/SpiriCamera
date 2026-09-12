@@ -12,7 +12,7 @@ from __future__ import annotations
 import re
 import threading
 import time
-from collections.abc import Generator
+from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from importlib.metadata import PackageNotFoundError, version
@@ -118,17 +118,22 @@ class CameraBase(SyncableObject):
         everything else here — nothing in SpiriSynq is truly read-only —
         though a value set by hand does not reconfigure the device and
         is overwritten the next time the source opens.
-    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` / ``exif_enabled`` / ``exif_extra``
-        The requested capture, encoding and tagging settings.  These are
-        live: changing them takes effect on the next frame.
-    ``received_*`` / ``exif_tags`` / ``exif_timestamp``
+    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` / ``exif_enabled``
+        The requested capture and encoding settings.  These are live:
+        changing them takes effect on the next frame.
+    ``received_*`` / ``_exif_tags`` / ``_exif_timestamp``
         What the current :py:attr:`image` turned out to be.  See
-        :py:data:`synq_skip_sync` — this is the one group that does not
-        go over the wire.
+        :py:data:`synq_skip_sync` and the note below — none of this
+        group goes over the wire as a field of its own.
+
+    Tags themselves are not a synced field at all.  A caller adds them
+    through :py:meth:`Camera.exif_set_tags` / :py:meth:`Camera.exif_update`
+    and reads them back from :py:attr:`Camera.exif_tags`, which is
+    recomputed from :py:attr:`image` rather than stored and sent.
 
     .. note::
 
-       The ``received_*`` and ``exif_*`` observations describe one
+       ``received_*`` and the two ``_exif_*`` fields describe one
        specific frame, so they must never be published as fields of
        their own.  SpiriSynq syncs each field independently and promises
        nothing about two of them arriving together or in order, so a
@@ -139,9 +144,15 @@ class CameraBase(SyncableObject):
        :py:meth:`Camera._on_image_changed`.  A mirror therefore fills
        these in for itself and stays exact by construction.
 
-       This is why they appear in ``synq_skip_sync`` rather than being
-       renamed with a leading underscore, which would also exclude them:
-       they are ordinary public attributes that a peer is meant to read.
+       The two ``_exif_*`` fields carry a leading underscore *and* sit in
+       ``synq_skip_sync``: the underscore is what actually keeps them off
+       the wire and out of a full rehydrate (SpiriSynq excludes any field
+       named that way unconditionally), and the explicit skip-set entry
+       is only for ``received_*``, which stays public because nothing
+       else needs a leading underscore to keep it from being a field a
+       remote peer could set out from under the image it describes.
+       Read :py:attr:`Camera.exif_tags` instead of touching ``_exif_tags``
+       directly; the underscore says "computed for you", not "hidden".
 
     .. note::
 
@@ -173,35 +184,26 @@ class CameraBase(SyncableObject):
         frames are flowing; ``status`` says why not when they are not.
     image : bytes
         The most recent encoded frame, in :py:attr:`mimetype` format,
-        carrying :py:attr:`exif_tags` in its EXIF.
+        carrying that frame's tags in its EXIF; see
+        :py:meth:`Camera.exif_tags_for_frame`.
     exif_enabled : bool
         Whether to tag encoded frames at all.  Turning it off gives byte
         identical frames for an unchanging scene, which psygnal then
         suppresses instead of republishing.
-    exif_extra : dict[str, str]
-        Tags to merge over the ones the camera derives for itself, for a
-        caller or a remote peer with something to add.
-    exif_tags : dict[str, str]
-        The tags on the current :py:attr:`image`, read back out of it.
-    exif_timestamp : float
-        Unix timestamp of when the current :py:attr:`image` was captured,
-        or ``0.0`` if it carried none.  Set by whichever node took the
-        frame, so comparing it against a local clock is only as good as
-        the agreement between the two.
     """
 
     #: Fields excluded from SpiriSynq, on top of the base class's own.
     #:
     #: Every one of these describes the current :py:attr:`image`, and is
-    #: derived from its bytes wherever it is needed.  Publishing them
+    #: derived from its bytes wherever it is needed.  Publishing it
     #: separately would let a peer pair an observation with the wrong
-    #: frame; see the class docstring.
+    #: frame; see the class docstring.  ``_exif_tags`` and
+    #: ``_exif_timestamp`` do not need an entry here — their leading
+    #: underscore already excludes them.
     synq_skip_sync = {
         "received_width",
         "received_height",
         "received_ratio",
-        "exif_tags",
-        "exif_timestamp",
     }
 
     source_str: str = ""
@@ -226,9 +228,8 @@ class CameraBase(SyncableObject):
     mimetype: str = "image/jpeg"
 
     exif_enabled: bool = True
-    exif_extra: dict[str, str] = field(default_factory=dict)
-    exif_tags: dict[str, str] = field(default_factory=dict)
-    exif_timestamp: float = 0.0
+    _exif_tags: dict[str, str] = field(default_factory=dict)
+    _exif_timestamp: float = 0.0
 
     running: bool = False
     status: str = STATUS_STOPPED
@@ -279,6 +280,7 @@ class Camera(CameraBase):
         mimetype: str = "image/jpeg",
         synq_topic: str = "",
         synq_auto_start: bool = True,
+        **rehydrated: object,
     ) -> None:
         """Create a camera.
 
@@ -305,11 +307,46 @@ class Camera(CameraBase):
             source later changes.
         synq_auto_start : bool
             Whether to join the SpiriSynq session immediately.
+        **rehydrated : object
+            Every other synced field (``vendor``, ``running``, ``status``,
+            ``image``, ``exif_enabled``, the resolved ``source``, ...).
+            Not meant to be passed by hand: SpiriSynq's full-object
+            rehydrate hands back *every* synced field as a keyword
+            argument, by its real name (``source_str``, not ``source``),
+            and this is what keeps that from raising ``TypeError`` for
+            whichever of them this signature does not already name.
+
+            .. warning::
+               A camera rebuilt this way (:py:meth:`Camera.from_topic`)
+               does not call :py:meth:`_resolve` against the received
+               ``source_str`` — doing so would try to open a device path
+               that may only mean something on the *authoritative*
+               machine, discarding the correctly-resolved ``source`` the
+               rehydrate reply just supplied.  Such a camera therefore
+               starts with no local handler and cannot :py:meth:`start`;
+               it exists to read the mirrored fields, not to capture.
         """
+        # Rehydrate hands every synced field back by its real name --
+        # including `source`, the resolved SourceInfo, which collides
+        # with this constructor's own `source` parameter (the convenience
+        # URL string). Both funnel into the same argument slot, so tell
+        # them apart by type: a caller only ever passes a str, so a
+        # SourceInfo here can only mean SpiriSynq reconstructing a mirror.
+        is_rehydrate = isinstance(source, SourceInfo)
+        resolved_source = source if is_rehydrate else None
+        source_str = str(rehydrated.pop("source_str", "" if is_rehydrate else source))
+        quality = rehydrated.pop("quality", quality)  # type: ignore[assignment]
+        max_width = rehydrated.pop("max_width", max_width)  # type: ignore[assignment]
+        max_height = rehydrated.pop("max_height", max_height)  # type: ignore[assignment]
+        max_framerate = rehydrated.pop("max_framerate", max_framerate)  # type: ignore[assignment]
+        mimetype = str(rehydrated.pop("mimetype", mimetype))
+        synq_topic = str(rehydrated.pop("synq_topic", synq_topic))
+
         CameraBase.__init__(
             self,
-            synq_topic=synq_topic or topic_for_source(source),
-            source_str=source,
+            synq_topic=synq_topic or topic_for_source(source_str),
+            source_str=source_str,
+            source=resolved_source if resolved_source is not None else SourceInfo(),
             quality=quality,
             max_width=max_width,
             max_height=max_height,
@@ -317,6 +354,7 @@ class Camera(CameraBase):
             mimetype=mimetype,
             # Deferred: the object is not wired up enough to sync yet.
             synq_auto_start=False,
+            **rehydrated,
         )
 
         self._lock = threading.RLock()
@@ -336,8 +374,19 @@ class Camera(CameraBase):
         # Last EXIF failure reported, so a source that cannot be tagged
         # says so once rather than at the full framerate.
         self._exif_complaint: str = ""
+        # Tags by provider name, so one provider's exif_set_tags/
+        # exif_clear_tags can never touch another's. Not a CameraBase
+        # field: it describes how *this* node builds a frame, which a
+        # mirror never does, so it has no business being synced.
+        self._exif_providers: dict[str, dict[str, str]] = {}
 
-        self._resolve(source)
+        if is_rehydrate:
+            logger.debug(
+                f"{self.synq_topic}: rebuilt from a rehydrate reply, "
+                "not resolving source locally"
+            )
+        else:
+            self._resolve(source_str)
 
         # React to our own state changing, whoever changed it — a local
         # caller, a UI binding, or a remote peer over SpiriSynq.
@@ -346,6 +395,13 @@ class Camera(CameraBase):
         # Frames arrive the same way on both sides: we set image, or the
         # network does. Either way the observations come out of its bytes.
         self.events.image.connect(self._on_image_changed)
+        # psygnal only fires this on a *later* reassignment, so a frame
+        # that arrived through the constructor -- a rehydrated mirror's
+        # image, already carrying a real frame -- would otherwise leave
+        # received_width and the rest at their empty defaults until the
+        # next one arrives. Priming is harmless for a normal construction,
+        # where image is still empty.
+        self._on_image_changed(self.image)
 
         self.synq_auto_start = synq_auto_start
         if synq_auto_start:
@@ -720,14 +776,125 @@ class Camera(CameraBase):
     # Frame tagging
     # ------------------------------------------------------------------
 
+    #: Provider name :py:meth:`exif_update` merges into, for callers with
+    #: no reason to pick their own.  Not itself a valid provider name a
+    #: caller would choose (empty), so it can never collide with one.
+    _DEFAULT_EXIF_PROVIDER = ""
+
+    @property
+    def exif_tags(self) -> dict[str, str]:
+        """The tags on the current :py:attr:`~CameraBase.image`.
+
+        Read back out of the frame itself rather than stored, so this is
+        never out of step with what is actually on screen — on the
+        authoritative node or on any mirror, since both learn it the
+        same way, from :py:meth:`_on_image_changed`.
+        """
+        return self._exif_tags
+
+    @property
+    def exif_timestamp(self) -> float:
+        """Unix timestamp the current :py:attr:`~CameraBase.image` was
+        captured at, or ``0.0`` if it carried none.
+
+        Set by whichever node took the frame, so comparing it against a
+        local clock is only as good as the agreement between the two.
+        """
+        return self._exif_timestamp
+
+    def exif_set_tags(self, provider: str, tags: Mapping[str, str]) -> None:
+        """Replace one provider's tags, leaving every other provider's.
+
+        This is the primitive for more than one piece of software tagging
+        the same camera's frames without stepping on each other: each
+        provider owns its own bucket, keyed by ``provider``, and setting
+        one never touches another's.  Call it again with the same
+        ``provider`` to replace what it set before.
+
+        Parameters
+        ----------
+        provider : str
+            A name identifying who is setting these tags — your module
+            or component name is a reasonable choice.  Two providers
+            using two different names can never clobber one another, no
+            matter what tags they choose or when they call this.
+        tags : Mapping[str, str]
+            The complete set of tags this provider wants embedded in
+            every frame from now on.  An empty mapping is the same as
+            :py:meth:`exif_clear_tags`.  Unlike :py:meth:`exif_update`, a
+            value of ``""`` is kept rather than dropped, which lets a
+            provider that genuinely needs to blank out a built-in tag —
+            omitting ``source`` from a frame headed somewhere public, say
+            — do exactly that.
+        """
+        tags = {str(name): str(value) for name, value in tags.items()}
+        if tags:
+            self._exif_providers[provider] = tags
+        else:
+            self._exif_providers.pop(provider, None)
+
+    def exif_clear_tags(self, provider: str) -> None:
+        """Remove everything ``provider`` has set, and nothing else.
+
+        Parameters
+        ----------
+        provider : str
+            The same name passed to :py:meth:`exif_set_tags`.  Clearing a
+            provider that never set anything is not an error.
+        """
+        self._exif_providers.pop(provider, None)
+
+    def exif_tag_providers(self) -> frozenset[str]:
+        """Names of the providers currently contributing custom tags.
+
+        Returns
+        -------
+        frozenset[str]
+            Provider names with at least one tag set right now.  Does
+            not include the built-in tags :py:meth:`exif_tags_for_frame`
+            adds on its own, which have no provider name.
+        """
+        return frozenset(self._exif_providers)
+
+    def exif_update(self, **tags: str) -> None:
+        """Merge tags into the default, unscoped tag bucket.
+
+        A convenience for the common case of one caller adding a tag or
+        two without needing a provider name of its own.  Two *different*
+        callers doing this concurrently still share this one bucket by
+        construction and can still overwrite each other; once that
+        matters, give each caller its own name and use
+        :py:meth:`exif_set_tags` instead.
+
+        Parameters
+        ----------
+        **tags : str
+            Tags to add or replace in the default bucket.  A value of
+            ``""`` drops that one tag from the default bucket, leaving
+            the rest of it, and every other provider, untouched.
+        """
+        current = dict(self._exif_providers.get(self._DEFAULT_EXIF_PROVIDER, {}))
+        current.update({name: str(value) for name, value in tags.items()})
+        self.exif_set_tags(
+            self._DEFAULT_EXIF_PROVIDER,
+            {name: value for name, value in current.items() if value},
+        )
+
     def exif_tags_for_frame(self, frame: np.ndarray) -> dict[str, str]:
         """Build the tags to write into the next encoded frame.
 
-        The override point for tagging.  A subclass with a GPS fix, a
-        gimbal angle or a mission identifier to attach should extend what
-        this returns; a caller with something simpler to add can put it
-        in :py:attr:`~CameraBase.exif_extra`, which is merged over the
-        result here and so wins on a clash.
+        The override point for tagging.  A subclass with a GPS fix or a
+        gimbal angle to attach on every frame should extend what this
+        returns; a caller or another piece of software adding metadata at
+        runtime should use :py:meth:`exif_set_tags` /
+        :py:meth:`exif_update` instead, which this merges in afterwards.
+
+        Providers are merged in over the built-ins in sorted-name order,
+        so the result does not depend on which provider happened to
+        register first — but two providers naming the *same* tag will
+        still resolve in that fixed order regardless, which is worth
+        avoiding by prefixing tag names with something distinguishing
+        rather than relying on.
 
         Dimensions are deliberately absent: the JPEG header already
         states them, and :py:meth:`_on_image_changed` reads them from
@@ -765,25 +932,10 @@ class Camera(CameraBase):
         if self.serial_number:
             tags["serial_number"] = self.serial_number
 
-        tags.update({str(k): str(v) for k, v in self.exif_extra.items()})
+        for provider in sorted(self._exif_providers):
+            tags.update(self._exif_providers[provider])
+
         return {name: value for name, value in tags.items() if value}
-
-    def exif_update(self, **tags: str) -> None:
-        """Merge tags into :py:attr:`~CameraBase.exif_extra`.
-
-        A convenience for the common case of adding one tag without
-        disturbing the others.  Takes effect on the next encoded frame.
-
-        Parameters
-        ----------
-        **tags : str
-            Tags to add or replace.  A value of ``""`` drops the tag.
-        """
-        merged = dict(self.exif_extra)
-        merged.update({name: str(value) for name, value in tags.items()})
-        # Reassigned rather than mutated: psygnal watches the attribute,
-        # not the dict, so an in-place update would publish nothing.
-        self.exif_extra = {name: value for name, value in merged.items() if value}
 
     def _tag(self, encoded: bytes, frame: np.ndarray) -> bytes:
         """Write this frame's tags into encoded image data.
@@ -830,11 +982,11 @@ class Camera(CameraBase):
         self.received_ratio = round(width / height, 4) if height else 0.0
 
         tags = exif.extract(image) if image else {}
-        self.exif_tags = tags
+        self._exif_tags = tags
         try:
-            self.exif_timestamp = float(tags.get(exif.TIMESTAMP_TAG, 0.0))
+            self._exif_timestamp = float(tags.get(exif.TIMESTAMP_TAG, 0.0))
         except ValueError:
-            self.exif_timestamp = 0.0
+            self._exif_timestamp = 0.0
 
     def _apply(self, capabilities: SourceCapabilities) -> None:
         """Copy what the source reported into the synced state.

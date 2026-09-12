@@ -154,8 +154,9 @@ cam.exif_timestamp  # Unix timestamp of the frame currently in cam.image
 
 `exif_tags` and `exif_timestamp` are read back *out of* `cam.image`, and
 so are `received_width`, `received_height` and `received_ratio`. None of
-them is sent over SpiriSynq. That is on purpose: SpiriSynq publishes each
-field independently and promises nothing about two of them arriving
+them is sent over SpiriSynq — they are properties, not synced fields, so
+there is nothing there *to* send. That is on purpose: SpiriSynq publishes
+each field independently and promises nothing about two of them arriving
 together, so a timestamp sent beside an image is a timestamp a peer can
 read against the wrong image. Travelling inside the JPEG, they cannot
 come apart from it — a peer that receives a frame fills them in for
@@ -167,9 +168,46 @@ mirror.exif_timestamp         # when the far end took it
 mirror.received_width         # what it actually sent
 ```
 
-To attach something the camera cannot know about, either set
-`exif_extra` (merged over the camera's own tags, so it wins on a clash)
-or override the method that builds them:
+### Multiple Tag Providers
+
+More than one piece of software may want to tag the same camera's
+frames — a logger, a telemetry service, a human poking at the debug UI.
+`exif_set_tags` gives each one its own namespace, so setting one never
+touches another's:
+
+```python
+cam.exif_set_tags("telemetry", {"battery": "88"})
+cam.exif_set_tags("logger", {"build": "42"})
+
+cam.exif_clear_tags("telemetry")   # only "battery" goes away
+```
+
+Calling `exif_set_tags` again for the same provider *replaces* that
+provider's tags rather than merging into them — drop a key by leaving it
+out next time. A value of `""` is kept rather than dropped, which is how
+a provider suppresses one of the built-in tags (say, omitting `source`
+from a frame headed somewhere public). Providers merge over the built-ins
+in sorted-name order, so the result does not depend on which one
+registered first; two providers naming the *same* tag still resolve in
+that order, which is worth avoiding with a distinguishing prefix rather
+than relying on.
+
+`exif_update(**tags)` is a shorthand for the common case of one caller
+adding a tag or two with no provider name of its own — it merges into a
+shared default bucket, and a value of `""` there removes just that tag:
+
+```python
+cam.exif_update(mission="probe-1")
+cam.exif_update(mission="")   # removes it; other tags untouched
+```
+
+Two *different* callers both using `exif_update` still share that one
+bucket and can still overwrite each other; once that matters, give each
+one a provider name and use `exif_set_tags` instead.
+
+To attach something the camera itself can compute, override the method
+that builds the built-in tags — this still gets whatever providers have
+set merged on top:
 
 ```python
 class SurveyCamera(Camera):

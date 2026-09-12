@@ -257,6 +257,40 @@ class TestOpenCVSourceLifecycle:
 
         assert source.read(SETTINGS) is None
 
+    def test_a_changed_resolution_is_reapplied_while_running(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """Lowering max_width/max_height must not wait for a restart.
+
+        The settings a running camera hands to read() come from live,
+        rebindable fields, so a value picked after start() has to reach
+        the device on the very next frame.
+        """
+        holder = fake_capture()
+        source = resolve_source("v4l:///dev/video0")
+        source.open(SETTINGS)
+        assert holder.capture is not None
+        holder.capture.properties.clear()
+
+        smaller = CaptureSettings(max_width=320, max_height=240, max_framerate=25)
+        source.read(smaller)
+
+        assert holder.capture.properties[cv2.CAP_PROP_FRAME_WIDTH] == 320
+        assert holder.capture.properties[cv2.CAP_PROP_FRAME_HEIGHT] == 240
+
+    def test_repeating_the_same_settings_does_not_reapply(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """An unchanged request should not re-touch the device every frame."""
+        holder = fake_capture()
+        source = resolve_source("v4l:///dev/video0")
+        source.open(SETTINGS)
+        assert holder.capture is not None
+        holder.capture.properties.clear()
+
+        source.read(SETTINGS)
+
+        assert holder.capture.properties == {}
 
 class TestNetworkSource:
     """Stream-specific behaviour."""

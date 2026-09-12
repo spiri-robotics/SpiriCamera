@@ -647,6 +647,22 @@ class TestCapabilities:
         assert cam.max_supported_height == 1080
         assert cam.max_supported_framerate == 60
 
+    def test_a_live_resolution_change_reaches_the_device(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """Lowering max_width while running must not need a restart."""
+        holder = fake_capture(width=1920, height=1080)
+        cam = camera("v4l:///dev/video0", max_width=1920, max_height=1080)
+        cam.start(background=False)
+        assert holder.capture is not None
+        holder.capture.properties.clear()
+
+        cam.max_width, cam.max_height = 320, 240
+        cam.read()
+
+        assert holder.capture.properties[cv2.CAP_PROP_FRAME_WIDTH] == 320
+        assert holder.capture.properties[cv2.CAP_PROP_FRAME_HEIGHT] == 240
+
     def test_unbounded_source_reports_none(self, camera: CameraFactory) -> None:
         """A rendered source advertises no ceiling."""
         cam = camera("testimage://", max_width=160, max_height=120)
@@ -734,8 +750,8 @@ class TestReceivedIsDerivedFromTheFrame:
             "received_width",
             "received_height",
             "received_ratio",
-            "exif_tags",
-            "exif_timestamp",
+            "_exif_tags",
+            "_exif_timestamp",
         }
 
         assert not skipped & Camera.valid_sync_paths()
@@ -744,7 +760,7 @@ class TestReceivedIsDerivedFromTheFrame:
         """Only the observations were skipped, not the requests."""
         paths = Camera.valid_sync_paths()
 
-        assert {"image", "max_width", "exif_enabled", "exif_extra"} <= paths
+        assert {"image", "max_width", "exif_enabled"} <= paths
 
 
 class TestFrameTags:
@@ -819,26 +835,143 @@ class TestFrameTags:
 
         assert cam.exif_tags["make"] == "Somebody Else"
 
-    def test_update_reassigns_rather_than_mutating(
-        self, camera: CameraFactory
-    ) -> None:
-        """psygnal watches the attribute, so the dict must be replaced."""
-        cam = camera("testimage://")
-        seen: list[dict[str, str]] = []
-        cam.events.exif_extra.connect(seen.append)
-
-        cam.exif_update(mission="probe-1")
-
-        assert seen == [{"mission": "probe-1"}]
-
     def test_update_drops_an_emptied_tag(self, camera: CameraFactory) -> None:
-        """An empty value is how a tag is removed."""
-        cam = camera("testimage://")
+        """An empty value is how exif_update removes a tag it added."""
+        cam = camera("testimage://", max_width=160, max_height=120)
         cam.exif_update(mission="probe-1", operator="alex")
+        cam.start(background=False)
 
         cam.exif_update(mission="")
+        cam.read()
 
-        assert cam.exif_extra == {"operator": "alex"}
+        assert "mission" not in cam.exif_tags
+        assert cam.exif_tags["operator"] == "alex"
+
+
+class TestExifProviders:
+    """Multiple pieces of software tagging the same camera's frames."""
+
+    def test_set_tags_is_visible_on_the_next_frame(
+        self, camera: CameraFactory
+    ) -> None:
+        """A provider's tags reach the frame without exif_update."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_set_tags("logger", {"mission": "probe-1"})
+        cam.start(background=False)
+
+        cam.read()
+
+        assert cam.exif_tags["mission"] == "probe-1"
+
+    def test_set_tags_replaces_rather_than_merges(
+        self, camera: CameraFactory
+    ) -> None:
+        """Calling it again for the same provider drops what it dropped."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.exif_set_tags("logger", {"a": "1", "b": "2"})
+
+        cam.exif_set_tags("logger", {"a": "1"})
+        cam.read()
+
+        assert "b" not in cam.exif_tags
+
+    def test_two_providers_do_not_clobber_each_other(
+        self, camera: CameraFactory
+    ) -> None:
+        """Setting one provider's tags must not touch another's."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.exif_set_tags("logger", {"mission": "probe-1"})
+
+        cam.exif_set_tags("telemetry", {"battery": "88"})
+        cam.read()
+
+        assert cam.exif_tags["mission"] == "probe-1"
+        assert cam.exif_tags["battery"] == "88"
+
+    def test_clearing_one_provider_leaves_the_other(
+        self, camera: CameraFactory
+    ) -> None:
+        """exif_clear_tags removes exactly one provider's bucket."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.exif_set_tags("logger", {"mission": "probe-1"})
+        cam.exif_set_tags("telemetry", {"battery": "88"})
+
+        cam.exif_clear_tags("logger")
+        cam.read()
+
+        assert "mission" not in cam.exif_tags
+        assert cam.exif_tags["battery"] == "88"
+
+    def test_clearing_an_unknown_provider_is_not_an_error(
+        self, camera: CameraFactory
+    ) -> None:
+        """Nothing to remove is not a failure."""
+        camera("testimage://").exif_clear_tags("nobody-set-this")
+
+    def test_an_empty_tag_set_clears_the_provider(
+        self, camera: CameraFactory
+    ) -> None:
+        """set_tags({}) reads the same as clear_tags."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_set_tags("logger", {"mission": "probe-1"})
+
+        cam.exif_set_tags("logger", {})
+
+        assert "logger" not in cam.exif_tag_providers()
+
+    def test_a_provider_can_suppress_a_builtin_tag(
+        self, camera: CameraFactory
+    ) -> None:
+        """Unlike exif_update, an empty value here is kept, not dropped.
+
+        exif_set_tags is how a provider blanks out something
+        exif_tags_for_frame would otherwise add on its own -- omitting
+        `source` from a frame headed somewhere public, say.
+        """
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.exif_set_tags("privacy", {"source": ""})
+        cam.start(background=False)
+
+        cam.read()
+
+        assert "source" not in cam.exif_tags
+
+    def test_providers_merge_in_sorted_order(self, camera: CameraFactory) -> None:
+        """A clash resolves the same way regardless of call order."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.exif_set_tags("zulu", {"clash": "from zulu"})
+        cam.exif_set_tags("alpha", {"clash": "from alpha"})
+
+        cam.read()
+
+        assert cam.exif_tags["clash"] == "from zulu"
+
+    def test_exif_tag_providers_lists_active_providers(
+        self, camera: CameraFactory
+    ) -> None:
+        """Introspection for whoever is debugging a clash."""
+        cam = camera("testimage://")
+        cam.exif_set_tags("logger", {"mission": "probe-1"})
+
+        assert cam.exif_tag_providers() == frozenset({"logger"})
+
+    def test_exif_update_and_exif_set_tags_share_no_bucket(
+        self, camera: CameraFactory
+    ) -> None:
+        """exif_update's default bucket is its own provider, unnamed."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.exif_update(mission="from update")
+
+        cam.exif_set_tags("logger", {"mission": "from logger"})
+        cam.read()
+
+        # Sorted order: "" (exif_update's bucket) sorts before "logger".
+        assert cam.exif_tags["mission"] == "from logger"
 
     def test_disabling_leaves_frames_untagged(self, camera: CameraFactory) -> None:
         """Off means byte-identical frames for an unchanging scene."""
@@ -910,3 +1043,103 @@ class TestFrameTags:
 
         assert cam.exif_timestamp == 0.0
         assert cam.exif_tags["timestamp"] == "not a number"
+
+
+class TestRehydrate:
+    """Reconstructing a camera from a full SpiriSynq rehydrate reply.
+
+    Exercised as a pure local YAML round trip -- dump, then load back
+    through the same __setstate__ -> __init__(**state) path a real
+    ``sr_rehydrate`` reply goes through -- so it needs no live network,
+    matching the rest of this suite.
+    """
+
+    def test_round_trips_without_crashing(
+        self, camera: CameraFactory, synq_session: object
+    ) -> None:
+        """__init__ must accept every field a rehydrate reply carries.
+
+        Regression test: Camera's custom __init__ only forwarded a fixed
+        allowlist of kwargs, so SyncableObject.__setstate__ calling
+        self.__init__(**state) with the rest of CameraBase's fields
+        (vendor, running, status, image, exif_enabled, the resolved
+        source, ...) raised TypeError for any of them.
+        """
+        cam = camera("testimage://", quality=55, max_width=160, max_height=120)
+        cam.synq_authoritive = True
+        cam.sync()
+        cam.start(background=False)
+        cam.exif_update(mission="probe-1")
+        cam.read()
+
+        restored = synq_session.type_registry.load(cam.sync_dumps())  # type: ignore[attr-defined]
+
+        assert isinstance(restored, Camera)
+
+    def test_preserves_status_and_running(
+        self, camera: CameraFactory, synq_session: object
+    ) -> None:
+        """A field's value must survive the round trip, not just its name."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.synq_authoritive = True
+        cam.sync()
+        cam.start(background=False)
+        cam.read()
+
+        restored = synq_session.type_registry.load(cam.sync_dumps())  # type: ignore[attr-defined]
+
+        assert restored.running is True
+        assert restored.status == STATUS_RUNNING
+        assert restored.quality == cam.quality
+        assert restored.max_width == cam.max_width
+
+    def test_does_not_open_a_source_locally(
+        self, camera: CameraFactory, synq_session: object
+    ) -> None:
+        """A rehydrated object is a passive mirror, not a second capturer.
+
+        Re-resolving source_str on this machine could disagree with the
+        source the reply already carries -- a device path meaningful only
+        on the authoritative machine, for one -- so it must not happen.
+        """
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.synq_authoritive = True
+        cam.sync()
+        cam.start(background=False)
+        cam.read()
+
+        restored = synq_session.type_registry.load(cam.sync_dumps())  # type: ignore[attr-defined]
+
+        assert restored.handler is None
+        assert restored.source.scheme == "testimage"
+
+    def test_the_frame_and_its_tags_survive(
+        self, camera: CameraFactory, synq_session: object
+    ) -> None:
+        """The tags and dimensions come back correctly primed, not empty.
+
+        Regression test: these are derived by an event handler connected
+        after CameraBase.__init__ already set `image` from the reply, so
+        without an explicit priming call they stayed at their defaults.
+        """
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.synq_authoritive = True
+        cam.sync()
+        cam.start(background=False)
+        cam.exif_update(mission="probe-1")
+        cam.read()
+
+        restored = synq_session.type_registry.load(cam.sync_dumps())  # type: ignore[attr-defined]
+
+        assert restored.exif_tags == cam.exif_tags
+        assert restored.exif_timestamp == cam.exif_timestamp
+        assert (restored.received_width, restored.received_height) == (160, 120)
+
+    def test_a_normal_construction_is_unaffected(
+        self, camera: CameraFactory
+    ) -> None:
+        """The source=/quality=/etc convenience API still just works."""
+        cam = camera("testimage://", quality=42, max_width=160, max_height=120)
+
+        assert cam.quality == 42
+        assert cam.handler is not None

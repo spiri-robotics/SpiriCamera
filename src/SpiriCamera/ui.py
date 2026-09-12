@@ -262,6 +262,15 @@ def _format_age(seconds: float) -> str:
 #: handed out twice is one.
 _last_counted: bytes | None = None
 
+#: Guards the check-and-set on ``_last_counted``.
+#:
+#: Two clients polling at once can both land in ``serve_frame`` between
+#: the read and the write, both see the old value, and both count the
+#: same frame -- doubling the reported fps and KiB/s for as long as a
+#: second tab stays open. The lock closes that window rather than just
+#: documenting it.
+_last_counted_lock = threading.Lock()
+
 
 @app.get(FRAME_ROUTE)
 def serve_frame() -> Response:
@@ -283,8 +292,10 @@ def serve_frame() -> Response:
     # in `image`, and any browser still polling would otherwise have that
     # one frame counted over and over -- reporting a busy 30fps for a
     # camera that has produced nothing since it was stopped.
-    if frame is not _last_counted:
+    with _last_counted_lock:
+        is_new = frame is not _last_counted
         _last_counted = frame
+    if is_new:
         frame_meter.record(len(frame), _frame_timestamp(frame))
 
     return Response(
@@ -314,11 +325,22 @@ def _format_tags(tags: dict[str, str]) -> str:
     return '\n'.join(f'{name}: {value}' for name, value in sorted(tags.items()))
 
 
+#: Provider name this page's own "Extra Tags" box tags under.
+#:
+#: A name of its own, rather than the default bucket exif_update() uses,
+#: so a human poking at this debug field never clobbers tags some other
+#: piece of software attached with exif_set_tags(); see
+#: Camera.exif_set_tags for the general mechanism.
+_UI_EXIF_PROVIDER = 'ui'
+
+
 def _apply_extra_tags(camera: Camera, text: str) -> None:
     """Parse ``name=value`` pairs from a text field onto the camera.
 
     Ignores anything without an ``=``, so a half-typed entry does not
-    throw away the tags already set.
+    throw away the tags already set.  Replaces only this page's own
+    provider bucket -- see :py:data:`_UI_EXIF_PROVIDER` -- so it can
+    never erase a tag another piece of software is managing.
 
     Parameters
     ----------
@@ -332,7 +354,7 @@ def _apply_extra_tags(camera: Camera, text: str) -> None:
         name, separator, value = pair.partition('=')
         if separator and name.strip():
             tags[name.strip()] = value.strip()
-    camera.exif_extra = tags
+    camera.exif_set_tags(_UI_EXIF_PROVIDER, tags)
 
 
 @ui.page('/')

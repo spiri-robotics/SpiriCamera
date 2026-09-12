@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 import time
 
 import cv2
@@ -167,32 +168,57 @@ class TestExtraTagEntry:
     @pytest.fixture
     def cam(self) -> Camera:
         """A camera that touches neither a device nor the network."""
-        return Camera("testimage://", synq_auto_start=False)
+        return Camera("testimage://", max_width=160, max_height=120,
+                     synq_auto_start=False)
+
+    def _tagged(self, cam: Camera) -> dict[str, str]:
+        """The tags that would land on the next frame."""
+        cam.start(background=False)
+        cam.read()
+        return cam.exif_tags
 
     def test_parses_pairs(self, cam: Camera) -> None:
         """Comma-separated name=value, whitespace forgiven."""
         camera_ui._apply_extra_tags(cam, " mission=probe-1, operator = alex ")
 
-        assert cam.exif_extra == {"mission": "probe-1", "operator": "alex"}
+        tags = self._tagged(cam)
+        assert tags["mission"] == "probe-1"
+        assert tags["operator"] == "alex"
 
     def test_ignores_a_fragment_without_a_separator(self, cam: Camera) -> None:
         """Typing is debounced, not atomic; half an entry is not a tag."""
         camera_ui._apply_extra_tags(cam, "mission=probe-1, operat")
 
-        assert cam.exif_extra == {"mission": "probe-1"}
+        tags = self._tagged(cam)
+        assert tags["mission"] == "probe-1"
+        assert "operat" not in tags
 
     def test_empty_field_clears(self, cam: Camera) -> None:
         """Deleting the text is how the tags are removed."""
         camera_ui._apply_extra_tags(cam, "mission=probe-1")
         camera_ui._apply_extra_tags(cam, "")
 
-        assert cam.exif_extra == {}
+        assert "mission" not in self._tagged(cam)
+        assert camera_ui._UI_EXIF_PROVIDER not in cam.exif_tag_providers()
 
     def test_an_empty_value_is_kept(self, cam: Camera) -> None:
-        """``name=`` is a tag being typed, not a tag being dropped."""
+        """``name=`` is a tag being typed, not a tag being dropped.
+
+        exif_set_tags (unlike exif_update) keeps an empty value rather
+        than filtering it, precisely so a still-being-typed entry is
+        visible and a deliberate blank can suppress a built-in tag.
+        """
         camera_ui._apply_extra_tags(cam, "mission=")
 
-        assert cam.exif_extra == {"mission": ""}
+        assert cam.exif_tags_for_frame(None).get("mission", "") == ""
+
+    def test_does_not_touch_another_providers_tags(self, cam: Camera) -> None:
+        """The debug box only ever edits its own bucket."""
+        cam.exif_set_tags("logger", {"build": "42"})
+
+        camera_ui._apply_extra_tags(cam, "mission=probe-1")
+
+        assert self._tagged(cam)["build"] == "42"
 
 
 class TestFrameAge:
@@ -317,6 +343,39 @@ class TestFrameAge:
 
 class TestStaleFrames:
     """A camera that has stopped must not read as a busy one."""
+
+    def test_concurrent_polls_of_one_frame_count_once(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Two tabs polling at once must not double-count a single frame.
+
+        The check-and-set on ``_last_counted`` is a classic race: without
+        a lock, two threads can both read the old value before either
+        writes the new one, and both decide the frame is new.
+        """
+        cam = Camera("testimage://", max_width=160, max_height=120,
+                     synq_auto_start=False)
+        monkeypatch.setattr(camera_ui, "_camera", cam)
+        cam.start(background=False)
+        cam.read()
+
+        barrier = threading.Barrier(2)
+
+        def poll() -> None:
+            barrier.wait(timeout=2)
+            camera_ui.serve_frame()
+
+        threads = [threading.Thread(target=poll) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        frames_per_second, _ = camera_ui.frame_meter.rates()
+        # rates() needs >=2 samples to report anything at all; a double
+        # count would still show as exactly one sample either way, so
+        # assert on the sample count directly instead.
+        assert len(camera_ui.frame_meter._samples) == 1
 
     def test_re_serving_one_frame_counts_once(
         self, monkeypatch: pytest.MonkeyPatch
