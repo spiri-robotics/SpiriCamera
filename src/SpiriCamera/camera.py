@@ -428,6 +428,11 @@ class Camera(CameraBase):
         self._overlay_widgets: dict[str, overlay.HudWidget] = {}
         self._overlay_objects: dict[str, object] = {}
         self._overlay_complaints: dict[str, str] = {}
+        # Per-widget declared_objects()/resolve_objects() results, cached
+        # until that widget's own svg_template signal says it changed --
+        # see OverlayMixin._overlay_invalidate_widget_cache.
+        self._overlay_declared_cache: dict[str, dict[str, str]] = {}
+        self._overlay_resolved_cache: dict[str, dict[str, str]] = {}
 
         if is_rehydrate:
             logger.debug(

@@ -1360,3 +1360,57 @@ class TestOverlays:
             )
         finally:
             widget.close()
+
+    def test_widget_cache_invalidated_on_template_change(
+        self, camera: CameraFactory
+    ) -> None:
+        """declared_objects()/resolve_objects() are cached per mirrored
+        widget, keyed on that widget's own ``events.svg_template`` signal
+        -- not recomputed from the raw template string on every frame.
+
+        A stale cache would keep resolving `objects.a`/`objects.b` at
+        whichever aliases the *first* template declared, silently
+        ignoring a live template edit that changes them.
+        """
+        from SpiriCamera.overlay import HudWidget
+
+        widget = HudWidget(
+            synq_topic="overlays/cache_demo",
+            synq_authoritive=True,
+            svg_template=(
+                "{# object: a = some/topic #}"
+                '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1">'
+                "<text>{{ objects.a.value }}</text></svg>"
+            ),
+        )
+        try:
+            cam = camera(
+                "testimage://",
+                max_width=160,
+                max_height=120,
+                overlay_widgets={widget.synq_absolute_path: {}},
+                synq_auto_start=True,
+            )
+            cam.start(background=False)
+            cam.read()  # populates the cache
+
+            topic = widget.synq_absolute_path
+            first = cam._overlay_resolved_cache[topic]
+            assert first == {"a": "some/topic"}
+            # Same object back, not a freshly re-parsed dict -- proves
+            # this call actually hit the cache.
+            mirror = cam._overlay_widgets[topic]
+            assert cam._cached_resolve_objects(topic, mirror) is first
+
+            widget.svg_template = (
+                "{# object: b = other/topic #}"
+                '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1">'
+                "<text>{{ objects.b.value }}</text></svg>"
+            )
+
+            assert wait_for(lambda: topic not in cam._overlay_resolved_cache, timeout=3.0)
+
+            cam.read()
+            assert cam._overlay_resolved_cache[topic] == {"b": "other/topic"}
+        finally:
+            widget.close()

@@ -67,6 +67,7 @@ constant fraction of the frame across resolutions.
 
 from __future__ import annotations
 
+import functools
 import importlib.resources
 import math
 import re
@@ -534,7 +535,7 @@ def camera_metrics_widget(camera: "Camera", *, anchor: str = "bottom_left") -> H
 
     Parameters
     ----------
-    camera : Camera
+    camera : SpiriCamera.camera.Camera
         The camera to describe.
     anchor : str
         Where to anchor the widget; see :py:attr:`HudWidget.anchor`.
@@ -578,8 +579,8 @@ class OverlayMixin:
 
     The only synced field is :py:attr:`overlay_widgets`; every other
     piece of state this needs (mirrored widgets, mirrored data-source
-    objects, per-widget error de-duplication) is plain instance state
-    the host class sets up itself -- see
+    objects, per-widget error de-duplication, cached template-parse
+    results) is plain instance state the host class sets up itself -- see
     :py:class:`~SpiriCamera.camera.Camera`'s constructor, which does the
     same for its own EXIF tag providers. This mixin has no
     ``__post_init__`` of its own and starts nothing by itself; the host
@@ -638,6 +639,7 @@ class OverlayMixin:
         for topic in list(self._overlay_widgets):
             if topic not in wanted:
                 self._overlay_widgets.pop(topic).close()
+                self._overlay_invalidate_widget_cache(topic)
 
         for topic in wanted:
             if topic in self._overlay_widgets:
@@ -649,8 +651,52 @@ class OverlayMixin:
                 continue
             self._overlay_widgets[topic] = widget
             self._overlay_complaints.pop(topic, None)
+            # Population is lazy (`_cached_declared_objects`/
+            # `_cached_resolve_objects`), but invalidation has to be
+            # eager: this is the only place that ever sees the widget's
+            # *old* template, right before a remote edit can replace it.
+            widget.events.svg_template.connect(
+                functools.partial(self._overlay_invalidate_widget_cache, topic)
+            )
 
         self._overlay_sync_objects()
+
+    def _overlay_invalidate_widget_cache(self, topic: str, *_args: object) -> None:
+        """Drop a widget's cached template-parse results.
+
+        Connected to that widget's own ``events.svg_template`` signal in
+        :py:meth:`_overlay_sync_widgets` -- a widget's template is edited
+        far less often than it is rendered, so :py:func:`declared_objects`
+        and :py:func:`resolve_objects` (a regex scan plus a MiniJinja
+        static-analysis pass) are worth caching per widget rather than
+        re-running every frame; this is what keeps that cache correct
+        across a live template edit instead of serving stale aliases.
+        """
+        self._overlay_declared_cache.pop(topic, None)
+        self._overlay_resolved_cache.pop(topic, None)
+
+    def _cached_declared_objects(self, topic: str, widget: HudWidget) -> dict[str, str]:
+        """:py:func:`declared_objects`, cached until ``widget``'s template
+        changes -- see :py:meth:`_overlay_invalidate_widget_cache`."""
+        cached = self._overlay_declared_cache.get(topic)
+        if cached is None:
+            cached = declared_objects(widget.svg_template)
+            self._overlay_declared_cache[topic] = cached
+        return cached
+
+    def _cached_resolve_objects(self, topic: str, widget: HudWidget) -> dict[str, str]:
+        """:py:func:`resolve_objects`, cached until ``widget``'s template
+        changes -- see :py:meth:`_overlay_invalidate_widget_cache`.
+
+        Deliberately does not cache an :py:exc:`OverlayError` -- a
+        template with a missing declaration should keep failing loudly
+        (via :py:meth:`_overlay_complain`) on every call, not just once.
+        """
+        cached = self._overlay_resolved_cache.get(topic)
+        if cached is None:
+            cached = resolve_objects(widget.svg_template)
+            self._overlay_resolved_cache[topic] = cached
+        return cached
 
     def _overlay_sync_objects(self) -> None:
         """Reconcile mirrored data-source objects against every mirrored
@@ -664,7 +710,9 @@ class OverlayMixin:
         for widget_topic, widget in self._overlay_widgets.items():
             usage = self.overlay_widgets.get(widget_topic, {})
             overrides = usage.get("bindings", {})
-            for alias, default_topic in declared_objects(widget.svg_template).items():
+            for alias, default_topic in self._cached_declared_objects(
+                widget_topic, widget
+            ).items():
                 object_topic = overrides.get(alias) or default_topic
                 if object_topic:
                     wanted_topics.add(object_topic)
@@ -695,7 +743,7 @@ class OverlayMixin:
         overrides = self.overlay_widgets.get(widget_topic, {}).get("bindings", {})
 
         values: dict[str, dict[str, object]] = {}
-        for alias, default_topic in resolve_objects(widget.svg_template).items():
+        for alias, default_topic in self._cached_resolve_objects(widget_topic, widget).items():
             object_topic = overrides.get(alias) or default_topic
             obj = self._overlay_objects.get(object_topic) if object_topic else None
             complaint_key = f"{widget_topic}#{alias}"
@@ -804,6 +852,8 @@ class OverlayMixin:
         for obj in self._overlay_objects.values():
             obj.close()
         self._overlay_objects.clear()
+        self._overlay_declared_cache.clear()
+        self._overlay_resolved_cache.clear()
 
 
 __all__ = [
