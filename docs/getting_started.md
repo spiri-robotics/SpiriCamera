@@ -30,39 +30,65 @@ Or create a `.env` file in your project root. See the {ref}`api-reference` for a
 
 ## Camera Usage
 
-SpiriCamera provides a :py:class:`~SpiriCamera.Camera` class for live frame capture. A camera owns the capture lifecycle, encoding, and publication; the protocol detail of reaching a device lives in the source handlers under :py:mod:`SpiriCamera.sources`.
+SpiriCamera provides a :py:class:`~SpiriCamera.Camera` class for live frame capture. A camera is a `SyncableObject`: it behaves like a small daemon that owns a device, captures in the background, and publishes each frame over SpiriSynq — not a handle you construct, read from synchronously, and throw away. The protocol detail of reaching a device lives in the source handlers under :py:mod:`SpiriCamera.sources`.
 
-### Basic Usage
+There are two roles, and most code only ever needs one of them:
+
+- **Authoritative** — the process that actually owns the device (typically `SpiriCamera run`, or something like it). It constructs a `Camera` normally, `start()`s it, and lets the background thread do the work.
+- **Mirror** — everyone else. Rather than constructing a second `Camera` pointed at the same device, get a handle onto the *existing* one over SpiriSynq and read its synced fields as they arrive.
+
+### Consuming an existing camera (the common case)
+
+Attach to a camera another process is already running by its SpiriSynq topic:
 
 ```python
 from SpiriCamera import Camera
 
-# Create a camera reader
+cam = Camera.from_topic("some-host/dev-video0")
+```
+
+This gives you a mirror: same synced fields (`image`, `status`, `running`, ...), kept up to date by SpiriSynq, but it never opens a device locally — it exists to observe, not to capture. There is no `read()` to call. Get frames one of two ways:
+
+**Poll**, when you're already on a timer or a render loop (this is what the debug UI does, ticking in step with `max_framerate`):
+
+```python
+frame_jpeg = cam.image   # the most recent frame, updated for you in the background
+```
+
+**Or subscribe**, when you want to react the moment a new frame (or any other field) lands, via the psygnal event every synced field gets:
+
+```python
+def on_frame(frame_jpeg: bytes) -> None:
+    ...
+
+cam.events.image.connect(on_frame)
+```
+
+Both approaches work the same way whether `cam` is a mirror or the authoritative camera itself — `image` is just a field, and it changes the same way either way.
+
+### Running a device yourself
+
+If your process *is* the one meant to own the device — a standalone script, or something like the `SpiriCamera run` CLI command — construct a `Camera` normally and start it:
+
+```python
+from SpiriCamera import Camera
+
 cam = Camera("/dev/video0", quality=85)
 
 # Start capture: opens the device and begins a background capture
 # thread that publishes each frame to cam.image
 cam.start()
 
-# The most recent encoded frame, updated in the background
-frame_jpeg = cam.image
-
-# Or drive frames yourself
+# Or drive frames yourself instead of running the background thread
+cam.stop()
+cam.start(background=False)
 frame_jpeg = cam.read()          # capture, encode, publish, return bytes
 frame_bgr = cam.read_frame()     # the raw BGR numpy array
 
-# Stop when done
 cam.stop()
 ```
 
-A camera is also a context manager:
-
-```python
-with Camera("testimage://", max_width=1280, max_height=720) as cam:
-    frame_jpeg = cam.read()
-```
-
-Pass `background=False` to `start()` to open the device without a capture thread, when you want to drive `read()` yourself.
+Pass `background=False` to `start()` to open the device without a capture thread, when you want to drive `read()` yourself — useful for one-off scripts and tests, not for a long-running consumer. Don't reach for this from a service that merely wants another process's frames; that's what `Camera.from_topic()` plus polling or `cam.events.image.connect()` is for.
 
 ### Inspecting a Source
 

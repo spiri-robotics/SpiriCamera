@@ -20,6 +20,7 @@ from importlib.metadata import PackageNotFoundError, version
 import cv2
 import numpy as np
 from loguru import logger
+from SpiriSynq.remote_callables import remote_method
 from SpiriSynq.syncable_objects import SyncableObject
 
 from SpiriCamera import exif
@@ -255,6 +256,14 @@ class Camera(CameraBase):
 
         with Camera("testimage://", max_width=1280, max_height=720) as cam:
             frame_bytes = cam.read()
+
+    This is the *authoritative* role: actually owning and driving a
+    device. Code that merely wants another process's frames should not
+    construct a second ``Camera`` this way — it should mirror the
+    existing one with :py:meth:`from_topic` and either poll
+    :py:attr:`~CameraBase.image` or connect to its psygnal event
+    (``cam.events.image.connect(...)``); see the "Consuming an existing
+    camera" section of the getting-started guide.
 
     While running, a background thread captures at
     :py:attr:`~CameraBase.max_framerate` and assigns each encoded frame
@@ -626,6 +635,32 @@ class Camera(CameraBase):
 
     def __exit__(self, *exc_info: object) -> None:
         self.stop()
+
+    @remote_method()
+    def webrtc_offer(self, sdp: str, type: str = "offer") -> dict[str, str]:
+        """Negotiate a WebRTC session publishing this camera's frames.
+
+        The zenoh-native counterpart to :py:mod:`SpiriCamera.whep`'s
+        HTTP route: both end up in
+        :py:func:`SpiriCamera.webrtc.negotiate_sync`, so a viewer
+        reached either way gets the same video track and tags channel.
+
+        Parameters
+        ----------
+        sdp : str
+            The remote peer's SDP offer.
+        type : str
+            The offer's SDP type, almost always ``"offer"``.
+
+        Returns
+        -------
+        dict[str, str]
+            ``{"session_id": ..., "sdp": ..., "type": "answer"}``.
+        """
+        from SpiriCamera import webrtc  # local: keeps this module aiortc-free
+
+        session_id, answer_sdp, answer_type = webrtc.negotiate_sync(self, sdp, type)
+        return {"session_id": session_id, "sdp": answer_sdp, "type": answer_type}
 
     # ------------------------------------------------------------------
     # Capture

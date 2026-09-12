@@ -199,5 +199,40 @@ def capture(
         raise typer.Exit(1)
 
 
+@app.command()
+def whep_serve(
+    source: SourceArgument = "",
+    host: Annotated[str, typer.Option(help="Address to bind")] = "0.0.0.0",
+    port: Annotated[int, typer.Option(help="Port to bind")] = 8889,
+) -> None:
+    """Run a camera and expose it for WHEP playback over HTTP."""
+    import uvicorn
+
+    from SpiriCamera.whep import create_whep_app
+
+    source = _resolve_source(source)
+    settings = get_settings()
+
+    cam = Camera(
+        source=source,
+        quality=settings.quality,
+        max_width=settings.frame_width,
+        max_height=settings.frame_height,
+        max_framerate=settings.framerate,
+    )
+
+    try:
+        cam.start()
+    except CameraError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1)
+
+    logger.info(f"Serving {cam.synq_topic} for WHEP on http://{host}:{port}/whep")
+    try:
+        uvicorn.run(create_whep_app(lambda: cam), host=host, port=port)
+    finally:
+        cam.stop()
+
+
 if __name__ == "__main__":
     app()
