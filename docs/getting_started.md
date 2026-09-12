@@ -30,7 +30,7 @@ Or create a `.env` file in your project root. See the {ref}`api-reference` for a
 
 ## Camera Usage
 
-SpiriCamera provides a :py:class:`~SpiriCamera.Camera` class for live frame capture. A camera is a `SyncableObject`: it behaves like a small daemon that owns a device, captures in the background, and publishes each frame over SpiriSynq — not a handle you construct, read from synchronously, and throw away. The protocol detail of reaching a device lives in the source handlers under :py:mod:`SpiriCamera.sources`.
+SpiriCamera provides a {py:class}`~SpiriCamera.Camera` class for live frame capture. A camera is a `SyncableObject`: it behaves like a small daemon that owns a device, captures in the background, and publishes each frame over SpiriSynq — not a handle you construct, read from synchronously, and throw away. The protocol detail of reaching a device lives in the source handlers under {py:mod}`SpiriCamera.sources`.
 
 There are two roles, and most code only ever needs one of them:
 
@@ -68,27 +68,27 @@ Both approaches work the same way whether `cam` is a mirror or the authoritative
 
 ### Running a device yourself
 
-If your process *is* the one meant to own the device — a standalone script, or something like the `SpiriCamera run` CLI command — construct a `Camera` normally and start it:
+If your process *is* the one meant to own the device — a standalone script, or something like the `SpiriCamera run` CLI command — construct a `Camera` normally and start it. Leave `start()` on its default `background=True`: the capture thread runs its own loop, paced to `max_framerate`, for as long as the camera is running. Don't drive it frame-at-a-time yourself — a `Camera` is meant to be treated like a small daemon, not a handle you poll by calling `read()` in your own loop.
 
 ```python
 from SpiriCamera import Camera
 
 cam = Camera("/dev/video0", quality=85)
+cam.start()               # opens the device, begins the background capture thread
 
-# Start capture: opens the device and begins a background capture
-# thread that publishes each frame to cam.image
-cam.start()
-
-# Or drive frames yourself instead of running the background thread
-cam.stop()
-cam.start(background=False)
-frame_jpeg = cam.read()          # capture, encode, publish, return bytes
-frame_bgr = cam.read_frame()     # the raw BGR numpy array
+frame_jpeg = cam.image    # whatever the background thread has captured so far
 
 cam.stop()
 ```
 
-Pass `background=False` to `start()` to open the device without a capture thread, when you want to drive `read()` yourself — useful for one-off scripts and tests, not for a long-running consumer. Don't reach for this from a service that merely wants another process's frames; that's what `Camera.from_topic()` plus polling or `cam.events.image.connect()` is for.
+or as a context manager, which starts on entry and stops on exit:
+
+```python
+with Camera("/dev/video0", quality=85) as cam:
+    frame_jpeg = cam.image
+```
+
+To change the rate frames are captured at, set `cam.max_framerate` (live — takes effect on the next frame, no restart needed) rather than calling `read()` less often. `start(background=False)` exists — it opens the device without the capture thread, leaving you to call `read()` yourself — but that's an edge case for tests and one-off scripts, not the pattern to reach for; ordinary code, including anything long-running, should stay on the default background thread and read `cam.image` or connect to `cam.events.image`.
 
 ### Inspecting a Source
 
@@ -266,7 +266,7 @@ export SPIRICAMERA_FRAME_HEIGHT=720 # Capture height
 export SPIRICAMERA_FRAMERATE=30     # Capture framerate
 ```
 
-Or passed directly to the :py:class:`~SpiriCamera.Camera` constructor:
+Or passed directly to the {py:class}`~SpiriCamera.Camera` constructor:
 
 ```python
 cam = Camera(

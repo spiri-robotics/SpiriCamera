@@ -248,14 +248,24 @@ class Camera(CameraBase):
     Usage::
 
         cam = Camera("/dev/video0", quality=85)
-        cam.start()
-        frame_bytes = cam.read()    # encoded bytes, also on cam.image
+        cam.start()                 # begins the background capture thread
+        frame_bytes = cam.image     # whatever it has captured so far
         cam.stop()
 
-    or as a context manager::
+    or as a context manager, which starts on entry and stops on exit::
 
         with Camera("testimage://", max_width=1280, max_height=720) as cam:
-            frame_bytes = cam.read()
+            frame_bytes = cam.image
+
+    Treat a running ``Camera`` like a small daemon, not a handle to poll
+    by calling :py:meth:`read` yourself: leave ``start()`` on its default
+    ``background=True`` and let the capture thread run its own loop,
+    paced to :py:attr:`~CameraBase.max_framerate`. To change the rate,
+    set ``max_framerate`` — it is live and takes effect on the next
+    frame — rather than calling :py:meth:`read` less often.
+    ``start(background=False)`` exists for scripted, frame-at-a-time use
+    (tests, one-off captures); it is not the pattern for anything
+    long-running.
 
     This is the *authoritative* role: actually owning and driving a
     device. Code that merely wants another process's frames should not
