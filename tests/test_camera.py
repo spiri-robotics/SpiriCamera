@@ -1249,6 +1249,47 @@ class TestOverlays:
         finally:
             widget.close()
 
+    def test_client_render_toggle_skips_baking_in_the_widget(
+        self, camera: CameraFactory
+    ) -> None:
+        """`overlay_client_render` set means the browser is expected to
+        render the widget itself -- the server-side frame stays plain."""
+        from SpiriCamera.overlay import HudWidget
+
+        widget = HudWidget(
+            synq_topic="overlays/client_demo",
+            synq_authoritive=True,
+            svg_template=(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">'
+                '<rect width="20" height="20" fill="red"/></svg>'
+            ),
+            anchor="top_left",
+        )
+        try:
+            cam = camera(
+                "testimage://",
+                max_width=160,
+                max_height=120,
+                overlay_widgets={widget.synq_absolute_path: {}},
+                overlay_client_render=True,
+                synq_auto_start=True,
+            )
+            cam.start(background=False)
+
+            data = cam.read()
+            decoded = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+
+            # No red square baked in -- testimage's own content, not the
+            # overlay, is what a plain-decoded frame shows at (5, 5).
+            blue, green, red = (int(c) for c in decoded[5, 5])
+            assert not (red > 200 and blue < 60 and green < 60)
+
+            markup = cam.render_overlays_for_client(cam.received_width, cam.received_height)
+            assert 'transform="translate(0,0)"' in markup
+            assert 'fill="red"' in markup
+        finally:
+            widget.close()
+
     def test_unresolvable_topic_does_not_stop_frames(
         self, camera: CameraFactory
     ) -> None:

@@ -790,7 +790,8 @@ class Camera(CameraBase):
                 )
             return self.image
 
-        frame = self._render_overlays(frame)
+        if not self.overlay_client_render:
+            frame = self._render_overlays(frame)
         encoded = self._tag(self._encode(frame), frame)
         self.image = encoded
         return encoded

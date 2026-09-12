@@ -9,8 +9,8 @@ published wherever its author runs (a UI panel, an ML detector, ...), and
 
 A widget's SVG is templated with MiniJinja against three namespaces:
 ``exif`` (the current frame's tags, see :py:mod:`SpiriCamera.exif`),
-``frame`` (the current frame's actual, as-received width/height/framerate,
-plus a render-time Unix timestamp -- see :py:attr:`FRAME_NAME`), and
+``frame`` (the current frame's actual, as-received width/height/framerate
+-- see :py:attr:`FRAME_NAME`), and
 ``objects`` (the latest field values of whatever other SpiriSynq objects
 the widget declares for itself). ``frame`` exists alongside ``objects``
 rather than folded into it because these values -- what the *rendered*
@@ -63,6 +63,19 @@ regardless of the camera's resolution. Scaling a small raster up to fit a
 4K frame (or down to fit a low-res one) would either blur the text or
 make it illegible -- crisp, fixed-size text was chosen over staying a
 constant fraction of the frame across resolutions.
+
+The one deliberate exception is a root ``<svg>`` whose ``width`` and
+``height`` are *both* percentages (``width="20%" height="20%"``): that
+scales the whole widget, preserving its own aspect ratio, to fit within
+that percentage of the frame being rendered onto -- see
+:py:func:`rasterize`. This is opt-in, not a default: a widget author who
+wants "always a fifth of the picture, whatever that picture's
+resolution" now has a way to say so, alongside the natural-pixel-size
+behaviour above, which stays the default for a plain ``width="260"``.
+Which is right depends on the widget -- fixed-size text and a HUD panel
+generally want to stay crisp and constant-sized; a logo, icon, or other
+graphic that is meant to track the frame's proportions wants percentage
+sizing instead.
 """
 
 from __future__ import annotations
@@ -71,7 +84,6 @@ import functools
 import importlib.resources
 import math
 import re
-import time
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -117,8 +129,7 @@ OBJECTS_NAME = "objects"
 EXIF_NAME = "exif"
 
 #: Top-level template name the current frame's actual, as-received
-#: ``width``/``height``/``framerate``, plus the wall-clock ``timestamp``
-#: (Unix seconds) it is being rendered at, are exposed under, e.g.
+#: ``width``/``height``/``framerate`` are exposed under, e.g.
 #: ``{{ frame.width }}x{{ frame.height }}``. See the module docstring for
 #: why these are injected directly rather than reached through ``objects``.
 FRAME_NAME = "frame"
@@ -341,9 +352,9 @@ def render_svg(
         The current frame's tags, exposed as ``{{ exif.* }}``.
     frame_info : Mapping[str, object]
         The current frame's actual ``width``/``height``/``framerate``,
-        plus a render-time ``timestamp``, exposed as ``{{ frame.* }}``.
-        See :py:attr:`FRAME_NAME` and the module docstring for why these
-        are injected directly instead of being reached through ``objects``.
+        exposed as ``{{ frame.* }}``. See :py:attr:`FRAME_NAME` and the
+        module docstring for why these are injected directly instead of
+        being reached through ``objects``.
 
     Returns
     -------
@@ -372,17 +383,166 @@ def render_svg(
         raise OverlayError(f"could not render overlay template: {exc}") from exc
 
 
-def rasterize(svg: str) -> np.ndarray:
-    """Parse and rasterize an SVG at its own natural pixel size.
+#: Matches a root ``<svg ...>`` opening tag.
+_ROOT_SVG_TAG_RE = re.compile(r"<svg\b[^>]*>", re.IGNORECASE)
 
-    Never forces a size: the widget's declared ``width``/``height`` or
-    ``viewBox`` *is* the pixel size it is rendered and, later, composited
-    at, unscaled. See the module docstring for why.
+#: Matches a ``width="20%"``/``height="20%"`` attribute within a tag
+#: matched by ``_ROOT_SVG_TAG_RE``.
+_PERCENT_SIZE_ATTR_RE = re.compile(r'\b(width|height)\s*=\s*"(-?[0-9]+(?:\.[0-9]+)?)%"')
+
+
+def _percent_size(svg: str) -> tuple[float, float] | None:
+    """``(width%, height%)`` if the root ``<svg>`` declares both as
+    percentages, else ``None``.
+
+    All-or-nothing: a ``width`` given as a percentage with an absolute
+    ``height`` (or vice versa) does not count -- there is no meaning for
+    "20% wide, 50px tall" in :py:func:`rasterize`.
+    """
+    match = _ROOT_SVG_TAG_RE.search(svg)
+    if match is None:
+        return None
+    attrs = dict(_PERCENT_SIZE_ATTR_RE.findall(match.group(0)))
+    if "width" not in attrs or "height" not in attrs:
+        return None
+    return float(attrs["width"]), float(attrs["height"])
+
+
+def _strip_percent_size(svg: str) -> str:
+    """Drop percentage ``width``/``height`` from the root ``<svg>`` tag.
+
+    Leaves thorvg to fall back to the SVG's own ``viewBox`` for its
+    natural size -- see :py:func:`rasterize`, which scales that natural
+    size against the *frame* itself, rather than let thorvg resolve the
+    percentage against the ``viewBox`` (a different, and here irrelevant,
+    reference size).
+    """
+    def _strip(match: re.Match[str]) -> str:
+        return _PERCENT_SIZE_ATTR_RE.sub("", match.group(0))
+
+    return _ROOT_SVG_TAG_RE.sub(_strip, svg, count=1)
+
+
+def _load_and_measure(
+    svg: str,
+    frame_width: int | None,
+    frame_height: int | None,
+) -> tuple[thorvg.Picture, float, float]:
+    """Parse ``svg`` into a thorvg ``Picture`` and resolve its pixel
+    size, without drawing it.
+
+    Shared by :py:func:`rasterize` (which draws the returned picture)
+    and :py:func:`measure_size` (which only needs the size) -- see
+    :py:func:`rasterize` for the percentage-sizing behavior this
+    implements.
+
+    Raises
+    ------
+    OverlayError
+        If the SVG could not be parsed, declares no size, or uses
+        percentage sizing with no frame size given to scale it against.
+    """
+    percent_size = _percent_size(svg)
+    if percent_size is not None:
+        if frame_width is None or frame_height is None:
+            raise OverlayError(
+                "overlay SVG has a percentage width/height but no frame "
+                "size was given to scale it against"
+            )
+        svg = _strip_percent_size(svg)
+
+    picture = thorvg.Picture(_engine)
+    result = picture.load_data(svg.encode("utf-8"), mimetype="svg", rpath=None, copy=True)
+    if result != 0:
+        raise OverlayError(f"thorvg could not parse overlay SVG (result {result})")
+
+    _, natural_width, natural_height = picture.get_size()
+    if natural_width <= 0 or natural_height <= 0:
+        raise OverlayError(
+            f"overlay SVG has no natural size ({natural_width}x{natural_height})"
+        )
+
+    if percent_size is not None:
+        width_pct, height_pct = percent_size
+        box_width = width_pct / 100.0 * frame_width
+        box_height = height_pct / 100.0 * frame_height
+        # The smaller of the two ratios, applied uniformly to both axes,
+        # so the widget fits *within* the percentage box without being
+        # stretched out of its own proportions.
+        scale = min(box_width / natural_width, box_height / natural_height)
+        natural_width *= scale
+        natural_height *= scale
+        picture.set_size(natural_width, natural_height)
+
+    return picture, natural_width, natural_height
+
+
+def measure_size(
+    svg: str,
+    frame_width: int | None = None,
+    frame_height: int | None = None,
+) -> tuple[int, int]:
+    """The pixel size :py:func:`rasterize` would draw ``svg`` at, without
+    actually rasterizing it.
+
+    Used by the client-render path (:py:meth:`OverlayMixin.render_overlays_for_client`)
+    to keep a browser-laid-out widget's box pixel-identical to the one
+    :py:func:`anchor_position` assumes server-side, without paying for a
+    software rasterization pass just to learn a size.
+
+    Parameters, return value, and exceptions: see :py:func:`rasterize`.
+    """
+    _, natural_width, natural_height = _load_and_measure(svg, frame_width, frame_height)
+    width, height = math.ceil(natural_width), math.ceil(natural_height)
+    if width <= 0 or height <= 0:
+        raise OverlayError(f"overlay SVG has no natural size ({width}x{height})")
+    return width, height
+
+
+def _normalize_svg_size(svg: str, width: float, height: float) -> str:
+    """Overwrite the root ``<svg>``'s ``width``/``height`` (percentage or
+    absolute, whatever it currently declares) with explicit pixel values.
+
+    Used by the client-render path so the ``<svg>`` element a browser
+    actually lays out occupies exactly the box :py:func:`measure_size`
+    (and, before it, :py:func:`anchor_position`) computed -- otherwise a
+    percentage-sized widget would be laid out at its full declared box
+    and its content merely letterboxed inside it, drifting off the
+    anchor position computed for the smaller, aspect-fit box.
+    """
+    def _replace(match: re.Match[str]) -> str:
+        tag = _PERCENT_SIZE_ATTR_RE.sub("", match.group(0))
+        tag = re.sub(r'\s(width|height)\s*=\s*"[^"]*"', "", tag)
+        return tag[:-1] + f' width="{width}" height="{height}">'
+
+    return _ROOT_SVG_TAG_RE.sub(_replace, svg, count=1)
+
+
+def rasterize(
+    svg: str,
+    frame_width: int | None = None,
+    frame_height: int | None = None,
+) -> np.ndarray:
+    """Parse and rasterize an SVG, at its own natural pixel size or
+    scaled to a percentage of the frame.
+
+    Never forces a size for an ordinarily-sized widget: its declared
+    ``width``/``height`` or ``viewBox`` *is* the pixel size it is
+    rendered and, later, composited at, unscaled. See the module
+    docstring for why, and for the one exception this function does
+    implement: a root ``<svg>`` whose ``width`` and ``height`` are both
+    percentages is scaled -- preserving its own aspect ratio -- to fit
+    within that percentage of ``frame_width``/``frame_height``, the same
+    way CSS ``object-fit: contain`` would.
 
     Parameters
     ----------
     svg : str
         Rendered SVG source, as returned by :py:func:`render_svg`.
+    frame_width, frame_height : int, optional
+        Size of the frame this is about to be composited onto. Only
+        consulted -- and required -- when ``svg``'s root ``width``/
+        ``height`` are both percentages; ignored otherwise.
 
     Returns
     -------
@@ -393,14 +553,12 @@ def rasterize(svg: str) -> np.ndarray:
     Raises
     ------
     OverlayError
-        If the SVG could not be parsed, or declares no size to render at.
+        If the SVG could not be parsed, declares no size to render at,
+        or uses percentage sizing with no frame size given to scale it
+        against.
     """
-    picture = thorvg.Picture(_engine)
-    result = picture.load_data(svg.encode("utf-8"), mimetype="svg", rpath=None, copy=True)
-    if result != 0:
-        raise OverlayError(f"thorvg could not parse overlay SVG (result {result})")
+    picture, natural_width, natural_height = _load_and_measure(svg, frame_width, frame_height)
 
-    _, natural_width, natural_height = picture.get_size()
     width, height = math.ceil(natural_width), math.ceil(natural_height)
     if width <= 0 or height <= 0:
         raise OverlayError(f"overlay SVG has no natural size ({width}x{height})")
@@ -533,6 +691,12 @@ def camera_metrics_widget(camera: "Camera", *, anchor: str = "bottom_left") -> H
     = {}`` is enough to mirror this widget and have it resolve ``cam``
     to ``camera`` itself.
 
+    The second line reads ``{{ exif.timestamp }}`` -- the frame's own
+    capture time, unlike the render-time values above -- with a MiniJinja
+    ``default`` filter so ``Camera.exif_enabled = False`` (which leaves
+    ``exif_tags`` empty) renders ``"untagged"`` instead of failing the
+    whole widget's render under this module's strict-undefined setting.
+
     Parameters
     ----------
     camera : SpiriCamera.camera.Camera
@@ -557,11 +721,68 @@ def camera_metrics_widget(camera: "Camera", *, anchor: str = "bottom_left") -> H
   <text x="8" y="20" font-family="{DEFAULT_FONT}" font-size="16" fill="white"
       >{{{{ frame.width }}}}x{{{{ frame.height }}}} {{{{ frame.framerate }}}}fps q={{{{ objects.cam.quality }}}}</text>
   <text x="8" y="40" font-family="{DEFAULT_FONT}" font-size="16" fill="white"
-      >{{{{ frame.timestamp }}}}</text>
+      >{{{{ exif.timestamp | default("untagged") }}}}</text>
 </svg>"""
 
     return HudWidget(
         synq_topic=f"{camera.synq_topic}_metrics",
+        synq_authoritive=True,
+        anchor=anchor,
+        svg_template=svg_template,
+    )
+
+
+#: The bundled Ghostscript tiger, as vendored -- a ``viewBox="0 0 900
+#: 900"`` and no ``width``/``height`` of its own. :py:func:`tiger_widget`
+#: adds a percentage ``width``/``height`` on top of this at build time,
+#: so the fraction of the frame it fills is a parameter, not baked into
+#: the file.
+_tiger_svg_path = importlib.resources.files("SpiriCamera").joinpath("assets/tiger.svg")
+
+
+def tiger_widget(
+    camera: "Camera", *, size_percent: float = 20.0, anchor: str = "center_middle"
+) -> HudWidget:
+    """Build and publish a widget showing the classic Ghostscript tiger.
+
+    A ready-made demonstration of percentage sizing (see
+    :py:func:`rasterize`): the vendored artwork is a fixed, unrelated
+    900x900 ``viewBox``, but ``size_percent`` is baked into the widget's
+    root ``<svg width="{size_percent}%" height="{size_percent}%">`` so it
+    always renders at that fraction of the frame -- shrinking or growing
+    with the camera's resolution -- rather than at some fixed pixel size
+    that would look tiny on a 4K frame and oversized on a small one.
+
+    Parameters
+    ----------
+    camera : SpiriCamera.camera.Camera
+        The camera this widget's topic is namespaced under. The artwork
+        itself does not depend on ``camera`` otherwise.
+    size_percent : float
+        Fraction of the frame, in each dimension, the tiger is scaled to
+        fit within, preserving its own aspect ratio.
+    anchor : str
+        Where to anchor the widget; see :py:attr:`HudWidget.anchor`.
+
+    Returns
+    -------
+    HudWidget
+        A published, authoritative widget under its own topic
+        (``f"{camera.synq_topic}_tiger"``). The caller owns it, and
+        should ``close()`` it when done -- typically alongside
+        ``camera`` itself.
+    """
+    svg = _tiger_svg_path.read_text(encoding="utf-8")
+    svg_template = _ROOT_SVG_TAG_RE.sub(
+        lambda match: match.group(0).replace(
+            "<svg ", f'<svg width="{size_percent}%" height="{size_percent}%" ', 1
+        ),
+        svg,
+        count=1,
+    )
+
+    return HudWidget(
+        synq_topic=f"{camera.synq_topic}_tiger",
         synq_authoritive=True,
         anchor=anchor,
         svg_template=svg_template,
@@ -615,6 +836,14 @@ class OverlayMixin:
     #: runtime adds, drops, rebinds, or repositions widgets on the next
     #: frame, no restart needed.
     overlay_widgets: EventedDict = field(default_factory=EventedDict)
+
+    #: When set, :py:meth:`~SpiriCamera.camera.Camera.read` skips
+    #: :py:meth:`_render_overlays` entirely -- the raw frame is encoded
+    #: unmodified, and a consumer (e.g. the NiceGUI UI) is expected to
+    #: call :py:meth:`render_overlays_for_client` itself and render the
+    #: result in the browser instead. A plain synced field like any
+    #: other -- flippable live, no camera reconstruction needed.
+    overlay_client_render: bool = False
 
     def _overlay_sync_widgets(self) -> None:
         """Reconcile mirrored widgets and mirrored data-source objects
@@ -802,7 +1031,6 @@ class OverlayMixin:
             "width": frame_width,
             "height": frame_height,
             "framerate": round(self.received_framerate, 1),
-            "timestamp": round(time.time(), 3),
         }
         result = frame
         for topic, widget in self._overlay_widgets.items():
@@ -813,7 +1041,7 @@ class OverlayMixin:
                     exif_tags=self.exif_tags,
                     frame_info=frame_info,
                 )
-                rgba = rasterize(svg)
+                rgba = rasterize(svg, frame_width, frame_height)
                 widget_height, widget_width = rgba.shape[:2]
                 usage = self.overlay_widgets.get(topic, {})
                 if "x" in usage and "y" in usage:
@@ -844,6 +1072,85 @@ class OverlayMixin:
 
         return result
 
+    def render_overlays_for_client(self, frame_width: int, frame_height: int) -> str:
+        """SVG markup positioning every resolvable widget by itself, for
+        a browser to render natively instead of :py:meth:`_render_overlays`
+        rasterizing and compositing it server-side.
+
+        Companion to :py:meth:`_render_overlays` for a camera with
+        :py:attr:`overlay_client_render` set -- same widget iteration,
+        same live object values, same :py:func:`anchor_position` math
+        (so placement matches the server-rendered path pixel for pixel),
+        but each widget is measured (:py:func:`measure_size`) rather
+        than rasterized, then positioned with an SVG ``<g transform>``
+        instead of being alpha-blended into a raster.
+
+        Parameters
+        ----------
+        frame_width, frame_height : int
+            The frame size overlays are anchored against -- typically
+            ``self.received_width``/``self.received_height``, i.e. the
+            size of the image the browser is actually displaying.
+
+        Returns
+        -------
+        str
+            Zero or more ``<g transform="translate(...)">...</g>``
+            elements, one per resolvable widget, meant to be wrapped in
+            a ``<svg viewBox="0 0 {frame_width} {frame_height}">`` by
+            the caller. Empty when ``overlay_widgets`` is empty or no
+            widget currently resolves -- same no-op contract as
+            :py:meth:`_render_overlays`.
+        """
+        self._overlay_sync_widgets()
+        if not self._overlay_widgets:
+            return ""
+
+        frame_info = {
+            "width": frame_width,
+            "height": frame_height,
+            "framerate": round(self.received_framerate, 1),
+        }
+        pieces: list[str] = []
+        for topic, widget in self._overlay_widgets.items():
+            try:
+                svg = render_svg(
+                    widget.svg_template,
+                    objects=self._overlay_object_values_for(widget),
+                    exif_tags=self.exif_tags,
+                    frame_info=frame_info,
+                )
+                widget_width, widget_height = measure_size(svg, frame_width, frame_height)
+                usage = self.overlay_widgets.get(topic, {})
+                if "x" in usage and "y" in usage:
+                    x, y = anchor_position(
+                        "custom",
+                        usage["x"],
+                        usage["y"],
+                        frame_width,
+                        frame_height,
+                        widget_width,
+                        widget_height,
+                    )
+                else:
+                    x, y = anchor_position(
+                        widget.anchor,
+                        widget.custom_anchor_x,
+                        widget.custom_anchor_y,
+                        frame_width,
+                        frame_height,
+                        widget_width,
+                        widget_height,
+                    )
+                sized_svg = _normalize_svg_size(svg, widget_width, widget_height)
+            except OverlayError as exc:
+                self._overlay_complain(topic, f"overlay {topic!r} not rendered, {exc}")
+            else:
+                self._overlay_complaints.pop(topic, None)
+                pieces.append(f'<g transform="translate({x},{y})">{sized_svg}</g>')
+
+        return "".join(pieces)
+
     def _overlay_close(self) -> None:
         """Release every mirrored widget and mirrored data-source object."""
         for widget in self._overlay_widgets.values():
@@ -871,4 +1178,5 @@ __all__ = [
     "rasterize",
     "render_svg",
     "resolve_objects",
+    "tiger_widget",
 ]

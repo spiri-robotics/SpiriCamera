@@ -128,12 +128,11 @@ class TestCameraMetricsWidget:
             svg = overlay.render_svg(
                 widget.svg_template,
                 objects={"cam": {"quality": 80}},
-                exif_tags={},
+                exif_tags={"timestamp": "1234567890.5"},
                 frame_info={
                     "width": 1900,
                     "height": 1070,
                     "framerate": 29.5,
-                    "timestamp": 1234567890.5,
                 },
             )
         finally:
@@ -141,6 +140,73 @@ class TestCameraMetricsWidget:
 
         assert "1900x1070 29.5fps q=80" in svg
         assert "1234567890.5" in svg
+
+    def test_shows_untagged_when_exif_is_disabled(self) -> None:
+        """``Camera.exif_enabled = False`` leaves ``exif_tags`` empty --
+        the widget should degrade gracefully, not fail to render."""
+        camera = FakeCamera("cam", "spiri-cam-01/cam")
+
+        widget = overlay.camera_metrics_widget(camera)
+        try:
+            svg = overlay.render_svg(
+                widget.svg_template,
+                objects={"cam": {"quality": 80}},
+                exif_tags={},
+                frame_info={"width": 1900, "height": 1070, "framerate": 29.5},
+            )
+        finally:
+            widget.close()
+
+        assert "untagged" in svg
+
+
+class TestTigerWidget:
+    """The ready-made percentage-sized example widget."""
+
+    def test_topic_is_derived_from_the_camera(self) -> None:
+        camera = FakeCamera("spiricamera_testimage", "spiri-cam-01/spiricamera_testimage")
+
+        widget = overlay.tiger_widget(camera)
+        try:
+            assert widget.synq_topic == "spiricamera_testimage_tiger"
+        finally:
+            widget.close()
+
+    def test_bakes_size_percent_into_the_root_svg(self) -> None:
+        camera = FakeCamera("cam", "spiri-cam-01/cam")
+
+        widget = overlay.tiger_widget(camera, size_percent=35)
+        try:
+            assert overlay._percent_size(widget.svg_template) == (35.0, 35.0)
+        finally:
+            widget.close()
+
+    def test_default_size_is_20_percent(self) -> None:
+        camera = FakeCamera("cam", "spiri-cam-01/cam")
+
+        widget = overlay.tiger_widget(camera)
+        try:
+            assert overlay._percent_size(widget.svg_template) == (20.0, 20.0)
+        finally:
+            widget.close()
+
+    def test_renders_to_a_raster_scaled_against_the_frame(self) -> None:
+        """End to end: the bundled artwork, once templated and rendered
+        through the same path `_render_overlays` uses, actually scales
+        against the frame rather than its own 900x900 viewBox."""
+        camera = FakeCamera("cam", "spiri-cam-01/cam")
+
+        widget = overlay.tiger_widget(camera, size_percent=20)
+        try:
+            svg = overlay.render_svg(
+                widget.svg_template, objects={}, exif_tags={}, frame_info={},
+            )
+            raster = overlay.rasterize(svg, frame_width=1000, frame_height=1000)
+        finally:
+            widget.close()
+
+        assert raster.shape == (200, 200, 4)
+        assert np.count_nonzero(raster[:, :, 3]) > 0
 
 
 class TestRenderSvg:
@@ -253,6 +319,138 @@ class TestRasterize:
         raster = overlay.rasterize(svg)
 
         assert np.count_nonzero(raster[:, :, 3]) > 0
+
+    def test_percent_size_is_scaled_against_the_frame(self) -> None:
+        """A square 100x100 viewBox, told to fill 20% of a 1000x1000
+        frame, ends up exactly 200x200 -- 20% of each frame dimension."""
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" '
+            'viewBox="0 0 100 100"><rect width="100" height="100" fill="red"/></svg>'
+        )
+
+        raster = overlay.rasterize(svg, frame_width=1000, frame_height=1000)
+
+        assert raster.shape == (200, 200, 4)
+
+    def test_percent_size_preserves_aspect_ratio(self) -> None:
+        """A square viewBox asked to fill 20% of a non-square frame is
+        capped by the *smaller* resulting dimension, not stretched to
+        fill both -- the frame is 1000 wide but only 500 tall, so 20%
+        of height (100px) is the binding constraint, not 20% of width
+        (200px)."""
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" '
+            'viewBox="0 0 100 100"><rect width="100" height="100" fill="red"/></svg>'
+        )
+
+        raster = overlay.rasterize(svg, frame_width=1000, frame_height=500)
+
+        assert raster.shape == (100, 100, 4)
+
+    def test_percent_size_without_frame_dimensions_raises(self) -> None:
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" '
+            'viewBox="0 0 100 100"><rect width="100" height="100" fill="red"/></svg>'
+        )
+
+        with pytest.raises(overlay.OverlayError):
+            overlay.rasterize(svg)
+
+    def test_mixed_percent_and_absolute_size_is_not_percent_sizing(self) -> None:
+        """All-or-nothing: a percentage ``width`` with an absolute
+        ``height`` is not scaled against the frame -- there is no
+        meaning for that combination, so it is rendered as an ordinary,
+        unscaled widget instead (and thorvg resolves the lone
+        percentage itself, against no viewBox, to a near-zero size)."""
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20" '
+            'viewBox="0 0 100 100"><rect width="100" height="100" fill="red"/></svg>'
+        )
+
+        raster = overlay.rasterize(svg, frame_width=1000, frame_height=1000)
+
+        assert raster.shape == (20, 20, 4)
+
+
+class TestMeasureSize:
+    """The pixel size `rasterize()` would use, without rasterizing."""
+
+    def test_matches_declared_size(self) -> None:
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="20">'
+            '<rect width="40" height="20" fill="red"/></svg>'
+        )
+
+        assert overlay.measure_size(svg) == (40, 20)
+
+    def test_matches_rasterize_for_percent_size(self) -> None:
+        """Same scaled result `rasterize()` would draw at, for a
+        percentage-sized widget -- same call, no frame size wasted on a
+        software rendering pass."""
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" '
+            'viewBox="0 0 100 100"><rect width="100" height="100" fill="red"/></svg>'
+        )
+
+        size = overlay.measure_size(svg, frame_width=1000, frame_height=500)
+
+        assert size == (100, 100)
+
+    def test_percent_size_without_frame_dimensions_raises(self) -> None:
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" '
+            'viewBox="0 0 100 100"><rect width="100" height="100" fill="red"/></svg>'
+        )
+
+        with pytest.raises(overlay.OverlayError):
+            overlay.measure_size(svg)
+
+    def test_unparsable_svg_raises(self) -> None:
+        with pytest.raises(overlay.OverlayError):
+            overlay.measure_size("not an svg at all")
+
+
+class TestNormalizeSvgSize:
+    """Overwriting a root `<svg>`'s declared size for client rendering."""
+
+    def test_absolute_size_is_replaced(self) -> None:
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="20">'
+            '<rect width="40" height="20" fill="red"/></svg>'
+        )
+
+        result = overlay._normalize_svg_size(svg, 80, 40)
+
+        assert result.startswith('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40">')
+        assert '<rect width="40" height="20" fill="red"/>' in result
+
+    def test_percent_size_is_replaced(self) -> None:
+        """The exact case client rendering needs: a percent-sized
+        widget's box pinned to the pre-computed, aspect-fit pixel size
+        `measure_size()` returned, not left to the browser to letterbox
+        inside the full percentage box."""
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20%" height="20%" '
+            'viewBox="0 0 100 100"><rect width="100" height="100" fill="red"/></svg>'
+        )
+
+        result = overlay._normalize_svg_size(svg, 100, 100)
+
+        assert 'width="20%"' not in result
+        assert 'width="100"' in result
+        assert 'height="100"' in result
+        assert 'viewBox="0 0 100 100"' in result
+
+    def test_only_the_root_tag_is_touched(self) -> None:
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">'
+            '<svg width="5" height="5"><rect width="5" height="5"/></svg></svg>'
+        )
+
+        result = overlay._normalize_svg_size(svg, 20, 20)
+
+        assert result.startswith('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">')
+        assert '<svg width="5" height="5">' in result
 
 
 class TestAnchorPosition:

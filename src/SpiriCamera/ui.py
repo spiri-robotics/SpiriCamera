@@ -47,6 +47,7 @@ from SpiriCamera.overlay import (
     HudWidget,
     camera_metrics_widget,
     declared_objects,
+    tiger_widget,
 )
 from SpiriCamera.sources.testimage import test_images
 from SpiriCamera.sources.v4l import list_devices
@@ -431,6 +432,30 @@ def add_metrics_widget(cam: Camera) -> HudWidget:
         The published widget, already added to ``cam.overlay_widgets``.
     """
     widget = camera_metrics_widget(cam)
+    _ui_widgets[widget.synq_absolute_path] = widget
+    _overlay_add_topic(cam, widget.synq_absolute_path)
+    return widget
+
+
+def add_tiger_widget(cam: Camera) -> HudWidget:
+    """Publish a :py:func:`~SpiriCamera.overlay.tiger_widget` for ``cam``
+    and add it to its own ``overlay_widgets``.
+
+    A worked example of percentage sizing (see
+    :py:func:`~SpiriCamera.overlay.rasterize`) alongside the pixel-sized
+    ``camera_metrics_widget`` example next to it.
+
+    Parameters
+    ----------
+    cam : Camera
+        The camera to attach the widget to.
+
+    Returns
+    -------
+    HudWidget
+        The published widget, already added to ``cam.overlay_widgets``.
+    """
+    widget = tiger_widget(cam)
     _ui_widgets[widget.synq_absolute_path] = widget
     _overlay_add_topic(cam, widget.synq_absolute_path)
     return widget
@@ -863,6 +888,7 @@ def build_page():
                 ui.button(icon='refresh', on_click=overlay_panel.refresh).props(
                     'flat round'
                 )
+            ui.switch('Render overlays in browser').bind_value(cam, 'overlay_client_render')
             with ui.row().classes('w-full items-center gap-2'):
                 add_topic = ui.input(
                     'Add widget by topic',
@@ -888,6 +914,10 @@ def build_page():
                 ui.button(
                     'Add CameraMetrics',
                     on_click=lambda: (add_metrics_widget(cam), overlay_panel.refresh()),
+                )
+                ui.button(
+                    'Add Tiger',
+                    on_click=lambda: (add_tiger_widget(cam), overlay_panel.refresh()),
                 )
 
             active = _overlay_topic_list(cam)
@@ -1007,6 +1037,23 @@ def build_page():
             """Pull the next frame, tracking the camera's current framerate."""
             timer.interval = 1 / max(1, int(get_camera().max_framerate or 1))
             frame.force_reload()
+            refresh_overlay()
+
+        def refresh_overlay() -> None:
+            """Push live overlay SVG into the frame's ``content`` layer.
+
+            Only does anything when ``overlay_client_render`` is set --
+            otherwise the overlay, if any, is already burned into the
+            frame itself server-side, and this clears any stale content
+            left over from the switch having just been turned off.
+            """
+            cam = get_camera()
+            body = ''
+            if cam.overlay_client_render and cam.received_width and cam.received_height:
+                body = cam.render_overlays_for_client(cam.received_width, cam.received_height)
+                if body:
+                    body = f'<svg viewBox="0 0 {cam.received_width} {cam.received_height}">{body}</svg>'
+            frame.set_content(body)
 
         def refresh_bandwidth() -> None:
             """Show the frame that arrived, and what the route is delivering.
@@ -1073,6 +1120,7 @@ if __name__ == '__main__':
 __all__ = [
     'FRAME_ROUTE',
     'add_metrics_widget',
+    'add_tiger_widget',
     'build_page',
     'create_overlay_widget',
     'discover_cameras',
