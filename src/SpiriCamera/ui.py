@@ -203,6 +203,12 @@ def get_camera() -> Camera:
             max_width=settings.frame_width,
             max_height=settings.frame_height,
             max_framerate=settings.framerate,
+            # This process actually runs the device; Camera already
+            # defaults to this for a normal construction, but it is
+            # spelled out here because this is the one real camera this
+            # page shows, and getting it wrong silently drops the
+            # hostname prefix on its topic and disables its RPCs.
+            synq_authoritive=True,
         )
     return _camera
 

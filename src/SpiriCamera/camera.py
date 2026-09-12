@@ -280,6 +280,7 @@ class Camera(CameraBase):
         mimetype: str = "image/jpeg",
         synq_topic: str = "",
         synq_auto_start: bool = True,
+        synq_authoritive: bool | None = None,
         **rehydrated: object,
     ) -> None:
         """Create a camera.
@@ -307,6 +308,19 @@ class Camera(CameraBase):
             source later changes.
         synq_auto_start : bool
             Whether to join the SpiriSynq session immediately.
+        synq_authoritive : bool | None
+            Whether this object owns the device it publishes, as opposed
+            to mirroring one that runs elsewhere.  ``None`` (the default)
+            picks the right answer for the two ways a ``Camera`` actually
+            gets built: ``True`` for an ordinary construction, since
+            every one of those in this codebase is something actually
+            running a device and is what makes SpiriSynq prefix its
+            topic with this machine's name and expose its
+            ``@remote_method`` RPCs; ``False`` when rebuilding from a
+            full rehydrate reply (see ``**rehydrated`` below), since a
+            mirror publishing under its *own* base topic would talk past
+            the real one.  Pass ``True``/``False`` explicitly only to
+            override that for an unusual case.
         **rehydrated : object
             Every other synced field (``vendor``, ``running``, ``status``,
             ``image``, ``exif_enabled``, the resolved ``source``, ...).
@@ -342,6 +356,9 @@ class Camera(CameraBase):
         mimetype = str(rehydrated.pop("mimetype", mimetype))
         synq_topic = str(rehydrated.pop("synq_topic", synq_topic))
 
+        if synq_authoritive is None:
+            synq_authoritive = not is_rehydrate
+
         CameraBase.__init__(
             self,
             synq_topic=synq_topic or topic_for_source(source_str),
@@ -352,6 +369,7 @@ class Camera(CameraBase):
             max_height=max_height,
             max_framerate=max_framerate,
             mimetype=mimetype,
+            synq_authoritive=synq_authoritive,
             # Deferred: the object is not wired up enough to sync yet.
             synq_auto_start=False,
             **rehydrated,

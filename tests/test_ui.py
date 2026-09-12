@@ -122,6 +122,21 @@ class TestSharedCamera:
         assert camera_ui.get_camera() is cam
         assert camera_ui.get_camera() is camera_ui.get_camera()
 
+    def test_the_real_camera_is_authoritative(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """This process runs the device; its topic must say so.
+
+        A non-authoritative camera never prefixes its topic with this
+        machine's name and never registers its RPCs -- exactly wrong for
+        the one camera this page actually captures with.
+        """
+        monkeypatch.setattr(camera_ui, "_camera", None)
+
+        cam = camera_ui.get_camera()
+
+        assert cam.synq_authoritive is True
+
 
 class TestPage:
     """Building the page itself."""

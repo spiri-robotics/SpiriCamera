@@ -74,6 +74,20 @@ class TestTopics:
 class TestConstruction:
     """Creating a camera."""
 
+    def test_is_authoritative_by_default(self, camera: CameraFactory) -> None:
+        """A normally-constructed camera is the thing running the device.
+
+        This is what makes SpiriSynq prefix its topic with this
+        machine's name rather than leave two hosts colliding on the
+        same bare topic, and what makes its RPCs register at all.
+        """
+        assert camera("testimage://").synq_authoritive is True
+
+    def test_authoritive_can_be_overridden(self, camera: CameraFactory) -> None:
+        """The default is a default, not a rule; nothing here is fixed."""
+        cam = camera("testimage://", synq_authoritive=False)
+        assert cam.synq_authoritive is False
+
     def test_resolves_its_source(self, camera: CameraFactory) -> None:
         """The parsed description is available before starting."""
         cam = camera("testimage://pm5544")
@@ -1143,3 +1157,22 @@ class TestRehydrate:
 
         assert cam.quality == 42
         assert cam.handler is not None
+
+    def test_a_mirror_defaults_to_non_authoritative(
+        self, camera: CameraFactory, synq_session: object
+    ) -> None:
+        """A rehydrated mirror must not declare itself the device's owner.
+
+        Doing so would set its own base topic from this machine's
+        session, which for a mirror of a camera running somewhere else
+        would not even match the real one's absolute path.
+        """
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.synq_authoritive = True
+        cam.sync()
+        cam.start(background=False)
+        cam.read()
+
+        restored = synq_session.type_registry.load(cam.sync_dumps())  # type: ignore[attr-defined]
+
+        assert restored.synq_authoritive is False
