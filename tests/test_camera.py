@@ -757,6 +757,7 @@ class TestReceivedIsDerivedFromTheFrame:
         cam.image = b""
 
         assert (cam.received_width, cam.received_height, cam.received_ratio) == (0, 0, 0.0)
+        assert cam.received_framerate == 0.0
 
     def test_they_are_not_published(self) -> None:
         """Frame observations stay off the wire; see CameraBase."""
@@ -764,11 +765,46 @@ class TestReceivedIsDerivedFromTheFrame:
             "received_width",
             "received_height",
             "received_ratio",
+            "received_framerate",
             "_exif_tags",
             "_exif_timestamp",
         }
 
         assert not skipped & Camera.valid_sync_paths()
+
+
+class TestReceivedFramerate:
+    """The rate frames are actually arriving at, measured locally."""
+
+    def test_zero_until_a_second_frame_arrives(self, camera: CameraFactory) -> None:
+        """One frame is not yet a rate -- there is nothing to measure it
+        against."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.read()
+
+        assert cam.received_framerate == 0.0
+
+    def test_measured_from_the_gap_between_frames(self, camera: CameraFactory) -> None:
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.read()
+
+        cam._received_frame_at -= 0.5  # pretend the previous frame landed 0.5s ago
+        cam.read()
+
+        assert cam.received_framerate == pytest.approx(2.0, abs=0.1)
+
+    def test_cleared_when_the_image_is(self, camera: CameraFactory) -> None:
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+        cam.read()
+        cam._received_frame_at -= 0.5
+        cam.read()
+
+        cam.image = b""
+
+        assert cam.received_framerate == 0.0
 
     def test_settings_are_still_published(self) -> None:
         """Only the observations were skipped, not the requests."""
@@ -1176,3 +1212,151 @@ class TestRehydrate:
         restored = synq_session.type_registry.load(cam.sync_dumps())  # type: ignore[attr-defined]
 
         assert restored.synq_authoritive is False
+
+
+class TestOverlays:
+    """Compositing live HudWidgets onto captured frames."""
+
+    def test_widget_is_baked_into_the_frame(self, camera: CameraFactory) -> None:
+        """A camera pointed at a live HudWidget's topic renders it."""
+        from SpiriCamera.overlay import HudWidget
+
+        widget = HudWidget(
+            synq_topic="overlays/demo",
+            synq_authoritive=True,
+            svg_template=(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">'
+                '<rect width="20" height="20" fill="red"/></svg>'
+            ),
+            anchor="top_left",
+        )
+        try:
+            cam = camera(
+                "testimage://",
+                max_width=160,
+                max_height=120,
+                overlay_widgets={widget.synq_absolute_path: {}},
+                synq_auto_start=True,
+            )
+            cam.start(background=False)
+
+            data = cam.read()
+            decoded = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+
+            # JPEG is lossy, so allow slack rather than an exact match.
+            blue, green, red = (int(c) for c in decoded[5, 5])
+            assert red > 200 and blue < 60 and green < 60
+        finally:
+            widget.close()
+
+    def test_unresolvable_topic_does_not_stop_frames(
+        self, camera: CameraFactory
+    ) -> None:
+        """A typo'd or not-yet-published overlay topic is a per-frame
+        annoyance, not a reason to stop the camera."""
+        cam = camera(
+            "testimage://",
+            max_width=160,
+            max_height=120,
+            overlay_widgets={"overlays/does_not_exist": {}},
+            synq_auto_start=True,
+        )
+        cam.start(background=False)
+
+        data = cam.read()
+
+        assert data.startswith(b"\xff\xd8")
+
+    def test_no_overlay_widgets_is_unaffected(self, camera: CameraFactory) -> None:
+        """The common case -- no overlays configured -- costs nothing."""
+        cam = camera("testimage://", max_width=160, max_height=120)
+        cam.start(background=False)
+
+        data = cam.read()
+
+        assert data.startswith(b"\xff\xd8")
+
+    def test_camera_can_render_its_own_metrics_widget(
+        self, camera: CameraFactory
+    ) -> None:
+        """A camera can mirror camera_metrics_widget(itself) -- a
+        self-referential mirror, since the widget's declared ``cam``
+        alias defaults to the same camera's own topic, read back over
+        zenoh. Exercised end to end, background=True, so the widget's
+        mirrored object has real frames to catch up to."""
+        from SpiriCamera.overlay import camera_metrics_widget
+
+        cam = camera(
+            "testimage://",
+            max_width=160,
+            max_height=120,
+            synq_authoritive=True,
+            synq_auto_start=True,
+        )
+        widget = camera_metrics_widget(cam)
+        try:
+            cam.overlay_widgets[widget.synq_absolute_path] = {}
+            cam.start(background=True)
+
+            # The widget needs at least one prior frame's received_width
+            # etc. published before it has anything to render -- give it
+            # a few frames to catch up rather than asserting on the first.
+            # A cleared complaint is the signal a frame actually rendered
+            # the widget successfully, not just that read() didn't raise.
+            assert wait_for(lambda: bool(cam.image), timeout=3.0)
+            assert wait_for(
+                lambda: widget.synq_absolute_path not in cam._overlay_complaints,
+                timeout=3.0,
+            )
+        finally:
+            widget.close()
+
+    def test_metrics_widget_tracks_live_changes_to_its_own_camera(
+        self, camera: CameraFactory
+    ) -> None:
+        """A field changed after the widget started reading it shows up
+        on the next frame, not just the value seen at the first render.
+
+        This is the regression case for a same-process data source
+        sharing its camera's own zenoh session: a mirror built on the
+        same SpiriSynq session as its source needs SyncableObject's
+        self-echo filter to key on publisher identity, not session zid
+        -- otherwise a genuine update from a different object on the
+        same session gets mistaken for hearing its own echo and
+        silently dropped, leaving this stuck on ``quality``'s default of
+        80 forever. This relies entirely on that filter (a SpiriSynq
+        concern) being correct; nothing in SpiriCamera works around it
+        by re-fetching on a timer any more.
+        """
+        from SpiriCamera.overlay import camera_metrics_widget
+
+        cam = camera(
+            "testimage://",
+            max_width=160,
+            max_height=120,
+            synq_authoritive=True,
+            synq_auto_start=True,
+        )
+        widget = camera_metrics_widget(cam)
+        try:
+            cam.overlay_widgets[widget.synq_absolute_path] = {}
+            cam.start(background=True)
+
+            # A frame has to actually be rendered first -- otherwise
+            # "no complaint yet" is ambiguous between "resolved cleanly"
+            # and "no frame has run yet to raise one".
+            assert wait_for(lambda: bool(cam.image), timeout=3.0)
+            assert wait_for(
+                lambda: widget.synq_absolute_path not in cam._overlay_complaints,
+                timeout=3.0,
+            )
+
+            cam.quality = 42
+
+            assert wait_for(
+                lambda: cam._overlay_object_values_for(widget).get("cam", {}).get("quality")
+                == 42,
+                timeout=3.0,
+            )
+        finally:
+            widget.close()

@@ -31,6 +31,7 @@ writable counterpart nearby — the camera's own settings, and Extra Tags.
 from __future__ import annotations
 
 import base64
+import re
 import threading
 import time
 from collections import deque
@@ -40,6 +41,13 @@ from nicegui import app, ui
 
 from SpiriCamera import Camera, exif
 from SpiriCamera.main import get_settings
+from SpiriCamera.overlay import (
+    ANCHORS,
+    DEFAULT_FONT,
+    HudWidget,
+    camera_metrics_widget,
+    declared_objects,
+)
 from SpiriCamera.sources.testimage import test_images
 from SpiriCamera.sources.v4l import list_devices
 
@@ -317,6 +325,178 @@ def discover_cameras(cam: Camera) -> list[dict]:
     return list(cam.synq_session.list_topics(type_filter='Camera'))
 
 
+def discover_widgets(cam: Camera) -> list[dict]:
+    """List HudWidget objects other nodes are currently advertising.
+
+    Parameters
+    ----------
+    cam : Camera
+        Any camera on the session to query from; see
+        :py:func:`discover_cameras`.
+
+    Returns
+    -------
+    list[dict]
+        One metadata dict per discovered widget, each with at least
+        ``topic``.
+    """
+    if not cam.synq_session:
+        return []
+    return list(cam.synq_session.list_topics(type_filter='HudWidget'))
+
+
+#: Sub-topic a widget created from this page publishes under, keyed by
+#: name -- kept distinct from a camera's own topic and from
+#: camera_metrics_widget's `f"{topic}_metrics"` so the three can never
+#: collide. Not related to `Camera.overlay_widgets` (the per-camera field
+#: naming which widgets to mirror) despite the similar name -- this is
+#: only where a widget *this page creates* is published.
+_UI_WIDGET_SUBTOPIC = 'ui_widgets'
+
+#: Starting point for a freshly created widget -- small enough to read
+#: at a glance, and a working example of `exif.*` templating rather than
+#: an empty box. No `objects.*` example: that needs a real default topic
+#: to declare (`{# object: alias = real/topic #}`, see overlay.py's
+#: module docstring), which this generic starting point has no way to
+#: guess.
+_NEW_WIDGET_TEMPLATE = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50">
+  <rect width="200" height="50" fill="black" fill-opacity="0.5"/>
+  <text x="8" y="30" font-family="{DEFAULT_FONT}" font-size="18" fill="white">Hello, {{{{ exif.topic }}}}</text>
+</svg>'''
+
+
+def _overlay_topic_list(cam: Camera) -> list[str]:
+    """Absolute topics of every widget ``cam`` currently mirrors."""
+    return list(cam.overlay_widgets.keys())
+
+
+def _overlay_add_topic(cam: Camera, topic: str) -> None:
+    """Start mirroring the widget at ``topic``, if not already."""
+    if topic not in cam.overlay_widgets:
+        cam.overlay_widgets[topic] = {}
+
+
+def _overlay_remove_topic(cam: Camera, topic: str) -> None:
+    """Stop mirroring the widget at ``topic``, leaving the others."""
+    cam.overlay_widgets.pop(topic, None)
+
+
+#: Widgets this page created, keyed by absolute topic, so "remove" can
+#: actually close them instead of merely detaching them from
+#: overlay_widgets -- a widget discovered from elsewhere on the network
+#: is never in here, and removing one of those only ever detaches it.
+_ui_widgets: dict[str, HudWidget] = {}
+
+
+def create_overlay_widget(cam: Camera, name: str) -> HudWidget:
+    """Publish a new, editable HudWidget and add it to ``cam.overlay_widgets``.
+
+    Parameters
+    ----------
+    cam : Camera
+        The camera to attach the new widget to.
+    name : str
+        A short name for the widget, used to build its topic. Slugified
+        the same way :py:func:`~SpiriCamera.camera.topic_for_source`
+        slugifies a source string, so anything typeable works.
+
+    Returns
+    -------
+    HudWidget
+        The published widget, already added to ``cam.overlay_widgets``.
+    """
+    slug = re.sub(r'[^A-Za-z0-9]+', '_', name).strip('_').lower() or 'widget'
+    widget = HudWidget(
+        synq_topic=f'{_UI_WIDGET_SUBTOPIC}/{slug}',
+        synq_authoritive=True,
+        svg_template=_NEW_WIDGET_TEMPLATE,
+    )
+    _ui_widgets[widget.synq_absolute_path] = widget
+    _overlay_add_topic(cam, widget.synq_absolute_path)
+    return widget
+
+
+def add_metrics_widget(cam: Camera) -> HudWidget:
+    """Publish a :py:func:`~SpiriCamera.overlay.camera_metrics_widget` for
+    ``cam`` and add it to its own ``overlay_widgets``.
+
+    Parameters
+    ----------
+    cam : Camera
+        The camera to describe and attach the widget to.
+
+    Returns
+    -------
+    HudWidget
+        The published widget, already added to ``cam.overlay_widgets``.
+    """
+    widget = camera_metrics_widget(cam)
+    _ui_widgets[widget.synq_absolute_path] = widget
+    _overlay_add_topic(cam, widget.synq_absolute_path)
+    return widget
+
+
+def _overlay_widget_usage(cam: Camera, topic: str) -> dict:
+    """This camera's current per-widget override dict for ``topic``.
+
+    A copy, not the live dict -- callers build on it and write the whole
+    thing back via :py:func:`_overlay_set_position`/
+    :py:func:`_overlay_set_binding`, since only ``EventedDict``'s own
+    ``__setitem__`` is instrumented for sync; mutating a plain dict
+    nested inside one of its values in place would not publish.
+    """
+    return dict(cam.overlay_widgets.get(topic, {}))
+
+
+def _overlay_set_position(cam: Camera, topic: str, x: float | None, y: float | None) -> None:
+    """Set (both given) or clear (either ``None``) this camera's position
+    override for the widget at ``topic``, falling back to the widget's
+    own anchor when cleared."""
+    usage = _overlay_widget_usage(cam, topic)
+    if x is None or y is None:
+        usage.pop('x', None)
+        usage.pop('y', None)
+    else:
+        usage['x'] = x
+        usage['y'] = y
+    cam.overlay_widgets[topic] = usage
+
+
+def _overlay_set_binding(cam: Camera, topic: str, alias: str, object_topic: str) -> None:
+    """Set (non-empty) or clear (empty) this camera's binding override
+    for ``alias`` on the widget at ``topic``, falling back to that
+    alias's own declared default when cleared."""
+    usage = _overlay_widget_usage(cam, topic)
+    bindings = dict(usage.get('bindings', {}))
+    if object_topic:
+        bindings[alias] = object_topic
+    else:
+        bindings.pop(alias, None)
+    if bindings:
+        usage['bindings'] = bindings
+    else:
+        usage.pop('bindings', None)
+    cam.overlay_widgets[topic] = usage
+
+
+def remove_overlay_widget(cam: Camera, topic: str) -> None:
+    """Detach ``topic`` from ``cam.overlay_widgets``, closing it if this
+    page is the one that created it.
+
+    Parameters
+    ----------
+    cam : Camera
+        The camera to detach the widget from.
+    topic : str
+        Absolute topic of the widget to remove, as it appears in
+        ``cam.overlay_widgets``.
+    """
+    _overlay_remove_topic(cam, topic)
+    widget = _ui_widgets.pop(topic, None)
+    if widget is not None:
+        widget.close()
+
+
 def _frame_timestamp(frame: bytes) -> float:
     """The Unix timestamp ``frame`` was captured at, per its own EXIF.
 
@@ -489,9 +669,10 @@ def build_page():
     """Build the camera test UI page."""
 
     def refresh_all() -> None:
-        """Rebuild both camera-bound panels after the camera is swapped."""
+        """Rebuild every camera-bound panel after the camera is swapped."""
         top_controls.refresh()
         settings_panels.refresh()
+        overlay_panel.refresh()
 
     def toggle_authoritive(value: bool) -> None:
         """Rebuild the process-wide camera as a device, or as a mirror."""
@@ -656,6 +837,154 @@ def build_page():
                     on_change=lambda event: _apply_extra_tags(cam, event.value),
                 ).props('debounce=500').classes('w-full')
 
+    @ui.refreshable
+    def overlay_panel() -> None:
+        """See, create, and edit the HudWidgets baked into this camera.
+
+        ``@ui.refreshable`` tears down and rebuilds every element inside
+        this function on ``.refresh()`` -- the right tool for a
+        *structural* change (a widget added or removed changes how many
+        rows exist), the wrong one for a value that only needs to update
+        in place. Editable fields below use ``bind_value`` instead, which
+        NiceGUI already keeps live on its own polling loop without ever
+        recreating the element -- the same way Quality or Max Width bind
+        two-way elsewhere on this page. ``.refresh()`` is therefore only
+        called after an action that actually adds or removes a row
+        (Create, Add, remove), plus the explicit refresh button below for
+        "did an unresolved topic resolve yet" -- never on a timer, which
+        previously blew away whatever you were typing (the new-widget
+        name field, an in-progress SVG edit) every second.
+        """
+        cam = get_camera()
+
+        with ui.card().classes('w-full flex-shrink-0'):
+            with ui.row().classes('w-full items-center justify-between'):
+                ui.label('Overlays').classes('text-lg font-bold')
+                ui.button(icon='refresh', on_click=overlay_panel.refresh).props(
+                    'flat round'
+                )
+            with ui.row().classes('w-full items-center gap-2'):
+                add_topic = ui.input(
+                    'Add widget by topic',
+                    placeholder='hostname/spiricamera_testimage_metrics',
+                ).classes('flex-1')
+                ui.button(
+                    'Add',
+                    on_click=lambda: (
+                        _overlay_add_topic(cam, add_topic.value.strip()),
+                        overlay_panel.refresh(),
+                    ) if add_topic.value.strip() else None,
+                )
+
+            with ui.row().classes('w-full items-center gap-2'):
+                new_widget_name = ui.input('New widget name').classes('flex-1')
+                ui.button(
+                    'Create & Add',
+                    on_click=lambda: (
+                        create_overlay_widget(cam, new_widget_name.value or 'widget'),
+                        overlay_panel.refresh(),
+                    ),
+                )
+                ui.button(
+                    'Add CameraMetrics',
+                    on_click=lambda: (add_metrics_widget(cam), overlay_panel.refresh()),
+                )
+
+            active = _overlay_topic_list(cam)
+            if not active:
+                ui.label('No overlay topics configured.').classes('opacity-70')
+
+            for topic in active:
+                widget = cam._overlay_widgets.get(topic)
+                with ui.card().classes('w-full').props('flat bordered'):
+                    with ui.row().classes('w-full items-center gap-2'):
+                        ui.label(topic).classes('font-mono flex-1 text-xs')
+                        if widget is None:
+                            ui.label('unresolved').classes('text-orange-600 text-xs')
+                        ui.button(
+                            icon='delete',
+                            on_click=lambda topic=topic: (
+                                remove_overlay_widget(cam, topic),
+                                overlay_panel.refresh(),
+                            ),
+                        ).props('flat round color=red')
+
+                    if widget is not None:
+                        with ui.row().classes('w-full items-center gap-2'):
+                            ui.select(
+                                list(ANCHORS), label='Anchor (default)',
+                            ).bind_value(widget, 'anchor').classes('w-40')
+                            ui.number('X % (default)').bind_value(
+                                widget, 'custom_anchor_x'
+                            ).bind_visibility_from(
+                                widget, 'anchor', backward=lambda a: a == 'custom'
+                            ).classes('w-24')
+                            ui.number('Y % (default)').bind_value(
+                                widget, 'custom_anchor_y'
+                            ).bind_visibility_from(
+                                widget, 'anchor', backward=lambda a: a == 'custom'
+                            ).classes('w-24')
+
+                        usage = cam.overlay_widgets.get(topic, {})
+                        with ui.row().classes('w-full items-center gap-2'):
+                            ui.label('Position override (this camera only):').classes(
+                                'text-xs opacity-70'
+                            )
+                            override_x = ui.number('X %', value=usage.get('x')).classes('w-24')
+                            override_y = ui.number('Y %', value=usage.get('y')).classes('w-24')
+                            override_x.on_value_change(
+                                lambda event, topic=topic, y=override_y: _overlay_set_position(
+                                    cam, topic, event.value, y.value,
+                                )
+                            )
+                            override_y.on_value_change(
+                                lambda event, topic=topic, x=override_x: _overlay_set_position(
+                                    cam, topic, x.value, event.value,
+                                )
+                            )
+                            ui.button(
+                                'Clear',
+                                on_click=lambda topic=topic: (
+                                    _overlay_set_position(cam, topic, None, None),
+                                    overlay_panel.refresh(),
+                                ),
+                            ).props('flat dense')
+
+                        for alias, default_topic in declared_objects(widget.svg_template).items():
+                            bound_to = usage.get('bindings', {}).get(alias, '')
+                            with ui.row().classes('w-full items-center gap-2'):
+                                ui.label(f'{alias} (default: {default_topic})').classes(
+                                    'font-mono text-xs flex-1'
+                                )
+                                ui.input(
+                                    'Override object topic', value=bound_to,
+                                ).props('debounce=500').classes('flex-1').on_value_change(
+                                    lambda event, topic=topic, alias=alias: _overlay_set_binding(
+                                        cam, topic, alias, event.value.strip(),
+                                    )
+                                )
+
+                        ui.textarea('SVG template').bind_value(
+                            widget, 'svg_template'
+                        ).props('debounce=500').classes('w-full font-mono text-xs')
+
+            discovered = [
+                meta.get('topic', '') for meta in discover_widgets(cam)
+                if meta.get('topic', '') and meta.get('topic', '') not in active
+            ]
+            if discovered:
+                ui.label('Discovered widgets').classes('text-md font-bold pt-2')
+                for topic in discovered:
+                    with ui.row().classes('w-full items-center gap-2'):
+                        ui.label(topic).classes('font-mono flex-1 text-xs')
+                        ui.button(
+                            'Add',
+                            on_click=lambda topic=topic: (
+                                _overlay_add_topic(cam, topic),
+                                overlay_panel.refresh(),
+                            ),
+                        )
+
     # Natural height, not h-screen: the frame is sized by width and the page
     # scrolls, rather than the frame being squeezed into whatever vertical
     # space the controls leave over.
@@ -725,7 +1054,16 @@ def build_page():
         refresh_bandwidth()
         ui.timer(0.5, refresh_bandwidth)
 
-        settings_panels()
+        with ui.tabs().classes('w-full') as tabs:
+            image_tab = ui.tab('Image')
+            overlay_tab = ui.tab('Overlay')
+
+        with ui.tab_panels(tabs, value=image_tab).classes('w-full'):
+            with ui.tab_panel(image_tab).classes('w-full gap-2 p-0'):
+                settings_panels()
+
+            with ui.tab_panel(overlay_tab).classes('w-full gap-2 p-0'):
+                overlay_panel()
 
 
 if __name__ == '__main__':
@@ -734,9 +1072,13 @@ if __name__ == '__main__':
 
 __all__ = [
     'FRAME_ROUTE',
+    'add_metrics_widget',
     'build_page',
+    'create_overlay_widget',
     'discover_cameras',
+    'discover_widgets',
     'get_camera',
+    'remove_overlay_widget',
     'serve_frame',
     'set_authoritive',
     'set_mirror',

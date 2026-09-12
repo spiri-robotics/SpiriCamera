@@ -23,7 +23,8 @@ from loguru import logger
 from SpiriSynq.remote_callables import remote_method
 from SpiriSynq.syncable_objects import SyncableObject
 
-from SpiriCamera import exif
+from SpiriCamera import exif, overlay
+from SpiriCamera.overlay import OverlayMixin
 from SpiriCamera.sources import (
     CaptureSettings,
     SourceBase,
@@ -100,7 +101,7 @@ def topic_for_source(source_str: str) -> str:
 
 
 @dataclass
-class CameraBase(SyncableObject):
+class CameraBase(OverlayMixin, SyncableObject):
     """The network-transparent half of a camera.
 
     Every field here is published over SpiriSynq and can be set by a
@@ -195,16 +196,19 @@ class CameraBase(SyncableObject):
 
     #: Fields excluded from SpiriSynq, on top of the base class's own.
     #:
-    #: Every one of these describes the current :py:attr:`image`, and is
-    #: derived from its bytes wherever it is needed.  Publishing it
-    #: separately would let a peer pair an observation with the wrong
-    #: frame; see the class docstring.  ``_exif_tags`` and
-    #: ``_exif_timestamp`` do not need an entry here — their leading
-    #: underscore already excludes them.
+    #: Every one of these describes the current :py:attr:`image` -- either
+    #: derived from its bytes directly, or (``received_framerate``) from
+    #: the local wall-clock gap since the previous one -- and is computed
+    #: fresh wherever it is needed.  Publishing it separately would let a
+    #: peer pair an observation with the wrong frame, or with a framerate
+    #: measured against a different network path than its own; see the
+    #: class docstring.  ``_exif_tags`` and ``_exif_timestamp`` do not need
+    #: an entry here — their leading underscore already excludes them.
     synq_skip_sync = {
         "received_width",
         "received_height",
         "received_ratio",
+        "received_framerate",
     }
 
     source_str: str = ""
@@ -221,6 +225,7 @@ class CameraBase(SyncableObject):
     received_width: int = 0
     received_height: int = 0
     received_ratio: float = 0.0
+    received_framerate: float = 0.0
 
     max_width: int = 1920
     max_height: int = 1080
@@ -231,6 +236,7 @@ class CameraBase(SyncableObject):
     exif_enabled: bool = True
     _exif_tags: dict[str, str] = field(default_factory=dict)
     _exif_timestamp: float = 0.0
+    _received_frame_at: float = 0.0
 
     running: bool = False
     status: str = STATUS_STOPPED
@@ -417,6 +423,12 @@ class Camera(CameraBase):
         # mirror never does, so it has no business being synced.
         self._exif_providers: dict[str, dict[str, str]] = {}
 
+        # OverlayMixin's per-node state -- see its docstring for why
+        # this lives here rather than as dataclass fields.
+        self._overlay_widgets: dict[str, overlay.HudWidget] = {}
+        self._overlay_objects: dict[str, object] = {}
+        self._overlay_complaints: dict[str, str] = {}
+
         if is_rehydrate:
             logger.debug(
                 f"{self.synq_topic}: rebuilt from a rehydrate reply, "
@@ -439,6 +451,10 @@ class Camera(CameraBase):
         # next one arrives. Priming is harmless for a normal construction,
         # where image is still empty.
         self._on_image_changed(self.image)
+        # Same reasoning: overlay_widgets set through the constructor
+        # (a rehydrated mirror, or a caller passing it directly) needs
+        # its widgets mirrored now, not only on the next render pass.
+        self._overlay_sync_widgets()
 
         self.synq_auto_start = synq_auto_start
         if synq_auto_start:
@@ -637,6 +653,7 @@ class Camera(CameraBase):
             self.stop()
         except Exception as exc:  # pragma: no cover - shutdown best effort
             logger.debug(f"{self.synq_topic}: error while stopping: {exc}")
+        self._overlay_close()
         super().close()
 
     def __enter__(self) -> Camera:
@@ -768,6 +785,7 @@ class Camera(CameraBase):
                 )
             return self.image
 
+        frame = self._render_overlays(frame)
         encoded = self._tag(self._encode(frame), frame)
         self.image = encoded
         return encoded
@@ -1036,13 +1054,37 @@ class Camera(CameraBase):
         Fires wherever the frame came from: this camera encoding one, or
         SpiriSynq delivering one to a mirror.  That is the whole point of
         keeping these out of the sync set — there is one way to learn
-        what a frame is, and it works the same on both sides.
+        what a frame is, and it works the same on both sides, including
+        ``received_framerate``: a mirror measures the rate frames actually
+        land at over the network, which is its own observation and not
+        necessarily the same number the source side would report.
         """
         size = exif.image_size(image) if image else None
         width, height = size or (0, 0)
         self.received_width = width
         self.received_height = height
         self.received_ratio = round(width / height, 4) if height else 0.0
+
+        if image:
+            now = time.monotonic()
+            if self._received_frame_at:
+                elapsed = now - self._received_frame_at
+                instantaneous = 1.0 / elapsed if elapsed > 0 else 0.0
+                # Exponential smoothing so one late or early frame does not
+                # make the displayed rate jump around; 0.3 settles onto a
+                # steady rate within a handful of frames without being too
+                # jittery on individual ones.
+                smoothing = 0.3
+                self.received_framerate = round(
+                    smoothing * instantaneous + (1 - smoothing) * self.received_framerate
+                    if self.received_framerate
+                    else instantaneous,
+                    2,
+                )
+            self._received_frame_at = now
+        else:
+            self.received_framerate = 0.0
+            self._received_frame_at = 0.0
 
         tags = exif.extract(image) if image else {}
         self._exif_tags = tags

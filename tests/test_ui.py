@@ -15,6 +15,7 @@ from nicegui.testing.user import User
 from SpiriCamera import exif
 from SpiriCamera import ui as camera_ui
 from SpiriCamera.camera import Camera
+from SpiriCamera.overlay import HudWidget
 
 
 @pytest.fixture(autouse=True)
@@ -27,6 +28,19 @@ def fresh_meter(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     monkeypatch.setattr(camera_ui, "frame_meter", camera_ui.RateMeter())
     monkeypatch.setattr(camera_ui, "_last_counted", None)
+
+
+@pytest.fixture(autouse=True)
+def fresh_ui_widgets() -> Iterator[None]:
+    """Close and forget every widget the overlay panel created.
+
+    ``_ui_widgets`` is process-wide, matching ``_camera`` -- left alone,
+    one test's widgets would leak their zenoh resources into the next.
+    """
+    yield
+    for widget in camera_ui._ui_widgets.values():
+        widget.close()
+    camera_ui._ui_widgets.clear()
 
 
 class TestRateMeter:
@@ -264,6 +278,106 @@ class TestModeSwitching:
         user.find('Mirror').click()
 
         assert camera_ui.get_camera() is built
+
+
+class TestOverlayWidgets:
+    """Creating, listing, and removing HudWidgets from the debug UI."""
+
+    def _authoritative_camera(self) -> Camera:
+        cam = Camera('testimage://', synq_auto_start=False)
+        cam.synq_authoritive = True
+        cam.sync()
+        return cam
+
+    def test_create_overlay_widget_adds_it_to_overlay_widgets(self) -> None:
+        """The new widget's topic lands in overlay_widgets, not just the
+        widget itself getting published."""
+        cam = self._authoritative_camera()
+
+        widget = camera_ui.create_overlay_widget(cam, 'My Widget!')
+
+        assert widget.synq_absolute_path in camera_ui._overlay_topic_list(cam)
+        cam.stop()
+
+    def test_create_overlay_widget_slugifies_the_name(self) -> None:
+        """A human-typed name becomes a topic-safe slug, same idea as
+        topic_for_source for a camera's own source string."""
+        cam = self._authoritative_camera()
+
+        widget = camera_ui.create_overlay_widget(cam, 'My Widget!')
+
+        assert widget.synq_topic == 'ui_widgets/my_widget'
+        cam.stop()
+
+    def test_add_metrics_widget_adds_it_to_overlay_widgets(self) -> None:
+        cam = self._authoritative_camera()
+
+        widget = camera_ui.add_metrics_widget(cam)
+
+        assert widget.synq_absolute_path in camera_ui._overlay_topic_list(cam)
+        cam.stop()
+
+    def test_remove_overlay_widget_closes_a_ui_created_widget(self) -> None:
+        """This page owns what it creates, so removing one really
+        releases its zenoh resources rather than just forgetting it."""
+        cam = self._authoritative_camera()
+        widget = camera_ui.create_overlay_widget(cam, 'temp')
+
+        camera_ui.remove_overlay_widget(cam, widget.synq_absolute_path)
+
+        assert widget.synq_absolute_path not in camera_ui._overlay_topic_list(cam)
+        assert widget.synq_is_deleted is True
+        cam.stop()
+
+    def test_remove_overlay_widget_only_detaches_a_foreign_one(self) -> None:
+        """A widget this page did not create -- one typed in or added
+        from discovery -- is never closed out from under whoever does
+        own it; it is only detached from overlay_widgets."""
+        cam = self._authoritative_camera()
+        foreign = HudWidget(synq_topic='someone_elses_widget', synq_authoritive=True)
+        cam.overlay_widgets[foreign.synq_absolute_path] = {}
+
+        camera_ui.remove_overlay_widget(cam, foreign.synq_absolute_path)
+
+        assert foreign.synq_absolute_path not in camera_ui._overlay_topic_list(cam)
+        assert foreign.synq_is_deleted is False
+        foreign.close()
+        cam.stop()
+
+    def test_overlay_widgets_keeps_other_entries(self) -> None:
+        """Adding or removing one widget leaves the others alone."""
+        cam = self._authoritative_camera()
+        cam.overlay_widgets['some/other/widget'] = {}
+
+        widget = camera_ui.create_overlay_widget(cam, 'temp')
+        assert set(camera_ui._overlay_topic_list(cam)) == {
+            'some/other/widget', widget.synq_absolute_path,
+        }
+
+        camera_ui.remove_overlay_widget(cam, widget.synq_absolute_path)
+        assert camera_ui._overlay_topic_list(cam) == ['some/other/widget']
+        cam.stop()
+
+    async def test_overlay_panel_shows_in_the_page(self, user: User) -> None:
+        await user.open('/')
+
+        await user.should_see('Overlays')
+        await user.should_see('Add CameraMetrics')
+
+    async def test_creating_a_widget_from_the_page(self, user: User) -> None:
+        """The end-to-end path: type a name, click Create, see it listed."""
+        await user.open('/')
+
+        name_field = next(
+            element
+            for element in user.find(kind=nicegui_ui.input).elements
+            if element.props.get('label') == 'New widget name'
+        )
+        name_field.value = 'demo'
+
+        user.find('Create & Add').click()
+
+        await user.should_see('ui_widgets/demo')
 
 
 class TestPage:
