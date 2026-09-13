@@ -14,7 +14,6 @@ Usage:
 """
 
 import argparse
-import time
 from dataclasses import dataclass, field
 
 import cv2
@@ -110,18 +109,41 @@ def main() -> None:
         svg_template=BOX_OVERLAY_SVG.replace("__DET_TOPIC__", detections.synq_absolute_path),
     )
     # Attach the widget to the mirrored camera so it actually renders there.
+    #
+    # This bakes the boxes directly into `cam.image` server-side (see
+    # CameraBase.read(), which composites overlays before encoding unless
+    # `overlay_client_render` is set), which means this same script's next
+    # detection pass runs on a frame that already has its own boxes drawn
+    # on it -- the overlay it's adding is fed right back into the thing
+    # deciding what to add. Harmless for a single-process demo pointed at
+    # one camera (YOLO doesn't mistake a green rectangle for a person or a
+    # bus, so it doesn't compound), but it's not the shape a real
+    # deployment wants: there, the node that owns the camera and the node
+    # that runs detection/publishes the overlay are two separate
+    # processes, and the camera-owning one would set
+    # `cam.overlay_client_render = True` so overlays are only ever
+    # composited for display (in a browser, via
+    # `render_overlays_for_client`) and never fed back into the frames
+    # anything downstream analyzes.
     cam.overlay_widgets[widget.synq_absolute_path] = {}
 
     print(f"mirroring camera: {cam.synq_absolute_path}")
     print(f"publishing detections on: {detections.synq_absolute_path}")
     print(f"publishing overlay widget on: {widget.synq_absolute_path}")
 
+    # `cam.image` is kept up to date in the background (no `read()` to
+    # drive), so this is a plain, tight loop rather than a poll: there's
+    # no sleep pacing it, and no separate signal/callback plumbing either
+    # -- it just runs detection back-to-back, as fast as `model.predict`
+    # allows, skipping a cycle only when the frame it would run on is the
+    # exact one it already processed. In practice a real source produces
+    # frames faster than YOLO can keep up, so that check almost never
+    # fires; it only matters at startup or against a very slow source.
     last_jpeg = None
     try:
         while True:
             jpeg = cam.image
             if not jpeg or jpeg is last_jpeg:
-                time.sleep(0.02)
                 continue
             last_jpeg = jpeg
 

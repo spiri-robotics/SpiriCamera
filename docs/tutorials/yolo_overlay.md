@@ -105,10 +105,54 @@ cam = Camera.from_topic(args.topic)
 
 This is the mirror pattern described in {doc}`../getting_started` — no
 device is opened locally, `cam.image` is kept up to date in the
-background, and there is no `read()` to drive. The script polls
-`cam.image` in a loop (skipping frames that haven't changed, since
-detection is far slower than the JPEG arrives), but subscribing to
-`cam.events.image` instead would work exactly the same way.
+background, and there is no `read()` to drive. The script runs a tight
+loop, not a poll: there's no sleep pacing it, it just runs detection
+back-to-back as fast as `model.predict` allows, skipping a cycle only
+when `cam.image` is the exact same object it already processed:
+
+```python
+last_jpeg = None
+while True:
+    jpeg = cam.image
+    if not jpeg or jpeg is last_jpeg:
+        continue
+    last_jpeg = jpeg
+    ...
+```
+
+In practice a real source produces frames faster than YOLO can keep up,
+so that identity check almost never fires — it only matters at startup
+(before a first frame has arrived) or against a very slow source. This
+is deliberately *not* event-driven: an earlier version connected to
+`cam.events.image` and ran detection from that callback, but
+`cam.events.image` fires on zenoh's own callback thread, and psygnal
+holds a lock for a signal's entire emission — for as long as a connected
+slot is running. Detection taking a few hundred milliseconds meant
+`cam.events.image.disconnect()`, called from the main thread during
+shutdown, blocked on that same lock until inference finished, and the
+non-daemon zenoh thread underneath it couldn't be joined until the
+callback returned either — the process wouldn't die on `Ctrl-C`. The
+plain loop above sidesteps all of that: there's no signal connection to
+disconnect and no callback thread to wait on, so `Ctrl-C` stops it
+immediately.
+
+### A note on overlays feeding back into detection
+
+Attaching the widget to the mirrored `cam` (`cam.overlay_widgets[...] =
+{}`) bakes the boxes directly into `cam.image` server-side — see
+{py:meth}`~SpiriCamera.camera.Camera.read`, which composites overlays
+before encoding unless {py:attr}`~SpiriCamera.overlay.OverlayMixin.overlay_client_render`
+is set. That means this same script's *next* detection pass runs on a
+frame that already has its own boxes drawn on it: the overlay it just
+added is fed straight back into the thing deciding what to add.
+Harmless here — YOLO doesn't mistake a green rectangle for a person or
+a bus, so it doesn't compound — but it's not the shape a real
+deployment wants. There, the node that owns the camera and the node
+that runs detection and publishes the overlay are two separate
+processes, and the camera-owning one sets `overlay_client_render = True`
+so overlays are only ever composited for display (in a browser, via
+{py:meth}`~SpiriCamera.overlay.OverlayMixin.render_overlays_for_client`)
+and never baked into the frames anything downstream analyzes.
 
 ### Publishing detections as a generic SpiriSynq object
 

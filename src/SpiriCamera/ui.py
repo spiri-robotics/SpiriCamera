@@ -1011,9 +1011,9 @@ def build_page():
                                     )
                                 )
 
-                        ui.textarea('SVG template').bind_value(
+                        ui.codemirror(language='XML', theme='basicDark').bind_value(
                             widget, 'svg_template'
-                        ).props('debounce=500').classes('w-full font-mono text-xs')
+                        ).classes('w-full')
 
             discovered = [
                 meta.get('topic', '') for meta in discover_widgets(cam)
