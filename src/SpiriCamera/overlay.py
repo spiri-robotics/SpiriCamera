@@ -193,10 +193,47 @@ DEFAULT_FONT = "Miracode"
 #: font_load() is a global registration despite living on a `Text`
 #: instance -- the instance itself is discarded immediately, only used
 #: to reach the underlying (process-wide, thorvg-internal) font cache.
-_font_path = importlib.resources.files("SpiriCamera").joinpath("assets/Miracode.ttf")
-_font_result = thorvg.Text(_engine).font_load(str(_font_path))
+#: Public so a client-render path (:py:meth:`OverlayMixin.render_overlays_for_client`)
+#: can embed the same file as a browser ``@font-face``, keeping the
+#: browser's rendering of ``DEFAULT_FONT`` visually identical to thorvg's
+#: rather than falling back to whatever generic font the browser picks
+#: for an unresolvable ``font-family``.
+DEFAULT_FONT_PATH = importlib.resources.files("SpiriCamera").joinpath("assets/Miracode.ttf")
+_font_result = thorvg.Text(_engine).font_load(str(DEFAULT_FONT_PATH))
 if _font_result != thorvg.Result.SUCCESS:
     logger.warning(f"overlay: could not load bundled font {DEFAULT_FONT!r}: {_font_result}")
+
+# Three more thorvg SVG-parser gaps, same family as the font-loading one
+# above, all affecting how `<text>` renders:
+#
+# 1. `dy` on `<text>` is silently ignored -- a template that writes
+#    `<text y="20" dy="-4">` renders identically to one with no `dy` at
+#    all, baseline pinned to `y`. A widget author positioning text
+#    relative to some other element (a box's top edge, say) has to bake
+#    that offset into `y` itself, e.g. `y="{{ box.y - 4 }}"` rather than
+#    `y="{{ box.y }}" dy="-4"` -- see ``examples/yolo_overlay.py``'s
+#    ``BOX_OVERLAY_SVG`` for a worked example. There is no general fix
+#    for this one short of rewriting every `dy` into the `y` it modifies,
+#    which is indistinguishable from just not using `dy`.
+# 1b. `stroke`, `stroke-width`, and `paint-order` are all silently
+#    ignored on `<text>` too -- there is no way to get a real
+#    outlined/stroked label out of thorvg. `fill` on `<text>` works
+#    fine, so a widget author wanting a label legible over an arbitrary
+#    background fakes the outline instead: draw the same text several
+#    times at small pixel offsets in one colour (typically black), then
+#    once more, undisplaced, in the real colour on top -- see
+#    ``examples/yolo_overlay.py``'s ``BOX_OVERLAY_SVG`` (``halo_offsets``)
+#    for a worked example.
+# 2. Independent of (1): even a plain `y` with no `dy` involved lands a
+#    few pixels low of where the same SVG renders in a browser -- see
+#    :py:func:`_correct_text_baseline` and ``_TEXT_BASELINE_SLOPE``/
+#    ``_TEXT_BASELINE_INTERCEPT`` below for the empirical fix
+#    :py:func:`rasterize` applies for this one automatically.
+#
+# Neither affects a browser, which honors `dy` and places a plain `y`
+# baseline correctly -- see :py:meth:`OverlayMixin.render_overlays_for_client`,
+# which renders the *un*corrected template text client-side and would
+# double-correct if it reused either workaround.
 
 
 class OverlayError(ValueError):
@@ -239,12 +276,21 @@ class HudWidget(SyncableObject):
     custom_anchor_y : float
         Percent (0-100) of the frame's height. See
         :py:attr:`custom_anchor_x`.
+    z_index : float
+        Paint order relative to this camera's other overlay widgets --
+        higher paints on top, lower underneath. Widgets sharing a value
+        keep the stable order they'd otherwise render in (insertion
+        order of :py:attr:`OverlayMixin.overlay_widgets`). Ties with
+        another widget's overlapping frame content (e.g. a bounding-box
+        widget meant to sit under a HUD) are the usual reason to set
+        this away from the default.
     """
 
     svg_template: str = ""
     anchor: str = "top_left"
     custom_anchor_x: float = 0.0
     custom_anchor_y: float = 0.0
+    z_index: float = 0.0
 
 
 def declared_objects(svg_template: str) -> dict[str, str]:
@@ -389,6 +435,70 @@ _ROOT_SVG_TAG_RE = re.compile(r"<svg\b[^>]*>", re.IGNORECASE)
 #: Matches a ``width="20%"``/``height="20%"`` attribute within a tag
 #: matched by ``_ROOT_SVG_TAG_RE``.
 _PERCENT_SIZE_ATTR_RE = re.compile(r'\b(width|height)\s*=\s*"(-?[0-9]+(?:\.[0-9]+)?)%"')
+
+#: Matches a ``<text ...>`` opening tag, to read/rewrite its ``y`` for
+#: :py:func:`_correct_text_baseline`. Deliberately does not also match
+#: ``<tspan>`` -- none of this module's own templates or
+#: ``examples/yolo_overlay.py`` use one, and a tspan's ``y`` is relative
+#: to its parent ``<text>`` in a way this line-level regex has no way to
+#: track.
+_TEXT_TAG_RE = re.compile(r"<text\b[^>]*>", re.IGNORECASE)
+
+#: Matches a ``y="..."`` attribute within a tag matched by ``_TEXT_TAG_RE``.
+_Y_ATTR_RE = re.compile(r'\by\s*=\s*"(-?[0-9]+(?:\.[0-9]+)?)"')
+
+#: Matches a ``font-size="..."`` attribute within a tag matched by
+#: ``_TEXT_TAG_RE``.
+_FONT_SIZE_ATTR_RE = re.compile(r'\bfont-size\s*=\s*"(-?[0-9]+(?:\.[0-9]+)?)"')
+
+#: ``font-size`` this module's default font renders at when a ``<text>``
+#: does not declare one of its own -- the CSS/SVG initial value, same as
+#: every browser assumes.
+_DEFAULT_TEXT_FONT_SIZE = 16.0
+
+#: Empirical fit (least-squares over ``font-size`` 8..64, error <=1px in
+#: that range) for how many pixels low of its declared ``y`` thorvg's
+#: software rasterizer actually draws a ``<text>`` baseline, using the
+#: bundled Miracode font -- see :py:func:`_correct_text_baseline`. Not
+#: derived from any documented thorvg behaviour (there is none to derive
+#: it from); re-measure both constants (render "H" at a few font sizes,
+#: as in the exploration this fix came from, and compare the solid
+#: pixel rows against the declared ``y``) if thorvg or the bundled font
+#: is ever upgraded and overlay text visibly drifts again.
+_TEXT_BASELINE_SLOPE = 0.1915
+_TEXT_BASELINE_INTERCEPT = -1.074
+
+
+def _correct_text_baseline(svg: str) -> str:
+    """Shift every ``<text>``'s ``y`` up to counter thorvg's low baseline.
+
+    Only meant for the SVG about to be handed to thorvg
+    (:py:func:`rasterize`) -- a browser (:py:meth:`OverlayMixin.render_overlays_for_client`)
+    already places a plain ``y`` correctly and must render the
+    *uncorrected* template, or it would shift text that was never wrong
+    there in the first place. See the module-level comment above
+    ``_TEXT_BASELINE_SLOPE`` for where the correction itself comes from.
+
+    A ``<text>`` with no ``y`` at all is left alone -- there is nothing
+    here to shift.
+    """
+
+    def _shift(match: re.Match[str]) -> str:
+        tag = match.group(0)
+        y_match = _Y_ATTR_RE.search(tag)
+        if y_match is None:
+            return tag
+        font_size_match = _FONT_SIZE_ATTR_RE.search(tag)
+        font_size = (
+            float(font_size_match.group(1)) if font_size_match else _DEFAULT_TEXT_FONT_SIZE
+        )
+        correction = round(_TEXT_BASELINE_SLOPE * font_size + _TEXT_BASELINE_INTERCEPT)
+        if correction <= 0:
+            return tag
+        corrected_y = float(y_match.group(1)) - correction
+        return tag[: y_match.start(1)] + f"{corrected_y:g}" + tag[y_match.end(1) :]
+
+    return _TEXT_TAG_RE.sub(_shift, svg)
 
 
 def _percent_size(svg: str) -> tuple[float, float] | None:
@@ -557,6 +667,7 @@ def rasterize(
         or uses percentage sizing with no frame size given to scale it
         against.
     """
+    svg = _correct_text_baseline(svg)
     picture, natural_width, natural_height = _load_and_measure(svg, frame_width, frame_height)
 
     width, height = math.ceil(natural_width), math.ceil(natural_height)
@@ -825,6 +936,11 @@ class OverlayMixin:
     #:   object a widget's declared alias resolves to, for this camera
     #:   alone. Omitted, or missing a given alias -> use that alias's own
     #:   ``{# object: alias = default_topic #}`` declaration.
+    #: - ``"z_index"``: overrides the widget's own
+    #:   :py:attr:`HudWidget.z_index` for this camera alone -- e.g. a
+    #:   bounding-box widget authored to sit underneath, but wanted on
+    #:   top for one particular camera. Omitted -> use the widget's own
+    #:   ``z_index``, same as every other camera mirroring it.
     #:
     #: A widget's mere presence as a key is what makes this camera render
     #: it -- there is no separate list of topics. An
@@ -844,6 +960,24 @@ class OverlayMixin:
     #: result in the browser instead. A plain synced field like any
     #: other -- flippable live, no camera reconstruction needed.
     overlay_client_render: bool = False
+
+    def _overlay_ordered_widgets(self) -> list[tuple[str, "HudWidget"]]:
+        """``_overlay_widgets`` items in paint order: lowest effective
+        ``z_index`` first, so later items in the returned list are
+        drawn on top of earlier ones. "Effective" because this camera's
+        own ``overlay_widgets[topic]["z_index"]``, if present, overrides
+        the widget's own :py:attr:`HudWidget.z_index` -- same override
+        pattern as ``"x"``/``"y"``, see :py:attr:`overlay_widgets`.
+        Stable, so widgets sharing a ``z_index`` keep their
+        ``_overlay_widgets`` insertion order rather than being
+        reshuffled every call.
+        """
+        return sorted(
+            self._overlay_widgets.items(),
+            key=lambda item: self.overlay_widgets.get(item[0], {}).get(
+                "z_index", item[1].z_index
+            ),
+        )
 
     def _overlay_sync_widgets(self) -> None:
         """Reconcile mirrored widgets and mirrored data-source objects
@@ -1033,7 +1167,7 @@ class OverlayMixin:
             "framerate": round(self.received_framerate, 1),
         }
         result = frame
-        for topic, widget in self._overlay_widgets.items():
+        for topic, widget in self._overlay_ordered_widgets():
             try:
                 svg = render_svg(
                     widget.svg_template,
@@ -1096,10 +1230,16 @@ class OverlayMixin:
         -------
         str
             Zero or more ``<g transform="translate(...)">...</g>``
-            elements, one per resolvable widget, meant to be wrapped in
-            a ``<svg viewBox="0 0 {frame_width} {frame_height}">`` by
-            the caller. Empty when ``overlay_widgets`` is empty or no
-            widget currently resolves -- same no-op contract as
+            elements, one per resolvable widget, meant to be wrapped by
+            the caller in a
+            ``<svg viewBox="0 0 {frame_width} {frame_height}" width="100%"
+            height="100%" preserveAspectRatio="xMidYMid meet">`` -- the
+            explicit size and "meet" matter whenever the display box's
+            aspect ratio can differ from the frame's (e.g. a resizable
+            viewport), so this letterboxes the same way the ``<img>``
+            does rather than stretching non-uniformly to fill the box.
+            Empty when ``overlay_widgets`` is empty or no widget
+            currently resolves -- same no-op contract as
             :py:meth:`_render_overlays`.
         """
         self._overlay_sync_widgets()
@@ -1112,7 +1252,7 @@ class OverlayMixin:
             "framerate": round(self.received_framerate, 1),
         }
         pieces: list[str] = []
-        for topic, widget in self._overlay_widgets.items():
+        for topic, widget in self._overlay_ordered_widgets():
             try:
                 svg = render_svg(
                     widget.svg_template,
@@ -1165,6 +1305,8 @@ class OverlayMixin:
 
 __all__ = [
     "ANCHORS",
+    "DEFAULT_FONT",
+    "DEFAULT_FONT_PATH",
     "EXIF_NAME",
     "FRAME_NAME",
     "OBJECTS_NAME",

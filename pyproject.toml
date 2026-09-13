@@ -25,6 +25,7 @@ dependencies = [
 [project.optional-dependencies]
 docs = ["sphinx>=9.1.0", "furo>=2024.0", "myst-parser>=5.1.0"]
 ui = ["nicegui>=2.0.0"]
+examples = ["ultralytics>=8.3.0"]
 
 [project.scripts]
 SpiriCamera = "SpiriCamera.cli:app"
@@ -48,3 +49,11 @@ dev = [
     "pytest-cov>=7.1.0",
     "coverage>=7.0.0",
 ]
+
+[tool.uv]
+# ultralytics (the "examples" extra) depends on GUI opencv-python, which
+# installs a conflicting copy of the cv2 package alongside
+# opencv-python-headless above and breaks import cv2 wherever there's no
+# X server. Void that dependency instead -- headless already provides
+# everything ultralytics needs.
+override-dependencies = ["opencv-python; sys_platform == 'never'"]

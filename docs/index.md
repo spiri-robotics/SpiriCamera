@@ -10,5 +10,6 @@ Work with Cameras in SpiriSynq
 
 getting_started
 architecture
+tutorials/yolo_overlay
 api/index
 ```

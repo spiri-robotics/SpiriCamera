@@ -42,6 +42,13 @@ autodoc_default_options = {
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 
+# fastapi/nicegui are mocked because importing them for real during a docs
+# build triggers a pydantic bug on Python 3.14 where an unrelated model's
+# schema generation corrupts the schema-ref cache for fastapi's own model
+# (id() reuse in a pydantic internal cache — pydantic/pydantic#8647), causing
+# ImportError while autodocing SpiriCamera.ui / SpiriCamera.whep.
+autodoc_mock_imports = ["fastapi", "nicegui"]
+
 # Napoleon settings for Google-style docstrings
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False

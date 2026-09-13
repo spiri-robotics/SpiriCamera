@@ -7,11 +7,21 @@ import pytest
 from SpiriCamera.sources.base import CaptureSettings, SourceError
 from SpiriCamera.sources.testimage import (
     DEFAULT_IMAGE,
+    YOLO_DEMO_IMAGE,
     fit_inside,
+    raster_test_images,
     svg_aspect_ratio,
     test_images as load_test_images,
 )
 from SpiriCamera.sources import resolve_source
+
+#: Whether ultralytics (the "examples" extra) is installed, and so
+#: whether the yolo_demo raster pattern is available to test against.
+HAS_YOLO_DEMO = YOLO_DEMO_IMAGE in raster_test_images()
+
+requires_yolo_demo = pytest.mark.skipif(
+    not HAS_YOLO_DEMO, reason="yolo_demo needs the 'examples' extra (ultralytics)"
+)
 
 #: Small enough to keep rasterising cheap in tests.
 SMALL = CaptureSettings(max_width=160, max_height=120)
@@ -170,3 +180,51 @@ class TestTestImageSource:
         assert frame is not None
         assert frame.ndim == 3
         assert frame.shape[2] == 3
+
+
+class TestYoloDemoImage:
+    """The optional raster pattern used to exercise ML pipelines."""
+
+    def test_missing_without_examples_extra(self) -> None:
+        """Without ultralytics installed, the pattern is simply absent."""
+        if HAS_YOLO_DEMO:
+            pytest.skip("ultralytics is installed in this environment")
+        with pytest.raises(SourceError, match="Unknown test image"):
+            resolve_source(f"testimage://{YOLO_DEMO_IMAGE}")
+
+    @requires_yolo_demo
+    def test_reports_no_resolution_limits(self) -> None:
+        """Like the SVG patterns, a rendered photo has no maximum size."""
+        source = resolve_source(f"testimage://{YOLO_DEMO_IMAGE}")
+        capabilities = source.open(SMALL)
+        assert capabilities.max_supported_width is None
+        assert capabilities.max_supported_height is None
+
+    @requires_yolo_demo
+    def test_read_returns_bgr_frame(self) -> None:
+        """A cropped, resized photo is still a three-channel BGR array."""
+        source = resolve_source(f"testimage://{YOLO_DEMO_IMAGE}")
+        source.open(SMALL)
+
+        frame = source.read(SMALL)
+
+        assert frame is not None
+        assert frame.ndim == 3
+        assert frame.shape[2] == 3
+
+    @requires_yolo_demo
+    def test_moves_between_reads(self) -> None:
+        """Unlike a static pattern, consecutive reads are not identical.
+
+        The pan is slow (one revolution every 24s), so back-to-back
+        reads land at slightly different points on the circle rather
+        than an unchanging frame -- this is what lets the pattern
+        exercise a moving-frame overlay.
+        """
+        source = resolve_source(f"testimage://{YOLO_DEMO_IMAGE}")
+        source.open(SMALL)
+
+        first = source.read(SMALL)
+        second = source.read(SMALL)
+
+        assert first is not second

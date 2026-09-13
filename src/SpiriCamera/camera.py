@@ -944,7 +944,7 @@ class Camera(CameraBase):
         return frozenset(self._exif_providers)
 
     def exif_update(self, **tags: str) -> None:
-        """Merge tags into the default, unscoped tag bucket.
+        r"""Merge tags into the default, unscoped tag bucket.
 
         A convenience for the common case of one caller adding a tag or
         two without needing a provider name of its own.  Two *different*
@@ -955,7 +955,7 @@ class Camera(CameraBase):
 
         Parameters
         ----------
-        **tags : str
+        \*\*tags : str
             Tags to add or replace in the default bucket.  A value of
             ``""`` drops that one tag from the default bucket, leaving
             the rest of it, and every other provider, untouched.

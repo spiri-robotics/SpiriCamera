@@ -178,6 +178,79 @@ as bugs in a UI far from the handler:
   half-typed, live-edited source string without raising. If your
   handler needs validation, do it in `open()`, not in the constructor.
 
+(the-overlay-layer)=
+## The overlay layer
+
+{py:mod}`SpiriCamera.overlay` bakes SVG "HUD" widgets into a frame before
+it is encoded. A widget ({py:class}`~SpiriCamera.overlay.HudWidget`) is
+its own `SyncableObject`, published wherever its author runs (a UI
+panel, an ML detector) — a camera never creates one, it only mirrors
+the widgets named in its `overlay_widgets` field
+({py:class}`~SpiriCamera.overlay.OverlayMixin`, mixed into
+{py:class}`~SpiriCamera.camera.CameraBase`). This split — author owns
+the widget, camera only opts in — is what lets several cameras share
+one widget definition while each binds it to its own data and
+placement.
+
+A widget's SVG is templated with MiniJinja against three separate
+namespaces, and *why there are three* is the one thing worth
+understanding before touching this code:
+
+- `exif` — the current frame's tags.
+- `frame` — the current frame's actual, as-received width/height/
+  framerate and a render-time timestamp. These are injected directly
+  rather than read through `objects` because they are exactly the
+  fields the "Frame-derived fields never travel as their own field"
+  rule above forbids publishing as synced attributes — there is no
+  topic a widget could declare to reach them.
+- `objects` — the latest field values of any other SpiriSynq object a
+  widget declares for itself, by alias, via a
+  `{# object: <alias> = <default topic> #}` comment next to where the
+  alias is used. The alias exists because a real topic can contain
+  characters (a hyphen in a hostname) that are not valid inside a
+  `{{ }}` expression, and because a camera rendering the widget can
+  rebind an alias to a different concrete object without touching the
+  shared widget definition (see `overlay_widgets`' `"bindings"` key).
+
+`SpiriCamera.overlay.resolve_objects` cross-checks MiniJinja's own
+static analysis of what a template *reads* against what it
+*declares*, and raises immediately if an alias is used with no
+matching declaration — a widget author gets that error at authoring
+time rather than a silently blank value baked into every frame.
+
+**Rendering never scales.** `rasterize()` renders each widget at its
+own natural pixel size (`Picture.get_size()`); `composite()` alpha
+blends it onto the frame at whatever position `anchor_position()`
+computes and clips the rest. A widget author who writes
+`font-size="24"` gets a real 24px regardless of the camera's
+resolution — scaling the raster to fit a declared box was rejected
+because it either blurs small text or makes it illegible on a 4K
+frame. Text is drawn by `thorvg`, using the bundled `Miracode` font
+registered once at import time; `thorvg` never falls back to an
+OS-installed font, so a widget that references an unloaded font family
+renders nothing for that text, silently.
+
+**Failure is per-widget, per-frame, and never fatal.** A widget that
+fails to render — a template error, a declared object with no value
+yet — is skipped for that frame and logged once
+(`OverlayMixin._overlay_complain` de-duplicates by message so a
+persistently-broken widget does not spam the log every frame). One
+broken overlay is not allowed to stop the camera from publishing.
+
+**Mirroring is lazy and cheap to re-check.** `_overlay_sync_widgets`
+and `_overlay_sync_objects` run once per frame but only do network work
+(mirroring a widget or a data-source object) the first time a topic is
+seen; anything already mirrored is trusted to update itself live via
+its own SpiriSynq subscription. That is what makes it safe to call
+every frame, which is how newly-added or newly-rebound
+`overlay_widgets` entries get picked up promptly without wiring
+fine-grained `EventedDict` change signals.
+
+See the {py:mod}`SpiriCamera.overlay` module docstring for the full
+reasoning, and {py:func}`~SpiriCamera.overlay.camera_metrics_widget`
+for a worked example of a ready-made widget that reads both `frame`
+and its own camera's live fields via `objects`.
+
 ## The debug UI's bandwidth and latency readout
 
 `SpiriCamera.ui` runs one `Camera` per process (`get_camera()`, module

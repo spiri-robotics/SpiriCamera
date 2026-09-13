@@ -44,12 +44,13 @@ from SpiriCamera.main import get_settings
 from SpiriCamera.overlay import (
     ANCHORS,
     DEFAULT_FONT,
+    DEFAULT_FONT_PATH,
     HudWidget,
     camera_metrics_widget,
     declared_objects,
     tiger_widget,
 )
-from SpiriCamera.sources.testimage import test_images
+from SpiriCamera.sources.testimage import raster_test_images, test_images
 from SpiriCamera.sources.v4l import list_devices
 
 #: Route the browser pulls frames from.
@@ -364,6 +365,19 @@ _NEW_WIDGET_TEMPLATE = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" h
   <rect width="200" height="50" fill="black" fill-opacity="0.5"/>
   <text x="8" y="30" font-family="{DEFAULT_FONT}" font-size="18" fill="white">Hello, {{{{ exif.topic }}}}</text>
 </svg>'''
+
+#: Embeds the same font file thorvg loads server-side as a browser
+#: ``@font-face``, so `refresh_overlay`'s client-rendered SVG (widgets'
+#: ``font-family="{DEFAULT_FONT}"``) resolves to Miracode in the browser
+#: instead of silently falling back to a generic font -- which otherwise
+#: makes overlay text look different between `overlay_client_render`
+#: on and off even though every other pixel of placement matches.
+#: A data URI rather than a static route: the font never changes at
+#: runtime, and this avoids standing up static file serving just for it.
+_DEFAULT_FONT_FACE_CSS = (
+    f"@font-face {{ font-family: '{DEFAULT_FONT}'; "
+    f"src: url(data:font/ttf;base64,{base64.b64encode(DEFAULT_FONT_PATH.read_bytes()).decode()}); }}"
+)
 
 
 def _overlay_topic_list(cam: Camera) -> list[str]:
@@ -684,6 +698,8 @@ def _source_options() -> dict[str, str]:
     options = {
         f'testimage://{name}': f'Test pattern: {name}' for name in sorted(test_images())
     }
+    for name in sorted(raster_test_images()):
+        options[f'testimage://{name}'] = f'Test photo: {name}'
     for device in list_devices():
         options[device['path']] = device['label']
     return options
@@ -692,6 +708,7 @@ def _source_options() -> dict[str, str]:
 @ui.page('/')
 def build_page():
     """Build the camera test UI page."""
+    ui.add_head_html(f'<style>{_DEFAULT_FONT_FACE_CSS}</style>')
 
     def refresh_all() -> None:
         """Rebuild every camera-bound panel after the camera is swapped."""
@@ -804,11 +821,11 @@ def build_page():
                 ui.label('Image Settings').classes('text-lg font-bold')
                 ui.label('Quality')
                 with ui.row().classes('w-full items-center gap-2 flex-nowrap'):
-                    ui.slider(min=1, max=100).bind_value(cam, 'quality').classes('flex-1')
-                    ui.number(min=1, max=100).bind_value(cam, 'quality').classes('w-20')
-                ui.number('Max Width').bind_value(cam, 'max_width').classes('w-full')
-                ui.number('Max Height').bind_value(cam, 'max_height').classes('w-full')
-                ui.number('Max Framerate').bind_value(cam, 'max_framerate').classes('w-full')
+                    ui.slider(min=1, max=100).bind_value(cam, 'quality', forward=int).classes('flex-1')
+                    ui.number(min=1, max=100).bind_value(cam, 'quality', forward=int).classes('w-20')
+                ui.number('Max Width').bind_value(cam, 'max_width', forward=int).classes('w-full')
+                ui.number('Max Height').bind_value(cam, 'max_height', forward=int).classes('w-full')
+                ui.number('Max Framerate').bind_value(cam, 'max_framerate', forward=int).classes('w-full')
                 ui.input('Mimetype').bind_value(cam, 'mimetype').classes('w-full')
                 ui.switch('Tag frames').bind_value(cam, 'exif_enabled')
 
@@ -1028,8 +1045,56 @@ def build_page():
         # bounded by a short card.
         ui.add_css('.camera-frame img { object-fit: contain; }')
 
-        with ui.card().classes('w-full p-0 overflow-hidden'):
-            frame = ui.interactive_image(FRAME_ROUTE).classes('camera-frame w-full')
+        # Plain CSS resize handle (bottom-right corner drag) rather than a
+        # custom JS drag handler -- the browser already tracks the pointer
+        # and clamps to min-width/min-height for us. interactive_image
+        # normally derives its own height from the loaded image's aspect
+        # ratio (nicegui/elements/interactive_image.js), which ignores
+        # whatever height the card is dragged to; fill the card instead and
+        # let object-fit letterbox any mismatch with the image's own ratio.
+        ui.add_css('''
+            .camera-viewport {
+                resize: both;
+                overflow: hidden;
+                min-width: 160px;
+                min-height: 90px;
+                height: 360px;
+            }
+            .camera-wrap {
+                position: relative;
+                height: 100%;
+            }
+            .camera-frame {
+                height: 100% !important;
+            }
+            .overlay-svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+        ''')
+
+        # The overlay lives in its own element, laid over interactive_image
+        # rather than injected into interactive_image's own <svg> (see
+        # nicegui/elements/interactive_image.js): that <svg> is hardcoded
+        # to preserveAspectRatio="none", stretching non-uniformly to fill
+        # its box, so anything nested inside it inherits that same skew and
+        # can't be un-distorted by giving the nested content its own
+        # preserveAspectRatio. Two siblings sharing one box, each doing its
+        # own "contain"/"meet" letterboxing against that same box, agree on
+        # where the letterboxing falls without either needing to know about
+        # the other.
+        with ui.card().classes('camera-viewport w-full p-0'):
+            with ui.element('div').classes('camera-wrap w-full'):
+                frame = ui.interactive_image(FRAME_ROUTE).classes('camera-frame w-full')
+                # sanitize=False: this is our own server-rendered overlay
+                # SVG, not user-supplied HTML, and ui.html's default
+                # sanitizer (the browser's native Sanitizer API) doesn't
+                # reliably pass through SVG the way interactive_image's own
+                # DOMPurify-with-svg-profile sanitizer did.
+                overlay = ui.html('', sanitize=False).classes('overlay-svg')
 
         bandwidth = ui.label().classes('w-full px-2 font-mono text-sm opacity-70')
 
@@ -1040,7 +1105,7 @@ def build_page():
             refresh_overlay()
 
         def refresh_overlay() -> None:
-            """Push live overlay SVG into the frame's ``content`` layer.
+            """Push live overlay SVG into the ``overlay`` element.
 
             Only does anything when ``overlay_client_render`` is set --
             otherwise the overlay, if any, is already burned into the
@@ -1052,8 +1117,18 @@ def build_page():
             if cam.overlay_client_render and cam.received_width and cam.received_height:
                 body = cam.render_overlays_for_client(cam.received_width, cam.received_height)
                 if body:
-                    body = f'<svg viewBox="0 0 {cam.received_width} {cam.received_height}">{body}</svg>'
-            frame.set_content(body)
+                    # Own top-level <svg>, sized against the same box as
+                    # the image (see the .camera-frame CSS above) and
+                    # letterboxed with "xMidYMid meet" against the frame's
+                    # own resolution -- matching the image's object-fit:
+                    # contain letterboxing without either element needing
+                    # to know about the other.
+                    body = (
+                        f'<svg viewBox="0 0 {cam.received_width} {cam.received_height}" '
+                        f'width="100%" height="100%" preserveAspectRatio="xMidYMid meet">'
+                        f'{body}</svg>'
+                    )
+            overlay.set_content(body)
 
         def refresh_bandwidth() -> None:
             """Show the frame that arrived, and what the route is delivering.

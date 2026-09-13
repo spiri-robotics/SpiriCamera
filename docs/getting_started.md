@@ -254,6 +254,70 @@ scene produce different bytes. Set `exif_enabled = False` for
 byte-identical frames, which psygnal then suppresses rather than
 republishing.
 
+### Overlays
+
+A camera can bake a small SVG "HUD" onto every frame before it is
+encoded — a resolution/framerate readout, a battery level, anything
+templated from live data. The built-in metrics overlay is the
+quickest way to see this working:
+
+```python
+from SpiriCamera import Camera
+from SpiriCamera.overlay import camera_metrics_widget
+
+cam = Camera("/dev/video0")
+widget = camera_metrics_widget(cam)          # publishes its own topic
+cam.overlay_widgets[widget.synq_topic] = {}   # opt this camera into it
+cam.start()
+```
+
+`cam.image` now includes the overlay, composited fresh on every frame.
+Removing the entry (`del cam.overlay_widgets[widget.synq_topic]`) drops
+it again immediately — no restart needed.
+
+A widget you author yourself is a {py:class}`~SpiriCamera.overlay.HudWidget`:
+an SVG template, MiniJinja-rendered against the current frame's `exif`
+tags, its actual `frame` (as-received width/height/framerate), and any
+other live SpiriSynq object it declares under `objects`:
+
+```python
+from SpiriCamera.overlay import HudWidget
+
+widget = HudWidget(
+    synq_topic="my-hud",
+    synq_authoritive=True,
+    anchor="top_right",
+    svg_template="""
+        {# object: battery = azrael/battery_monitor #}
+        <svg xmlns="http://www.w3.org/2000/svg" width="160" height="30">
+          <text x="4" y="20" font-size="16" fill="white">
+            {{ objects.battery.voltage }}V @ {{ frame.framerate }}fps
+          </text>
+        </svg>
+    """,
+)
+cam.overlay_widgets[widget.synq_topic] = {}
+```
+
+The `{# object: battery = ... #}` comment declares both the alias used
+in the template and the default topic it mirrors — every camera that
+opts into this widget gets that binding unless it overrides it for
+itself:
+
+```python
+cam.overlay_widgets[widget.synq_topic] = {
+    "bindings": {"battery": "some-other-host/battery_monitor"},
+    "x": 2, "y": 2,   # percent-of-frame position override, this camera only
+}
+```
+
+A widget you author is not owned by any one camera — publish it once
+and any number of cameras can mirror it, each with its own binding and
+placement overrides. See {py:mod}`SpiriCamera.overlay` (or the
+{ref}`overlay architecture notes <the-overlay-layer>`) for the full
+templating rules, including why `frame` is a separate namespace from
+`objects`.
+
 ### Configuration
 
 Camera parameters are configured via environment variables:
