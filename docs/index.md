@@ -9,6 +9,7 @@ Work with Cameras in SpiriSynq
 :caption: Contents
 
 getting_started
+exif
 architecture
 tutorials/yolo_overlay
 api/index
