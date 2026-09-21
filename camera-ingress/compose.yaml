@@ -1,0 +1,31 @@
+# camera-ingress: captures from a source and publishes frames onto
+# SpiriSynq, continuously, until stopped.
+#
+# Defaults to the bundled synthetic test pattern so it runs with no
+# hardware attached -- useful for trying the app store entry itself.
+# For a real camera, set SOURCE (e.g. SOURCE=/dev/video0 or
+# SOURCE=rtsp://user:pass@host/stream) and, for a local device, add a
+# devices: mapping for it.
+services:
+  camera-ingress:
+    image: ghcr.io/spiri-robotics/spiricamera:latest
+    restart: unless-stopped
+    command: ["SpiriCamera", "run"]
+    # On `spirisynq`, not host: the zenoh-router app on that network lets
+    # peers reach each other without LAN multicast. Install zenoh-router
+    # first.
+    networks:
+      - spirisynq
+    environment:
+      - SPIRICAMERA_SOURCE=${SOURCE:-testimage://pm5544}
+      - SPIRICAMERA_QUALITY=${QUALITY:-80}
+      - SPIRICAMERA_FRAME_WIDTH=${FRAME_WIDTH:-1920}
+      - SPIRICAMERA_FRAME_HEIGHT=${FRAME_HEIGHT:-1080}
+      - SPIRICAMERA_FRAMERATE=${FRAMERATE:-30}
+    # devices:
+    #   - ${SOURCE}:${SOURCE}
+
+networks:
+  spirisynq:
+    name: spirisynq
+    external: true

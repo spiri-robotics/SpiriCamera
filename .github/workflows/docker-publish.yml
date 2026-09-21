@@ -1,0 +1,120 @@
+name: Build and Publish Docker Image
+
+# Registry defaults to GHCR and needs no secrets there (uses GITHUB_TOKEN).
+# To publish elsewhere instead, set repository variables (Settings > Secrets
+# and variables > Actions > Variables) without touching this file:
+#   REGISTRY   - e.g. docker.io (default: ghcr.io)
+#   IMAGE_NAME - e.g. myorg/spiricamera (default: spiri-robotics/spiricamera --
+#                GHCR needs a lowercase name, and github.repository is
+#                "spiri-robotics/SpiriCamera", so that default is hardcoded
+#                below rather than derived)
+#
+# On a release tag, also opens a PR against spiri-robotics/Appstore-Spiri_development
+# bumping every compose.yaml in that repo whose image matches this one, to
+# the new tag. That covers all of SpiriCamera's app-store entries there
+# (camera-ingress, camera-debug-ui, ...) with no per-app configuration.
+# Requires an APP_STORE_TOKEN secret (a PAT with push + PR access on that repo).
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+
+env:
+  REGISTRY: ${{ vars.REGISTRY || 'ghcr.io' }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME || 'spiri-robotics/spiricamera' }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.REGISTRY == 'docker.io' && secrets.DOCKERHUB_USERNAME || github.actor }}
+          password: ${{ env.REGISTRY == 'docker.io' && secrets.DOCKERHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=edge,branch=main
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  update-app-store:
+    needs: build-and-push
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      # secrets aren't readable in a job-level `if:`, so each step below
+      # is individually gated instead -- the whole job no-ops rather than
+      # failing when APP_STORE_TOKEN hasn't been set up yet.
+      - name: Checkout project
+        if: ${{ secrets.APP_STORE_TOKEN != '' }}
+        uses: actions/checkout@v4
+        with:
+          path: project
+
+      - name: Checkout app store
+        if: ${{ secrets.APP_STORE_TOKEN != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: spiri-robotics/Appstore-Spiri_development
+          token: ${{ secrets.APP_STORE_TOKEN }}
+          path: app-store
+
+      - uses: actions/setup-python@v5
+        if: ${{ secrets.APP_STORE_TOKEN != '' }}
+        with:
+          python-version: "3.13"
+
+      - name: Bump every matching compose.yaml
+        id: bump
+        if: ${{ secrets.APP_STORE_TOKEN != '' }}
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          NEW_VERSION: ${{ github.ref_name }}
+          SEARCH_ROOT: "app-store"
+        run: |
+          pip install --quiet ruamel.yaml
+          changed=$(python3 project/.github/scripts/bump_app_store_compose.py \
+            --search-root "$SEARCH_ROOT" --image-ref "$IMAGE_REF" --version "$NEW_VERSION")
+          echo "Bumped: $changed"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+      - name: Open pull request
+        if: ${{ secrets.APP_STORE_TOKEN != '' }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.APP_STORE_TOKEN }}
+          path: app-store
+          branch: release-spiricamera-${{ github.ref_name }}
+          commit-message: "SpiriCamera: release ${{ github.ref_name }}"
+          title: "SpiriCamera: release ${{ github.ref_name }}"
+          body: |
+            Automated update from the [SpiriCamera](${{ github.server_url }}/${{ github.repository }}) release workflow.
+
+            Bumps to `${{ github.ref_name }}`:
+            ${{ steps.bump.outputs.changed }}

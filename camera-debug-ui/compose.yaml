@@ -1,0 +1,26 @@
+# camera-debug-ui: NiceGUI page for inspecting a camera's frames and
+# creating/editing the HudWidget overlays baked into them. Talks to
+# camera-ingress (or any other SpiriCamera) over SpiriSynq -- it does
+# not capture from hardware itself, so it has nothing to point at a
+# source string for.
+services:
+  camera-debug-ui:
+    image: ghcr.io/spiri-robotics/spiricamera:latest
+    restart: unless-stopped
+    command: ["python", "-m", "SpiriCamera.ui"]
+    # On `spirisynq`, not host: the zenoh-router app on that network lets
+    # peers reach each other without LAN multicast, and SpiriConfig's
+    # plugin discovery needs the container's bridge-network IP anyway.
+    # Install zenoh-router first.
+    networks:
+      - spirisynq
+    labels:
+      spiriconfig.plugin.name: camera-debug-ui
+      spiriconfig.plugin.port: "8080"
+      spiriconfig.plugin.title: Camera Debug
+      spiriconfig.plugin.icon: camera_alt
+
+networks:
+  spirisynq:
+    name: spirisynq
+    external: true

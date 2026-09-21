@@ -709,6 +709,10 @@ def _source_options() -> dict[str, str]:
 def build_page():
     """Build the camera test UI page."""
     ui.add_head_html(f'<style>{_DEFAULT_FONT_FACE_CSS}</style>')
+    # Deep-link/history sync when embedded as a SpiriConfig plugin iframe;
+    # a no-op outside that context. Absolute path on purpose -- it's the
+    # shell's URL, not ours, so it must not be prefix-rewritten.
+    ui.add_head_html('<script src="/plugin-sdk/shell.js"></script>', shared=True)
 
     def refresh_all() -> None:
         """Rebuild every camera-bound panel after the camera is swapped."""
