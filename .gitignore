@@ -33,9 +33,6 @@ htmlcov/
 .coverage.*
 *.coverage
 
-# Compiled deps
-uv.lock
-
 # OS
 .DS_Store
 Thumbs.db
