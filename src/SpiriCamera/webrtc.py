@@ -46,7 +46,12 @@ from concurrent.futures import Future
 
 import cv2
 import numpy as np
-from aiortc import RTCDataChannel, RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
+from aiortc import (
+    RTCDataChannel,
+    RTCPeerConnection,
+    RTCSessionDescription,
+    VideoStreamTrack,
+)
 from av import VideoFrame
 from loguru import logger
 
@@ -152,7 +157,9 @@ class _CameraVideoTrack(VideoStreamTrack):
         return frame
 
 
-async def _wait_ice_complete(pc: RTCPeerConnection, timeout: float = _ICE_GATHERING_TIMEOUT) -> None:
+async def _wait_ice_complete(
+    pc: RTCPeerConnection, timeout: float = _ICE_GATHERING_TIMEOUT
+) -> None:
     """Block until ``pc`` has gathered every local ICE candidate."""
     if pc.iceGatheringState == "complete":
         return
@@ -206,12 +213,16 @@ async def _negotiate(camera: object, sdp: str, type_: str) -> tuple[str, str, st
     return session_id, local.sdp, local.type
 
 
-def negotiate_sync(camera: object, sdp: str, type_: str = "offer", timeout: float = 10.0) -> tuple[str, str, str]:
+def negotiate_sync(
+    camera: object, sdp: str, type_: str = "offer", timeout: float = 10.0
+) -> tuple[str, str, str]:
     """Synchronous entry point, for a caller with no event loop of its own."""
     return _run(_negotiate(camera, sdp, type_)).result(timeout)
 
 
-async def negotiate_async(camera: object, sdp: str, type_: str = "offer", timeout: float = 10.0) -> tuple[str, str, str]:
+async def negotiate_async(
+    camera: object, sdp: str, type_: str = "offer", timeout: float = 10.0
+) -> tuple[str, str, str]:
     """Awaitable entry point, for a caller already running one."""
     return await asyncio.wrap_future(_run(_negotiate(camera, sdp, type_)))
 

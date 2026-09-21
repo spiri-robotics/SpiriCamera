@@ -1004,7 +1004,9 @@ class Camera(CameraBase):
         captured = time.time()
         tags = {
             exif.TIMESTAMP_TAG: f"{captured:.6f}",
-            exif.DATETIME_TAG: time.strftime("%Y:%m:%d %H:%M:%S", time.localtime(captured)),
+            exif.DATETIME_TAG: time.strftime(
+                "%Y:%m:%d %H:%M:%S", time.localtime(captured)
+            ),
             "software": f"SpiriCamera {_VERSION}",
             "source": self.source.url or self.source_str,
             # The full SpiriSynq path, which is what names this camera on
@@ -1082,7 +1084,8 @@ class Camera(CameraBase):
                 # jittery on individual ones.
                 smoothing = 0.3
                 self.received_framerate = round(
-                    smoothing * instantaneous + (1 - smoothing) * self.received_framerate
+                    smoothing * instantaneous
+                    + (1 - smoothing) * self.received_framerate
                     if self.received_framerate
                     else instantaneous,
                     2,

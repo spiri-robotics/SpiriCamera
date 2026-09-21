@@ -147,9 +147,7 @@ def capture(
     frames: Annotated[
         int, typer.Option("-f", "--frames", help="Number of frames to capture")
     ] = 1,
-    quality: Annotated[
-        int, typer.Option("-q", "--quality", help="JPEG quality")
-    ] = 80,
+    quality: Annotated[int, typer.Option("-q", "--quality", help="JPEG quality")] = 80,
     output: Annotated[
         str,
         typer.Option("-o", "--output", help="Output file (default: stdout)"),

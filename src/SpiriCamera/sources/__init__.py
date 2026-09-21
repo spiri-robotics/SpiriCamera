@@ -127,9 +127,7 @@ def known_schemes() -> list[str]:
         Sorted scheme names, formatted as ``scheme://``.
     """
     schemes = {
-        f"{scheme}://"
-        for handler in registered_sources()
-        for scheme in handler.schemes
+        f"{scheme}://" for handler in registered_sources() for scheme in handler.schemes
     }
     return sorted(schemes)
 

@@ -44,7 +44,9 @@ class TestAspectRatio:
 
     def test_reads_bundled_pattern(self) -> None:
         """pm5544 is a 4:3 pattern."""
-        assert svg_aspect_ratio(load_test_images()[DEFAULT_IMAGE]) == pytest.approx(4 / 3, abs=1e-3)
+        assert svg_aspect_ratio(load_test_images()[DEFAULT_IMAGE]) == pytest.approx(
+            4 / 3, abs=1e-3
+        )
 
     def test_prefers_viewbox(self) -> None:
         """A viewBox wins over width and height attributes."""

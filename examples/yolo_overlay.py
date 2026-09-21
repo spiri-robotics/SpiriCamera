@@ -89,15 +89,23 @@ class Detections(SyncableObject):
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("topic", help="camera topic to mirror, e.g. some-host/dev-video0")
-    parser.add_argument("--model", default="yolov8n.pt", help="ultralytics model to load")
-    parser.add_argument("--conf", type=float, default=0.4, help="detection confidence threshold")
+    parser.add_argument(
+        "topic", help="camera topic to mirror, e.g. some-host/dev-video0"
+    )
+    parser.add_argument(
+        "--model", default="yolov8n.pt", help="ultralytics model to load"
+    )
+    parser.add_argument(
+        "--conf", type=float, default=0.4, help="detection confidence threshold"
+    )
     args = parser.parse_args()
 
     cam = Camera.from_topic(args.topic)
     model = YOLO(args.model)
 
-    detections = Detections(synq_topic="yolo-detector/detections", synq_authoritive=True)
+    detections = Detections(
+        synq_topic="yolo-detector/detections", synq_authoritive=True
+    )
 
     widget = HudWidget(
         synq_topic="yolo-detector/boxes_overlay",
@@ -106,7 +114,9 @@ def main() -> None:
         # Sits under any other overlay (a HUD, the tiger demo widget)
         # sharing the frame, rather than potentially painting over one.
         z_index=-100,
-        svg_template=BOX_OVERLAY_SVG.replace("__DET_TOPIC__", detections.synq_absolute_path),
+        svg_template=BOX_OVERLAY_SVG.replace(
+            "__DET_TOPIC__", detections.synq_absolute_path
+        ),
     )
     # Attach the widget to the mirrored camera so it actually renders there.
     #

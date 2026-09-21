@@ -127,7 +127,9 @@ class FakeCapture:
         self.framerate = framerate
         self.properties: dict[int, float] = {}
         self.released = False
-        self._frames = frames if frames is not None else [np.zeros((height, width, 3), np.uint8)]
+        self._frames = (
+            frames if frames is not None else [np.zeros((height, width, 3), np.uint8)]
+        )
         self._reads = 0
 
     def isOpened(self) -> bool:  # noqa: N802 - mirrors the cv2 API
@@ -226,9 +228,7 @@ async def user(monkeypatch: pytest.MonkeyPatch) -> AsyncGenerator[User, None]:
     """
     from SpiriCamera.ui import build_page
 
-    cam = Camera(
-        "testimage://", max_width=160, max_height=120, synq_auto_start=False
-    )
+    cam = Camera("testimage://", max_width=160, max_height=120, synq_auto_start=False)
     monkeypatch.setattr("SpiriCamera.ui._camera", cam)
 
     async with user_simulation(root=build_page) as simulated:

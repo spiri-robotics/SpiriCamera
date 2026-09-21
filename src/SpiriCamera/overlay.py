@@ -198,10 +198,14 @@ DEFAULT_FONT = "Miracode"
 #: browser's rendering of ``DEFAULT_FONT`` visually identical to thorvg's
 #: rather than falling back to whatever generic font the browser picks
 #: for an unresolvable ``font-family``.
-DEFAULT_FONT_PATH = importlib.resources.files("SpiriCamera").joinpath("assets/Miracode.ttf")
+DEFAULT_FONT_PATH = importlib.resources.files("SpiriCamera").joinpath(
+    "assets/Miracode.ttf"
+)
 _font_result = thorvg.Text(_engine).font_load(str(DEFAULT_FONT_PATH))
 if _font_result != thorvg.Result.SUCCESS:
-    logger.warning(f"overlay: could not load bundled font {DEFAULT_FONT!r}: {_font_result}")
+    logger.warning(
+        f"overlay: could not load bundled font {DEFAULT_FONT!r}: {_font_result}"
+    )
 
 # Three more thorvg SVG-parser gaps, same family as the font-loading one
 # above, all affecting how `<text>` renders:
@@ -420,7 +424,9 @@ def render_svg(
         return _env.render_str(
             svg_template,
             **{
-                OBJECTS_NAME: {alias: dict(fields) for alias, fields in objects.items()},
+                OBJECTS_NAME: {
+                    alias: dict(fields) for alias, fields in objects.items()
+                },
                 EXIF_NAME: dict(exif_tags),
                 FRAME_NAME: dict(frame_info),
             },
@@ -490,7 +496,9 @@ def _correct_text_baseline(svg: str) -> str:
             return tag
         font_size_match = _FONT_SIZE_ATTR_RE.search(tag)
         font_size = (
-            float(font_size_match.group(1)) if font_size_match else _DEFAULT_TEXT_FONT_SIZE
+            float(font_size_match.group(1))
+            if font_size_match
+            else _DEFAULT_TEXT_FONT_SIZE
         )
         correction = round(_TEXT_BASELINE_SLOPE * font_size + _TEXT_BASELINE_INTERCEPT)
         if correction <= 0:
@@ -527,6 +535,7 @@ def _strip_percent_size(svg: str) -> str:
     percentage against the ``viewBox`` (a different, and here irrelevant,
     reference size).
     """
+
     def _strip(match: re.Match[str]) -> str:
         return _PERCENT_SIZE_ATTR_RE.sub("", match.group(0))
 
@@ -562,7 +571,9 @@ def _load_and_measure(
         svg = _strip_percent_size(svg)
 
     picture = thorvg.Picture(_engine)
-    result = picture.load_data(svg.encode("utf-8"), mimetype="svg", rpath=None, copy=True)
+    result = picture.load_data(
+        svg.encode("utf-8"), mimetype="svg", rpath=None, copy=True
+    )
     if result != 0:
         raise OverlayError(f"thorvg could not parse overlay SVG (result {result})")
 
@@ -620,6 +631,7 @@ def _normalize_svg_size(svg: str, width: float, height: float) -> str:
     and its content merely letterboxed inside it, drifting off the
     anchor position computed for the smaller, aspect-fit box.
     """
+
     def _replace(match: re.Match[str]) -> str:
         tag = _PERCENT_SIZE_ATTR_RE.sub("", match.group(0))
         tag = re.sub(r'\s(width|height)\s*=\s*"[^"]*"', "", tag)
@@ -668,7 +680,9 @@ def rasterize(
         against.
     """
     svg = _correct_text_baseline(svg)
-    picture, natural_width, natural_height = _load_and_measure(svg, frame_width, frame_height)
+    picture, natural_width, natural_height = _load_and_measure(
+        svg, frame_width, frame_height
+    )
 
     width, height = math.ceil(natural_width), math.ceil(natural_height)
     if width <= 0 or height <= 0:
@@ -766,7 +780,9 @@ def composite(frame: np.ndarray, rgba: np.ndarray, x: int, y: int) -> np.ndarray
     region = rgba[src_y : src_y + height, src_x : src_x + width]
     alpha = region[:, :, 3:4].astype(np.float32) / 255.0
     rgb_as_bgr = region[:, :, 2::-1].astype(np.float32)
-    background = result[dst_y : dst_y + height, dst_x : dst_x + width].astype(np.float32)
+    background = result[dst_y : dst_y + height, dst_x : dst_x + width].astype(
+        np.float32
+    )
     blended = rgb_as_bgr * alpha + background * (1.0 - alpha)
     result[dst_y : dst_y + height, dst_x : dst_x + width] = blended.astype(np.uint8)
     return result
@@ -777,7 +793,9 @@ def composite(frame: np.ndarray, rgba: np.ndarray, x: int, y: int) -> np.ndarray
 # ---------------------------------------------------------------------------
 
 
-def camera_metrics_widget(camera: "Camera", *, anchor: str = "bottom_left") -> HudWidget:
+def camera_metrics_widget(
+    camera: "Camera", *, anchor: str = "bottom_left"
+) -> HudWidget:
     """Build and publish a widget showing a camera's own live stats.
 
     A ready-made overlay rather than a hand-authored one: baking a
@@ -1088,11 +1106,15 @@ class OverlayMixin:
             if topic in self._overlay_objects:
                 continue
             try:
-                self._overlay_objects[topic] = self.synq_session.from_topic_untyped(topic)
+                self._overlay_objects[topic] = self.synq_session.from_topic_untyped(
+                    topic
+                )
             except Exception as exc:
                 self._overlay_complain(topic, f"overlay object unavailable, {exc}")
 
-    def _overlay_object_values_for(self, widget: HudWidget) -> dict[str, dict[str, object]]:
+    def _overlay_object_values_for(
+        self, widget: HudWidget
+    ) -> dict[str, dict[str, object]]:
         """Latest known field values, keyed by alias, for each object
         ``widget`` declares and reads.
 
@@ -1106,13 +1128,16 @@ class OverlayMixin:
         overrides = self.overlay_widgets.get(widget_topic, {}).get("bindings", {})
 
         values: dict[str, dict[str, object]] = {}
-        for alias, default_topic in self._cached_resolve_objects(widget_topic, widget).items():
+        for alias, default_topic in self._cached_resolve_objects(
+            widget_topic, widget
+        ).items():
             object_topic = overrides.get(alias) or default_topic
             obj = self._overlay_objects.get(object_topic) if object_topic else None
             complaint_key = f"{widget_topic}#{alias}"
             if obj is None:
                 self._overlay_complain(
-                    complaint_key, f"object {object_topic!r} unavailable for alias {alias!r}"
+                    complaint_key,
+                    f"object {object_topic!r} unavailable for alias {alias!r}",
                 )
                 continue
             self._overlay_complaints.pop(complaint_key, None)
@@ -1260,7 +1285,9 @@ class OverlayMixin:
                     exif_tags=self.exif_tags,
                     frame_info=frame_info,
                 )
-                widget_width, widget_height = measure_size(svg, frame_width, frame_height)
+                widget_width, widget_height = measure_size(
+                    svg, frame_width, frame_height
+                )
                 usage = self.overlay_widgets.get(topic, {})
                 if "x" in usage and "y" in usage:
                     x, y = anchor_position(

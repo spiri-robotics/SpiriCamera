@@ -27,7 +27,10 @@ def whep_source_url(camera) -> Iterator[str]:
     publisher.start()
 
     config = uvicorn.Config(
-        create_whep_app(lambda: publisher), host="127.0.0.1", port=0, log_level="warning"
+        create_whep_app(lambda: publisher),
+        host="127.0.0.1",
+        port=0,
+        log_level="warning",
     )
     server = uvicorn.Server(config)
     thread = threading.Thread(target=server.run, daemon=True)

@@ -247,9 +247,7 @@ class TestStatus:
         """A camera with nowhere to look says so."""
         assert camera("").status == "no source configured"
 
-    def test_reports_why_a_source_will_not_resolve(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_reports_why_a_source_will_not_resolve(self, camera: CameraFactory) -> None:
         """The resolution failure is carried in full."""
         cam = camera("testimage://nope")
         assert "Unknown test image" in cam.status
@@ -437,9 +435,7 @@ class TestEncoding:
         assert len(small) < len(large)
 
     @pytest.mark.parametrize("mimetype", ["image/png", "image/gif"])
-    def test_unsupported_mimetype(
-        self, camera: CameraFactory, mimetype: str
-    ) -> None:
+    def test_unsupported_mimetype(self, camera: CameraFactory, mimetype: str) -> None:
         """An unencodable mimetype names what is supported.
 
         PNG is in here deliberately: the camera used to offer it and no
@@ -484,7 +480,9 @@ class TestLiveSettings:
         assert cam.capture_settings().max_width == 640
 
     @pytest.mark.parametrize("value", [None, 0, -5, "nonsense"])
-    def test_rejects_unusable_bounds(self, camera: CameraFactory, value: object) -> None:
+    def test_rejects_unusable_bounds(
+        self, camera: CameraFactory, value: object
+    ) -> None:
         """A cleared or nonsensical field never yields a zero dimension."""
         cam = camera("testimage://")
         cam.max_width = value
@@ -583,9 +581,7 @@ class TestRetargeting:
         assert cam.running is True
         assert cam.source.target == "/dev/video10"
 
-    def test_resumes_after_an_unresolvable_source(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_resumes_after_an_unresolvable_source(self, camera: CameraFactory) -> None:
         """The same holds when the half-typed string does not resolve."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start()
@@ -598,9 +594,7 @@ class TestRetargeting:
 
         assert cam.running is True
 
-    def test_does_not_resume_when_stopped_by_hand(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_does_not_resume_when_stopped_by_hand(self, camera: CameraFactory) -> None:
         """Editing the source of a stopped camera leaves it stopped."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start()
@@ -756,7 +750,11 @@ class TestReceivedIsDerivedFromTheFrame:
 
         cam.image = b""
 
-        assert (cam.received_width, cam.received_height, cam.received_ratio) == (0, 0, 0.0)
+        assert (cam.received_width, cam.received_height, cam.received_ratio) == (
+            0,
+            0,
+            0.0,
+        )
         assert cam.received_framerate == 0.0
 
     def test_they_are_not_published(self) -> None:
@@ -826,9 +824,7 @@ class TestFrameTags:
         assert cam.exif_tags["make"] == "SpiriCamera"
         assert cam.exif_tags["software"].startswith("SpiriCamera ")
 
-    def test_frames_name_the_camera_on_the_network(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_frames_name_the_camera_on_the_network(self, camera: CameraFactory) -> None:
         """The SpiriSynq path, so a stray frame can be traced back."""
         cam = camera("testimage://", synq_topic="probe")
         cam.start(background=False)
@@ -837,9 +833,7 @@ class TestFrameTags:
         assert cam.exif_tags["topic"] == cam.synq_absolute_path
         assert "probe" in cam.exif_tags["topic"]
 
-    def test_timestamp_is_read_back_off_the_frame(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_timestamp_is_read_back_off_the_frame(self, camera: CameraFactory) -> None:
         """The capture time is in the image, not beside it."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
@@ -901,9 +895,7 @@ class TestFrameTags:
 class TestExifProviders:
     """Multiple pieces of software tagging the same camera's frames."""
 
-    def test_set_tags_is_visible_on_the_next_frame(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_set_tags_is_visible_on_the_next_frame(self, camera: CameraFactory) -> None:
         """A provider's tags reach the frame without exif_update."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.exif_set_tags("logger", {"mission": "probe-1"})
@@ -913,9 +905,7 @@ class TestExifProviders:
 
         assert cam.exif_tags["mission"] == "probe-1"
 
-    def test_set_tags_replaces_rather_than_merges(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_set_tags_replaces_rather_than_merges(self, camera: CameraFactory) -> None:
         """Calling it again for the same provider drops what it dropped."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
@@ -961,9 +951,7 @@ class TestExifProviders:
         """Nothing to remove is not a failure."""
         camera("testimage://").exif_clear_tags("nobody-set-this")
 
-    def test_an_empty_tag_set_clears_the_provider(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_an_empty_tag_set_clears_the_provider(self, camera: CameraFactory) -> None:
         """set_tags({}) reads the same as clear_tags."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.exif_set_tags("logger", {"mission": "probe-1"})
@@ -972,9 +960,7 @@ class TestExifProviders:
 
         assert "logger" not in cam.exif_tag_providers()
 
-    def test_a_provider_can_suppress_a_builtin_tag(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_a_provider_can_suppress_a_builtin_tag(self, camera: CameraFactory) -> None:
         """Unlike exif_update, an empty value here is kept, not dropped.
 
         exif_set_tags is how a provider blanks out something
@@ -1082,9 +1068,7 @@ class TestExifProviders:
         assert frame.startswith(b"\xff\xd8")
         assert cam.exif_tags == {}
 
-    def test_an_unreadable_timestamp_is_not_fatal(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_an_unreadable_timestamp_is_not_fatal(self, camera: CameraFactory) -> None:
         """A peer can put anything in a tag; it must not break the frame."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
@@ -1185,9 +1169,7 @@ class TestRehydrate:
         assert restored.exif_timestamp == cam.exif_timestamp
         assert (restored.received_width, restored.received_height) == (160, 120)
 
-    def test_a_normal_construction_is_unaffected(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_a_normal_construction_is_unaffected(self, camera: CameraFactory) -> None:
         """The source=/quality=/etc convenience API still just works."""
         cam = camera("testimage://", quality=42, max_width=160, max_height=120)
 
@@ -1284,7 +1266,9 @@ class TestOverlays:
             blue, green, red = (int(c) for c in decoded[5, 5])
             assert not (red > 200 and blue < 60 and green < 60)
 
-            markup = cam.render_overlays_for_client(cam.received_width, cam.received_height)
+            markup = cam.render_overlays_for_client(
+                cam.received_width, cam.received_height
+            )
             assert 'transform="translate(0,0)"' in markup
             assert 'fill="red"' in markup
         finally:
@@ -1395,8 +1379,10 @@ class TestOverlays:
             cam.quality = 42
 
             assert wait_for(
-                lambda: cam._overlay_object_values_for(widget).get("cam", {}).get("quality")
-                == 42,
+                lambda: (
+                    cam._overlay_object_values_for(widget).get("cam", {}).get("quality")
+                    == 42
+                ),
                 timeout=3.0,
             )
         finally:
@@ -1449,7 +1435,9 @@ class TestOverlays:
                 "<text>{{ objects.b.value }}</text></svg>"
             )
 
-            assert wait_for(lambda: topic not in cam._overlay_resolved_cache, timeout=3.0)
+            assert wait_for(
+                lambda: topic not in cam._overlay_resolved_cache, timeout=3.0
+            )
 
             cam.read()
             assert cam._overlay_resolved_cache[topic] == {"b": "other/topic"}

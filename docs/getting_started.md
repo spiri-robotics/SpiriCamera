@@ -52,14 +52,14 @@ This gives you a mirror: same synced fields (`image`, `status`, `running`, ...),
 **Poll**, when you're already on a timer or a render loop (this is what the debug UI does, ticking in step with `max_framerate`):
 
 ```python
-frame_jpeg = cam.image   # the most recent frame, updated for you in the background
+frame_jpeg = cam.image  # the most recent frame, updated for you in the background
 ```
 
 **Or subscribe**, when you want to react the moment a new frame (or any other field) lands, via the psygnal event every synced field gets:
 
 ```python
-def on_frame(frame_jpeg: bytes) -> None:
-    ...
+def on_frame(frame_jpeg: bytes) -> None: ...
+
 
 cam.events.image.connect(on_frame)
 ```
@@ -74,9 +74,9 @@ If your process *is* the one meant to own the device — a standalone script, or
 from SpiriCamera import Camera
 
 cam = Camera("/dev/video0", quality=85)
-cam.start()               # opens the device, begins the background capture thread
+cam.start()  # opens the device, begins the background capture thread
 
-frame_jpeg = cam.image    # whatever the background thread has captured so far
+frame_jpeg = cam.image  # whatever the background thread has captured so far
 
 cam.stop()
 ```
@@ -123,8 +123,8 @@ A video file or a still image can stand in for a camera. Files are just
 paths — absolute or relative, no scheme needed:
 
 ```python
-cam = Camera("/srv/clips/approach.mp4")   # loops at the end
-cam = Camera("./pattern.png")             # a steady picture
+cam = Camera("/srv/clips/approach.mp4")  # loops at the end
+cam = Camera("./pattern.png")  # a steady picture
 ```
 
 Use `file://` when a path would otherwise read as a URL. POSIX collapses
@@ -137,9 +137,9 @@ inside a directory named `rtsp:` — and a stream URL. The stream wins;
 A camera index, a device node, or an explicit scheme:
 
 ```python
-cam = Camera("0")                 # camera index, the OpenCV convention
-cam = Camera("/dev/video0")       # device node
-cam = Camera("v4l:///dev/video5") # not plugged in yet
+cam = Camera("0")  # camera index, the OpenCV convention
+cam = Camera("/dev/video0")  # device node
+cam = Camera("v4l:///dev/video5")  # not plugged in yet
 ```
 
 A schemeless path is matched by asking the filesystem what it is, not by
@@ -153,12 +153,12 @@ how it is spelled, so `/dev/video0` is recognised as a camera and
 `stopped`, or the reason it is neither:
 
 ```python
-cam = Camera("/dev/vi")     # half-typed
-cam.status                  # "Unrecognised source: '/dev/vi'. Supported: ..."
+cam = Camera("/dev/vi")  # half-typed
+cam.status  # "Unrecognised source: '/dev/vi'. Supported: ..."
 
 cam = Camera("v4l:///dev/video99")
-cam.start()                 # raises CameraError
-cam.status                  # "Failed to open capture source: '/dev/video99'"
+cam.start()  # raises CameraError
+cam.status  # "Failed to open capture source: '/dev/video99'"
 ```
 
 `running` says whether frames are flowing; `status` says why not when
@@ -183,8 +183,8 @@ from SpiriCamera import Camera
 from SpiriCamera.overlay import camera_metrics_widget
 
 cam = Camera("/dev/video0")
-widget = camera_metrics_widget(cam)          # publishes its own topic
-cam.overlay_widgets[widget.synq_topic] = {}   # opt this camera into it
+widget = camera_metrics_widget(cam)  # publishes its own topic
+cam.overlay_widgets[widget.synq_topic] = {}  # opt this camera into it
 cam.start()
 ```
 
@@ -224,7 +224,8 @@ itself:
 ```python
 cam.overlay_widgets[widget.synq_topic] = {
     "bindings": {"battery": "some-other-host/battery_monitor"},
-    "x": 2, "y": 2,   # percent-of-frame position override, this camera only
+    "x": 2,
+    "y": 2,  # percent-of-frame position override, this camera only
 }
 ```
 

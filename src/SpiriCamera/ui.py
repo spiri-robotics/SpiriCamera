@@ -54,7 +54,7 @@ from SpiriCamera.sources.testimage import raster_test_images, test_images
 from SpiriCamera.sources.v4l import list_devices
 
 #: Route the browser pulls frames from.
-FRAME_ROUTE = '/camera/frame'
+FRAME_ROUTE = "/camera/frame"
 
 #: Seconds of history the bandwidth meter averages over.
 METER_WINDOW = 3.0
@@ -185,11 +185,11 @@ frame_meter = RateMeter()
 #: 1x1 black PNG, served before the first frame exists.
 PLACEHOLDER = Response(
     content=base64.b64decode(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk'
-        'YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+        "YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
     ),
-    media_type='image/png',
-    headers={'Cache-Control': 'no-store'},
+    media_type="image/png",
+    headers={"Cache-Control": "no-store"},
 )
 
 _camera: Camera | None = None
@@ -243,7 +243,7 @@ def get_camera() -> Camera:
     global _camera
     if _camera is None:
         settings = get_settings()
-        _camera = _make_authoritive(settings.source or 'testimage://')
+        _camera = _make_authoritive(settings.source or "testimage://")
     return _camera
 
 
@@ -267,7 +267,7 @@ def _replace_camera(new_camera: Camera) -> Camera:
     return new_camera
 
 
-def set_authoritive(source_str: str = '') -> Camera:
+def set_authoritive(source_str: str = "") -> Camera:
     """Switch to running a device ourselves, replacing any mirror.
 
     Parameters
@@ -282,10 +282,10 @@ def set_authoritive(source_str: str = '') -> Camera:
     Camera
         The new authoritative camera.
     """
-    return _replace_camera(_make_authoritive(source_str or 'testimage://'))
+    return _replace_camera(_make_authoritive(source_str or "testimage://"))
 
 
-def set_mirror(topic: str = '') -> Camera:
+def set_mirror(topic: str = "") -> Camera:
     """Switch to mirroring another node's camera, replacing any device.
 
     Parameters
@@ -302,7 +302,9 @@ def set_mirror(topic: str = '') -> Camera:
         nothing to show until a topic is given: its fields sit at their
         defaults rather than mirroring anything.
     """
-    new_camera = Camera.from_topic(topic) if topic else Camera('', synq_authoritive=False)
+    new_camera = (
+        Camera.from_topic(topic) if topic else Camera("", synq_authoritive=False)
+    )
     return _replace_camera(new_camera)
 
 
@@ -324,7 +326,7 @@ def discover_cameras(cam: Camera) -> list[dict]:
     """
     if not cam.synq_session:
         return []
-    return list(cam.synq_session.list_topics(type_filter='Camera'))
+    return list(cam.synq_session.list_topics(type_filter="Camera"))
 
 
 def discover_widgets(cam: Camera) -> list[dict]:
@@ -344,7 +346,7 @@ def discover_widgets(cam: Camera) -> list[dict]:
     """
     if not cam.synq_session:
         return []
-    return list(cam.synq_session.list_topics(type_filter='HudWidget'))
+    return list(cam.synq_session.list_topics(type_filter="HudWidget"))
 
 
 #: Sub-topic a widget created from this page publishes under, keyed by
@@ -353,7 +355,7 @@ def discover_widgets(cam: Camera) -> list[dict]:
 #: collide. Not related to `Camera.overlay_widgets` (the per-camera field
 #: naming which widgets to mirror) despite the similar name -- this is
 #: only where a widget *this page creates* is published.
-_UI_WIDGET_SUBTOPIC = 'ui_widgets'
+_UI_WIDGET_SUBTOPIC = "ui_widgets"
 
 #: Starting point for a freshly created widget -- small enough to read
 #: at a glance, and a working example of `exif.*` templating rather than
@@ -420,9 +422,9 @@ def create_overlay_widget(cam: Camera, name: str) -> HudWidget:
     HudWidget
         The published widget, already added to ``cam.overlay_widgets``.
     """
-    slug = re.sub(r'[^A-Za-z0-9]+', '_', name).strip('_').lower() or 'widget'
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", name).strip("_").lower() or "widget"
     widget = HudWidget(
-        synq_topic=f'{_UI_WIDGET_SUBTOPIC}/{slug}',
+        synq_topic=f"{_UI_WIDGET_SUBTOPIC}/{slug}",
         synq_authoritive=True,
         svg_template=_NEW_WIDGET_TEMPLATE,
     )
@@ -487,34 +489,38 @@ def _overlay_widget_usage(cam: Camera, topic: str) -> dict:
     return dict(cam.overlay_widgets.get(topic, {}))
 
 
-def _overlay_set_position(cam: Camera, topic: str, x: float | None, y: float | None) -> None:
+def _overlay_set_position(
+    cam: Camera, topic: str, x: float | None, y: float | None
+) -> None:
     """Set (both given) or clear (either ``None``) this camera's position
     override for the widget at ``topic``, falling back to the widget's
     own anchor when cleared."""
     usage = _overlay_widget_usage(cam, topic)
     if x is None or y is None:
-        usage.pop('x', None)
-        usage.pop('y', None)
+        usage.pop("x", None)
+        usage.pop("y", None)
     else:
-        usage['x'] = x
-        usage['y'] = y
+        usage["x"] = x
+        usage["y"] = y
     cam.overlay_widgets[topic] = usage
 
 
-def _overlay_set_binding(cam: Camera, topic: str, alias: str, object_topic: str) -> None:
+def _overlay_set_binding(
+    cam: Camera, topic: str, alias: str, object_topic: str
+) -> None:
     """Set (non-empty) or clear (empty) this camera's binding override
     for ``alias`` on the widget at ``topic``, falling back to that
     alias's own declared default when cleared."""
     usage = _overlay_widget_usage(cam, topic)
-    bindings = dict(usage.get('bindings', {}))
+    bindings = dict(usage.get("bindings", {}))
     if object_topic:
         bindings[alias] = object_topic
     else:
         bindings.pop(alias, None)
     if bindings:
-        usage['bindings'] = bindings
+        usage["bindings"] = bindings
     else:
-        usage.pop('bindings', None)
+        usage.pop("bindings", None)
     cam.overlay_widgets[topic] = usage
 
 
@@ -555,7 +561,7 @@ def _frame_timestamp(frame: bytes) -> float:
         Unix seconds, or ``0.0`` if the frame does not say.
     """
     try:
-        return float(exif.extract(frame).get(exif.TIMESTAMP_TAG, ''))
+        return float(exif.extract(frame).get(exif.TIMESTAMP_TAG, ""))
     except ValueError:
         return 0.0
 
@@ -577,10 +583,10 @@ def _format_age(seconds: float) -> str:
         Something like ``26 ms old`` or ``4.2 s old``.
     """
     if seconds < 1:
-        return f'{seconds * 1000:.0f} ms old'
+        return f"{seconds * 1000:.0f} ms old"
     if seconds < 60:
-        return f'{seconds:.1f} s old'
-    return f'{seconds / 60:.0f} min old'
+        return f"{seconds:.1f} s old"
+    return f"{seconds / 60:.0f} min old"
 
 
 #: The frame object last counted by the meter, to recognise a re-serve.
@@ -632,7 +638,7 @@ def serve_frame() -> Response:
         media_type=camera.mimetype,
         # force_reload() already cache-busts with a timestamp; this stops
         # any proxy in between from holding on to a frame.
-        headers={'Cache-Control': 'no-store'},
+        headers={"Cache-Control": "no-store"},
     )
 
 
@@ -650,8 +656,8 @@ def _format_tags(tags: dict[str, str]) -> str:
         One ``name: value`` per line, or a placeholder when untagged.
     """
     if not tags:
-        return 'untagged'
-    return '\n'.join(f'{name}: {value}' for name, value in sorted(tags.items()))
+        return "untagged"
+    return "\n".join(f"{name}: {value}" for name, value in sorted(tags.items()))
 
 
 #: Provider name this page's own "Extra Tags" box tags under.
@@ -660,7 +666,7 @@ def _format_tags(tags: dict[str, str]) -> str:
 #: so a human poking at this debug field never clobbers tags some other
 #: piece of software attached with exif_set_tags(); see
 #: Camera.exif_set_tags for the general mechanism.
-_UI_EXIF_PROVIDER = 'ui'
+_UI_EXIF_PROVIDER = "ui"
 
 
 def _apply_extra_tags(camera: Camera, text: str) -> None:
@@ -679,8 +685,8 @@ def _apply_extra_tags(camera: Camera, text: str) -> None:
         Comma-separated ``name=value`` pairs.
     """
     tags = {}
-    for pair in (text or '').split(','):
-        name, separator, value = pair.partition('=')
+    for pair in (text or "").split(","):
+        name, separator, value = pair.partition("=")
         if separator and name.strip():
             tags[name.strip()] = value.strip()
     camera.exif_set_tags(_UI_EXIF_PROVIDER, tags)
@@ -696,19 +702,19 @@ def _source_options() -> dict[str, str]:
         every V4L2 device currently plugged in.
     """
     options = {
-        f'testimage://{name}': f'Test pattern: {name}' for name in sorted(test_images())
+        f"testimage://{name}": f"Test pattern: {name}" for name in sorted(test_images())
     }
     for name in sorted(raster_test_images()):
-        options[f'testimage://{name}'] = f'Test photo: {name}'
+        options[f"testimage://{name}"] = f"Test photo: {name}"
     for device in list_devices():
-        options[device['path']] = device['label']
+        options[device["path"]] = device["label"]
     return options
 
 
-@ui.page('/')
+@ui.page("/")
 def build_page():
     """Build the camera test UI page."""
-    ui.add_head_html(f'<style>{_DEFAULT_FONT_FACE_CSS}</style>')
+    ui.add_head_html(f"<style>{_DEFAULT_FONT_FACE_CSS}</style>")
     # Deep-link/history sync when embedded as a SpiriConfig plugin iframe;
     # a no-op outside that context. Absolute path on purpose -- it's the
     # shell's URL, not ours, so it must not be prefix-rewritten.
@@ -751,39 +757,47 @@ def build_page():
         """
         cam = get_camera()
 
-        with ui.card().classes('w-full flex-shrink-0'):
-            with ui.row().classes('w-full items-center'):
+        with ui.card().classes("w-full flex-shrink-0"):
+            with ui.row().classes("w-full items-center"):
                 ui.switch(
-                    'Authoritative', value=cam.synq_authoritive,
+                    "Authoritative",
+                    value=cam.synq_authoritive,
                     on_change=lambda e: toggle_authoritive(e.value),
                 )
                 if cam.synq_authoritive:
-                    ui.button('Start', on_click=cam.start).classes('bg-green-600 text-white')
-                    ui.button('Stop', on_click=cam.stop).classes('bg-red-600 text-white')
+                    ui.button("Start", on_click=cam.start).classes(
+                        "bg-green-600 text-white"
+                    )
+                    ui.button("Stop", on_click=cam.stop).classes(
+                        "bg-red-600 text-white"
+                    )
                     # Debounced: every keystroke would otherwise retarget the camera.
-                    ui.input('Source string').bind_value(cam, 'source_str').props(
-                        'debounce=500'
-                    ).classes('flex-1')
+                    ui.input("Source string").bind_value(cam, "source_str").props(
+                        "debounce=500"
+                    ).classes("flex-1")
                     ui.select(
-                        _source_options(), label='Known sources',
+                        _source_options(),
+                        label="Known sources",
                         on_change=lambda e: pick_source(e.value),
-                    ).classes('w-64')
+                    ).classes("w-64")
                 # Says "running", "stopped", or why it is neither.
-                ui.label().bind_text_from(cam, 'status').classes('px-2 font-mono')
+                ui.label().bind_text_from(cam, "status").classes("px-2 font-mono")
 
-        ui.label().bind_text_from(cam.source, 'error').bind_visibility_from(
-            cam.source, 'error'
-        ).classes('w-full text-red-600 px-2')
+        ui.label().bind_text_from(cam.source, "error").bind_visibility_from(
+            cam.source, "error"
+        ).classes("w-full text-red-600 px-2")
 
         if not cam.synq_authoritive:
             # A mirror has no device of its own to start, and retargeting
             # its source_str would try to resolve it against *this*
             # machine's devices -- what mirroring means here is picking
             # someone else's camera, not editing this one's fields.
-            with ui.card().classes('w-full flex-shrink-0'):
-                with ui.row().classes('w-full items-center justify-between'):
-                    ui.label('Cameras on the network').classes('text-lg font-bold')
-                    ui.button(icon='refresh', on_click=top_controls.refresh).props('flat round')
+            with ui.card().classes("w-full flex-shrink-0"):
+                with ui.row().classes("w-full items-center justify-between"):
+                    ui.label("Cameras on the network").classes("text-lg font-bold")
+                    ui.button(icon="refresh", on_click=top_controls.refresh).props(
+                        "flat round"
+                    )
 
                 # Discovery is best-effort -- it relies on zenoh scouting
                 # reaching the other node, which multicast-free networks,
@@ -791,25 +805,25 @@ def build_page():
                 # topic by hand is not a fallback for rare cases; it is
                 # the one path that always works, so it is offered
                 # alongside the list rather than hidden behind it.
-                with ui.row().classes('w-full items-center gap-2'):
+                with ui.row().classes("w-full items-center gap-2"):
                     topic_input = ui.input(
-                        'Topic', placeholder='hostname/spiricamera_testimage'
-                    ).classes('flex-1')
-                    ui.button('Mirror', on_click=lambda: mirror(topic_input.value))
+                        "Topic", placeholder="hostname/spiricamera_testimage"
+                    ).classes("flex-1")
+                    ui.button("Mirror", on_click=lambda: mirror(topic_input.value))
 
                 discovered = discover_cameras(cam)
                 if not discovered:
                     ui.label(
-                        'No other camera is currently advertising itself.'
-                    ).classes('opacity-70')
+                        "No other camera is currently advertising itself."
+                    ).classes("opacity-70")
                 for meta in discovered:
-                    topic = str(meta.get('topic', ''))
-                    with ui.row().classes('w-full items-center gap-2'):
-                        ui.label(topic).classes('font-mono flex-1')
-                        ui.label(str(meta.get('authoritive_node', ''))).classes(
-                            'opacity-70 text-xs'
+                    topic = str(meta.get("topic", ""))
+                    with ui.row().classes("w-full items-center gap-2"):
+                        ui.label(topic).classes("font-mono flex-1")
+                        ui.label(str(meta.get("authoritive_node", ""))).classes(
+                            "opacity-70 text-xs"
                         )
-                        ui.button('Mirror', on_click=lambda topic=topic: mirror(topic))
+                        ui.button("Mirror", on_click=lambda topic=topic: mirror(topic))
 
     @ui.refreshable
     def settings_panels() -> None:
@@ -820,24 +834,36 @@ def build_page():
         """
         cam = get_camera()
 
-        with ui.row().classes('w-full gap-2 flex-shrink-0'):
-            with ui.card().classes('flex-1'):
-                ui.label('Image Settings').classes('text-lg font-bold')
-                ui.label('Quality')
-                with ui.row().classes('w-full items-center gap-2 flex-nowrap'):
-                    ui.slider(min=1, max=100).bind_value(cam, 'quality', forward=int).classes('flex-1')
-                    ui.number(min=1, max=100).bind_value(cam, 'quality', forward=int).classes('w-20')
-                ui.number('Max Width').bind_value(cam, 'max_width', forward=int).classes('w-full')
-                ui.number('Max Height').bind_value(cam, 'max_height', forward=int).classes('w-full')
-                ui.number('Max Framerate').bind_value(cam, 'max_framerate', forward=int).classes('w-full')
-                ui.input('Mimetype').bind_value(cam, 'mimetype').classes('w-full')
-                ui.switch('Tag frames').bind_value(cam, 'exif_enabled')
+        with ui.row().classes("w-full gap-2 flex-shrink-0"):
+            with ui.card().classes("flex-1"):
+                ui.label("Image Settings").classes("text-lg font-bold")
+                ui.label("Quality")
+                with ui.row().classes("w-full items-center gap-2 flex-nowrap"):
+                    ui.slider(min=1, max=100).bind_value(
+                        cam, "quality", forward=int
+                    ).classes("flex-1")
+                    ui.number(min=1, max=100).bind_value(
+                        cam, "quality", forward=int
+                    ).classes("w-20")
+                ui.number("Max Width").bind_value(
+                    cam, "max_width", forward=int
+                ).classes("w-full")
+                ui.number("Max Height").bind_value(
+                    cam, "max_height", forward=int
+                ).classes("w-full")
+                ui.number("Max Framerate").bind_value(
+                    cam, "max_framerate", forward=int
+                ).classes("w-full")
+                ui.input("Mimetype").bind_value(cam, "mimetype").classes("w-full")
+                ui.switch("Tag frames").bind_value(cam, "exif_enabled")
 
-            with ui.card().classes('flex-1'):
-                ui.label('Device').classes('text-lg font-bold')
-                ui.input('Vendor').bind_value(cam, 'vendor').classes('w-full')
-                ui.input('Model').bind_value(cam, 'model').classes('w-full')
-                ui.input('Serial Number').bind_value(cam, 'serial_number').classes('w-full')
+            with ui.card().classes("flex-1"):
+                ui.label("Device").classes("text-lg font-bold")
+                ui.input("Vendor").bind_value(cam, "vendor").classes("w-full")
+                ui.input("Model").bind_value(cam, "model").classes("w-full")
+                ui.input("Serial Number").bind_value(cam, "serial_number").classes(
+                    "w-full"
+                )
 
                 # Every field here is two-way on purpose. The source
                 # overwrites the max_supported_* values each time it
@@ -845,26 +871,38 @@ def build_page():
                 # this is a debugging tool: being able to type a wrong
                 # value in and watch what downstream does with it is the
                 # point.
-                ui.label('Capabilities').classes('text-lg font-bold pt-2')
-                ui.number('Max Supported Width').bind_value(cam, 'max_supported_width').props('suffix="px"').classes('w-full')
-                ui.number('Max Supported Height').bind_value(cam, 'max_supported_height').props('suffix="px"').classes('w-full')
-                ui.number('Max Supported Framerate').bind_value(cam, 'max_supported_framerate').props('suffix="fps"').classes('w-full')
+                ui.label("Capabilities").classes("text-lg font-bold pt-2")
+                ui.number("Max Supported Width").bind_value(
+                    cam, "max_supported_width"
+                ).props('suffix="px"').classes("w-full")
+                ui.number("Max Supported Height").bind_value(
+                    cam, "max_supported_height"
+                ).props('suffix="px"').classes("w-full")
+                ui.number("Max Supported Framerate").bind_value(
+                    cam, "max_supported_framerate"
+                ).props('suffix="fps"').classes("w-full")
 
                 # What actually arrived, as opposed to what was asked for
                 # or advertised.
-                ui.label('Received').classes('text-lg font-bold pt-2')
-                ui.number('Received Width').bind_value(cam, 'received_width').props('suffix="px"').classes('w-full')
-                ui.number('Received Height').bind_value(cam, 'received_height').props('suffix="px"').classes('w-full')
-                ui.number('Received Ratio').bind_value(cam, 'received_ratio').props('step=0.0001').classes('w-full')
-                ui.input('Synq Topic').bind_value(cam, 'synq_topic').classes('w-full')
+                ui.label("Received").classes("text-lg font-bold pt-2")
+                ui.number("Received Width").bind_value(cam, "received_width").props(
+                    'suffix="px"'
+                ).classes("w-full")
+                ui.number("Received Height").bind_value(cam, "received_height").props(
+                    'suffix="px"'
+                ).classes("w-full")
+                ui.number("Received Ratio").bind_value(cam, "received_ratio").props(
+                    "step=0.0001"
+                ).classes("w-full")
+                ui.input("Synq Topic").bind_value(cam, "synq_topic").classes("w-full")
 
-            with ui.card().classes('flex-1'):
-                ui.label('Resolved Source').classes('text-lg font-bold')
-                ui.input('Status').bind_value(cam, 'status').classes('w-full')
-                ui.input('Scheme').bind_value(cam.source, 'scheme').classes('w-full')
-                ui.input('Target').bind_value(cam.source, 'target').classes('w-full')
-                ui.input('Handler').bind_value(cam.source, 'handler').classes('w-full')
-                ui.input('Error').bind_value(cam.source, 'error').classes('w-full')
+            with ui.card().classes("flex-1"):
+                ui.label("Resolved Source").classes("text-lg font-bold")
+                ui.input("Status").bind_value(cam, "status").classes("w-full")
+                ui.input("Scheme").bind_value(cam.source, "scheme").classes("w-full")
+                ui.input("Target").bind_value(cam.source, "target").classes("w-full")
+                ui.input("Handler").bind_value(cam.source, "handler").classes("w-full")
+                ui.input("Error").bind_value(cam.source, "error").classes("w-full")
 
                 # Read out of the current frame's EXIF rather than synced
                 # as fields of their own, so they cannot disagree with the
@@ -872,16 +910,16 @@ def build_page():
                 # frame already happened — which makes this the second
                 # documented exception to the two-way binding rule, the
                 # writable counterpart being Extra Tags below.
-                ui.label('Frame Tags').classes('text-lg font-bold pt-2')
+                ui.label("Frame Tags").classes("text-lg font-bold pt-2")
                 ui.label().bind_text_from(
-                    cam, 'exif_tags', backward=_format_tags
-                ).classes('w-full font-mono text-xs whitespace-pre-wrap')
+                    cam, "exif_tags", backward=_format_tags
+                ).classes("w-full font-mono text-xs whitespace-pre-wrap")
 
                 ui.input(
-                    'Extra Tags',
-                    placeholder='mission=probe-1, operator=alex',
+                    "Extra Tags",
+                    placeholder="mission=probe-1, operator=alex",
                     on_change=lambda event: _apply_extra_tags(cam, event.value),
-                ).props('debounce=500').classes('w-full')
+                ).props("debounce=500").classes("w-full")
 
     @ui.refreshable
     def overlay_panel() -> None:
@@ -903,133 +941,165 @@ def build_page():
         """
         cam = get_camera()
 
-        with ui.card().classes('w-full flex-shrink-0'):
-            with ui.row().classes('w-full items-center justify-between'):
-                ui.label('Overlays').classes('text-lg font-bold')
-                ui.button(icon='refresh', on_click=overlay_panel.refresh).props(
-                    'flat round'
+        with ui.card().classes("w-full flex-shrink-0"):
+            with ui.row().classes("w-full items-center justify-between"):
+                ui.label("Overlays").classes("text-lg font-bold")
+                ui.button(icon="refresh", on_click=overlay_panel.refresh).props(
+                    "flat round"
                 )
-            ui.switch('Render overlays in browser').bind_value(cam, 'overlay_client_render')
-            with ui.row().classes('w-full items-center gap-2'):
+            ui.switch("Render overlays in browser").bind_value(
+                cam, "overlay_client_render"
+            )
+            with ui.row().classes("w-full items-center gap-2"):
                 add_topic = ui.input(
-                    'Add widget by topic',
-                    placeholder='hostname/spiricamera_testimage_metrics',
-                ).classes('flex-1')
+                    "Add widget by topic",
+                    placeholder="hostname/spiricamera_testimage_metrics",
+                ).classes("flex-1")
                 ui.button(
-                    'Add',
+                    "Add",
                     on_click=lambda: (
-                        _overlay_add_topic(cam, add_topic.value.strip()),
-                        overlay_panel.refresh(),
-                    ) if add_topic.value.strip() else None,
+                        (
+                            _overlay_add_topic(cam, add_topic.value.strip()),
+                            overlay_panel.refresh(),
+                        )
+                        if add_topic.value.strip()
+                        else None
+                    ),
                 )
 
-            with ui.row().classes('w-full items-center gap-2'):
-                new_widget_name = ui.input('New widget name').classes('flex-1')
+            with ui.row().classes("w-full items-center gap-2"):
+                new_widget_name = ui.input("New widget name").classes("flex-1")
                 ui.button(
-                    'Create & Add',
+                    "Create & Add",
                     on_click=lambda: (
-                        create_overlay_widget(cam, new_widget_name.value or 'widget'),
+                        create_overlay_widget(cam, new_widget_name.value or "widget"),
                         overlay_panel.refresh(),
                     ),
                 )
                 ui.button(
-                    'Add CameraMetrics',
+                    "Add CameraMetrics",
                     on_click=lambda: (add_metrics_widget(cam), overlay_panel.refresh()),
                 )
                 ui.button(
-                    'Add Tiger',
+                    "Add Tiger",
                     on_click=lambda: (add_tiger_widget(cam), overlay_panel.refresh()),
                 )
 
             active = _overlay_topic_list(cam)
             if not active:
-                ui.label('No overlay topics configured.').classes('opacity-70')
+                ui.label("No overlay topics configured.").classes("opacity-70")
 
             for topic in active:
                 widget = cam._overlay_widgets.get(topic)
-                with ui.card().classes('w-full').props('flat bordered'):
-                    with ui.row().classes('w-full items-center gap-2'):
-                        ui.label(topic).classes('font-mono flex-1 text-xs')
+                with ui.card().classes("w-full").props("flat bordered"):
+                    with ui.row().classes("w-full items-center gap-2"):
+                        ui.label(topic).classes("font-mono flex-1 text-xs")
                         if widget is None:
-                            ui.label('unresolved').classes('text-orange-600 text-xs')
+                            ui.label("unresolved").classes("text-orange-600 text-xs")
                         ui.button(
-                            icon='delete',
+                            icon="delete",
                             on_click=lambda topic=topic: (
                                 remove_overlay_widget(cam, topic),
                                 overlay_panel.refresh(),
                             ),
-                        ).props('flat round color=red')
+                        ).props("flat round color=red")
 
                     if widget is not None:
-                        with ui.row().classes('w-full items-center gap-2'):
+                        with ui.row().classes("w-full items-center gap-2"):
                             ui.select(
-                                list(ANCHORS), label='Anchor (default)',
-                            ).bind_value(widget, 'anchor').classes('w-40')
-                            ui.number('X % (default)').bind_value(
-                                widget, 'custom_anchor_x'
+                                list(ANCHORS),
+                                label="Anchor (default)",
+                            ).bind_value(widget, "anchor").classes("w-40")
+                            ui.number("X % (default)").bind_value(
+                                widget, "custom_anchor_x"
                             ).bind_visibility_from(
-                                widget, 'anchor', backward=lambda a: a == 'custom'
-                            ).classes('w-24')
-                            ui.number('Y % (default)').bind_value(
-                                widget, 'custom_anchor_y'
+                                widget, "anchor", backward=lambda a: a == "custom"
+                            ).classes("w-24")
+                            ui.number("Y % (default)").bind_value(
+                                widget, "custom_anchor_y"
                             ).bind_visibility_from(
-                                widget, 'anchor', backward=lambda a: a == 'custom'
-                            ).classes('w-24')
+                                widget, "anchor", backward=lambda a: a == "custom"
+                            ).classes("w-24")
 
                         usage = cam.overlay_widgets.get(topic, {})
-                        with ui.row().classes('w-full items-center gap-2'):
-                            ui.label('Position override (this camera only):').classes(
-                                'text-xs opacity-70'
+                        with ui.row().classes("w-full items-center gap-2"):
+                            ui.label("Position override (this camera only):").classes(
+                                "text-xs opacity-70"
                             )
-                            override_x = ui.number('X %', value=usage.get('x')).classes('w-24')
-                            override_y = ui.number('Y %', value=usage.get('y')).classes('w-24')
+                            override_x = ui.number("X %", value=usage.get("x")).classes(
+                                "w-24"
+                            )
+                            override_y = ui.number("Y %", value=usage.get("y")).classes(
+                                "w-24"
+                            )
                             override_x.on_value_change(
-                                lambda event, topic=topic, y=override_y: _overlay_set_position(
-                                    cam, topic, event.value, y.value,
+                                lambda event, topic=topic, y=override_y: (
+                                    _overlay_set_position(
+                                        cam,
+                                        topic,
+                                        event.value,
+                                        y.value,
+                                    )
                                 )
                             )
                             override_y.on_value_change(
-                                lambda event, topic=topic, x=override_x: _overlay_set_position(
-                                    cam, topic, x.value, event.value,
+                                lambda event, topic=topic, x=override_x: (
+                                    _overlay_set_position(
+                                        cam,
+                                        topic,
+                                        x.value,
+                                        event.value,
+                                    )
                                 )
                             )
                             ui.button(
-                                'Clear',
+                                "Clear",
                                 on_click=lambda topic=topic: (
                                     _overlay_set_position(cam, topic, None, None),
                                     overlay_panel.refresh(),
                                 ),
-                            ).props('flat dense')
+                            ).props("flat dense")
 
-                        for alias, default_topic in declared_objects(widget.svg_template).items():
-                            bound_to = usage.get('bindings', {}).get(alias, '')
-                            with ui.row().classes('w-full items-center gap-2'):
-                                ui.label(f'{alias} (default: {default_topic})').classes(
-                                    'font-mono text-xs flex-1'
+                        for alias, default_topic in declared_objects(
+                            widget.svg_template
+                        ).items():
+                            bound_to = usage.get("bindings", {}).get(alias, "")
+                            with ui.row().classes("w-full items-center gap-2"):
+                                ui.label(f"{alias} (default: {default_topic})").classes(
+                                    "font-mono text-xs flex-1"
                                 )
                                 ui.input(
-                                    'Override object topic', value=bound_to,
-                                ).props('debounce=500').classes('flex-1').on_value_change(
-                                    lambda event, topic=topic, alias=alias: _overlay_set_binding(
-                                        cam, topic, alias, event.value.strip(),
+                                    "Override object topic",
+                                    value=bound_to,
+                                ).props("debounce=500").classes(
+                                    "flex-1"
+                                ).on_value_change(
+                                    lambda event, topic=topic, alias=alias: (
+                                        _overlay_set_binding(
+                                            cam,
+                                            topic,
+                                            alias,
+                                            event.value.strip(),
+                                        )
                                     )
                                 )
 
-                        ui.codemirror(language='XML', theme='basicDark').bind_value(
-                            widget, 'svg_template'
-                        ).classes('w-full')
+                        ui.codemirror(language="XML", theme="basicDark").bind_value(
+                            widget, "svg_template"
+                        ).classes("w-full")
 
             discovered = [
-                meta.get('topic', '') for meta in discover_widgets(cam)
-                if meta.get('topic', '') and meta.get('topic', '') not in active
+                meta.get("topic", "")
+                for meta in discover_widgets(cam)
+                if meta.get("topic", "") and meta.get("topic", "") not in active
             ]
             if discovered:
-                ui.label('Discovered widgets').classes('text-md font-bold pt-2')
+                ui.label("Discovered widgets").classes("text-md font-bold pt-2")
                 for topic in discovered:
-                    with ui.row().classes('w-full items-center gap-2'):
-                        ui.label(topic).classes('font-mono flex-1 text-xs')
+                    with ui.row().classes("w-full items-center gap-2"):
+                        ui.label(topic).classes("font-mono flex-1 text-xs")
                         ui.button(
-                            'Add',
+                            "Add",
                             on_click=lambda topic=topic: (
                                 _overlay_add_topic(cam, topic),
                                 overlay_panel.refresh(),
@@ -1039,7 +1109,7 @@ def build_page():
     # Natural height, not h-screen: the frame is sized by width and the page
     # scrolls, rather than the frame being squeezed into whatever vertical
     # space the controls leave over.
-    with ui.column().classes('w-full gap-2 p-2'):
+    with ui.column().classes("w-full gap-2 p-2"):
         top_controls()
 
         # interactive_image's inner <img> is width:100%;height:100% with no
@@ -1047,7 +1117,7 @@ def build_page():
         # rather than warp, and let the wrapper's own aspect-ratio set the
         # height so the frame fills the available width instead of being
         # bounded by a short card.
-        ui.add_css('.camera-frame img { object-fit: contain; }')
+        ui.add_css(".camera-frame img { object-fit: contain; }")
 
         # Plain CSS resize handle (bottom-right corner drag) rather than a
         # custom JS drag handler -- the browser already tracks the pointer
@@ -1056,7 +1126,7 @@ def build_page():
         # ratio (nicegui/elements/interactive_image.js), which ignores
         # whatever height the card is dragged to; fill the card instead and
         # let object-fit letterbox any mismatch with the image's own ratio.
-        ui.add_css('''
+        ui.add_css("""
             .camera-viewport {
                 resize: both;
                 overflow: hidden;
@@ -1078,7 +1148,7 @@ def build_page():
                 height: 100%;
                 pointer-events: none;
             }
-        ''')
+        """)
 
         # The overlay lives in its own element, laid over interactive_image
         # rather than injected into interactive_image's own <svg> (see
@@ -1090,17 +1160,17 @@ def build_page():
         # own "contain"/"meet" letterboxing against that same box, agree on
         # where the letterboxing falls without either needing to know about
         # the other.
-        with ui.card().classes('camera-viewport w-full p-0'):
-            with ui.element('div').classes('camera-wrap w-full'):
-                frame = ui.interactive_image(FRAME_ROUTE).classes('camera-frame w-full')
+        with ui.card().classes("camera-viewport w-full p-0"):
+            with ui.element("div").classes("camera-wrap w-full"):
+                frame = ui.interactive_image(FRAME_ROUTE).classes("camera-frame w-full")
                 # sanitize=False: this is our own server-rendered overlay
                 # SVG, not user-supplied HTML, and ui.html's default
                 # sanitizer (the browser's native Sanitizer API) doesn't
                 # reliably pass through SVG the way interactive_image's own
                 # DOMPurify-with-svg-profile sanitizer did.
-                overlay = ui.html('', sanitize=False).classes('overlay-svg')
+                overlay = ui.html("", sanitize=False).classes("overlay-svg")
 
-        bandwidth = ui.label().classes('w-full px-2 font-mono text-sm opacity-70')
+        bandwidth = ui.label().classes("w-full px-2 font-mono text-sm opacity-70")
 
         def refresh_frame() -> None:
             """Pull the next frame, tracking the camera's current framerate."""
@@ -1117,9 +1187,11 @@ def build_page():
             left over from the switch having just been turned off.
             """
             cam = get_camera()
-            body = ''
+            body = ""
             if cam.overlay_client_render and cam.received_width and cam.received_height:
-                body = cam.render_overlays_for_client(cam.received_width, cam.received_height)
+                body = cam.render_overlays_for_client(
+                    cam.received_width, cam.received_height
+                )
                 if body:
                     # Own top-level <svg>, sized against the same box as
                     # the image (see the .camera-frame CSS above) and
@@ -1130,7 +1202,7 @@ def build_page():
                     body = (
                         f'<svg viewBox="0 0 {cam.received_width} {cam.received_height}" '
                         f'width="100%" height="100%" preserveAspectRatio="xMidYMid meet">'
-                        f'{body}</svg>'
+                        f"{body}</svg>"
                     )
             overlay.set_content(body)
 
@@ -1150,8 +1222,8 @@ def build_page():
             cam = get_camera()
             parts = []
             if cam.received_width and cam.received_height:
-                parts.append(f'{cam.received_width}x{cam.received_height}')
-                parts.append(f'{cam.received_ratio:.3f}')
+                parts.append(f"{cam.received_width}x{cam.received_height}")
+                parts.append(f"{cam.received_ratio:.3f}")
 
             # Age of the frame on screen, measured at the route where
             # frames actually leave. Against a remote camera it is only
@@ -1161,52 +1233,54 @@ def build_page():
                 parts.append(_format_age(age))
 
             fps, bytes_per_second = frame_meter.rates()
-            parts.append(f'{bytes_per_second / 1024:.0f} KiB/s')
-            parts.append(f'{fps:.1f} fps')
+            parts.append(f"{bytes_per_second / 1024:.0f} KiB/s")
+            parts.append(f"{fps:.1f} fps")
 
             # Off the frame in hand, not off the rates: bytes-per-second
             # divided by frames-per-second is nothing at all once both are
             # zero, but the last frame is still exactly this big.
             if cam.image:
-                parts.append(f'{len(cam.image) / 1024:.0f} KiB/frame')
+                parts.append(f"{len(cam.image) / 1024:.0f} KiB/frame")
 
-            parts.append(f'requested {int(cam.max_framerate or 0)} fps')
+            parts.append(f"requested {int(cam.max_framerate or 0)} fps")
 
-            bandwidth.set_text(' · '.join(parts))
+            bandwidth.set_text(" · ".join(parts))
 
-        timer = ui.timer(1 / max(1, int(get_camera().max_framerate or 1)), refresh_frame)
+        timer = ui.timer(
+            1 / max(1, int(get_camera().max_framerate or 1)), refresh_frame
+        )
         # Filled in before the first tick, so the line reads 0 fps rather
         # than being blank for half a second on every page load.
         refresh_bandwidth()
         ui.timer(0.5, refresh_bandwidth)
 
-        with ui.tabs().classes('w-full') as tabs:
-            image_tab = ui.tab('Image')
-            overlay_tab = ui.tab('Overlay')
+        with ui.tabs().classes("w-full") as tabs:
+            image_tab = ui.tab("Image")
+            overlay_tab = ui.tab("Overlay")
 
-        with ui.tab_panels(tabs, value=image_tab).classes('w-full'):
-            with ui.tab_panel(image_tab).classes('w-full gap-2 p-0'):
+        with ui.tab_panels(tabs, value=image_tab).classes("w-full"):
+            with ui.tab_panel(image_tab).classes("w-full gap-2 p-0"):
                 settings_panels()
 
-            with ui.tab_panel(overlay_tab).classes('w-full gap-2 p-0'):
+            with ui.tab_panel(overlay_tab).classes("w-full gap-2 p-0"):
                 overlay_panel()
 
 
-if __name__ == '__main__':
-    ui.run(title='SpiriCamera Test UI', reload=False, show=False, dark=None)
+if __name__ == "__main__":
+    ui.run(title="SpiriCamera Test UI", reload=False, show=False, dark=None)
 
 
 __all__ = [
-    'FRAME_ROUTE',
-    'add_metrics_widget',
-    'add_tiger_widget',
-    'build_page',
-    'create_overlay_widget',
-    'discover_cameras',
-    'discover_widgets',
-    'get_camera',
-    'remove_overlay_widget',
-    'serve_frame',
-    'set_authoritive',
-    'set_mirror',
+    "FRAME_ROUTE",
+    "add_metrics_widget",
+    "add_tiger_widget",
+    "build_page",
+    "create_overlay_widget",
+    "discover_cameras",
+    "discover_widgets",
+    "get_camera",
+    "remove_overlay_widget",
+    "serve_frame",
+    "set_authoritive",
+    "set_mirror",
 ]

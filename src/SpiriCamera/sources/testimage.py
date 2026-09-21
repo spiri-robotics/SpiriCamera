@@ -64,7 +64,9 @@ def test_images() -> dict[str, str]:
         logger.warning(f"No test image directory at {directory}")
         return {}
 
-    images = {svg.stem: svg.read_text(encoding="utf-8") for svg in directory.glob("*.svg")}
+    images = {
+        svg.stem: svg.read_text(encoding="utf-8") for svg in directory.glob("*.svg")
+    }
     logger.debug(f"Loaded {len(images)} test image(s): {', '.join(sorted(images))}")
     return images
 
@@ -106,7 +108,9 @@ def _load_raster(path: Path) -> np.ndarray:
     return image
 
 
-def _pan_window(width: int, height: int, crop_width: int, crop_height: int) -> tuple[int, int]:
+def _pan_window(
+    width: int, height: int, crop_width: int, crop_height: int
+) -> tuple[int, int]:
     """Slide a crop window slowly around the centre of an image, in a circle.
 
     Parameters
@@ -307,7 +311,9 @@ class TestImageSource(SourceBase):
             f"{self!r} serving {self._image_name} at "
             f"{settings.max_width}x{settings.max_height}"
         )
-        return SourceCapabilities(vendor="SpiriCamera", model=f"testimage:{self._image_name}")
+        return SourceCapabilities(
+            vendor="SpiriCamera", model=f"testimage:{self._image_name}"
+        )
 
     def close(self) -> None:
         """Stop serving and drop the cached render."""

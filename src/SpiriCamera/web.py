@@ -7,4 +7,3 @@ from __future__ import annotations
 # a subclass of ``spiriconfig.plugins.Plugin`` implementing:
 #   - cli() -> typer.Typer
 #   - page() -> None (renders to nicegui.ui)
-

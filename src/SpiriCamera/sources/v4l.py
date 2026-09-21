@@ -156,7 +156,9 @@ def list_devices() -> list[dict[str, str]]:
         identity = " ".join(
             filter(None, (metadata.get("vendor"), metadata.get("model")))
         )
-        devices.append({"path": path, "label": f"{identity} ({path})" if identity else path})
+        devices.append(
+            {"path": path, "label": f"{identity} ({path})" if identity else path}
+        )
     return devices
 
 

@@ -15,7 +15,7 @@ cam = Camera("/dev/video0")
 cam.exif_update(mission="probe-1")
 cam.start()
 
-cam.exif_tags       # {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}
+cam.exif_tags  # {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}
 cam.exif_timestamp  # Unix timestamp of the frame currently in cam.image
 ```
 
@@ -30,9 +30,9 @@ come apart from it — a peer that receives a frame fills them in for
 itself, exactly:
 
 ```python
-mirror.image = frame          # the only thing that crossed the network
-mirror.exif_timestamp         # when the far end took it
-mirror.received_width         # what it actually sent
+mirror.image = frame  # the only thing that crossed the network
+mirror.exif_timestamp  # when the far end took it
+mirror.received_width  # what it actually sent
 ```
 
 ## Multiple Tag Providers
@@ -46,7 +46,7 @@ touches another's:
 cam.exif_set_tags("telemetry", {"battery": "88"})
 cam.exif_set_tags("logger", {"build": "42"})
 
-cam.exif_clear_tags("telemetry")   # only "battery" goes away
+cam.exif_clear_tags("telemetry")  # only "battery" goes away
 ```
 
 Calling `exif_set_tags` again for the same provider *replaces* that
@@ -65,7 +65,7 @@ shared default bucket, and a value of `""` there removes just that tag:
 
 ```python
 cam.exif_update(mission="probe-1")
-cam.exif_update(mission="")   # removes it; other tags untouched
+cam.exif_update(mission="")  # removes it; other tags untouched
 ```
 
 Two *different* callers both using `exif_update` still share that one
@@ -107,10 +107,12 @@ a subclass for:
 cam = Camera("/dev/video0")
 cam.start()
 
+
 def on_gps_fix(lat: float, lon: float) -> None:
     cam.exif_update(gps_lat=f"{lat:.6f}", gps_lon=f"{lon:.6f}")
 
-gps.events.fix.connect(on_gps_fix)   # or however your GPS source notifies you
+
+gps.events.fix.connect(on_gps_fix)  # or however your GPS source notifies you
 ```
 
 Every frame captured after that carries the most recent fix — there is
@@ -121,7 +123,7 @@ same way, with an empty string, rather than left showing a last-known
 position as if it were current:
 
 ```python
-cam.exif_update(gps_lat="", gps_lon="")   # drop both; other tags untouched
+cam.exif_update(gps_lat="", gps_lon="")  # drop both; other tags untouched
 ```
 
 If your GPS source lives inside the `Camera` subclass itself — an
@@ -163,9 +165,9 @@ from SpiriCamera import exif
 
 data = open("frame.jpg", "rb").read()
 
-exif.is_jpeg(data)      # True — cheap check, just the magic bytes
-exif.extract(data)      # {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}
-exif.image_size(data)   # (1920, 1080) — read from the JPEG header, not decoded
+exif.is_jpeg(data)  # True — cheap check, just the magic bytes
+exif.extract(data)  # {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}
+exif.image_size(data)  # (1920, 1080) — read from the JPEG header, not decoded
 ```
 
 `extract` never raises: bytes with no tags, damaged EXIF, or a format

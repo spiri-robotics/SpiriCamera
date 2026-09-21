@@ -14,7 +14,9 @@ class TestDeclaredObjects:
     def test_finds_a_declaration(self) -> None:
         template = "{# object: battery = azrael/battery_monitor #}\n<svg></svg>"
 
-        assert overlay.declared_objects(template) == {"battery": "azrael/battery_monitor"}
+        assert overlay.declared_objects(template) == {
+            "battery": "azrael/battery_monitor"
+        }
 
     def test_finds_several_declarations(self) -> None:
         template = (
@@ -48,7 +50,9 @@ class TestResolveObjects:
             "{{ objects.battery.voltage }}"
         )
 
-        assert overlay.resolve_objects(template) == {"battery": "azrael/battery_monitor"}
+        assert overlay.resolve_objects(template) == {
+            "battery": "azrael/battery_monitor"
+        }
 
     def test_ignores_a_declared_but_unused_alias(self) -> None:
         """Declaring an object is not the same as mirroring it -- only
@@ -78,7 +82,9 @@ class TestResolveObjects:
             "{{ objects.battery.voltage }} {{ objects.battery.current }}"
         )
 
-        assert overlay.resolve_objects(template) == {"battery": "azrael/battery_monitor"}
+        assert overlay.resolve_objects(template) == {
+            "battery": "azrael/battery_monitor"
+        }
 
 
 class FakeCamera:
@@ -98,7 +104,9 @@ class TestCameraMetricsWidget:
     """The ready-made widget showing a camera's own live stats."""
 
     def test_topic_is_derived_from_the_camera(self) -> None:
-        camera = FakeCamera("spiricamera_testimage", "spiri-cam-01/spiricamera_testimage")
+        camera = FakeCamera(
+            "spiricamera_testimage", "spiri-cam-01/spiricamera_testimage"
+        )
 
         widget = overlay.camera_metrics_widget(camera)
         try:
@@ -164,7 +172,9 @@ class TestTigerWidget:
     """The ready-made percentage-sized example widget."""
 
     def test_topic_is_derived_from_the_camera(self) -> None:
-        camera = FakeCamera("spiricamera_testimage", "spiri-cam-01/spiricamera_testimage")
+        camera = FakeCamera(
+            "spiricamera_testimage", "spiri-cam-01/spiricamera_testimage"
+        )
 
         widget = overlay.tiger_widget(camera)
         try:
@@ -199,7 +209,10 @@ class TestTigerWidget:
         widget = overlay.tiger_widget(camera, size_percent=20)
         try:
             svg = overlay.render_svg(
-                widget.svg_template, objects={}, exif_tags={}, frame_info={},
+                widget.svg_template,
+                objects={},
+                exif_tags={},
+                frame_info={},
             )
             raster = overlay.rasterize(svg, frame_width=1000, frame_height=1000)
         finally:
@@ -242,7 +255,9 @@ class TestRenderSvg:
 
     def test_malformed_template_raises(self) -> None:
         with pytest.raises(overlay.OverlayError):
-            overlay.render_svg("{{ unterminated", objects={}, exif_tags={}, frame_info={})
+            overlay.render_svg(
+                "{{ unterminated", objects={}, exif_tags={}, frame_info={}
+            )
 
 
 class TestRasterize:
@@ -421,7 +436,9 @@ class TestNormalizeSvgSize:
 
         result = overlay._normalize_svg_size(svg, 80, 40)
 
-        assert result.startswith('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40">')
+        assert result.startswith(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40">'
+        )
         assert '<rect width="40" height="20" fill="red"/>' in result
 
     def test_percent_size_is_replaced(self) -> None:
@@ -449,7 +466,9 @@ class TestNormalizeSvgSize:
 
         result = overlay._normalize_svg_size(svg, 20, 20)
 
-        assert result.startswith('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">')
+        assert result.startswith(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">'
+        )
         assert '<svg width="5" height="5">' in result
 
 
@@ -473,9 +492,7 @@ class TestAnchorPosition:
     def test_named_anchors(self, anchor: str, expected: tuple[int, int]) -> None:
         """A 100x50 frame with a 20x10 widget, flush against each edge or
         centred, depending on the anchor."""
-        assert (
-            overlay.anchor_position(anchor, 0.0, 0.0, 100, 50, 20, 10) == expected
-        )
+        assert overlay.anchor_position(anchor, 0.0, 0.0, 100, 50, 20, 10) == expected
 
     def test_custom_uses_percent_as_top_left(self) -> None:
         """Unlike the named anchors, ``custom`` ignores widget size: the

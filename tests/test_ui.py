@@ -161,19 +161,19 @@ class TestSourceOptions:
         """Every shipped test pattern is offered, not just the default."""
         options = camera_ui._source_options()
 
-        assert 'testimage://pm5544' in options
+        assert "testimage://pm5544" in options
 
     def test_includes_local_v4l_devices(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """A plugged-in USB camera shows up alongside the test patterns."""
         monkeypatch.setattr(
             camera_ui,
-            'list_devices',
-            lambda: [{'path': '/dev/video0', 'label': 'Some Webcam (/dev/video0)'}],
+            "list_devices",
+            lambda: [{"path": "/dev/video0", "label": "Some Webcam (/dev/video0)"}],
         )
 
         options = camera_ui._source_options()
 
-        assert options['/dev/video0'] == 'Some Webcam (/dev/video0)'
+        assert options["/dev/video0"] == "Some Webcam (/dev/video0)"
 
 
 class TestModeSwitching:
@@ -187,24 +187,24 @@ class TestModeSwitching:
         not close the zenoh resources a real ``Camera`` opened, so that
         is done by hand.
         """
-        monkeypatch.setattr(camera_ui, '_camera', None)
+        monkeypatch.setattr(camera_ui, "_camera", None)
         yield
         if camera_ui._camera is not None:
             camera_ui._camera.close()
 
     def test_set_authoritive_builds_a_real_camera(self) -> None:
         """Switching to authoritative mode makes an ordinary camera."""
-        cam = camera_ui.set_authoritive('testimage://')
+        cam = camera_ui.set_authoritive("testimage://")
 
         assert cam.synq_authoritive is True
         assert cam is camera_ui.get_camera()
 
     def test_set_authoritive_closes_the_camera_it_replaces(self) -> None:
         """The old camera must not keep running in the background."""
-        old = camera_ui.set_authoritive('testimage://')
+        old = camera_ui.set_authoritive("testimage://")
         old.start(background=False)
 
-        camera_ui.set_authoritive('testimage://pm5544')
+        camera_ui.set_authoritive("testimage://pm5544")
 
         assert old.running is False
 
@@ -213,9 +213,11 @@ class TestModeSwitching:
         cam = camera_ui.set_mirror()
 
         assert cam.synq_authoritive is False
-        assert cam.image == b''
+        assert cam.image == b""
 
-    def test_set_mirror_fetches_the_given_topic(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_set_mirror_fetches_the_given_topic(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """A topic (typed by hand or picked from discovery) is mirrored.
 
         ``Camera.from_topic`` performs a real RPC round trip over zenoh;
@@ -223,23 +225,23 @@ class TestModeSwitching:
         Here it is stubbed so this test stays a fast, hermetic check of
         the wiring in :py:func:`SpiriCamera.ui.set_mirror`.
         """
-        built = Camera('testimage://', synq_auto_start=False)
-        monkeypatch.setattr(Camera, 'from_topic', classmethod(lambda cls, topic: built))
+        built = Camera("testimage://", synq_auto_start=False)
+        monkeypatch.setattr(Camera, "from_topic", classmethod(lambda cls, topic: built))
 
-        cam = camera_ui.set_mirror('some/topic')
+        cam = camera_ui.set_mirror("some/topic")
 
         assert cam is built
         assert cam is camera_ui.get_camera()
 
     async def test_toggling_off_shows_the_discovery_panel(self, user: User) -> None:
         """Switching off authoritative mode replaces the device controls."""
-        await user.open('/')
-        await user.should_see('Start')
+        await user.open("/")
+        await user.should_see("Start")
 
         user.find(kind=nicegui_ui.switch).click()
 
-        await user.should_see('Cameras on the network')
-        await user.should_not_see('Start')
+        await user.should_see("Cameras on the network")
+        await user.should_not_see("Start")
 
     async def test_toggling_back_on_restores_device_controls(self, user: User) -> None:
         """The device controls come back when authoritative mode returns.
@@ -248,34 +250,34 @@ class TestModeSwitching:
         toggling mode rebuilds the whole panel the switch lives in, so
         the element from before that rebuild no longer has a parent.
         """
-        await user.open('/')
+        await user.open("/")
 
         user.find(kind=nicegui_ui.switch).click()
-        await user.should_see('Cameras on the network')
+        await user.should_see("Cameras on the network")
         user.find(kind=nicegui_ui.switch).click()
 
-        await user.should_see('Start')
-        await user.should_not_see('Cameras on the network')
+        await user.should_see("Start")
+        await user.should_not_see("Cameras on the network")
 
     async def test_typing_a_topic_and_clicking_mirror(
         self, monkeypatch: pytest.MonkeyPatch, user: User
     ) -> None:
         """A hand-typed topic is not limited to what discovery found."""
-        built = Camera('testimage://', synq_auto_start=False)
-        monkeypatch.setattr(Camera, 'from_topic', classmethod(lambda cls, topic: built))
+        built = Camera("testimage://", synq_auto_start=False)
+        monkeypatch.setattr(Camera, "from_topic", classmethod(lambda cls, topic: built))
 
-        await user.open('/')
+        await user.open("/")
         user.find(kind=nicegui_ui.switch).click()
-        await user.should_see('Cameras on the network')
+        await user.should_see("Cameras on the network")
 
         topic_field = next(
             element
             for element in user.find(kind=nicegui_ui.input).elements
-            if element.props.get('label') == 'Topic'
+            if element.props.get("label") == "Topic"
         )
-        topic_field.value = 'otherhost/spiricamera_testimage'
+        topic_field.value = "otherhost/spiricamera_testimage"
 
-        user.find('Mirror').click()
+        user.find("Mirror").click()
 
         assert camera_ui.get_camera() is built
 
@@ -284,7 +286,7 @@ class TestOverlayWidgets:
     """Creating, listing, and removing HudWidgets from the debug UI."""
 
     def _authoritative_camera(self) -> Camera:
-        cam = Camera('testimage://', synq_auto_start=False)
+        cam = Camera("testimage://", synq_auto_start=False)
         cam.synq_authoritive = True
         cam.sync()
         return cam
@@ -294,7 +296,7 @@ class TestOverlayWidgets:
         widget itself getting published."""
         cam = self._authoritative_camera()
 
-        widget = camera_ui.create_overlay_widget(cam, 'My Widget!')
+        widget = camera_ui.create_overlay_widget(cam, "My Widget!")
 
         assert widget.synq_absolute_path in camera_ui._overlay_topic_list(cam)
         cam.stop()
@@ -304,9 +306,9 @@ class TestOverlayWidgets:
         topic_for_source for a camera's own source string."""
         cam = self._authoritative_camera()
 
-        widget = camera_ui.create_overlay_widget(cam, 'My Widget!')
+        widget = camera_ui.create_overlay_widget(cam, "My Widget!")
 
-        assert widget.synq_topic == 'ui_widgets/my_widget'
+        assert widget.synq_topic == "ui_widgets/my_widget"
         cam.stop()
 
     def test_add_metrics_widget_adds_it_to_overlay_widgets(self) -> None:
@@ -321,7 +323,7 @@ class TestOverlayWidgets:
         """This page owns what it creates, so removing one really
         releases its zenoh resources rather than just forgetting it."""
         cam = self._authoritative_camera()
-        widget = camera_ui.create_overlay_widget(cam, 'temp')
+        widget = camera_ui.create_overlay_widget(cam, "temp")
 
         camera_ui.remove_overlay_widget(cam, widget.synq_absolute_path)
 
@@ -334,7 +336,7 @@ class TestOverlayWidgets:
         from discovery -- is never closed out from under whoever does
         own it; it is only detached from overlay_widgets."""
         cam = self._authoritative_camera()
-        foreign = HudWidget(synq_topic='someone_elses_widget', synq_authoritive=True)
+        foreign = HudWidget(synq_topic="someone_elses_widget", synq_authoritive=True)
         cam.overlay_widgets[foreign.synq_absolute_path] = {}
 
         camera_ui.remove_overlay_widget(cam, foreign.synq_absolute_path)
@@ -347,37 +349,38 @@ class TestOverlayWidgets:
     def test_overlay_widgets_keeps_other_entries(self) -> None:
         """Adding or removing one widget leaves the others alone."""
         cam = self._authoritative_camera()
-        cam.overlay_widgets['some/other/widget'] = {}
+        cam.overlay_widgets["some/other/widget"] = {}
 
-        widget = camera_ui.create_overlay_widget(cam, 'temp')
+        widget = camera_ui.create_overlay_widget(cam, "temp")
         assert set(camera_ui._overlay_topic_list(cam)) == {
-            'some/other/widget', widget.synq_absolute_path,
+            "some/other/widget",
+            widget.synq_absolute_path,
         }
 
         camera_ui.remove_overlay_widget(cam, widget.synq_absolute_path)
-        assert camera_ui._overlay_topic_list(cam) == ['some/other/widget']
+        assert camera_ui._overlay_topic_list(cam) == ["some/other/widget"]
         cam.stop()
 
     async def test_overlay_panel_shows_in_the_page(self, user: User) -> None:
-        await user.open('/')
+        await user.open("/")
 
-        await user.should_see('Overlays')
-        await user.should_see('Add CameraMetrics')
+        await user.should_see("Overlays")
+        await user.should_see("Add CameraMetrics")
 
     async def test_creating_a_widget_from_the_page(self, user: User) -> None:
         """The end-to-end path: type a name, click Create, see it listed."""
-        await user.open('/')
+        await user.open("/")
 
         name_field = next(
             element
             for element in user.find(kind=nicegui_ui.input).elements
-            if element.props.get('label') == 'New widget name'
+            if element.props.get("label") == "New widget name"
         )
-        name_field.value = 'demo'
+        name_field.value = "demo"
 
-        user.find('Create & Add').click()
+        user.find("Create & Add").click()
 
-        await user.should_see('ui_widgets/demo')
+        await user.should_see("ui_widgets/demo")
 
 
 class TestPage:
@@ -425,8 +428,9 @@ class TestExtraTagEntry:
     @pytest.fixture
     def cam(self) -> Camera:
         """A camera that touches neither a device nor the network."""
-        return Camera("testimage://", max_width=160, max_height=120,
-                     synq_auto_start=False)
+        return Camera(
+            "testimage://", max_width=160, max_height=120, synq_auto_start=False
+        )
 
     def _tagged(self, cam: Camera) -> dict[str, str]:
         """The tags that would land on the next frame."""
@@ -610,8 +614,9 @@ class TestStaleFrames:
         a lock, two threads can both read the old value before either
         writes the new one, and both decide the frame is new.
         """
-        cam = Camera("testimage://", max_width=160, max_height=120,
-                     synq_auto_start=False)
+        cam = Camera(
+            "testimage://", max_width=160, max_height=120, synq_auto_start=False
+        )
         monkeypatch.setattr(camera_ui, "_camera", cam)
         cam.start(background=False)
         cam.read()
@@ -642,8 +647,9 @@ class TestStaleFrames:
         Counting each response would report a busy framerate for a camera
         that has produced nothing since it was stopped.
         """
-        cam = Camera("testimage://", max_width=160, max_height=120,
-                     synq_auto_start=False)
+        cam = Camera(
+            "testimage://", max_width=160, max_height=120, synq_auto_start=False
+        )
         monkeypatch.setattr(camera_ui, "_camera", cam)
         cam.start(background=False)
         cam.read()
@@ -658,8 +664,9 @@ class TestStaleFrames:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """De-duplication is by identity, so real frames still count."""
-        cam = Camera("testimage://", max_width=160, max_height=120,
-                     synq_auto_start=False)
+        cam = Camera(
+            "testimage://", max_width=160, max_height=120, synq_auto_start=False
+        )
         monkeypatch.setattr(camera_ui, "_camera", cam)
         cam.start(background=False)
 

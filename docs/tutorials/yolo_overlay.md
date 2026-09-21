@@ -167,9 +167,10 @@ defines the smallest object that fits:
 class Detections(SyncableObject):
     boxes: list = field(default_factory=list)
 
+
 detections = Detections(synq_topic="yolo-detector/detections", synq_authoritive=True)
 ...
-detections.boxes = boxes   # reassigning the field publishes it
+detections.boxes = boxes  # reassigning the field publishes it
 ```
 
 Each entry in `boxes` is a plain dict — `{"x", "y", "w", "h", "label", "score"}`

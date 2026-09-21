@@ -22,9 +22,7 @@ class TestV4LClaims:
     """Which strings the V4L2 handler takes."""
 
     @pytest.fixture
-    def sysfs_knows_null(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def sysfs_knows_null(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Make sysfs report /dev/null as a video device.
 
         /dev/null is a character device on every system, which makes it
@@ -45,7 +43,9 @@ class TestV4LClaims:
         """A schemeless path is claimed when Linux calls it a camera."""
         assert V4LSource.handles(SourceURL.parse("/dev/null"))
 
-    @pytest.mark.parametrize("source", ["rtsp://host/s", "testimage://", "http://host/f"])
+    @pytest.mark.parametrize(
+        "source", ["rtsp://host/s", "testimage://", "http://host/f"]
+    )
     def test_declines_other_schemes(self, source: str) -> None:
         """A URL belonging to another scheme is left alone."""
         assert not V4LSource.handles(SourceURL.parse(source))
@@ -83,9 +83,7 @@ class TestV4LClaims:
         Consulting it is then impossible rather than merely unhelpful,
         which is the situation inside a container without /sys.
         """
-        monkeypatch.setattr(
-            "SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path / "absent"
-        )
+        monkeypatch.setattr("SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path / "absent")
         assert V4LSource.handles(SourceURL.parse("/dev/null"))
 
     def test_bare_index_opens_by_number_not_filename(
@@ -206,7 +204,9 @@ class TestOpenCVSourceLifecycle:
         with pytest.raises(SourceError, match="Failed to open"):
             resolve_source("v4l:///dev/video0").open(SETTINGS)
 
-    def test_open_is_idempotent(self, fake_capture: Callable[..., CaptureHolder]) -> None:
+    def test_open_is_idempotent(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
         """Opening twice does not replace a working capture."""
         holder = fake_capture()
         source = resolve_source("v4l:///dev/video0")
@@ -238,7 +238,9 @@ class TestOpenCVSourceLifecycle:
         with pytest.raises(SourceError, match="not open"):
             resolve_source("v4l:///dev/video0").read(SETTINGS)
 
-    def test_read_returns_frame(self, fake_capture: Callable[..., CaptureHolder]) -> None:
+    def test_read_returns_frame(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
         """A successful grab returns the device's array."""
         frame = np.full((480, 640, 3), 7, np.uint8)
         fake_capture(frames=[frame])
@@ -291,6 +293,7 @@ class TestOpenCVSourceLifecycle:
         source.read(SETTINGS)
 
         assert holder.capture.properties == {}
+
 
 class TestNetworkSource:
     """Stream-specific behaviour."""

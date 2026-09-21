@@ -98,7 +98,9 @@ def main() -> None:
     settings = get_settings()
     setup_logging(level="DEBUG" if settings.debug else settings.log_level)
 
-    logger.info(f"Starting {settings.app_name} v{settings.version} [environment: {settings.environment}]")
+    logger.info(
+        f"Starting {settings.app_name} v{settings.version} [environment: {settings.environment}]"
+    )
 
     # Add your main application logic here
     logger.info(f"{settings.app_name} is running")

@@ -121,6 +121,11 @@ class TestCapture:
         """Capture exits non-zero rather than writing an empty file."""
         result = runner.invoke(
             app,
-            ["capture", "v4l:///dev/video-does-not-exist", "-o", str(tmp_path / "x.jpg")],
+            [
+                "capture",
+                "v4l:///dev/video-does-not-exist",
+                "-o",
+                str(tmp_path / "x.jpg"),
+            ],
         )
         assert result.exit_code == 1
