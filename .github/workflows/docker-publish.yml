@@ -9,11 +9,9 @@ name: Build and Publish Docker Image
 #                "spiri-robotics/SpiriCamera", so that default is hardcoded
 #                below rather than derived)
 #
-# On a release tag, also opens a PR against spiri-robotics/Appstore-Spiri_development
-# bumping every compose.yaml in that repo whose image matches this one, to
-# the new tag. That covers all of SpiriCamera's app-store entries there
-# (camera-ingress, camera-debug-ui, ...) with no per-app configuration.
-# Requires an APP_STORE_TOKEN secret (a PAT with push + PR access on that repo).
+# Release tags (vX.Y.Z) publish X.Y.Z, X.Y and latest. The app store
+# (spiri-robotics/Appstore-Spiri_development) picks new versions up by
+# itself via Dependabot, so nothing here needs access to that repo.
 on:
   push:
     branches: [main]
@@ -62,62 +60,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  update-app-store:
-    needs: build-and-push
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    env:
-      # `secrets` isn't a readable context in a step-level `if:` (only env,
-      # vars, github, etc. are), so its presence is surfaced through env
-      # here and each step below is gated on that instead -- the whole job
-      # no-ops rather than failing when APP_STORE_TOKEN hasn't been set up.
-      HAVE_APP_STORE_TOKEN: ${{ secrets.APP_STORE_TOKEN != '' }}
-    steps:
-      - name: Checkout project
-        if: ${{ env.HAVE_APP_STORE_TOKEN == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          path: project
-
-      - name: Checkout app store
-        if: ${{ env.HAVE_APP_STORE_TOKEN == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          repository: spiri-robotics/Appstore-Spiri_development
-          token: ${{ secrets.APP_STORE_TOKEN }}
-          path: app-store
-
-      - uses: actions/setup-python@v5
-        if: ${{ env.HAVE_APP_STORE_TOKEN == 'true' }}
-        with:
-          python-version: "3.13"
-
-      - name: Bump every matching compose.yaml
-        id: bump
-        if: ${{ env.HAVE_APP_STORE_TOKEN == 'true' }}
-        env:
-          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          NEW_VERSION: ${{ github.ref_name }}
-          SEARCH_ROOT: "app-store"
-        run: |
-          pip install --quiet ruamel.yaml
-          changed=$(python3 project/.github/scripts/bump_app_store_compose.py \
-            --search-root "$SEARCH_ROOT" --image-ref "$IMAGE_REF" --version "$NEW_VERSION")
-          echo "Bumped: $changed"
-          echo "changed=$changed" >> "$GITHUB_OUTPUT"
-
-      - name: Open pull request
-        if: ${{ env.HAVE_APP_STORE_TOKEN == 'true' }}
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.APP_STORE_TOKEN }}
-          path: app-store
-          branch: release-spiricamera-${{ github.ref_name }}
-          commit-message: "SpiriCamera: release ${{ github.ref_name }}"
-          title: "SpiriCamera: release ${{ github.ref_name }}"
-          body: |
-            Automated update from the [SpiriCamera](${{ github.server_url }}/${{ github.repository }}) release workflow.
-
-            Bumps to `${{ github.ref_name }}`:
-            ${{ steps.bump.outputs.changed }}
