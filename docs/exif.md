@@ -90,6 +90,14 @@ Tag names are free-form; the whole set round-trips through the EXIF
 also written to that tag, so ordinary image tools show something
 sensible.
 
+A camera fed by another camera (a `spirisynq://` source, see
+{doc}`getting_started`) starts from the tags the upstream frame already
+carried, so a GPS fix added upstream is still there after the re-encode.
+Its own built-ins then replace the upstream's `source`, `topic` and
+`software` — those describe whoever produced *these* bytes — but the
+upstream's `timestamp` is kept, since that is when the picture was
+actually taken. Providers merge on top of both, as usual.
+
 Because a tag records a capture time, two captures of an unchanging
 scene produce different bytes. Set `exif_enabled = False` for
 byte-identical frames, which psygnal then suppresses rather than

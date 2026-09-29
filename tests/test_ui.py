@@ -691,6 +691,7 @@ class TestStaleFrames:
 
         # Rolling averages, so they decay to nothing.
         await user.should_see("0 KiB/s")
+        await user.should_see("0 kb/s")
         await user.should_see("0.0 fps")
         # An account of the last frame, which is still exactly this big.
         await user.should_see("KiB/frame")

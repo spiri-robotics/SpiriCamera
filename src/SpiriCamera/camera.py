@@ -13,7 +13,7 @@ import re
 import threading
 import time
 from collections.abc import Generator, Mapping
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, field
 from importlib.metadata import PackageNotFoundError, version
 
@@ -47,6 +47,13 @@ STATUS_RUNNING = "running"
 
 #: :py:attr:`CameraBase.status` while idle with nothing wrong.
 STATUS_STOPPED = "stopped"
+
+#: Prefix of :py:attr:`CameraBase.status` while running but waiting for a
+#: source that will not open yet; the reason follows after a colon.
+STATUS_WAITING = "waiting for source"
+
+#: Seconds between attempts to open a source that is not there yet.
+_SOURCE_RETRY_INTERVAL = 1.0
 
 #: How long :py:meth:`Camera.stop` waits for the capture thread to exit.
 _STOP_TIMEOUT = 5.0
@@ -176,14 +183,18 @@ class CameraBase(OverlayMixin, SyncableObject):
     source : SourceInfo
         Resolved description of :py:attr:`source_str`.
     running : bool
-        Whether capture is active.  Assigning to it starts or stops the
-        camera, including from a remote peer.
+        Whether the camera is started: capturing, or waiting for a
+        source that will not open yet.  Assigning to it starts or stops
+        the camera, including from a remote peer.
     status : str
         What the camera is doing, in words: :py:data:`STATUS_RUNNING`,
-        :py:data:`STATUS_STOPPED`, or the reason it is not running —
-        a source string that would not resolve, a device that would not
-        open, or a capture that keeps failing.  ``running`` says whether
-        frames are flowing; ``status`` says why not when they are not.
+        :py:data:`STATUS_STOPPED`, ``"<STATUS_WAITING>: <reason>"`` for
+        a started camera whose device or upstream topic is not there
+        (yet, or any more), or the reason it is not running — a source
+        string that would not resolve, or a capture that keeps failing.
+        ``running`` says whether the camera is trying; ``status`` says
+        whether frames are actually flowing, and why not when they are
+        not.
     image : bytes
         The most recent encoded frame, in :py:attr:`mimetype` format,
         carrying that frame's tags in its EXIF; see
@@ -417,6 +428,9 @@ class Camera(CameraBase):
         # Last EXIF failure reported, so a source that cannot be tagged
         # says so once rather than at the full framerate.
         self._exif_complaint: str = ""
+        # Why the source last refused to open, so a retry that keeps
+        # failing the same way says so once rather than every second.
+        self._waiting_for: str = ""
         # Tags by provider name, so one provider's exif_set_tags/
         # exif_clear_tags can never touch another's. Not a CameraBase
         # field: it describes how *this* node builds a frame, which a
@@ -554,11 +568,20 @@ class Camera(CameraBase):
             opens but captures nothing until the caller drives
             :py:meth:`read` — useful for scripted, frame-at-a-time use.
 
+        A source that resolves but will not open yet -- a device that is
+        not plugged in, a ``spirisynq://`` topic nobody publishes yet --
+        does not stop a background camera from starting.  It starts
+        *waiting*: ``running`` is true, :py:attr:`~CameraBase.status`
+        reads ``"waiting for source: <reason>"``, and the capture thread
+        keeps trying to open the source until it works.  The same
+        happens if the source is lost while running.
+
         Raises
         ------
         CameraError
-            If the source string could not be resolved, or the source
-            refused to open.
+            If the source string could not be resolved, or -- only with
+            ``background=False``, where no thread is left to wait -- the
+            source refused to open.
         """
         with self._lifecycle():
             # Recorded before the attempt, so a camera that was asked to run
@@ -575,18 +598,18 @@ class Camera(CameraBase):
                 self.status = reason
                 raise CameraError(f"{self.synq_topic}: cannot start, {reason}")
 
-            try:
-                capabilities = self._handler.open(self.capture_settings())
-            except SourceError as exc:
-                self._handler.close()
-                self.status = str(exc)
-                raise CameraError(f"{self.synq_topic}: {exc}") from exc
-
-            self._apply(capabilities)
             self._stop_event.clear()
             self._active = True
+            try:
+                self._open_source()
+            except SourceError as exc:
+                if not background:
+                    self._active = False
+                    self.status = str(exc)
+                    raise CameraError(f"{self.synq_topic}: {exc}") from exc
+                self._wait_for_source(exc)
+
             self.running = True
-            self.status = STATUS_RUNNING
 
             if background:
                 self._thread = threading.Thread(
@@ -596,10 +619,55 @@ class Camera(CameraBase):
                 )
                 self._thread.start()
 
+    def _open_source(self) -> None:
+        """Open the handler and record what it reported.
+
+        Raises
+        ------
+        SourceError
+            If the source will not open; the handler is closed again.
+        """
+        handler = self._handler
+        assert handler is not None
+        # A source that reaches SpiriSynq itself (spirisynq://) must do so
+        # on this camera's session, not whichever one happens to be the
+        # default on the calling thread -- a remote `running = True` lands
+        # here on a zenoh thread, and a retry on the capture thread.
+        session = self.synq_session
+        try:
+            with session.as_default() if session else nullcontext():
+                capabilities = handler.open(self.capture_settings())
+        except SourceError:
+            handler.close()
+            raise
+
+        self._apply(capabilities)
+        self._waiting_for = ""
+        self._set_status_if_active(STATUS_RUNNING)
         logger.info(
-            f"{self.synq_topic} started | {self.source.url} | "
+            f"{self.synq_topic} capturing | {self.source.url} | "
             f"{self.describe_capabilities()}"
         )
+
+    def _wait_for_source(self, error: SourceError) -> None:
+        """Report that the source is unavailable, logging each new reason once."""
+        reason = str(error)
+        self._set_status_if_active(f"{STATUS_WAITING}: {reason}")
+        if reason != self._waiting_for:
+            self._waiting_for = reason
+            logger.warning(
+                f"{self.synq_topic}: waiting for {self.source.url}, {reason}"
+            )
+
+    def _set_status_if_active(self, status: str) -> None:
+        """Set ``status`` unless a concurrent :py:meth:`stop` got there first.
+
+        The capture thread reports on opening its source, which can race
+        a stop; without this it could write ``running`` over ``stopped``.
+        """
+        with self._lock:
+            if self._active:
+                self.status = status
 
     def stop(self) -> None:
         """Stop capturing and release the source.
@@ -801,10 +869,22 @@ class Camera(CameraBase):
 
         Settings are re-read every iteration, so a live change to the
         framerate applies without restarting the camera.
+
+        A source that is not open -- never opened, or closed itself after
+        losing its device or upstream -- is reopened here, every
+        :py:data:`_SOURCE_RETRY_INTERVAL` until it works.
         """
         failures = 0
         while not self._stop_event.is_set():
             started = time.monotonic()
+            if not self._is_source_open():
+                try:
+                    self._open_source()
+                    failures = 0
+                except SourceError as exc:
+                    self._wait_for_source(exc)
+                    self._stop_event.wait(_SOURCE_RETRY_INTERVAL)
+                    continue
             try:
                 self.read()
                 if failures:
@@ -976,6 +1056,15 @@ class Camera(CameraBase):
         runtime should use :py:meth:`exif_set_tags` /
         :py:meth:`exif_update` instead, which this merges in afterwards.
 
+        Tags come in three layers, each overriding the one before: tags
+        the source says arrived with the frame
+        (:py:meth:`~SpiriCamera.sources.SourceBase.frame_tags`, e.g. an
+        upstream camera's GPS tags through a ``spirisynq://`` source),
+        then this camera's built-ins, then providers.  The built-ins
+        describe the node that produced *these* bytes, so they replace an
+        upstream's ``source`` and ``topic`` -- except the capture time,
+        which is kept from the inherited tags when they carry one.
+
         Providers are merged in over the built-ins in sorted-name order,
         so the result does not depend on which provider happened to
         register first — but two providers naming the *same* tag will
@@ -999,10 +1088,18 @@ class Camera(CameraBase):
             Tags to embed.  Empty means embed nothing.
         """
         del frame  # The defaults describe the camera, not the pixels.
-        # One clock reading for both tags, so the precise value and the
-        # human-readable one can never name different instants.
-        captured = time.time()
-        tags = {
+        handler = self._handler
+        inherited = handler.frame_tags() if handler is not None else {}
+        # A frame that arrived already tagged was captured when *it* says,
+        # not when this node re-encoded it. One reading for both tags, so
+        # the precise value and the human-readable one can never name
+        # different instants.
+        try:
+            captured = float(inherited[exif.TIMESTAMP_TAG])
+        except (KeyError, ValueError):
+            captured = time.time()
+        tags = dict(inherited)
+        tags |= {
             exif.TIMESTAMP_TAG: f"{captured:.6f}",
             exif.DATETIME_TAG: time.strftime(
                 "%Y:%m:%d %H:%M:%S", time.localtime(captured)

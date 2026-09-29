@@ -263,7 +263,7 @@ pull-based readout. Read the module docstring in
 {py:mod}`SpiriCamera.ui` for the full reasoning; the parts worth
 knowing if you're debugging the numbers it shows:
 
-- **fps / KiB/s** come from `RateMeter`, which is fed only when
+- **fps / KiB/s / kb/s** come from `RateMeter`, which is fed only when
   `serve_frame()` sees a *new* frame object (compared by identity, via
   `_last_counted`) — a stopped camera being polled repeatedly reports
   0 fps rather than the rate of the polling. `_last_counted_lock`
@@ -332,6 +332,37 @@ source string (compound schemes, since `NetworkSource` already claims
 bare `http`/`https`) pulls a remote WHEP publisher's stream in as an
 ordinary `SourceBase`, negotiating on `open()` and reading decoded
 frames off a background task on the same shared loop.
+
+**Another camera is a source too.** `SpiriCamera.sources.spirisynq.SpiriSynqSource`
+(`spirisynq://<topic>`) mirrors an upstream camera on `open()` and
+returns its latest frame, decoded and fitted to the requested bounds.
+It never imports `camera.py`: it looks the upstream's type tag up with
+`Session.list_topics` and mirrors it with whatever class the session has
+registered under it (the real `Camera`, in any process running one),
+falling back to `from_topic_untyped` only when there is none. The order
+matters — `from_topic_untyped` re-registers the tag with a synthesized
+class, which breaks every later `Camera.from_topic` on that session.
+`Camera.start()` opens its handler under `synq_session.as_default()`,
+so the mirror lands on the camera's own session even when a remote
+`running = True` triggers the start from a zenoh thread. Upstream frame
+tags come through `SourceBase.frame_tags()`, merged under the camera's
+own.
+
+**Sources that are not there yet, or any more.** A background camera
+treats a `SourceError` from `open()` as "not yet": it stays `running`,
+reports `waiting for source: <reason>`, and the capture loop retries
+the open every `_SOURCE_RETRY_INTERVAL`. The loop reopens any handler
+whose `is_open` goes false, so the contract for a source that loses
+its device mid-stream is simply to close itself and raise from
+`read()`. `V4LSource` does that when a failed read finds its device
+node gone (a failed read with the node present is only a dropped
+frame). `SpiriSynqSource` does it on the upstream's tombstone (a clean
+shutdown), or — since a crash sends none — when no frame has arrived
+for `STALE_AFTER` seconds and the topic no longer answers
+`list_topics`, or answers from a different process. It uses
+`list_topics` rather than an `sr_metadata` RPC for this because an
+absent topic is silently no reply there, where the RPC logs an error
+on every retry.
 
 ### Hooking a `whep-serve` camera up to MediaMTX
 

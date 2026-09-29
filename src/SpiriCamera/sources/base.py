@@ -408,5 +408,21 @@ class SourceBase(abc.ABC):
             If the source has failed in a way a retry will not fix.
         """
 
+    def frame_tags(self) -> dict[str, str]:
+        """Tags that arrived with the frame :py:meth:`read` last returned.
+
+        For sources whose frames were already tagged before they got
+        here -- another camera's output, say -- so the metadata survives
+        being decoded and re-encoded.  The camera merges these under its
+        own tags; see
+        :py:meth:`~SpiriCamera.camera.Camera.exif_tags_for_frame`.
+
+        Returns
+        -------
+        dict[str, str]
+            The inherited tags.  The default reports none.
+        """
+        return {}
+
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.url.raw!r})"

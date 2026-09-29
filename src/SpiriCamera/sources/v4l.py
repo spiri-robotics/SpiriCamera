@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import re
 import stat
 from pathlib import Path
 
+import numpy as np
 from loguru import logger
 
-from SpiriCamera.sources.base import SourceError, SourceURL
+from SpiriCamera.sources.base import CaptureSettings, SourceError, SourceURL
 from SpiriCamera.sources.capture import OpenCVSource
 
 #: Where Linux exposes V4L2 device identity.
@@ -21,12 +23,19 @@ class V4LSource(OpenCVSource):
     or a ``/dev/v4l/by-id/...`` symlink to one), or an explicit
     ``v4l://`` or ``v4l2://`` URL.
 
-    A schemeless path is claimed by asking the filesystem whether it is
-    a character device, rather than by matching its spelling.  That is
-    what distinguishes a camera from a video file, and it means a
-    half-typed path is reported as unrecognised instead of being claimed
-    and then failing to open.  The explicit scheme skips the check, so a
-    device that is not plugged in yet can still be configured.
+    A schemeless path is claimed if the filesystem says it is a video
+    character device, or if it is spelled like a V4L2 device node that
+    is simply absent right now -- ``/dev/video<N>``, or anything under
+    ``/dev/v4l/`` such as a by-id link.  The first rule is what tells a
+    camera from a video file; the second is what lets a camera
+    configured as ``/dev/video0`` wait for its device to be plugged in
+    rather than being rejected at boot.  A half-typed path (``/dev/vi``)
+    or another device (``/dev/null``) matches neither and is reported as
+    unrecognised.  The explicit ``v4l://`` scheme skips both checks.
+
+    A device that disappears while open -- unplugged, or reset by its
+    driver -- closes this source, and the camera reopens it once it is
+    back; see :py:meth:`read`.
     """
 
     schemes = ("v4l", "v4l2")
@@ -49,7 +58,11 @@ class V4LSource(OpenCVSource):
             return True
         if url.scheme:
             return False
-        return url.target.isdigit() or _is_video_device(url.target)
+        return (
+            url.target.isdigit()
+            or _is_video_device(url.target)
+            or _is_device_node_name(url.target)
+        )
 
     @classmethod
     def from_url(cls, url: SourceURL) -> V4LSource:
@@ -74,15 +87,44 @@ class V4LSource(OpenCVSource):
         ------
         SourceError
             If no device was given, or a schemeless target is neither a
-            camera index nor a character device.
+            camera index, a video device, nor named like one.
         """
         if not url.target:
             raise SourceError(f"No V4L2 device given in {url.raw!r}")
 
-        if not url.scheme and not url.target.isdigit():
-            if not _is_video_device(url.target):
-                raise SourceError(f"Not a video device: {url.target!r}")
+        if not url.scheme and not cls.handles(url):
+            raise SourceError(f"Not a video device: {url.target!r}")
         return cls(url)
+
+    def read(self, settings: CaptureSettings) -> np.ndarray | None:
+        """Grab a frame, closing the source if its device has gone away.
+
+        A failed read on a device that is still present is an ordinary
+        dropped frame.  One whose device node has vanished will never
+        succeed again on this capture object, so the source closes
+        itself; the camera then waits for the device and reopens it.
+
+        Raises
+        ------
+        SourceError
+            If the device has disappeared.
+        """
+        frame = super().read(settings)
+        if frame is None and not self._device_present():
+            self.close()
+            raise SourceError(f"Video device {self.target!r} disappeared")
+        return frame
+
+    def _device_present(self) -> bool:
+        """Whether the device this source names currently exists.
+
+        Assumes present when that cannot be checked -- a bare index on a
+        host with no sysfs -- so a dropped frame is never mistaken for a
+        lost device.
+        """
+        if self.target.isdigit():
+            return not _SYSFS_ROOT.is_dir() or _sysfs_node_for(self.target) is not None
+        return Path(self.target).exists()
 
     def capture_target(self) -> str | int:
         """Return a camera index for bare digits, else the device path.
@@ -213,6 +255,15 @@ def _is_video_device(path: str) -> bool:
     if not _SYSFS_ROOT.is_dir():
         return True
     return _sysfs_node_for(path) is not None
+
+
+#: Paths named like a V4L2 device node, whether or not one exists now.
+_DEVICE_NODE_NAME = re.compile(r"/dev/(video\d+|v4l/.+)")
+
+
+def _is_device_node_name(path: str) -> bool:
+    """Whether a path is spelled like a V4L2 device node."""
+    return _DEVICE_NODE_NAME.fullmatch(path) is not None
 
 
 def _is_character_device(path: str) -> bool:

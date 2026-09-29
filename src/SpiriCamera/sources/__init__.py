@@ -23,7 +23,14 @@ from SpiriCamera.sources.base import (
 from SpiriCamera.sources.capture import OpenCVSource
 
 # Importing these modules is what registers their handlers.
-from SpiriCamera.sources import file, network, testimage, v4l, webrtc  # noqa: F401
+from SpiriCamera.sources import (  # noqa: F401
+    file,
+    network,
+    spirisynq,
+    testimage,
+    v4l,
+    webrtc,
+)
 
 
 def registered_sources() -> list[type[SourceBase]]:

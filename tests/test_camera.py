@@ -14,6 +14,7 @@ from SpiriCamera import exif
 from SpiriCamera.camera import (
     STATUS_RUNNING,
     STATUS_STOPPED,
+    STATUS_WAITING,
     Camera,
     CameraError,
     CameraNotStartedError,
@@ -264,7 +265,7 @@ class TestStatus:
         cam = camera("v4l:///dev/video0")
 
         with pytest.raises(CameraError):
-            cam.start()
+            cam.start(background=False)
 
         assert "Failed to open" in cam.status
         assert cam.source.error == ""
@@ -507,6 +508,105 @@ class TestLiveSettings:
         cam.max_framerate = 30
         # At the original 1fps this would take a second per frame.
         assert wait_for(lambda: bool(cam.image), timeout=2.0)
+
+
+class TestWaitingForSource:
+    """A started camera waits for a source that is not there, then uses it."""
+
+    @pytest.fixture(autouse=True)
+    def fast_retries(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr("SpiriCamera.camera._SOURCE_RETRY_INTERVAL", 0.02)
+
+    def test_starts_waiting(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        fake_capture(opened=False)
+        cam = camera("v4l:///dev/video0")
+
+        cam.start()
+
+        assert cam.running is True
+        assert cam.status.startswith(STATUS_WAITING)
+        assert "Failed to open" in cam.status
+
+    def test_captures_once_the_device_appears(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        fake_capture(opened=False)
+        cam = camera("v4l:///dev/video0")
+        cam.start()
+
+        fake_capture(opened=True)
+
+        assert wait_for(lambda: cam.status == STATUS_RUNNING and cam.image)
+        assert cam.max_supported_width == 640
+
+    def test_waits_again_when_the_device_disappears(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        frame = np.full((480, 640, 3), 5, np.uint8)
+        holder = fake_capture(frames=[frame, None])
+        cam = camera("v4l:///dev/video0")
+        cam.start()
+        assert wait_for(lambda: cam.image)
+
+        unplugged = fake_capture(opened=False)
+        unplugged.present = False
+        holder.present = False
+        assert wait_for(lambda: cam.status.startswith(STATUS_WAITING))
+        assert "disappeared" in cam.status or "Failed to open" in cam.status
+        assert cam.running is True
+
+        fake_capture(opened=True)
+        assert wait_for(lambda: cam.status == STATUS_RUNNING)
+
+    def test_a_dropped_frame_is_not_a_lost_device(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        holder = fake_capture(frames=[None])
+        cam = camera("v4l:///dev/video0")
+        cam.start()
+
+        assert wait_for(lambda: "capture failing" in cam.status)
+        assert holder.capture is not None and not holder.capture.released
+
+    def test_stop_ends_the_wait(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        fake_capture(opened=False)
+        cam = camera("v4l:///dev/video0")
+        cam.start()
+
+        cam.running = False
+
+        assert cam.status == STATUS_STOPPED
+        assert cam._thread is None
+        fake_capture(opened=True)
+        time.sleep(0.1)
+        assert cam.status == STATUS_STOPPED
+        assert not cam.image
+
+    def test_waits_for_an_unplugged_schemeless_device(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """``/dev/video7`` resolves before it exists, so a boot-time config works."""
+        fake_capture(opened=False)
+        cam = camera("/dev/video7")
+        assert cam.source.error == ""
+
+        cam.start()
+        assert cam.status.startswith(STATUS_WAITING)
+
+    def test_scripted_start_still_refuses(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """With no capture thread there is nothing to wait with."""
+        fake_capture(opened=False)
+        cam = camera("v4l:///dev/video0")
+
+        with pytest.raises(CameraError):
+            cam.start(background=False)
+        assert cam.running is False
 
 
 class TestRetargeting:

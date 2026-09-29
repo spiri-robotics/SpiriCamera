@@ -66,6 +66,26 @@ cam.events.image.connect(on_frame)
 
 Both approaches work the same way whether `cam` is a mirror or the authoritative camera itself — `image` is just a field, and it changes the same way either way.
 
+### Building on an existing camera
+
+A mirror is a view of someone else's camera: its settings and overlays are that camera's, and changing them changes it for everyone. To get a *different* stream out of it — smaller, with your own overlays, at your own quality or framerate — use it as the source of a camera of your own instead:
+
+```python
+from SpiriCamera import Camera
+
+small = Camera(
+    "spirisynq://some-host/dev-video0",
+    max_width=640,
+    max_height=360,
+    quality=60,
+)
+small.start()
+```
+
+`spirisynq://` takes the same topic `Camera.from_topic` does. Each upstream frame is decoded and scaled down to fit inside `max_width` x `max_height` (keeping its aspect ratio; it never scales up), then goes through this camera like any source's frame: its own `overlay_widgets` are baked in, it is re-encoded at its own `quality`, and it is published on its own topic. The upstream is untouched, so any number of these can hang off one device. Frame tags carry over too — see {doc}`exif`.
+
+The upstream does not have to exist yet, and may come and go: the camera waits for the topic, and reconnects when an upstream that shut down, crashed, or restarted is back — see "Waiting for a Source" below. An upstream that is merely stopped is kept; its last frame stays up until it starts again.
+
 ### Running a device yourself
 
 If your process *is* the one meant to own the device — a standalone script, or something like the `SpiriCamera run` CLI command — construct a `Camera` normally and start it. Leave `start()` on its default `background=True`: the capture thread runs its own loop, paced to `max_framerate`, for as long as the camera is running. Don't drive it frame-at-a-time yourself — a `Camera` is meant to be treated like a small daemon, not a handle you poll by calling `read()` in your own loop.
@@ -142,27 +162,40 @@ cam = Camera("/dev/video0")  # device node
 cam = Camera("v4l:///dev/video5")  # not plugged in yet
 ```
 
-A schemeless path is matched by asking the filesystem what it is, not by
-how it is spelled, so `/dev/video0` is recognised as a camera and
-`/dev/null` is not. That check needs the device to exist; write
-`v4l://` if you are configuring one that will appear later.
+A schemeless path is recognised as a camera if the filesystem says it is
+one, or if it is named like one — `/dev/video<N>`, or anything under
+`/dev/v4l/` (the `by-id` links are the robust way to name a USB camera).
+So `/dev/video0` works even before the device is plugged in, while
+`/dev/null` and a half-typed `/dev/vi` do not. `v4l://` accepts any path.
+
+### Waiting for a Source
+
+A started camera does not give up on a source that is not there. A
+device that is unplugged, or a `spirisynq://` topic nobody publishes
+yet, leaves the camera `running` with a status of
+`waiting for source: <reason>`, retrying about once a second until it
+works. The same happens if the device is unplugged or the upstream
+camera goes away mid-stream: it waits, and picks up again when it is
+back. `SpiriCamera run` therefore keeps running through a camera
+being replugged or a host rebooting. Only `start(background=False)` —
+scripted use with no capture thread to wait on — still raises instead.
 
 ### Knowing What It Is Doing
 
 `camera.status` says what the camera is doing in words — `running`,
-`stopped`, or the reason it is neither:
+`stopped`, waiting, or the reason it is none of those:
 
 ```python
 cam = Camera("/dev/vi")  # half-typed
 cam.status  # "Unrecognised source: '/dev/vi'. Supported: ..."
 
 cam = Camera("v4l:///dev/video99")
-cam.start()  # raises CameraError
-cam.status  # "Failed to open capture source: '/dev/video99'"
+cam.start()  # does not raise
+cam.status  # "waiting for source: Failed to open capture source: '/dev/video99'"
 ```
 
-`running` says whether frames are flowing; `status` says why not when
-they are not.
+`running` says whether the camera is trying; `status` says whether
+frames are actually flowing, and why not when they are not.
 
 ### Frame Tags
 

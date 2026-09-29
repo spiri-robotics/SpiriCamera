@@ -1278,7 +1278,11 @@ def build_page():
                 parts.append(_format_age(age))
 
             fps, bytes_per_second = frame_meter.rates()
+            # Both units: KiB/s for comparing against frame sizes and
+            # disk, kb/s (SI kilobits) for comparing against link
+            # budgets and encoder bitrates, which are quoted that way.
             parts.append(f"{bytes_per_second / 1024:.0f} KiB/s")
+            parts.append(f"{bytes_per_second * 8 / 1000:.0f} kb/s")
             parts.append(f"{fps:.1f} fps")
 
             # Off the frame in hand, not off the rates: bytes-per-second

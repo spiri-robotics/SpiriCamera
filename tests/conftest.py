@@ -164,9 +164,15 @@ class FakeCapture:
 
 
 class CaptureHolder:
-    """Holds the fake capture a source opened, for later assertions."""
+    """Holds the fake capture a source opened, for later assertions.
+
+    ``present`` stands in for the device node existing, which is what a
+    V4L source checks on a failed read to tell a dropped frame from an
+    unplugged device.
+    """
 
     capture: FakeCapture | None = None
+    present: bool = True
 
 
 @pytest.fixture
@@ -189,6 +195,10 @@ def fake_capture(monkeypatch: pytest.MonkeyPatch) -> Callable[..., CaptureHolder
             return holder.capture
 
         monkeypatch.setattr("SpiriCamera.sources.capture.cv2.VideoCapture", factory)
+        monkeypatch.setattr(
+            "SpiriCamera.sources.v4l.V4LSource._device_present",
+            lambda self: holder.present,
+        )
         return holder
 
     return install
