@@ -1274,6 +1274,42 @@ class TestOverlays:
         finally:
             widget.close()
 
+    def test_client_render_canvas_separates_layout_from_frame(
+        self, camera: CameraFactory
+    ) -> None:
+        """A canvas size moves anchoring into that coordinate space, while
+        templates still see the real frame size."""
+        from SpiriCamera.overlay import HudWidget
+
+        widget = HudWidget(
+            synq_topic="overlays/client_canvas_demo",
+            synq_authoritive=True,
+            svg_template=(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">'
+                "<text>{{ frame.width }}</text></svg>"
+            ),
+            anchor="bottom_right",
+        )
+        try:
+            cam = camera(
+                "testimage://",
+                max_width=160,
+                max_height=120,
+                overlay_widgets={widget.synq_absolute_path: {}},
+                overlay_client_render=True,
+                synq_auto_start=True,
+            )
+            cam.start(background=False)
+            cam.read()
+
+            markup = cam.render_overlays_for_client(
+                cam.received_width, cam.received_height, 400, 300
+            )
+            assert 'transform="translate(380,280)"' in markup
+            assert f"<text>{cam.received_width}</text>" in markup
+        finally:
+            widget.close()
+
     def test_unresolvable_topic_does_not_stop_frames(
         self, camera: CameraFactory
     ) -> None:

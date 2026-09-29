@@ -1231,7 +1231,13 @@ class OverlayMixin:
 
         return result
 
-    def render_overlays_for_client(self, frame_width: int, frame_height: int) -> str:
+    def render_overlays_for_client(
+        self,
+        frame_width: int,
+        frame_height: int,
+        canvas_width: int | None = None,
+        canvas_height: int | None = None,
+    ) -> str:
         """SVG markup positioning every resolvable widget by itself, for
         a browser to render natively instead of :py:meth:`_render_overlays`
         rasterizing and compositing it server-side.
@@ -1249,7 +1255,16 @@ class OverlayMixin:
         frame_width, frame_height : int
             The frame size overlays are anchored against -- typically
             ``self.received_width``/``self.received_height``, i.e. the
-            size of the image the browser is actually displaying.
+            size of the image the browser is actually displaying. Always
+            what templates see as ``frame.width``/``frame.height``.
+        canvas_width, canvas_height : int, optional
+            The coordinate space widgets are measured and anchored in,
+            when that differs from the frame -- e.g. the on-screen size
+            of the displayed image in CSS pixels, so a widget drawn
+            ``18`` units tall stays 18 screen pixels tall however large
+            the frame is. Omitted -> the frame size, so widgets scale
+            with the image exactly as they do when burned in
+            server-side.
 
         Returns
         -------
@@ -1257,7 +1272,7 @@ class OverlayMixin:
             Zero or more ``<g transform="translate(...)">...</g>``
             elements, one per resolvable widget, meant to be wrapped by
             the caller in a
-            ``<svg viewBox="0 0 {frame_width} {frame_height}" width="100%"
+            ``<svg viewBox="0 0 {canvas_width} {canvas_height}" width="100%"
             height="100%" preserveAspectRatio="xMidYMid meet">`` -- the
             explicit size and "meet" matter whenever the display box's
             aspect ratio can differ from the frame's (e.g. a resizable
@@ -1271,6 +1286,8 @@ class OverlayMixin:
         if not self._overlay_widgets:
             return ""
 
+        canvas_width = canvas_width or frame_width
+        canvas_height = canvas_height or frame_height
         frame_info = {
             "width": frame_width,
             "height": frame_height,
@@ -1286,7 +1303,7 @@ class OverlayMixin:
                     frame_info=frame_info,
                 )
                 widget_width, widget_height = measure_size(
-                    svg, frame_width, frame_height
+                    svg, canvas_width, canvas_height
                 )
                 usage = self.overlay_widgets.get(topic, {})
                 if "x" in usage and "y" in usage:
@@ -1294,8 +1311,8 @@ class OverlayMixin:
                         "custom",
                         usage["x"],
                         usage["y"],
-                        frame_width,
-                        frame_height,
+                        canvas_width,
+                        canvas_height,
                         widget_width,
                         widget_height,
                     )
@@ -1304,8 +1321,8 @@ class OverlayMixin:
                         widget.anchor,
                         widget.custom_anchor_x,
                         widget.custom_anchor_y,
-                        frame_width,
-                        frame_height,
+                        canvas_width,
+                        canvas_height,
                         widget_width,
                         widget_height,
                     )

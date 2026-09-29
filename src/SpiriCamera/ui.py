@@ -720,6 +720,13 @@ def build_page():
     # shell's URL, not ours, so it must not be prefix-rewritten.
     ui.add_head_html('<script src="/plugin-sdk/shell.js"></script>', shared=True)
 
+    # How this browser tab lays out client-rendered overlays. Page-local
+    # rather than a Camera field: the viewport being scaled to is this
+    # tab's own, so two viewers of one camera can reasonably differ.
+    # "box" is the overlay element's on-screen size in CSS pixels, kept
+    # current by a ResizeObserver set up next to the frame viewer.
+    overlay_view = {"scale_to_viewport": True, "box": (0, 0)}
+
     def refresh_all() -> None:
         """Rebuild every camera-bound panel after the camera is swapped."""
         top_controls.refresh()
@@ -950,6 +957,14 @@ def build_page():
             ui.switch("Render overlays in browser").bind_value(
                 cam, "overlay_client_render"
             )
+            # Off: widgets are laid out in image pixels and scale with
+            # the image, same as burned-in overlays. On: laid out in
+            # screen pixels, so they stay the same on-screen size however
+            # large the frame or viewport is. Browser rendering only --
+            # a burned-in overlay has no viewport to scale to.
+            ui.switch("Scale overlays to viewport").bind_value(
+                overlay_view, "scale_to_viewport"
+            ).bind_enabled_from(cam, "overlay_client_render")
             with ui.row().classes("w-full items-center gap-2"):
                 add_topic = ui.input(
                     "Add widget by topic",
@@ -1147,6 +1162,7 @@ def build_page():
                 width: 100%;
                 height: 100%;
                 pointer-events: none;
+                font-family: '""" + DEFAULT_FONT + """', monospace;
             }
         """)
 
@@ -1161,7 +1177,7 @@ def build_page():
         # where the letterboxing falls without either needing to know about
         # the other.
         with ui.card().classes("camera-viewport w-full p-0"):
-            with ui.element("div").classes("camera-wrap w-full"):
+            with ui.element("div").classes("camera-wrap w-full") as wrap:
                 frame = ui.interactive_image(FRAME_ROUTE).classes("camera-frame w-full")
                 # sanitize=False: this is our own server-rendered overlay
                 # SVG, not user-supplied HTML, and ui.html's default
@@ -1169,6 +1185,26 @@ def build_page():
                 # reliably pass through SVG the way interactive_image's own
                 # DOMPurify-with-svg-profile sanitizer did.
                 overlay = ui.html("", sanitize=False).classes("overlay-svg")
+
+        # Report the viewer box's on-screen size back to the server for
+        # "Scale overlays to viewport" -- the server otherwise has no idea
+        # how big the frame is being drawn. Fires once on observe, then
+        # on every resize (window, layout, or the card's drag handle).
+        ui.on(
+            "overlay_box",
+            lambda e: overlay_view.update(box=(e.args["width"], e.args["height"])),
+            throttle=0.1,
+        )
+        ui.timer(
+            0,
+            lambda: ui.run_javascript(f"""
+                new ResizeObserver(([entry]) => emitEvent("overlay_box", {{
+                    width: entry.contentRect.width,
+                    height: entry.contentRect.height,
+                }})).observe(getHtmlElement({wrap.id}));
+            """),
+            once=True,
+        )
 
         bandwidth = ui.label().classes("w-full px-2 font-mono text-sm opacity-70")
 
@@ -1189,18 +1225,27 @@ def build_page():
             cam = get_camera()
             body = ""
             if cam.overlay_client_render and cam.received_width and cam.received_height:
+                canvas_width, canvas_height = cam.received_width, cam.received_height
+                box_width, box_height = overlay_view["box"]
+                if overlay_view["scale_to_viewport"] and box_width and box_height:
+                    # The frame's letterboxed on-screen size, i.e. what
+                    # object-fit: contain draws it at inside the box.
+                    scale = min(box_width / canvas_width, box_height / canvas_height)
+                    canvas_width = max(1, round(canvas_width * scale))
+                    canvas_height = max(1, round(canvas_height * scale))
                 body = cam.render_overlays_for_client(
-                    cam.received_width, cam.received_height
+                    cam.received_width, cam.received_height, canvas_width, canvas_height
                 )
                 if body:
                     # Own top-level <svg>, sized against the same box as
                     # the image (see the .camera-frame CSS above) and
                     # letterboxed with "xMidYMid meet" against the frame's
-                    # own resolution -- matching the image's object-fit:
+                    # aspect ratio -- matching the image's object-fit:
                     # contain letterboxing without either element needing
-                    # to know about the other.
+                    # to know about the other. In viewport mode the canvas
+                    # already is the letterboxed size, so this is 1:1.
                     body = (
-                        f'<svg viewBox="0 0 {cam.received_width} {cam.received_height}" '
+                        f'<svg viewBox="0 0 {canvas_width} {canvas_height}" '
                         f'width="100%" height="100%" preserveAspectRatio="xMidYMid meet">'
                         f"{body}</svg>"
                     )
