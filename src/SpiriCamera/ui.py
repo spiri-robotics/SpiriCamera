@@ -1162,9 +1162,9 @@ def build_page():
                 width: 100%;
                 height: 100%;
                 pointer-events: none;
-                font-family: '""" + DEFAULT_FONT + """', monospace;
             }
         """)
+        ui.add_css(f".overlay-svg {{ font-family: '{DEFAULT_FONT}', monospace; }}")
 
         # The overlay lives in its own element, laid over interactive_image
         # rather than injected into interactive_image's own <svg> (see
