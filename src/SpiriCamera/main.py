@@ -60,6 +60,7 @@ class Settings(BaseSettings):
 
     # Camera configuration
     source: str = ""
+    topic: str = ""
     quality: int = 80
     frame_width: int = 1920
     frame_height: int = 1080
