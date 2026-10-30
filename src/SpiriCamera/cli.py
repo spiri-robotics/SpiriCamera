@@ -121,6 +121,8 @@ def run(source: SourceArgument = "") -> None:
         max_width=settings.frame_width,
         max_height=settings.frame_height,
         max_framerate=settings.framerate,
+        # Empty: derived from the source, e.g. spiricamera_dev_video0.
+        synq_topic=settings.topic,
     )
 
     try:

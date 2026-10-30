@@ -62,6 +62,31 @@ class TestMissingSource:
         assert "TestImageSource" in result.stdout
 
 
+class TestRun:
+    """The run command."""
+
+    def test_topic_comes_from_the_environment(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """SPIRICAMERA_TOPIC names the camera's topic instead of the source."""
+        from SpiriCamera import cli
+        from SpiriCamera.camera import CameraError
+
+        made: dict = {}
+
+        class StopsAtStart:
+            def __init__(self, **kwargs) -> None:
+                made.update(kwargs)
+
+            def start(self) -> None:
+                raise CameraError("not started in tests")
+
+        monkeypatch.setattr(cli, "Camera", StopsAtStart)
+        monkeypatch.setenv("SPIRICAMERA_TOPIC", "camera1")
+        runner.invoke(app, ["run", "testimage://"])
+        assert made["synq_topic"] == "camera1"
+
+
 class TestValidate:
     """The validate command."""
 
