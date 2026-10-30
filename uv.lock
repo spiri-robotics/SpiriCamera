@@ -2804,7 +2804,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.14.2" },
     { name = "resvg-py", specifier = ">=0.5.0" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=9.1.0" },
-    { name = "spirisynq", specifier = ">=0.1.3" },
+    { name = "spirisynq", specifier = ">=0.6.0" },
     { name = "thorvg-python", specifier = ">=1.1.3" },
     { name = "typer", specifier = ">=0.26.8" },
     { name = "ultralytics", marker = "extra == 'examples'", specifier = ">=8.3.0" },
@@ -2822,7 +2822,7 @@ dev = [
 
 [[package]]
 name = "spirisynq"
-version = "0.1.3"
+version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -2834,9 +2834,9 @@ dependencies = [
     { name = "rich" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b7/03/df2dddd00b6eac8a6a648938cb4c9778e1dea1855de71e169bfd5c7f2343/spirisynq-0.1.3.tar.gz", hash = "sha256:735e8c3c7cdb2f048bafb1a848035873b41fff8281ccf3217db103c173d074b2", size = 57288, upload-time = "2026-09-12T19:36:10.422Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bd/4e/a9d25f36d0af6b719c0b0146833c9228e5f46046ad6cc9845380bf8a861d/spirisynq-0.6.0.tar.gz", hash = "sha256:d51450ccca3a2652930abd7da1ccca318445378f39847856cb1b3b503b3f4469", size = 98945, upload-time = "2026-10-30T18:15:55.267Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a7/55/5a3a4fa26963340416646a65e23635ef73fcba14ac976e4aef74397283ac/spirisynq-0.1.3-py3-none-any.whl", hash = "sha256:33fb381eefa745c11ec4c84b48fbf9a199d62779df0444cfc1d17ac835097e11", size = 42626, upload-time = "2026-09-12T19:36:08.999Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/70/fb923da3733ae70a6b5e9de8b4f5a28802b1ea4d704c2a015532fe8b8e4f/spirisynq-0.6.0-py3-none-any.whl", hash = "sha256:84ad18e418ac8a3a2fe4d69a8076c9c308a6e838c05c5a71981932a5bab966b2", size = 64901, upload-time = "2026-10-30T18:15:53.936Z" },
 ]
 
 [[package]]
