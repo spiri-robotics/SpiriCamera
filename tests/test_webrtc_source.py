@@ -89,3 +89,13 @@ def test_close_stops_the_pull_task(whep_source_url: str, camera) -> None:
     assert handler is not None
     assert not handler.is_open
     assert handler.read(SETTINGS) is None
+
+
+def test_whep_answers_options() -> None:
+    """OPTIONS /whep succeeds: MediaMTX's WHEP client asks first and gives up on an error."""
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_whep_app(lambda: None))
+    response = client.options("/whep")
+    assert response.status_code == 204
+    assert "POST" in response.headers["Allow"]

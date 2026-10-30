@@ -48,6 +48,12 @@ def create_whep_app(get_camera: Callable[[], Camera]) -> FastAPI:
     """
     app = FastAPI(title="SpiriCamera WHEP")
 
+    # WHEP clients may ask first, for CORS or the server's ICE servers (we
+    # have none to offer). Some, like MediaMTX's, give up if this fails.
+    @app.options("/whep", status_code=204)
+    async def whep_options() -> Response:
+        return Response(status_code=204, headers={"Allow": "OPTIONS, POST"})
+
     @app.post("/whep", status_code=201)
     async def whep_offer(request: Request) -> Response:
         offer_sdp = (await request.body()).decode("utf-8")
