@@ -11,6 +11,7 @@ from SpiriCamera.camera import (
 )
 from SpiriCamera.sources import (
     CaptureSettings,
+    Intrinsics,
     SourceBase,
     SourceCapabilities,
     SourceError,
@@ -32,6 +33,7 @@ __all__ = [
     "CameraNotStartedError",
     "CaptureSettings",
     "FrameUnavailableError",
+    "Intrinsics",
     "SourceBase",
     "SourceCapabilities",
     "SourceError",

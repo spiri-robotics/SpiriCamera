@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -44,6 +43,15 @@ class Settings(BaseSettings):
         User-requested capture height (default 1080).
     framerate : int
         User-requested capture framerate (default 30).
+    hfov, vfov : float
+        The lens's field of view in degrees, e.g. from its datasheet;
+        ``0`` is unset.  ``vfov`` unset assumes square pixels.
+    fx, fy, cx, cy : float
+        A calibrated lens instead, in pixels of a ``calibration_width`` x
+        ``calibration_height`` image (OpenCV's camera matrix).  Wins over
+        ``hfov``/``vfov``; ``cx``/``cy`` unset are the image centre.
+    calibration_width, calibration_height : int
+        The image size ``fx``... were measured at.
     """
 
     model_config = SettingsConfigDict(
@@ -65,6 +73,31 @@ class Settings(BaseSettings):
     frame_width: int = 1920
     frame_height: int = 1080
     framerate: int = 30
+
+    # The lens, when someone knows it; see Camera.set_intrinsics.
+    hfov: float = 0.0
+    vfov: float = 0.0
+    fx: float = 0.0
+    fy: float = 0.0
+    cx: float = 0.0
+    cy: float = 0.0
+    calibration_width: int = 0
+    calibration_height: int = 0
+
+    def intrinsics(self) -> dict[str, float] | None:
+        """The configured lens as ``Camera.set_intrinsics`` arguments, if any."""
+        if self.fx:
+            return {
+                "width": self.calibration_width,
+                "height": self.calibration_height,
+                "fx": self.fx,
+                "fy": self.fy,
+                "cx": self.cx,
+                "cy": self.cy,
+            }
+        if self.hfov:
+            return {"hfov": self.hfov, "vfov": self.vfov}
+        return None
 
 
 def setup_logging(level: str = "INFO") -> None:

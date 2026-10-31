@@ -11,8 +11,8 @@ from loguru import logger
 
 from SpiriCamera import __version__
 from SpiriCamera.camera import Camera, CameraError
-from SpiriCamera.sources import SourceError, describe_source, known_schemes
 from SpiriCamera.main import get_settings
+from SpiriCamera.sources import SourceError, describe_source, known_schemes
 
 app = typer.Typer(
     name="SpiriCamera",
@@ -54,6 +54,18 @@ def _resolve_source(source: str) -> str:
     return source
 
 
+def _set_lens(cam: Camera) -> None:
+    """Give the camera the lens its settings describe, or exit if it isn't one."""
+    lens = get_settings().intrinsics()
+    if lens is None:
+        return
+    try:
+        cam.set_intrinsics("manual", **lens)
+    except ValueError as exc:
+        typer.echo(f"Error: SPIRICAMERA_ lens settings: {exc}", err=True)
+        raise typer.Exit(1)
+
+
 @app.command()
 def version() -> None:
     """Show version information."""
@@ -88,19 +100,28 @@ def validate(source: SourceArgument = "") -> None:
     typer.echo(f"Handler:      {info.handler}")
 
     cam = Camera(source=source)
+    _set_lens(cam)
     try:
         cam.start(background=False)
     except CameraError as exc:
-        typer.echo(f"Connected:    False")
+        typer.echo("Connected:    False")
         typer.echo(f"Error:        {exc}")
         raise typer.Exit(1)
 
-    typer.echo(f"Connected:    True")
+    typer.echo("Connected:    True")
     typer.echo(f"Capture:      {cam.describe_capabilities()}")
     if cam.vendor or cam.model:
         typer.echo(f"Device:       {cam.vendor} {cam.model}".strip())
     if cam.serial_number:
         typer.echo(f"Serial:       {cam.serial_number}")
+    if cam.intrinsics is None:
+        # A field of view becomes a lens at the first frame's size.
+        try:
+            cam.read()
+        except CameraError:
+            pass
+    lens = cam.intrinsics
+    typer.echo(f"Lens:         {f'{lens} ({lens.origin})' if lens else 'unknown'}")
     cam.stop()
 
 
@@ -124,6 +145,7 @@ def run(source: SourceArgument = "") -> None:
         # Empty: derived from the source, e.g. spiricamera_dev_video0.
         synq_topic=settings.topic,
     )
+    _set_lens(cam)
 
     try:
         cam.start()
@@ -220,6 +242,7 @@ def whep_serve(
         max_height=settings.frame_height,
         max_framerate=settings.framerate,
     )
+    _set_lens(cam)
 
     try:
         cam.start()

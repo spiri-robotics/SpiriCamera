@@ -11,17 +11,6 @@ from __future__ import annotations
 
 import inspect
 
-from SpiriCamera.sources.base import (
-    CaptureSettings,
-    SourceBase,
-    SourceCapabilities,
-    SourceError,
-    SourceInfo,
-    SourceURL,
-    UnknownSourceError,
-)
-from SpiriCamera.sources.capture import OpenCVSource
-
 # Importing these modules is what registers their handlers.
 from SpiriCamera.sources import (  # noqa: F401
     file,
@@ -31,6 +20,17 @@ from SpiriCamera.sources import (  # noqa: F401
     v4l,
     webrtc,
 )
+from SpiriCamera.sources.base import (
+    CaptureSettings,
+    Intrinsics,
+    SourceBase,
+    SourceCapabilities,
+    SourceError,
+    SourceInfo,
+    SourceURL,
+    UnknownSourceError,
+)
+from SpiriCamera.sources.capture import OpenCVSource
 
 
 def registered_sources() -> list[type[SourceBase]]:
@@ -141,6 +141,7 @@ def known_schemes() -> list[str]:
 
 __all__ = [
     "CaptureSettings",
+    "Intrinsics",
     "OpenCVSource",
     "SourceBase",
     "SourceCapabilities",

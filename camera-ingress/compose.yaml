@@ -22,6 +22,17 @@ services:
       - SPIRICAMERA_FRAME_WIDTH=${FRAME_WIDTH:-1920}
       - SPIRICAMERA_FRAME_HEIGHT=${FRAME_HEIGHT:-1080}
       - SPIRICAMERA_FRAMERATE=${FRAMERATE:-30}
+      # The lens, if known (0 is unset): a field of view in degrees from
+      # the datasheet, or a calibration, OpenCV's camera matrix at the
+      # image size it was made at. Outranks what the source or MAVLink says.
+      - SPIRICAMERA_HFOV=${HFOV:-0}
+      - SPIRICAMERA_VFOV=${VFOV:-0}
+      - SPIRICAMERA_FX=${FX:-0}
+      - SPIRICAMERA_FY=${FY:-0}
+      - SPIRICAMERA_CX=${CX:-0}
+      - SPIRICAMERA_CY=${CY:-0}
+      - SPIRICAMERA_CALIBRATION_WIDTH=${CALIBRATION_WIDTH:-0}
+      - SPIRICAMERA_CALIBRATION_HEIGHT=${CALIBRATION_HEIGHT:-0}
     # devices:
     #   - ${SOURCE}:${SOURCE}
 

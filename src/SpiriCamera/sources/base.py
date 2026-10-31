@@ -16,12 +16,12 @@ so a source handler must never import the camera module.
 from __future__ import annotations
 
 import abc
-from dataclasses import dataclass, fields
+import math
+from dataclasses import dataclass, fields, replace
 from typing import ClassVar, Self
 
 import numpy as np
 from SpiriSynq.syncable_objects import SubSyncableDataclass
-
 
 # ---------------------------------------------------------------------------
 # Errors
@@ -126,6 +126,113 @@ class CaptureSettings:
 
 
 @dataclass(frozen=True)
+class Intrinsics:
+    """A pinhole camera model, at the resolution it was measured at.
+
+    The model is in pixels of a ``width`` x ``height`` image.  A frame of
+    another size with the same aspect -- a camera asked for a smaller
+    ``max_width``, say -- uses :py:meth:`scaled` to that size, rather than
+    the numbers as they are.
+
+    Synced as one value, not field by field, so a peer never sees one
+    report's focal length with another's size.
+
+    Attributes
+    ----------
+    width : int
+        Image width the model is in, in pixels.
+    height : int
+        Image height the model is in, in pixels.
+    fx : float
+        Horizontal focal length, in pixels.
+    fy : float
+        Vertical focal length, in pixels.
+    cx : float
+        Principal point, horizontally, in pixels from the left edge.
+    cy : float
+        Principal point, vertically, in pixels from the top edge.
+    origin : str
+        Where it came from: ``manual`` (the camera's settings), ``source``
+        (the source reported it, e.g. a Gazebo sensor's ``camera_info``)
+        or ``mavlink`` (the camera's MAVLink component or autopilot,
+        through SpiriMav).  See :py:data:`~SpiriCamera.camera.INTRINSICS_ORIGINS`.
+    """
+
+    width: int
+    height: int
+    fx: float
+    fy: float
+    cx: float
+    cy: float
+    origin: str = ""
+
+    def __post_init__(self) -> None:
+        if self.width <= 0 or self.height <= 0:
+            raise ValueError(f"image size {self.width}x{self.height} is not positive")
+        if not (self.fx > 0 and self.fy > 0):
+            raise ValueError(f"focal lengths {self.fx}, {self.fy} are not positive")
+
+    @classmethod
+    def from_fov(
+        cls,
+        width: int,
+        height: int,
+        hfov: float,
+        vfov: float = 0.0,
+        origin: str = "",
+    ) -> Intrinsics:
+        """The model of a centred lens with a given field of view.
+
+        Parameters
+        ----------
+        width, height : int
+            Image size to express the model in.
+        hfov : float
+            Horizontal field of view, in degrees.
+        vfov : float
+            Vertical field of view, in degrees.  ``0`` assumes square
+            pixels, so it follows from ``hfov`` and the image's aspect.
+        origin : str
+            See the class attributes.
+        """
+        if not 0 < hfov < 180 or not 0 <= vfov < 180:
+            raise ValueError(f"field of view {hfov}°x{vfov}° is not in (0°, 180°)")
+        fx = width / 2 / math.tan(math.radians(hfov) / 2)
+        fy = height / 2 / math.tan(math.radians(vfov) / 2) if vfov else fx
+        return cls(width, height, fx, fy, width / 2, height / 2, origin)
+
+    @property
+    def hfov(self) -> float:
+        """Horizontal field of view through the principal point, in degrees."""
+        return math.degrees(
+            math.atan(self.cx / self.fx) + math.atan((self.width - self.cx) / self.fx)
+        )
+
+    @property
+    def vfov(self) -> float:
+        """Vertical field of view through the principal point, in degrees."""
+        return math.degrees(
+            math.atan(self.cy / self.fy) + math.atan((self.height - self.cy) / self.fy)
+        )
+
+    def scaled(self, width: int, height: int) -> Intrinsics:
+        """The same lens, for an image resized to ``width`` x ``height``."""
+        sx, sy = width / self.width, height / self.height
+        return replace(
+            self,
+            width=width,
+            height=height,
+            fx=self.fx * sx,
+            fy=self.fy * sy,
+            cx=self.cx * sx,
+            cy=self.cy * sy,
+        )
+
+    def __str__(self) -> str:
+        return f"{self.hfov:.1f}°x{self.vfov:.1f}° at {self.width}x{self.height}"
+
+
+@dataclass(frozen=True)
 class SourceCapabilities:
     """What a source reports it can provide, once opened.
 
@@ -154,6 +261,10 @@ class SourceCapabilities:
         Device model, when the source can determine one.
     serial_number : str
         Device serial number, when the source can determine one.
+    intrinsics : Intrinsics | None
+        The lens, when the source knows it -- a simulated camera does,
+        exactly; most devices don't say.  Its ``origin`` is filled in
+        by the camera.
     """
 
     max_supported_width: int | None = None
@@ -162,6 +273,7 @@ class SourceCapabilities:
     vendor: str = ""
     model: str = ""
     serial_number: str = ""
+    intrinsics: Intrinsics | None = None
 
 
 @dataclass

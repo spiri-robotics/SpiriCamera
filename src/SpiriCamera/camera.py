@@ -14,7 +14,7 @@ import threading
 import time
 from collections.abc import Generator, Mapping
 from contextlib import contextmanager, nullcontext
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from importlib.metadata import PackageNotFoundError, version
 
 import cv2
@@ -27,6 +27,7 @@ from SpiriCamera import exif, overlay
 from SpiriCamera.overlay import OverlayMixin
 from SpiriCamera.sources import (
     CaptureSettings,
+    Intrinsics,
     SourceBase,
     SourceCapabilities,
     SourceError,
@@ -51,6 +52,12 @@ STATUS_STOPPED = "stopped"
 #: Prefix of :py:attr:`CameraBase.status` while running but waiting for a
 #: source that will not open yet; the reason follows after a colon.
 STATUS_WAITING = "waiting for source"
+
+#: Where :py:attr:`CameraBase.intrinsics` can come from, most trusted
+#: first: what someone configured beats what the source reports, which
+#: beats what a MAVLink camera or autopilot says (someone typed those
+#: numbers in somewhere too, just further from the camera).
+INTRINSICS_ORIGINS = ("manual", "source", "mavlink")
 
 #: Seconds between attempts to open a source that is not there yet.
 _SOURCE_RETRY_INTERVAL = 1.0
@@ -203,6 +210,11 @@ class CameraBase(OverlayMixin, SyncableObject):
         Whether to tag encoded frames at all.  Turning it off gives byte
         identical frames for an unchanging scene, which psygnal then
         suppresses instead of republishing.
+    intrinsics : Intrinsics | None
+        The lens, from the most trusted of :py:data:`INTRINSICS_ORIGINS`
+        that has reported one, or ``None`` when nothing has.  Its size is
+        the source's native one where known; scale it to
+        ``received_width`` x ``received_height`` to use it on a frame.
     """
 
     #: Fields excluded from SpiriSynq, on top of the base class's own.
@@ -232,6 +244,8 @@ class CameraBase(OverlayMixin, SyncableObject):
     max_supported_width: int | None = None
     max_supported_height: int | None = None
     max_supported_framerate: int | None = None
+
+    intrinsics: Intrinsics | None = None
 
     received_width: int = 0
     received_height: int = 0
@@ -436,6 +450,13 @@ class Camera(CameraBase):
         # field: it describes how *this* node builds a frame, which a
         # mirror never does, so it has no business being synced.
         self._exif_providers: dict[str, dict[str, str]] = {}
+        # What each of INTRINSICS_ORIGINS last reported: a model, or a field
+        # of view (hfov, vfov) waiting on a frame size to become one.
+        # Per-node like the providers: only the authoritative camera picks.
+        self._intrinsics_reports: dict[str, Intrinsics | tuple[float, float]] = {}
+        self._intrinsics_lock = threading.Lock()
+        # The frame size the field-of-view reports were last resolved at.
+        self._intrinsics_size: tuple[int, int] | None = None
 
         # OverlayMixin's per-node state -- see its docstring for why
         # this lives here rather than as dataclass fields.
@@ -761,6 +782,104 @@ class Camera(CameraBase):
 
         session_id, answer_sdp, answer_type = webrtc.negotiate_sync(self, sdp, type)
         return {"session_id": session_id, "sdp": answer_sdp, "type": answer_type}
+
+    # ------------------------------------------------------------------
+    # Intrinsics
+    # ------------------------------------------------------------------
+
+    @remote_method()
+    def set_intrinsics(
+        self,
+        origin: str,
+        width: int = 0,
+        height: int = 0,
+        fx: float = 0.0,
+        fy: float = 0.0,
+        cx: float = 0.0,
+        cy: float = 0.0,
+        hfov: float = 0.0,
+        vfov: float = 0.0,
+    ) -> None:
+        """Report this camera's lens, as *origin* knows it.
+
+        Either a full pinhole model -- ``width``, ``height``, ``fx`` and
+        ``fy``, with ``cx``/``cy`` defaulting to the image centre -- or
+        just a field of view in degrees, ``hfov`` and optionally ``vfov``,
+        which becomes a centred model at the camera's own frame size once
+        it knows one.  A later report from the same origin replaces this
+        one; :py:attr:`~CameraBase.intrinsics` is whichever origin ranks
+        highest in :py:data:`INTRINSICS_ORIGINS`.
+
+        Plain numbers rather than an :py:class:`Intrinsics`, so a peer
+        that doesn't have this package (SpiriMav) can call it.
+
+        Raises
+        ------
+        ValueError
+            For an unknown origin, or numbers that aren't a lens.
+        """
+        if origin not in INTRINSICS_ORIGINS:
+            raise ValueError(f"origin {origin!r} is not one of {INTRINSICS_ORIGINS}")
+        report: Intrinsics | tuple[float, float]
+        if fx or fy:
+            report = Intrinsics(
+                int(width),
+                int(height),
+                float(fx),
+                float(fy or fx),
+                float(cx or width / 2),
+                float(cy or height / 2),
+                origin,
+            )
+        else:
+            # Checked now, so a bad one is refused rather than dropped later.
+            Intrinsics.from_fov(640, 480, float(hfov), float(vfov))
+            report = (float(hfov), float(vfov))
+        with self._intrinsics_lock:
+            self._intrinsics_reports[origin] = report
+        self._update_intrinsics()
+
+    @remote_method()
+    def clear_intrinsics(self, origin: str) -> None:
+        """Forget what *origin* reported, falling back to the next one."""
+        with self._intrinsics_lock:
+            self._intrinsics_reports.pop(origin, None)
+        self._update_intrinsics()
+
+    def _update_intrinsics(self) -> None:
+        """Pick :py:attr:`~CameraBase.intrinsics` from the reports."""
+        size: tuple[int, int] | None = None
+        if self.max_supported_width and self.max_supported_height:
+            size = (self.max_supported_width, self.max_supported_height)
+        elif self.received_width and self.received_height:
+            size = (self.received_width, self.received_height)
+
+        chosen = None
+        with self._intrinsics_lock:
+            if size is None:
+                # Before any frame, a field of view can borrow the size
+                # another origin's full model is in.
+                size = next(
+                    (
+                        (report.width, report.height)
+                        for report in self._intrinsics_reports.values()
+                        if isinstance(report, Intrinsics)
+                    ),
+                    None,
+                )
+            for origin in INTRINSICS_ORIGINS:
+                report = self._intrinsics_reports.get(origin)
+                if isinstance(report, Intrinsics):
+                    chosen = report
+                elif report is not None and size is not None:
+                    chosen = Intrinsics.from_fov(*size, *report, origin=origin)
+                if chosen is not None:
+                    break
+            self._intrinsics_size = size
+        if chosen != self.intrinsics:
+            if chosen is not None:
+                logger.info(f"{self.synq_topic}: lens {chosen} ({chosen.origin})")
+            self.intrinsics = chosen
 
     # ------------------------------------------------------------------
     # Capture
@@ -1169,6 +1288,15 @@ class Camera(CameraBase):
         self.received_width = width
         self.received_height = height
         self.received_ratio = round(width / height, 4) if height else 0.0
+        if (
+            self.synq_authoritive
+            and width
+            and not (self.max_supported_width and self.max_supported_height)
+            and (width, height) != self._intrinsics_size
+        ):
+            # A field of view becomes pixels at the size frames arrive at,
+            # when the source doesn't say what its native one is.
+            self._update_intrinsics()
 
         if image:
             now = time.monotonic()
@@ -1215,6 +1343,15 @@ class Camera(CameraBase):
             self.model = capabilities.model
         if capabilities.serial_number:
             self.serial_number = capabilities.serial_number
+
+        with self._intrinsics_lock:
+            if capabilities.intrinsics is None:
+                self._intrinsics_reports.pop("source", None)
+            else:
+                self._intrinsics_reports["source"] = replace(
+                    capabilities.intrinsics, origin="source"
+                )
+        self._update_intrinsics()
 
 
 def _positive(value: object, default: int = 1) -> int:
