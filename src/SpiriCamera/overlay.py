@@ -704,15 +704,20 @@ def _load_and_measure(
             )
         svg = _strip_percent_size(svg)
 
+    # thorvg objects are native and never freed by Python's garbage
+    # collector: whoever holds the returned picture must hand it to a
+    # canvas (which then owns it) or release it with unref(True).
     picture = thorvg.Picture(_engine)
     result = picture.load_data(
         svg.encode("utf-8"), mimetype="svg", rpath=None, copy=True
     )
     if result != 0:
+        picture.unref(True)
         raise OverlayError(f"thorvg could not parse overlay SVG (result {result})")
 
     _, natural_width, natural_height = picture.get_size()
     if natural_width <= 0 or natural_height <= 0:
+        picture.unref(True)
         raise OverlayError(
             f"overlay SVG has no natural size ({natural_width}x{natural_height})"
         )
@@ -747,7 +752,10 @@ def measure_size(
 
     Parameters, return value, and exceptions: see :py:func:`rasterize`.
     """
-    _, natural_width, natural_height = _load_and_measure(svg, frame_width, frame_height)
+    picture, natural_width, natural_height = _load_and_measure(
+        svg, frame_width, frame_height
+    )
+    picture.unref(True)
     width, height = math.ceil(natural_width), math.ceil(natural_height)
     if width <= 0 or height <= 0:
         raise OverlayError(f"overlay SVG has no natural size ({width}x{height})")
@@ -820,18 +828,26 @@ def rasterize(
 
     width, height = math.ceil(natural_width), math.ceil(natural_height)
     if width <= 0 or height <= 0:
+        picture.unref(True)
         raise OverlayError(f"overlay SVG has no natural size ({width}x{height})")
 
     canvas = thorvg.SwCanvas(_engine)
-    canvas.set_target(width, height)
-    canvas.add(picture)
-    canvas.draw(True)
-    canvas.sync()
+    try:
+        canvas.set_target(width, height)
+        if canvas.add(picture) != thorvg.Result.SUCCESS:
+            picture.unref(True)
+        canvas.draw(True)
+        canvas.sync()
 
-    buffer = np.ctypeslib.as_array(canvas.buffer_arr)
-    # .copy(): buffer_arr's backing memory belongs to `canvas`, which is
-    # local to this call and free to be garbage-collected right after.
-    return buffer.view(np.uint8).reshape(height, width, 4).copy()
+        buffer = np.ctypeslib.as_array(canvas.buffer_arr)
+        # .copy(): buffer_arr's backing memory belongs to `canvas`, which is
+        # destroyed right below.
+        return buffer.view(np.uint8).reshape(height, width, 4).copy()
+    finally:
+        # Frees the canvas and the picture it now owns. thorvg_python has
+        # no __del__, so without this every widget leaked its canvas and
+        # picture on every frame -- gigabytes an hour on a HUD.
+        canvas.destroy()
 
 
 def anchor_position(
@@ -901,25 +917,70 @@ def composite(frame: np.ndarray, rgba: np.ndarray, x: int, y: int) -> np.ndarray
         happen to render byte-identical output.
     """
     result = frame.copy()
-    frame_height, frame_width = result.shape[:2]
-    widget_height, widget_width = rgba.shape[:2]
+    _blend_into(result, *_blend_form(rgba), x, y)
+    return result
+
+
+def _blend_form(rgba: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """A widget raster as :py:func:`_blend_into` blends it: its colour
+    already multiplied by its alpha, as BGR, and its inverse alpha, both
+    ``uint16``. Worked out once per raster, not once per frame."""
+    alpha = rgba[:, :, 3:4].astype(np.uint16)
+    premultiplied = (rgba[:, :, 2::-1].astype(np.uint16) * alpha + 127) // 255
+    inverse_alpha = 255 - alpha
+    premultiplied.flags.writeable = False
+    inverse_alpha.flags.writeable = False
+    return premultiplied, inverse_alpha
+
+
+@functools.lru_cache(maxsize=32)
+def _rasterize_for_blend(
+    svg: str, frame_width: int, frame_height: int
+) -> tuple[np.ndarray, np.ndarray]:
+    """:py:func:`rasterize`, in :py:func:`_blend_form`, cached by the
+    rendered SVG: most widgets render the same SVG frame after frame (a
+    status line, a battery, anything not moving), and parsing and drawing
+    it again each frame was most of a HUD's CPU. Shared between callers,
+    so read-only."""
+    return _blend_form(rasterize(svg, frame_width, frame_height))
+
+
+def _blend_into(
+    frame: np.ndarray,
+    premultiplied: np.ndarray,
+    inverse_alpha: np.ndarray,
+    x: int,
+    y: int,
+) -> None:
+    """Alpha-blend a widget, in :py:func:`_blend_form`, onto ``frame`` in
+    place, at ``(x, y)``, clipped to the frame -- see :py:func:`composite`.
+
+    Integer maths throughout: ``v / 255``, rounded, is
+    ``(v + 128 + ((v + 128) >> 8)) >> 8`` for any ``v`` a ``uint16``
+    product of two bytes can be, which is what makes this cheaper than
+    blending in floats.
+    """
+    frame_height, frame_width = frame.shape[:2]
+    widget_height, widget_width = inverse_alpha.shape[:2]
 
     src_x, src_y = max(0, -x), max(0, -y)
     dst_x, dst_y = max(0, x), max(0, y)
     width = min(widget_width - src_x, frame_width - dst_x)
     height = min(widget_height - src_y, frame_height - dst_y)
     if width <= 0 or height <= 0:
-        return result
+        return
 
-    region = rgba[src_y : src_y + height, src_x : src_x + width]
-    alpha = region[:, :, 3:4].astype(np.float32) / 255.0
-    rgb_as_bgr = region[:, :, 2::-1].astype(np.float32)
-    background = result[dst_y : dst_y + height, dst_x : dst_x + width].astype(
-        np.float32
-    )
-    blended = rgb_as_bgr * alpha + background * (1.0 - alpha)
-    result[dst_y : dst_y + height, dst_x : dst_x + width] = blended.astype(np.uint8)
-    return result
+    source = (slice(src_y, src_y + height), slice(src_x, src_x + width))
+    background = frame[dst_y : dst_y + height, dst_x : dst_x + width]
+    blended = background * inverse_alpha[source]
+    blended += 128
+    blended += blended >> 8
+    blended >>= 8
+    blended += premultiplied[source]
+    # Each half rounds on its own, so a nearly opaque pixel over a bright
+    # background can come to 256.
+    np.minimum(blended, 255, out=blended)
+    background[...] = blended
 
 
 # ---------------------------------------------------------------------------
@@ -1463,8 +1524,10 @@ class OverlayMixin:
                 for svg, centre in self._overlay_renders(
                     topic, widget, frame_info, (1.0, 1.0)
                 ):
-                    rgba = rasterize(svg, frame_width, frame_height)
-                    widget_height, widget_width = rgba.shape[:2]
+                    premultiplied, inverse_alpha = _rasterize_for_blend(
+                        svg, frame_width, frame_height
+                    )
+                    widget_height, widget_width = inverse_alpha.shape[:2]
                     x, y = self._overlay_position(
                         topic,
                         widget,
@@ -1474,7 +1537,11 @@ class OverlayMixin:
                         widget_width,
                         widget_height,
                     )
-                    result = composite(result, rgba, x, y)
+                    # One copy of the frame, however many widgets: it is
+                    # never blended onto in place -- see composite().
+                    if result is frame:
+                        result = frame.copy()
+                    _blend_into(result, premultiplied, inverse_alpha, x, y)
             except OverlayError as exc:
                 self._overlay_complain(topic, f"overlay {topic!r} not rendered, {exc}")
             else:
