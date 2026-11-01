@@ -15,12 +15,18 @@ The upstream is reached without importing :py:mod:`SpiriCamera.camera`
 forbidden): this handler only needs an object with an ``image`` field
 and an ``events.image`` signal, which any SpiriSynq mirror of a camera
 provides, whatever class it was built as.
+
+The frames are the upstream's view, so the upstream's lens and pose come
+with them: the lens through :py:meth:`SpiriSynqSource.frame_intrinsics`,
+live, and the pose as the capabilities' ``frame``, the upstream's topic,
+which the consuming camera follows unless it has been placed itself.
 """
 
 from __future__ import annotations
 
 import threading
 import time
+from collections.abc import Mapping
 
 import cv2
 import numpy as np
@@ -30,6 +36,7 @@ from SpiriSynq.session import Session, current_session
 from SpiriCamera import exif
 from SpiriCamera.sources.base import (
     CaptureSettings,
+    Intrinsics,
     SourceBase,
     SourceCapabilities,
     SourceError,
@@ -330,10 +337,15 @@ class SpiriSynqSource(SourceBase):
         """The EXIF tags the upstream wrote into the frame last read."""
         return self._tags
 
-    @staticmethod
-    def _capabilities(upstream: object) -> SourceCapabilities:
-        """Pass the upstream's own reported limits and identity through."""
+    def frame_intrinsics(self) -> Intrinsics | None:
+        """The upstream's lens now: the frames are its view, resized."""
+        return _lens(getattr(self._upstream, "intrinsics", None))
+
+    def _capabilities(self, upstream: object) -> SourceCapabilities:
+        """Pass the upstream's own reported limits, identity, lens and pose through."""
         return SourceCapabilities(
+            intrinsics=_lens(getattr(upstream, "intrinsics", None)),
+            frame=self.target,
             max_supported_width=getattr(upstream, "max_supported_width", None),
             max_supported_height=getattr(upstream, "max_supported_height", None),
             max_supported_framerate=getattr(upstream, "max_supported_framerate", None),
@@ -341,3 +353,15 @@ class SpiriSynqSource(SourceBase):
             model=getattr(upstream, "model", "") or "",
             serial_number=getattr(upstream, "serial_number", "") or "",
         )
+
+
+def _lens(value: object) -> Intrinsics | None:
+    """An upstream's ``intrinsics``, typed or as the plain mapping a mirror may hold."""
+    if isinstance(value, Intrinsics) or value is None:
+        return value
+    if isinstance(value, Mapping):
+        try:
+            return Intrinsics(**value)
+        except (TypeError, ValueError):
+            return None
+    return None

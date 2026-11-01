@@ -52,6 +52,13 @@ class Settings(BaseSettings):
         ``hfov``/``vfov``; ``cx``/``cy`` unset are the image centre.
     calibration_width, calibration_height : int
         The image size ``fx``... were measured at.
+    relative_to : str
+        The SpiriSynq topic of what the camera is mounted on, a gimbal's
+        (``mu-1/robot_gimbal1``), so the camera has a pose and looks
+        where it does.  Mounted with no offset and the same axes; set
+        ``mount`` over SpiriSynq for any other mounting.  Empty leaves
+        the camera unplaced, unless its source places it (a
+        ``spirisynq://`` relay follows the camera it relays).
     """
 
     model_config = SettingsConfigDict(
@@ -83,6 +90,9 @@ class Settings(BaseSettings):
     cy: float = 0.0
     calibration_width: int = 0
     calibration_height: int = 0
+
+    # What the camera is mounted on; see Camera's relative_to.
+    relative_to: str = ""
 
     def intrinsics(self) -> dict[str, float] | None:
         """The configured lens as ``Camera.set_intrinsics`` arguments, if any."""

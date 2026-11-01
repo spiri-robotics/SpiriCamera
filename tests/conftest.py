@@ -34,16 +34,16 @@ import uuid
 SYNQ_NAMESPACE = f"spiricamera-test-{uuid.uuid4().hex[:12]}"
 os.environ["SPIRI_SYNQ_BASE_TOPIC"] = SYNQ_NAMESPACE
 
-from collections.abc import AsyncGenerator, Callable, Iterator  # noqa: E402
+from collections.abc import AsyncGenerator, Callable, Iterator
 
-import numpy as np  # noqa: E402
-import pytest  # noqa: E402
-import zenoh  # noqa: E402
-from nicegui.testing.user import User  # noqa: E402
-from nicegui.testing.user_simulation import user_simulation  # noqa: E402
-from SpiriSynq.session import Session, current_session  # noqa: E402
+import numpy as np
+import pytest
+import zenoh
+from nicegui.testing.user import User
+from nicegui.testing.user_simulation import user_simulation
+from SpiriSynq.session import Session, current_session
 
-from SpiriCamera.camera import Camera  # noqa: E402
+from SpiriCamera.camera import Camera
 
 #: Zenoh config for the test peer: no discovery, no endpoints, no peers.
 #:
@@ -132,11 +132,11 @@ class FakeCapture:
         )
         self._reads = 0
 
-    def isOpened(self) -> bool:  # noqa: N802 - mirrors the cv2 API
+    def isOpened(self) -> bool:
         """Whether the device is open."""
         return self.opened and not self.released
 
-    def set(self, prop: int, value: float) -> bool:  # noqa: A003
+    def set(self, prop: int, value: float) -> bool:
         """Record a property the source tried to apply."""
         self.properties[prop] = value
         return True
@@ -228,7 +228,7 @@ def camera() -> Iterator[Callable[..., Camera]]:
 
 
 @pytest.fixture
-async def user(monkeypatch: pytest.MonkeyPatch) -> AsyncGenerator[User, None]:
+async def user(monkeypatch: pytest.MonkeyPatch) -> AsyncGenerator[User]:
     """Render the real page against a throwaway camera.
 
     ``build_page`` is passed as ``root`` so NiceGUI calls the page

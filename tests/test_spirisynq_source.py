@@ -12,6 +12,8 @@ import uuid
 from collections.abc import Callable
 
 import pytest
+from SpiriSynq.example_types.position import Offset, Pose, RootFrame
+from SpiriSynq.link import Link
 from SpiriSynq.session import current_session
 
 from SpiriCamera import exif
@@ -154,6 +156,36 @@ class TestFrames:
         cam = proxy()
         assert cam.vendor == upstream.vendor == "SpiriCamera"
         assert cam.model == upstream.model
+
+    def test_follows_the_upstream_pose(
+        self, proxy: Callable[..., Camera], upstream: Camera
+    ) -> None:
+        """Its frames are the upstream's view, so it is where the upstream is."""
+        upstream.relative_to = RootFrame("ECEF")
+        upstream.mount = Pose(offset=Offset(1.0, 2.0, 3.0))
+        cam = proxy()
+        assert cam.relative_to == Link(upstream.synq_absolute_path)
+        wait_for(lambda: cam.pose == upstream.pose)
+
+    def test_a_placed_proxy_stays_placed(self, proxy: Callable[..., Camera]) -> None:
+        cam = proxy(relative_to=RootFrame("ECEF"), mount=Pose())
+        assert cam.relative_to == RootFrame("ECEF")
+
+    def test_follows_the_upstream_lens(
+        self, proxy: Callable[..., Camera], upstream: Camera
+    ) -> None:
+        """Live: a lens that changes upstream (a zoom) changes here too."""
+        cam = proxy()
+        upstream.set_intrinsics("manual", hfov=60.0)
+        wait_for(lambda: upstream.intrinsics is not None)
+
+        def lens_followed() -> bool:
+            cam.read()
+            lens = cam.intrinsics
+            return lens is not None and abs(lens.hfov - 60.0) < 0.01
+
+        wait_for(lens_followed)
+        assert cam.intrinsics.origin == "source"  # type: ignore[union-attr]
 
     def test_close_unsubscribes(self, proxy: Callable[..., Camera]) -> None:
         cam = proxy()

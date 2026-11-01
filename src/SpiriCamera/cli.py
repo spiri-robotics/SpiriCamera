@@ -8,6 +8,8 @@ from typing import Annotated
 
 import typer
 from loguru import logger
+from SpiriSynq.example_types.position import Pose
+from SpiriSynq.link import Link
 
 from SpiriCamera import __version__
 from SpiriCamera.camera import Camera, CameraError
@@ -63,6 +65,18 @@ def _set_lens(cam: Camera) -> None:
         cam.set_intrinsics("manual", **lens)
     except ValueError as exc:
         typer.echo(f"Error: SPIRICAMERA_ lens settings: {exc}", err=True)
+        raise typer.Exit(1)
+
+
+def _set_mount(cam: Camera) -> None:
+    """Mount the camera on what its settings name, or exit if that isn't a topic."""
+    relative_to = get_settings().relative_to
+    if not relative_to:
+        return
+    try:
+        cam.relative_to, cam.mount = Link(relative_to), Pose()
+    except ValueError as exc:
+        typer.echo(f"Error: SPIRICAMERA_RELATIVE_TO: {exc}", err=True)
         raise typer.Exit(1)
 
 
@@ -146,6 +160,7 @@ def run(source: SourceArgument = "") -> None:
         synq_topic=settings.topic,
     )
     _set_lens(cam)
+    _set_mount(cam)
 
     try:
         cam.start()

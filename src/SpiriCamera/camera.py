@@ -20,8 +20,9 @@ from importlib.metadata import PackageNotFoundError, version
 import cv2
 import numpy as np
 from loguru import logger
+from SpiriSynq.example_types.position import Pose, Position, RootFrame
+from SpiriSynq.link import Link
 from SpiriSynq.remote_callables import remote_method
-from SpiriSynq.syncable_objects import SyncableObject
 
 from SpiriCamera import exif, overlay
 from SpiriCamera.overlay import OverlayMixin
@@ -115,14 +116,24 @@ def topic_for_source(source_str: str) -> str:
 
 
 @dataclass
-class CameraBase(OverlayMixin, SyncableObject):
+class CameraBase(OverlayMixin, Position):
     """The network-transparent half of a camera.
 
     Every field here is published over SpiriSynq and can be set by a
     remote peer.  :py:class:`Camera` adds the behaviour that reacts to
     those fields; this class is what a mirror on another node sees.
 
-    The fields fall into five groups:
+    A camera is a :py:class:`~SpiriSynq.example_types.position.Position`
+    too: ``relative_to`` is what it is mounted on (a gimbal, an airframe)
+    and ``mount`` how, so its ``pose`` is where it is and which way it
+    looks, in ECEF.  Its own frame is FRD: ``x`` out of the lens, ``y``
+    to the picture's right, ``z`` down it (see
+    :py:mod:`SpiriCamera.projection`).  A camera that relays another's
+    frames (``spirisynq://``) follows that camera's pose unless it is
+    given its own; one nobody has placed has no pose, and an overlay
+    can't put anything on its picture by where it is in the world.
+
+    The other fields fall into five groups:
 
     ``source_str`` / ``source``
         What the camera is pointed at.  ``source_str`` is the request;
@@ -457,6 +468,10 @@ class Camera(CameraBase):
         self._intrinsics_lock = threading.Lock()
         # The frame size the field-of-view reports were last resolved at.
         self._intrinsics_size: tuple[int, int] | None = None
+        # The upstream this camera was placed on because its source said
+        # the frames are that object's view, so a camera placed by hand is
+        # never moved, and one whose source changes is moved off again.
+        self._placed_by_source: str = ""
 
         # OverlayMixin's per-node state -- see its docstring for why
         # this lives here rather than as dataclass fields.
@@ -468,6 +483,7 @@ class Camera(CameraBase):
         # see OverlayMixin._overlay_invalidate_widget_cache.
         self._overlay_declared_cache: dict[str, dict[str, str]] = {}
         self._overlay_resolved_cache: dict[str, dict[str, str]] = {}
+        self._overlay_placement_cache: dict[str, overlay.WorldPlacement] = {}
 
         if is_rehydrate:
             logger.debug(
@@ -944,7 +960,10 @@ class Camera(CameraBase):
             raise CameraNotStartedError(
                 f"{self.synq_topic}: not started, call start() first"
             )
-        return handler.read(self.capture_settings())
+        frame = handler.read(self.capture_settings())
+        if frame is not None:
+            self._follow_source_lens(handler)
+        return frame
 
     def read(self) -> bytes:
         """Capture, encode, and publish a single frame.
@@ -1352,6 +1371,42 @@ class Camera(CameraBase):
                     capabilities.intrinsics, origin="source"
                 )
         self._update_intrinsics()
+        self._place_from_source(capabilities.frame)
+
+    def _follow_source_lens(self, handler: SourceBase) -> None:
+        """Take the lens the source has now, when it says it has changed."""
+        lens = handler.frame_intrinsics()
+        if lens is None:
+            return
+        lens = replace(lens, origin="source")
+        with self._intrinsics_lock:
+            if self._intrinsics_reports.get("source") == lens:
+                return
+            self._intrinsics_reports["source"] = lens
+        self._update_intrinsics()
+
+    def _place_from_source(self, frame: str) -> None:
+        """Follow the pose of *frame*, the object whose view the source's frames are.
+
+        Only a camera nobody has placed (or that was placed this way) is
+        moved: an identity mount on *frame*, so it is where that object is
+        and looks the way it does.  With no *frame* any more, a camera
+        placed this way is unplaced again.
+        """
+        placed = Link(self._placed_by_source) if self._placed_by_source else None
+        unplaced = self.relative_to == RootFrame("unknown") and self.mount is None
+        if not (unplaced or (placed is not None and self.relative_to == placed)):
+            return
+        if frame:
+            if placed != Link(frame):
+                logger.info(
+                    f"{self.synq_topic}: seeing through {frame}, following its pose"
+                )
+                self.relative_to, self.mount = Link(frame), Pose()
+            self._placed_by_source = frame
+        elif placed is not None:
+            self.relative_to, self.mount = RootFrame("unknown"), None
+            self._placed_by_source = ""
 
 
 def _positive(value: object, default: int = 1) -> int:

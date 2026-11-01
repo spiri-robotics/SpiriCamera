@@ -1,6 +1,7 @@
 """Sphinx configuration for SpiriCamera."""
 
 from __future__ import annotations
+
 import sys
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 project = "SpiriCamera"
-copyright = "2026, Spiri"  # noqa: A001
+copyright = "2026, Spiri"
 author = "Alex Davies"
 release = "0.1.0"
 

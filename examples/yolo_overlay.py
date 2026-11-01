@@ -19,11 +19,11 @@ from dataclasses import dataclass, field
 import cv2
 import numpy as np
 from psygnal.containers import EventedList
+from SpiriSynq.syncable_objects import SyncableObject
 from ultralytics import YOLO
 
 from SpiriCamera import Camera
 from SpiriCamera.overlay import HudWidget
-from SpiriSynq.syncable_objects import SyncableObject
 
 #: Alias "det" is declared once here and used by every {{ objects.det.* }}
 #: expression below -- see HudWidget.svg_template for the mechanism.

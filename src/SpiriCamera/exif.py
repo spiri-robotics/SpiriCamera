@@ -255,9 +255,9 @@ def _dump(tags: Mapping[str, str]) -> bytes:
 
 __all__ = [
     "DATETIME_TAG",
-    "ExifError",
-    "TIMESTAMP_TAG",
     "STANDARD_TAGS",
+    "TIMESTAMP_TAG",
+    "ExifError",
     "embed",
     "extract",
     "image_size",

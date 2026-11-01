@@ -22,6 +22,7 @@ The SpiriCamera package provides camera functionality for video capture and fram
 SpiriCamera.camera
 SpiriCamera.exif
 SpiriCamera.overlay
+SpiriCamera.projection
 SpiriCamera.sources
 SpiriCamera.webrtc
 SpiriCamera.whep
@@ -34,6 +35,7 @@ SpiriCamera.main
 - {doc}`SpiriCamera.camera` — capture lifecycle, encoding, and publication
 - {doc}`SpiriCamera.exif` — frame metadata carried inside the encoded frame
 - {doc}`SpiriCamera.overlay` — SVG HUD overlays baked into frames before encoding
+- {doc}`SpiriCamera.projection` — where a point in the world lands in a camera's picture
 - {doc}`SpiriCamera.sources` — source handler registry and resolution
 - {doc}`SpiriCamera.webrtc` — WebRTC plumbing shared by every signaling path
 - {doc}`SpiriCamera.whep` — WHEP (WebRTC-HTTP Egress Protocol) exposure for a single camera

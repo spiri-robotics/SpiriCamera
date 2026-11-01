@@ -265,6 +265,12 @@ class SourceCapabilities:
         The lens, when the source knows it -- a simulated camera does,
         exactly; most devices don't say.  Its ``origin`` is filled in
         by the camera.
+    frame : str
+        The SpiriSynq topic of the
+        :py:class:`~SpiriSynq.example_types.position.Position` the frames
+        are seen from, when they are some other object's view: a relayed
+        camera's.  The camera follows its pose unless it has been placed
+        itself.  Empty for a source that is the camera.
     """
 
     max_supported_width: int | None = None
@@ -274,6 +280,7 @@ class SourceCapabilities:
     model: str = ""
     serial_number: str = ""
     intrinsics: Intrinsics | None = None
+    frame: str = ""
 
 
 @dataclass
@@ -535,6 +542,21 @@ class SourceBase(abc.ABC):
             The inherited tags.  The default reports none.
         """
         return {}
+
+    def frame_intrinsics(self) -> Intrinsics | None:
+        """The lens of the frame :py:meth:`read` last returned, if it changes.
+
+        For sources whose lens can change while open -- another camera's
+        output, whose lens zooms -- so the camera follows it rather than
+        keeping the one :py:meth:`open` reported.
+
+        Returns
+        -------
+        Intrinsics | None
+            The lens now, or ``None`` to keep the last one reported.  The
+            default keeps what :py:meth:`open` said.
+        """
+        return None
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.url.raw!r})"

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from SpiriCamera.sources import resolve_source
 from SpiriCamera.sources.base import CaptureSettings, SourceError
 from SpiriCamera.sources.testimage import (
     DEFAULT_IMAGE,
@@ -11,9 +12,10 @@ from SpiriCamera.sources.testimage import (
     fit_inside,
     raster_test_images,
     svg_aspect_ratio,
+)
+from SpiriCamera.sources.testimage import (
     test_images as load_test_images,
 )
-from SpiriCamera.sources import resolve_source
 
 #: Whether ultralytics (the "examples" extra) is installed, and so
 #: whether the yolo_demo raster pattern is available to test against.

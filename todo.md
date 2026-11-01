@@ -3,10 +3,6 @@ Max width/height are not respected, user can not reduce resolution
 Not sure how exif tags are working. The use case for this is software adding metadata to the stream. We don't seem to be able to remove custom tags? Multipl eproviders don't seem to be able to manage tags?
 
 
-Bigger project, webrtc and SHRED. Need to support webrtc receiving and sending, keep our tagged metadata in the stream proeprly. Session initation via a zenoh RPC call and the ability to expose a topic over http for SHRED.
-
-Done: WHEP (not SHRED) egress/ingest via SpiriCamera.webrtc + SpiriCamera.whep + sources/webrtc.py, `webrtc_offer` zenoh RPC, `SpiriCamera whep-serve` CLI. Tags travel over a `spiricamera-tags` data channel, but only when the *viewer's* own offer opens it -- a single-shot WHEP answer can't add one the offer didn't have. MediaMTX can pull our WHEP stream directly (`source: whep://...` in mediamtx.yml, see docs/architecture.md) but drops the tags channel entirely -- it has no data channel support at all right now.
-
 Follow-up, on hold for now: proper STANAG 4609 interop means encoding our tags as MISB ST 0601 KLV and giving SpiriCamera an RTSP/SRT output with a synchronous KLV track (RFC 6597, SMPTE336M) -- that's what MediaMTX actually carries end-to-end, unrelated to WHEP/WebRTC. Have a design sketch of the KLV dataclass (tag/codec metadata per field) but haven't built it.
 
 What one of these (`UasDatalinkSet`, pre-KLV-encoding, before `to_klv()` packs it into TLV bytes) would look like as YAML -- field names/units match ST 0601 Table 1 verbatim, `None`/absent means "no source for this yet", not zero:
@@ -56,34 +52,6 @@ frame_center_longitude_deg: -73.5680
 frame_center_elevation_m: 40.0
 ```
 
-
-#Overlay system. Maybe a seperate project? 
-
-It's a bit jumped together, rendering widgets, showing widgets, etc. Think it should probably be a mixin class we can add to a camera to enable overlay support.
-
-The overlay system, oh god the overlay system. An overlay is an SVG. It can be anchored to top_right,  top_middle, top_left. center_left, center_middle, center_right. Bottom_etc. (how do we cover everything? Like for an ML bounding box?) ALso anchored to coordinates (in percentage, not pixels). That's a property of the hudWidget syncableobject.
-
-
-HUDwidgets get zenoh topics injected into them as style elements.
-
-The SVG gets templated by MiniJinja, and has access to raw zenoh topics and image exif data.
-
-The SVG can be baked directly into a camera image with thorvg-python.
-
- or rendered in the browser itself. (note, no virtual DoM, this is going to be expensive for the browser to do. I'd like to support 120fps)
-
- Widget would look something likde
-
- class HudWidget:
-     svg_template: str
-     anchor: left,right,middle,cutom
-     custom_anchor_x: 80 (percent)
-     custom_anchor_y: 50 (percent)
-
-A camera can support overlays as a subscriber, or CSV ofs subcribers. "overlays/**" (default) would grab call overlays for example. We don't nessearily need to instantiate a HudWidget object on the client side to do this, just build a generic attribute tree. We'll need to figure how topics work, can we statically analyse it to figure out what topics we need to cache or what?
-
->MiniJinja has exactly the API you need: Template::undeclared_variables(), which "returns a set of all undeclared variables in the template... since this runs a static analysis
-
-Yes on static analysis.
-
 ---
+
+Chunked progressive MJPEG. Figure out the chunk size to have a useful image, send it as hard real time with zenoh's priority. the tail end as InteractiveLow or DataLow?. Still use the same basic channel, but have some ability merge segments. Probably need a segment number too, a wrap-around byte. We can also set a target bitrate, anything beyond that gets DataLow? Thinking about use case, it's easy to put basic jpeg at interactivelow, we prioritize only like mavlink streams more. Telemetry data in general. Need to figure out how we should prioritize stuff. want explicit chunk boundaries so the receiver can decode at any cut. I think we want InteractiveLow for enough to see what you're getting, DataLow to ge tthe jpeg up to a target bitrate, and Background for anything over that. One byte for frame ID is probably fine it would roll over every few seconds at 30fps. Background chunks probably need to be tagged with a timestamp...

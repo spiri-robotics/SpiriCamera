@@ -30,7 +30,7 @@ class OpenCVSource(SourceBase):
     and serial number.
     """
 
-    def __init__(self, url) -> None:  # noqa: ANN001 - inherited signature
+    def __init__(self, url) -> None:
         super().__init__(url)
         self._capture: cv2.VideoCapture | None = None
         #: Settings last pushed onto the device, so :py:meth:`read` can

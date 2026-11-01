@@ -56,6 +56,15 @@ per-camera position override, for exactly the same reason: a widget's own
 placement, and a camera can place it elsewhere for itself alone. See
 :py:attr:`OverlayMixin.overlay_widgets` for the shape of both.
 
+A widget can also be placed by where its objects are in the world rather
+than on the frame: ``{# anchor: <alias> #}`` centres it on an object's
+pixel, ``{# anchor: each <alias>.<field> #}`` draws a copy on each object
+that field links to, and ``{# project: <alias>, ... #}`` gives a
+frame-wide widget its objects' pixels. Those widgets get a ``view``
+namespace (and ``item``, for ``each``), computed by
+:py:mod:`SpiriCamera.projection` from the camera's own pose and lens; see
+:py:func:`world_placement` and :ref:`world-overlays`.
+
 Rendered SVG is rasterized with ``thorvg_python`` at its own **natural**
 pixel size (``Picture.get_size()``), never scaled to fit a declared box:
 a widget author who writes ``font-size="24"`` gets a real 24px on screen
@@ -85,7 +94,7 @@ import importlib.resources
 import math
 import re
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING
 
 import minijinja
@@ -93,7 +102,10 @@ import numpy as np
 import thorvg_python as thorvg
 from loguru import logger
 from psygnal.containers import EventedDict
+from SpiriSynq.example_types.position import Pose
 from SpiriSynq.syncable_objects import SyncableObject
+
+from SpiriCamera.projection import View, project
 
 if TYPE_CHECKING:
     # Deferred: SpiriCamera.camera imports this module, not the other
@@ -134,6 +146,16 @@ EXIF_NAME = "exif"
 #: why these are injected directly rather than reached through ``objects``.
 FRAME_NAME = "frame"
 
+#: Top-level template name for where the widget's objects are in the
+#: picture, for a widget that declares an ``anchor`` or ``project``; see
+#: :py:func:`world_placement` and :ref:`world-overlays`.
+VIEW_NAME = "view"
+
+#: Top-level template name for the one linked object an
+#: ``{# anchor: each <alias>.<field> #}`` widget is being drawn for, its
+#: fields as ``{{ item.<field> }}``.
+ITEM_NAME = "item"
+
 #: Matches an object declaration comment: `{# object: alias = real/topic #}`.
 #: A dedicated, narrow syntax we own completely -- not an attempt to
 #: parse arbitrary MiniJinja expression syntax -- which is what keeps it
@@ -142,6 +164,20 @@ FRAME_NAME = "frame"
 #: whitespace-trimmed.
 _OBJECT_DECLARATION_RE = re.compile(
     r"\{#\s*object:\s*(?P<alias>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<topic>[^#]+?)\s*#\}"
+)
+
+#: Matches an anchor declaration: `{# anchor: alias #}`, or
+#: `{# anchor: each alias.field #}`. Same narrow-syntax reasoning as
+#: `_OBJECT_DECLARATION_RE`.
+_ANCHOR_DECLARATION_RE = re.compile(
+    r"\{#\s*anchor:\s*(?:(?P<each>each)\s+)?"
+    r"(?P<alias>[A-Za-z_][A-Za-z0-9_]*)(?:\.(?P<field>[A-Za-z_][A-Za-z0-9_]*))?\s*#\}"
+)
+
+#: Matches a projection declaration: `{# project: alias, other #}`.
+_PROJECT_DECLARATION_RE = re.compile(
+    r"\{#\s*project:\s*(?P<aliases>[A-Za-z_][A-Za-z0-9_]*"
+    r"(?:\s*,\s*[A-Za-z_][A-Za-z0-9_]*)*)\s*#\}"
 )
 
 _env = minijinja.Environment()
@@ -368,6 +404,10 @@ def resolve_objects(svg_template: str) -> dict[str, str]:
         if alias:
             used.add(alias)
 
+    # An object a widget is placed on, or projects, is one it uses, even
+    # if its template never reads a field of it.
+    used |= set(world_placement(svg_template).aliases)
+
     declared = declared_objects(svg_template)
     missing = sorted(used - declared.keys())
     if missing:
@@ -379,12 +419,96 @@ def resolve_objects(svg_template: str) -> dict[str, str]:
     return {alias: declared[alias] for alias in used}
 
 
+@dataclass(frozen=True)
+class WorldPlacement:
+    """How a widget is drawn by where its objects are in the world.
+
+    What :py:func:`world_placement` read from a template's ``anchor`` and
+    ``project`` declarations; see :ref:`world-overlays`.
+
+    Attributes
+    ----------
+    anchor : str | None
+        The alias the widget is centred on, ``{# anchor: <alias> #}``,
+        or whose linked objects it is drawn on, one copy each, with
+        :py:attr:`each`.  ``None`` for a widget placed on the frame.
+    each : str | None
+        The field of :py:attr:`anchor`'s object holding the links,
+        ``{# anchor: each <alias>.<field> #}``.
+    project : tuple[str, ...]
+        Aliases whose pixels the widget is given, as
+        ``{{ view.<alias> }}``, ``{# project: <alias>, ... #}``.
+    """
+
+    anchor: str | None = None
+    each: str | None = None
+    project: tuple[str, ...] = ()
+
+    @property
+    def aliases(self) -> tuple[str, ...]:
+        """Every alias this placement needs mirrored."""
+        return ((self.anchor,) if self.anchor else ()) + self.project
+
+
+def world_placement(svg_template: str) -> WorldPlacement:
+    """A widget's ``anchor`` and ``project`` declarations.
+
+    Parameters
+    ----------
+    svg_template : str
+        A :py:attr:`HudWidget.svg_template`.
+
+    Returns
+    -------
+    WorldPlacement
+        Empty for a widget that declares neither, the usual case.
+
+    Raises
+    ------
+    OverlayError
+        For more than one anchor, an anchor and a projection in one
+        widget, ``each`` without a field (or a field without ``each``),
+        or an alias with no ``{# object: #}`` declaration.
+    """
+    anchors = list(_ANCHOR_DECLARATION_RE.finditer(svg_template))
+    project = tuple(
+        alias.strip()
+        for match in _PROJECT_DECLARATION_RE.finditer(svg_template)
+        for alias in match["aliases"].split(",")
+    )
+    if len(anchors) > 1:
+        raise OverlayError("a widget has one anchor, this one declares several")
+    if anchors and project:
+        raise OverlayError(
+            "a widget is either anchored on an object or projects objects, not both"
+        )
+    placement = WorldPlacement(project=project)
+    if anchors:
+        match = anchors[0]
+        if bool(match["each"]) != bool(match["field"]):
+            raise OverlayError(
+                f"'{match[0]}': anchor on one object as 'anchor: <alias>', "
+                "or on each of its links as 'anchor: each <alias>.<field>'"
+            )
+        placement = WorldPlacement(anchor=match["alias"], each=match["field"])
+    declared = declared_objects(svg_template)
+    for alias in placement.aliases:
+        if alias not in declared:
+            raise OverlayError(
+                f"template places itself by {alias!r} with no matching "
+                f"'{{# object: {alias} = ... #}}' declaration"
+            )
+    return placement
+
+
 def render_svg(
     svg_template: str,
     *,
     objects: Mapping[str, Mapping[str, object]],
     exif_tags: Mapping[str, str],
     frame_info: Mapping[str, object],
+    view: Mapping[str, object] | None = None,
+    item: Mapping[str, object] | None = None,
 ) -> str:
     """Render a widget's template against live object field values, EXIF
     tags, and the actual frame being rendered onto.
@@ -405,6 +529,14 @@ def render_svg(
         exposed as ``{{ frame.* }}``. See :py:attr:`FRAME_NAME` and the
         module docstring for why these are injected directly instead of
         being reached through ``objects``.
+    view : Mapping[str, object], optional
+        Where the widget's objects are in the picture, exposed as
+        ``{{ view.* }}``: the anchor's :py:class:`~SpiriCamera.projection.View`
+        fields, or ``{alias: fields or None}`` for a projecting widget.
+        Only for a widget with a :py:func:`world_placement`.
+    item : Mapping[str, object], optional
+        The linked object an ``anchor: each`` copy is drawn for, its
+        fields exposed as ``{{ item.* }}``.
 
     Returns
     -------
@@ -429,6 +561,8 @@ def render_svg(
                 },
                 EXIF_NAME: dict(exif_tags),
                 FRAME_NAME: dict(frame_info),
+                **({VIEW_NAME: dict(view)} if view is not None else {}),
+                **({ITEM_NAME: dict(item)} if item is not None else {}),
             },
         )
     except Exception as exc:
@@ -793,9 +927,7 @@ def composite(frame: np.ndarray, rgba: np.ndarray, x: int, y: int) -> np.ndarray
 # ---------------------------------------------------------------------------
 
 
-def camera_metrics_widget(
-    camera: "Camera", *, anchor: str = "bottom_left"
-) -> HudWidget:
+def camera_metrics_widget(camera: Camera, *, anchor: str = "bottom_left") -> HudWidget:
     """Build and publish a widget showing a camera's own live stats.
 
     A ready-made overlay rather than a hand-authored one: baking a
@@ -870,7 +1002,7 @@ _tiger_svg_path = importlib.resources.files("SpiriCamera").joinpath("assets/tige
 
 
 def tiger_widget(
-    camera: "Camera", *, size_percent: float = 20.0, anchor: str = "center_middle"
+    camera: Camera, *, size_percent: float = 20.0, anchor: str = "center_middle"
 ) -> HudWidget:
     """Build and publish a widget showing the classic Ghostscript tiger.
 
@@ -979,7 +1111,7 @@ class OverlayMixin:
     #: other -- flippable live, no camera reconstruction needed.
     overlay_client_render: bool = False
 
-    def _overlay_ordered_widgets(self) -> list[tuple[str, "HudWidget"]]:
+    def _overlay_ordered_widgets(self) -> list[tuple[str, HudWidget]]:
         """``_overlay_widgets`` items in paint order: lowest effective
         ``z_index`` first, so later items in the returned list are
         drawn on top of earlier ones. "Effective" because this camera's
@@ -1055,6 +1187,7 @@ class OverlayMixin:
         """
         self._overlay_declared_cache.pop(topic, None)
         self._overlay_resolved_cache.pop(topic, None)
+        self._overlay_placement_cache.pop(topic, None)
 
     def _cached_declared_objects(self, topic: str, widget: HudWidget) -> dict[str, str]:
         """:py:func:`declared_objects`, cached until ``widget``'s template
@@ -1079,6 +1212,47 @@ class OverlayMixin:
             self._overlay_resolved_cache[topic] = cached
         return cached
 
+    def _cached_world_placement(self, topic: str, widget: HudWidget) -> WorldPlacement:
+        """:py:func:`world_placement`, cached like :py:meth:`_cached_resolve_objects`,
+        and like it, never caching an error."""
+        cached = self._overlay_placement_cache.get(topic)
+        if cached is None:
+            cached = world_placement(widget.svg_template)
+            self._overlay_placement_cache[topic] = cached
+        return cached
+
+    def _overlay_bound_topic(self, widget_topic: str, alias: str, default: str) -> str:
+        """The object *alias* names for this camera: its binding, or *default*."""
+        overrides = self.overlay_widgets.get(widget_topic, {}).get("bindings", {})
+        return overrides.get(alias) or default
+
+    def _overlay_linked_topics(self, widget_topic: str, widget: HudWidget) -> list[str]:
+        """The topics an ``anchor: each`` widget's links name, in their order.
+
+        Empty for any other widget, or while its object isn't mirrored yet.
+        """
+        try:
+            placement = self._cached_world_placement(widget_topic, widget)
+        except OverlayError:
+            return []
+        if placement.each is None:
+            return []
+        default = self._cached_declared_objects(widget_topic, widget).get(
+            placement.anchor or "", ""
+        )
+        parent = self._overlay_objects.get(
+            self._overlay_bound_topic(widget_topic, placement.anchor or "", default)
+        )
+        links = getattr(parent, placement.each, None) if parent is not None else None
+        if not isinstance(links, (list, tuple)):
+            return []
+        # A Link, or a bare topic from a peer that sent one.
+        return [
+            topic
+            for link in links
+            if (topic := getattr(link, "topic", link)) and isinstance(topic, str)
+        ]
+
     def _overlay_sync_objects(self) -> None:
         """Reconcile mirrored data-source objects against every mirrored
         widget's declared aliases and this camera's binding overrides.
@@ -1098,11 +1272,20 @@ class OverlayMixin:
                 if object_topic:
                     wanted_topics.add(object_topic)
 
+        self._overlay_mirror(wanted_topics)
+        # An `anchor: each` widget's linked objects, once the object holding
+        # the links is mirrored -- so one frame later than it, at first.
+        for widget_topic, widget in self._overlay_widgets.items():
+            wanted_topics.update(self._overlay_linked_topics(widget_topic, widget))
+        self._overlay_mirror(wanted_topics)
+
         for topic in list(self._overlay_objects):
             if topic not in wanted_topics:
                 self._overlay_objects.pop(topic).close()
 
-        for topic in wanted_topics:
+    def _overlay_mirror(self, topics: set[str]) -> None:
+        """Mirror each of *topics* not mirrored yet, retrying failures next time."""
+        for topic in topics:
             if topic in self._overlay_objects:
                 continue
             try:
@@ -1141,12 +1324,95 @@ class OverlayMixin:
                 )
                 continue
             self._overlay_complaints.pop(complaint_key, None)
-            values[alias] = {
-                field_name: getattr(obj, field_name)
-                for field_name in type(obj).valid_sync_paths()
-                if "/" not in field_name
-            }
+            values[alias] = _fields(obj)
         return values
+
+    def _overlay_view(self, obj: object, width: int, height: int) -> View | None:
+        """Where *obj* is in a ``width`` x ``height`` frame from this camera.
+
+        None while anything it takes is unknown: this camera's pose or
+        lens, or *obj*'s pose; or when *obj* is behind the camera.
+        """
+        camera, lens = getattr(self, "pose", None), getattr(self, "intrinsics", None)
+        pose = getattr(obj, "pose", None)
+        if isinstance(pose, Mapping):
+            # A mirror whose session doesn't know Pose holds the plain value.
+            pose = Pose.from_plain(dict(pose))
+        if not (isinstance(camera, Pose) and isinstance(pose, Pose) and lens):
+            return None
+        return project(camera, lens, pose, width, height)
+
+    def _overlay_renders(
+        self,
+        topic: str,
+        widget: HudWidget,
+        frame_info: Mapping[str, object],
+        scale: tuple[float, float],
+    ) -> list[tuple[str, tuple[float, float] | None]]:
+        """Render *widget* for this frame: each copy's SVG, and where its centre goes.
+
+        One copy, placed on the frame (``None``), for an ordinary or
+        projecting widget; one per object it is anchored on that is in
+        view, each centred on that object's pixel -- in the coordinate
+        space the widgets are drawn in, *scale* times the frame's.  An
+        anchored widget whose objects are all out of view has none.
+
+        Raises
+        ------
+        OverlayError
+            If the template can't be rendered, as :py:func:`render_svg`.
+        """
+        placement = self._cached_world_placement(topic, widget)
+        objects = self._overlay_object_values_for(widget)
+        width, height = int(frame_info["width"]), int(frame_info["height"])  # type: ignore[call-overload]
+
+        def render(view: Mapping | None = None, item: Mapping | None = None) -> str:
+            return render_svg(
+                widget.svg_template,
+                objects=objects,
+                exif_tags=self.exif_tags,
+                frame_info=frame_info,
+                view=view,
+                item=item,
+            )
+
+        if placement.project:
+            views = {}
+            for alias in placement.project:
+                default = self._cached_declared_objects(topic, widget)[alias]
+                obj = self._overlay_objects.get(
+                    self._overlay_bound_topic(topic, alias, default)
+                )
+                view = (
+                    self._overlay_view(obj, width, height) if obj is not None else None
+                )
+                views[alias] = asdict(view) if view is not None else None
+            return [(render(view=views), None)]
+        if placement.anchor is None:
+            return [(render(), None)]
+
+        if placement.each is None:
+            default = self._cached_declared_objects(topic, widget)[placement.anchor]
+            targets = [self._overlay_bound_topic(topic, placement.anchor, default)]
+        else:
+            targets = self._overlay_linked_topics(topic, widget)
+        renders = []
+        for target in targets:
+            obj = self._overlay_objects.get(target)
+            view = self._overlay_view(obj, width, height) if obj is not None else None
+            if view is None or not view.visible(width, height):
+                continue
+            sx, sy = scale
+            centre = (view.x * sx, view.y * sy)
+            # In the widget's own units, which are the canvas's.
+            fields = asdict(view) | {
+                "x": centre[0],
+                "y": centre[1],
+                "r": view.r * min(sx, sy) if view.r is not None else None,
+            }
+            item = _fields(obj) if placement.each is not None else None
+            renders.append((render(view=fields, item=item), centre))
+        return renders
 
     def _overlay_complain(self, key: str, message: str) -> None:
         """Log a failure once per distinct message, not once per frame."""
@@ -1194,36 +1460,21 @@ class OverlayMixin:
         result = frame
         for topic, widget in self._overlay_ordered_widgets():
             try:
-                svg = render_svg(
-                    widget.svg_template,
-                    objects=self._overlay_object_values_for(widget),
-                    exif_tags=self.exif_tags,
-                    frame_info=frame_info,
-                )
-                rgba = rasterize(svg, frame_width, frame_height)
-                widget_height, widget_width = rgba.shape[:2]
-                usage = self.overlay_widgets.get(topic, {})
-                if "x" in usage and "y" in usage:
-                    x, y = anchor_position(
-                        "custom",
-                        usage["x"],
-                        usage["y"],
+                for svg, centre in self._overlay_renders(
+                    topic, widget, frame_info, (1.0, 1.0)
+                ):
+                    rgba = rasterize(svg, frame_width, frame_height)
+                    widget_height, widget_width = rgba.shape[:2]
+                    x, y = self._overlay_position(
+                        topic,
+                        widget,
+                        centre,
                         frame_width,
                         frame_height,
                         widget_width,
                         widget_height,
                     )
-                else:
-                    x, y = anchor_position(
-                        widget.anchor,
-                        widget.custom_anchor_x,
-                        widget.custom_anchor_y,
-                        frame_width,
-                        frame_height,
-                        widget_width,
-                        widget_height,
-                    )
-                result = composite(result, rgba, x, y)
+                    result = composite(result, rgba, x, y)
             except OverlayError as exc:
                 self._overlay_complain(topic, f"overlay {topic!r} not rendered, {exc}")
             else:
@@ -1293,47 +1544,76 @@ class OverlayMixin:
             "height": frame_height,
             "framerate": round(self.received_framerate, 1),
         }
+        scale = (canvas_width / frame_width, canvas_height / frame_height)
         pieces: list[str] = []
         for topic, widget in self._overlay_ordered_widgets():
             try:
-                svg = render_svg(
-                    widget.svg_template,
-                    objects=self._overlay_object_values_for(widget),
-                    exif_tags=self.exif_tags,
-                    frame_info=frame_info,
-                )
-                widget_width, widget_height = measure_size(
-                    svg, canvas_width, canvas_height
-                )
-                usage = self.overlay_widgets.get(topic, {})
-                if "x" in usage and "y" in usage:
-                    x, y = anchor_position(
-                        "custom",
-                        usage["x"],
-                        usage["y"],
+                placed = []
+                for svg, centre in self._overlay_renders(
+                    topic, widget, frame_info, scale
+                ):
+                    widget_width, widget_height = measure_size(
+                        svg, canvas_width, canvas_height
+                    )
+                    x, y = self._overlay_position(
+                        topic,
+                        widget,
+                        centre,
                         canvas_width,
                         canvas_height,
                         widget_width,
                         widget_height,
                     )
-                else:
-                    x, y = anchor_position(
-                        widget.anchor,
-                        widget.custom_anchor_x,
-                        widget.custom_anchor_y,
-                        canvas_width,
-                        canvas_height,
-                        widget_width,
-                        widget_height,
-                    )
-                sized_svg = _normalize_svg_size(svg, widget_width, widget_height)
+                    sized_svg = _normalize_svg_size(svg, widget_width, widget_height)
+                    placed.append(f'<g transform="translate({x},{y})">{sized_svg}</g>')
             except OverlayError as exc:
                 self._overlay_complain(topic, f"overlay {topic!r} not rendered, {exc}")
             else:
                 self._overlay_complaints.pop(topic, None)
-                pieces.append(f'<g transform="translate({x},{y})">{sized_svg}</g>')
+                pieces.extend(placed)
 
         return "".join(pieces)
+
+    def _overlay_position(
+        self,
+        topic: str,
+        widget: HudWidget,
+        centre: tuple[float, float] | None,
+        width: int,
+        height: int,
+        widget_width: int,
+        widget_height: int,
+    ) -> tuple[int, int]:
+        """A widget copy's top-left corner on a ``width`` x ``height`` canvas.
+
+        Centred on *centre* for a copy anchored on an object; otherwise
+        this camera's ``x``/``y`` override, or the widget's own anchor.
+        """
+        if centre is not None:
+            return (
+                round(centre[0] - widget_width / 2),
+                round(centre[1] - widget_height / 2),
+            )
+        usage = self.overlay_widgets.get(topic, {})
+        if "x" in usage and "y" in usage:
+            return anchor_position(
+                "custom",
+                usage["x"],
+                usage["y"],
+                width,
+                height,
+                widget_width,
+                widget_height,
+            )
+        return anchor_position(
+            widget.anchor,
+            widget.custom_anchor_x,
+            widget.custom_anchor_y,
+            width,
+            height,
+            widget_width,
+            widget_height,
+        )
 
     def _overlay_close(self) -> None:
         """Release every mirrored widget and mirrored data-source object."""
@@ -1345,6 +1625,16 @@ class OverlayMixin:
         self._overlay_objects.clear()
         self._overlay_declared_cache.clear()
         self._overlay_resolved_cache.clear()
+        self._overlay_placement_cache.clear()
+
+
+def _fields(obj: object) -> dict[str, object]:
+    """A mirrored object's top-level synced fields, as a template reads them."""
+    return {
+        field_name: getattr(obj, field_name)
+        for field_name in type(obj).valid_sync_paths()  # type: ignore[attr-defined]
+        if "/" not in field_name
+    }
 
 
 __all__ = [
@@ -1353,10 +1643,13 @@ __all__ = [
     "DEFAULT_FONT_PATH",
     "EXIF_NAME",
     "FRAME_NAME",
+    "ITEM_NAME",
     "OBJECTS_NAME",
+    "VIEW_NAME",
     "HudWidget",
     "OverlayError",
     "OverlayMixin",
+    "WorldPlacement",
     "anchor_position",
     "camera_metrics_widget",
     "composite",
@@ -1365,4 +1658,5 @@ __all__ = [
     "render_svg",
     "resolve_objects",
     "tiger_widget",
+    "world_placement",
 ]

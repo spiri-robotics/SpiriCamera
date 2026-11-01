@@ -13,10 +13,10 @@ from __future__ import annotations
 import math
 import re
 import time
-import xml.etree.ElementTree as ElementTree
 from functools import cache
 from importlib.resources import files
 from pathlib import Path
+from xml.etree import ElementTree
 
 import cv2
 import numpy as np

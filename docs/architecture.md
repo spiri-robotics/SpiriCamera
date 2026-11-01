@@ -36,8 +36,11 @@ never need to know it's being driven by a `Camera`.
 ## Camera as a SpiriSynq object
 
 `Camera` is a `SyncableObject` ({py:class}`~SpiriCamera.camera.CameraBase`
-declares the synced fields; `Camera` adds behaviour on top). Two things
-about that are easy to get wrong:
+declares the synced fields; `Camera` adds behaviour on top). It is a
+SpiriSynq `Position` in particular: `relative_to` and `mount` say what
+it is mounted on and how, and `pose` is where it is and which way it
+looks, which is what lets an overlay draw on things in the world
+({ref}`world-overlays`). Two things about it are easy to get wrong:
 
 **Nothing is read-only.** Fields like `max_supported_width` or
 `received_width` are described as "what the device reported" or "what
@@ -193,7 +196,8 @@ one widget definition while each binds it to its own data and
 placement.
 
 A widget's SVG is templated with MiniJinja against three separate
-namespaces, and *why there are three* is the one thing worth
+namespaces (plus `view` and `item` for a widget placed on the world;
+see below), and *why there are three* is the one thing worth
 understanding before touching this code:
 
 - `exif` — the current frame's tags.
@@ -245,6 +249,20 @@ its own SpiriSynq subscription. That is what makes it safe to call
 every frame, which is how newly-added or newly-rebound
 `overlay_widgets` entries get picked up promptly without wiring
 fine-grained `EventedDict` change signals.
+
+**Placing a widget on the world is opt-in, and the template never does
+the geometry.** A widget that declares `{# anchor: ... #}` or
+`{# project: ... #}` (`world_placement()`) is drawn by where its objects
+are in the frame tree: `_overlay_renders()` projects their poses through
+the camera's own pose and lens ({py:mod}`SpiriCamera.projection`), and
+either centres a copy of the widget on each, or hands a frame-wide
+widget the pixels as `view`. That is why a camera is a `Position`. A
+relay camera follows its upstream's pose and lens through the source
+contract (`SourceCapabilities.frame`, `SourceBase.frame_intrinsics()`), so
+a source never reaches back into the camera. Both render paths, burned
+in and client-side, go through `_overlay_renders()` and
+`_overlay_position()`, so they place widgets the same way. The guide for
+widget authors is {ref}`world-overlays`.
 
 See the {py:mod}`SpiriCamera.overlay` module docstring for the full
 reasoning, and {py:func}`~SpiriCamera.overlay.camera_metrics_widget`

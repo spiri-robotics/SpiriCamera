@@ -10,6 +10,7 @@ Work with Cameras in SpiriSynq
 
 getting_started
 exif
+world_overlays
 architecture
 tutorials/yolo_overlay
 api/index

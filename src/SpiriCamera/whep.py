@@ -80,4 +80,4 @@ def create_whep_app(get_camera: Callable[[], Camera]) -> FastAPI:
     return app
 
 
-__all__ = ["create_whep_app", "SDP_MEDIA_TYPE"]
+__all__ = ["SDP_MEDIA_TYPE", "create_whep_app"]
