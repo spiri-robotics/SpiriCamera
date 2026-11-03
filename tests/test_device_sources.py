@@ -81,8 +81,21 @@ class TestV4LClaims:
         Consulting it is then impossible rather than merely unhelpful,
         which is the situation inside a container without /sys.
         """
-        monkeypatch.setattr("SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path / "absent")
+        monkeypatch.setattr(
+            "SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path / "sys/class/video4linux"
+        )
         assert V4LSource.handles(SourceURL.parse("/dev/null"))
+
+    def test_no_video4linux_class_means_no_cameras(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """With sysfs mounted but no video4linux class, nothing is a camera.
+
+        That's a host with no camera driver loaded, like a CI runner: a
+        character device such as /dev/null is still not a camera there.
+        """
+        monkeypatch.setattr("SpiriCamera.sources.v4l._SYSFS_ROOT", tmp_path / "video4linux")
+        assert not V4LSource.handles(SourceURL.parse("/dev/null"))
 
     def test_bare_index_opens_by_number_not_filename(
         self, fake_capture: Callable[..., CaptureHolder]

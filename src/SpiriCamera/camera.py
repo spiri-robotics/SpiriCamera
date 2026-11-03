@@ -145,8 +145,7 @@ class CameraBase(OverlayMixin, Position):
         everything else here — nothing in SpiriSynq is truly read-only —
         though a value set by hand does not reconfigure the device and
         is overwritten the next time the source opens.
-    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` /
-    ``exif_enabled``
+    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` / ``exif_enabled``
         The requested capture and encoding settings.  These are live:
         changing them takes effect on the next frame.
     ``received_*`` / ``_exif_tags`` / ``_exif_timestamp``
@@ -227,7 +226,7 @@ class CameraBase(OverlayMixin, Position):
         that has reported one, or ``None`` when nothing has.  Its size is
         the source's native one where known; scale it to
         ``received_width`` x ``received_height`` to use it on a frame.
-    """
+    """  # noqa: E501 - an RST definition term must stay on one line
 
     #: Fields excluded from SpiriSynq, on top of the base class's own.
     #:
