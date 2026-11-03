@@ -302,9 +302,7 @@ def set_mirror(topic: str = "") -> Camera:
         nothing to show until a topic is given: its fields sit at their
         defaults rather than mirroring anything.
     """
-    new_camera = (
-        Camera.from_topic(topic) if topic else Camera("", synq_authoritive=False)
-    )
+    new_camera = Camera.from_topic(topic) if topic else Camera("", synq_authoritive=False)
     return _replace_camera(new_camera)
 
 
@@ -366,7 +364,7 @@ _UI_WIDGET_SUBTOPIC = "ui_widgets"
 _NEW_WIDGET_TEMPLATE = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50">
   <rect width="200" height="50" fill="black" fill-opacity="0.5"/>
   <text x="8" y="30" font-family="{DEFAULT_FONT}" font-size="18" fill="white">Hello, {{{{ exif.topic }}}}</text>
-</svg>'''
+</svg>'''  # noqa: E501 - SVG, and its text line is clearer whole
 
 #: Embeds the same font file thorvg loads server-side as a browser
 #: ``@font-face``, so `refresh_overlay`'s client-rendered SVG (widgets'
@@ -378,7 +376,8 @@ _NEW_WIDGET_TEMPLATE = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" h
 #: runtime, and this avoids standing up static file serving just for it.
 _DEFAULT_FONT_FACE_CSS = (
     f"@font-face {{ font-family: '{DEFAULT_FONT}'; "
-    f"src: url(data:font/ttf;base64,{base64.b64encode(DEFAULT_FONT_PATH.read_bytes()).decode()}); }}"
+    "src: url(data:font/ttf;base64,"
+    f"{base64.b64encode(DEFAULT_FONT_PATH.read_bytes()).decode()}); }}"
 )
 
 
@@ -489,9 +488,7 @@ def _overlay_widget_usage(cam: Camera, topic: str) -> dict:
     return dict(cam.overlay_widgets.get(topic, {}))
 
 
-def _overlay_set_position(
-    cam: Camera, topic: str, x: float | None, y: float | None
-) -> None:
+def _overlay_set_position(cam: Camera, topic: str, x: float | None, y: float | None) -> None:
     """Set (both given) or clear (either ``None``) this camera's position
     override for the widget at ``topic``, falling back to the widget's
     own anchor when cleared."""
@@ -505,9 +502,7 @@ def _overlay_set_position(
     cam.overlay_widgets[topic] = usage
 
 
-def _overlay_set_binding(
-    cam: Camera, topic: str, alias: str, object_topic: str
-) -> None:
+def _overlay_set_binding(cam: Camera, topic: str, alias: str, object_topic: str) -> None:
     """Set (non-empty) or clear (empty) this camera's binding override
     for ``alias`` on the widget at ``topic``, falling back to that
     alias's own declared default when cleared."""
@@ -701,9 +696,7 @@ def _source_options() -> dict[str, str]:
         ``source_str -> label``, covering every bundled test pattern and
         every V4L2 device currently plugged in.
     """
-    options = {
-        f"testimage://{name}": f"Test pattern: {name}" for name in sorted(test_images())
-    }
+    options = {f"testimage://{name}": f"Test pattern: {name}" for name in sorted(test_images())}
     for name in sorted(raster_test_images()):
         options[f"testimage://{name}"] = f"Test photo: {name}"
     for device in list_devices():
@@ -772,12 +765,8 @@ def build_page():
                     on_change=lambda e: toggle_authoritive(e.value),
                 )
                 if cam.synq_authoritive:
-                    ui.button("Start", on_click=cam.start).classes(
-                        "bg-green-600 text-white"
-                    )
-                    ui.button("Stop", on_click=cam.stop).classes(
-                        "bg-red-600 text-white"
-                    )
+                    ui.button("Start", on_click=cam.start).classes("bg-green-600 text-white")
+                    ui.button("Stop", on_click=cam.stop).classes("bg-red-600 text-white")
                     # Debounced: every keystroke would otherwise retarget the camera.
                     ui.input("Source string").bind_value(cam, "source_str").props(
                         "debounce=500"
@@ -802,9 +791,7 @@ def build_page():
             with ui.card().classes("w-full flex-shrink-0"):
                 with ui.row().classes("w-full items-center justify-between"):
                     ui.label("Cameras on the network").classes("text-lg font-bold")
-                    ui.button(icon="refresh", on_click=top_controls.refresh).props(
-                        "flat round"
-                    )
+                    ui.button(icon="refresh", on_click=top_controls.refresh).props("flat round")
 
                 # Discovery is best-effort -- it relies on zenoh scouting
                 # reaching the other node, which multicast-free networks,
@@ -820,9 +807,9 @@ def build_page():
 
                 discovered = discover_cameras(cam)
                 if not discovered:
-                    ui.label(
-                        "No other camera is currently advertising itself."
-                    ).classes("opacity-70")
+                    ui.label("No other camera is currently advertising itself.").classes(
+                        "opacity-70"
+                    )
                 for meta in discovered:
                     topic = str(meta.get("topic", ""))
                     with ui.row().classes("w-full items-center gap-2"):
@@ -846,21 +833,17 @@ def build_page():
                 ui.label("Image Settings").classes("text-lg font-bold")
                 ui.label("Quality")
                 with ui.row().classes("w-full items-center gap-2 flex-nowrap"):
-                    ui.slider(min=1, max=100).bind_value(
-                        cam, "quality", forward=int
-                    ).classes("flex-1")
-                    ui.number(min=1, max=100).bind_value(
-                        cam, "quality", forward=int
-                    ).classes("w-20")
-                ui.number("Max Width").bind_value(
-                    cam, "max_width", forward=int
-                ).classes("w-full")
-                ui.number("Max Height").bind_value(
-                    cam, "max_height", forward=int
-                ).classes("w-full")
-                ui.number("Max Framerate").bind_value(
-                    cam, "max_framerate", forward=int
-                ).classes("w-full")
+                    ui.slider(min=1, max=100).bind_value(cam, "quality", forward=int).classes(
+                        "flex-1"
+                    )
+                    ui.number(min=1, max=100).bind_value(cam, "quality", forward=int).classes(
+                        "w-20"
+                    )
+                ui.number("Max Width").bind_value(cam, "max_width", forward=int).classes("w-full")
+                ui.number("Max Height").bind_value(cam, "max_height", forward=int).classes("w-full")
+                ui.number("Max Framerate").bind_value(cam, "max_framerate", forward=int).classes(
+                    "w-full"
+                )
                 ui.input("Mimetype").bind_value(cam, "mimetype").classes("w-full")
                 ui.switch("Tag frames").bind_value(cam, "exif_enabled")
 
@@ -868,9 +851,7 @@ def build_page():
                 ui.label("Device").classes("text-lg font-bold")
                 ui.input("Vendor").bind_value(cam, "vendor").classes("w-full")
                 ui.input("Model").bind_value(cam, "model").classes("w-full")
-                ui.input("Serial Number").bind_value(cam, "serial_number").classes(
-                    "w-full"
-                )
+                ui.input("Serial Number").bind_value(cam, "serial_number").classes("w-full")
 
                 # Every field here is two-way on purpose. The source
                 # overwrites the max_supported_* values each time it
@@ -879,12 +860,12 @@ def build_page():
                 # value in and watch what downstream does with it is the
                 # point.
                 ui.label("Capabilities").classes("text-lg font-bold pt-2")
-                ui.number("Max Supported Width").bind_value(
-                    cam, "max_supported_width"
-                ).props('suffix="px"').classes("w-full")
-                ui.number("Max Supported Height").bind_value(
-                    cam, "max_supported_height"
-                ).props('suffix="px"').classes("w-full")
+                ui.number("Max Supported Width").bind_value(cam, "max_supported_width").props(
+                    'suffix="px"'
+                ).classes("w-full")
+                ui.number("Max Supported Height").bind_value(cam, "max_supported_height").props(
+                    'suffix="px"'
+                ).classes("w-full")
                 ui.number("Max Supported Framerate").bind_value(
                     cam, "max_supported_framerate"
                 ).props('suffix="fps"').classes("w-full")
@@ -918,9 +899,9 @@ def build_page():
                 # documented exception to the two-way binding rule, the
                 # writable counterpart being Extra Tags below.
                 ui.label("Frame Tags").classes("text-lg font-bold pt-2")
-                ui.label().bind_text_from(
-                    cam, "exif_tags", backward=_format_tags
-                ).classes("w-full font-mono text-xs whitespace-pre-wrap")
+                ui.label().bind_text_from(cam, "exif_tags", backward=_format_tags).classes(
+                    "w-full font-mono text-xs whitespace-pre-wrap"
+                )
 
                 ui.input(
                     "Extra Tags",
@@ -951,12 +932,8 @@ def build_page():
         with ui.card().classes("w-full flex-shrink-0"):
             with ui.row().classes("w-full items-center justify-between"):
                 ui.label("Overlays").classes("text-lg font-bold")
-                ui.button(icon="refresh", on_click=overlay_panel.refresh).props(
-                    "flat round"
-                )
-            ui.switch("Render overlays in browser").bind_value(
-                cam, "overlay_client_render"
-            )
+                ui.button(icon="refresh", on_click=overlay_panel.refresh).props("flat round")
+            ui.switch("Render overlays in browser").bind_value(cam, "overlay_client_render")
             # Off: widgets are laid out in image pixels and scale with
             # the image, same as burned-in overlays. On: laid out in
             # screen pixels, so they stay the same on-screen size however
@@ -1041,30 +1018,22 @@ def build_page():
                             ui.label("Position override (this camera only):").classes(
                                 "text-xs opacity-70"
                             )
-                            override_x = ui.number("X %", value=usage.get("x")).classes(
-                                "w-24"
-                            )
-                            override_y = ui.number("Y %", value=usage.get("y")).classes(
-                                "w-24"
-                            )
+                            override_x = ui.number("X %", value=usage.get("x")).classes("w-24")
+                            override_y = ui.number("Y %", value=usage.get("y")).classes("w-24")
                             override_x.on_value_change(
-                                lambda event, topic=topic, y=override_y: (
-                                    _overlay_set_position(
-                                        cam,
-                                        topic,
-                                        event.value,
-                                        y.value,
-                                    )
+                                lambda event, topic=topic, y=override_y: _overlay_set_position(
+                                    cam,
+                                    topic,
+                                    event.value,
+                                    y.value,
                                 )
                             )
                             override_y.on_value_change(
-                                lambda event, topic=topic, x=override_x: (
-                                    _overlay_set_position(
-                                        cam,
-                                        topic,
-                                        x.value,
-                                        event.value,
-                                    )
+                                lambda event, topic=topic, x=override_x: _overlay_set_position(
+                                    cam,
+                                    topic,
+                                    x.value,
+                                    event.value,
                                 )
                             )
                             ui.button(
@@ -1075,9 +1044,7 @@ def build_page():
                                 ),
                             ).props("flat dense")
 
-                        for alias, default_topic in declared_objects(
-                            widget.svg_template
-                        ).items():
+                        for alias, default_topic in declared_objects(widget.svg_template).items():
                             bound_to = usage.get("bindings", {}).get(alias, "")
                             with ui.row().classes("w-full items-center gap-2"):
                                 ui.label(f"{alias} (default: {default_topic})").classes(
@@ -1086,16 +1053,12 @@ def build_page():
                                 ui.input(
                                     "Override object topic",
                                     value=bound_to,
-                                ).props("debounce=500").classes(
-                                    "flex-1"
-                                ).on_value_change(
-                                    lambda event, topic=topic, alias=alias: (
-                                        _overlay_set_binding(
-                                            cam,
-                                            topic,
-                                            alias,
-                                            event.value.strip(),
-                                        )
+                                ).props("debounce=500").classes("flex-1").on_value_change(
+                                    lambda event, topic=topic, alias=alias: _overlay_set_binding(
+                                        cam,
+                                        topic,
+                                        alias,
+                                        event.value.strip(),
                                     )
                                 )
 
@@ -1295,9 +1258,7 @@ def build_page():
 
             bandwidth.set_text(" · ".join(parts))
 
-        timer = ui.timer(
-            1 / max(1, int(get_camera().max_framerate or 1)), refresh_frame
-        )
+        timer = ui.timer(1 / max(1, int(get_camera().max_framerate or 1)), refresh_frame)
         # Filled in before the first tick, so the line reads 0 fps rather
         # than being blank for half a second on every page load.
         refresh_bandwidth()

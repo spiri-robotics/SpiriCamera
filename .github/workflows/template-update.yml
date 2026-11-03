@@ -1,0 +1,104 @@
+name: Template Update
+
+# Weekly: pull the latest SpiriProjectTemplates release into this project with
+# `copier update`, re-lock, check, and open or refresh one PR. This is how
+# dependency bumps and new conventions reach every Spiri project, so they stay
+# consistent with each other.
+#
+# Where the template and local edits touch the same lines, copier leaves
+# conflict markers; the PR then opens as a draft for a person to resolve.
+#
+# One-time setup: Settings > Actions > General > "Allow GitHub Actions to
+# create and approve pull requests". PRs opened with the default token don't
+# trigger other workflows, hence the checks run here too. To have the normal
+# CI run on the PR as well, add a TEMPLATE_UPDATE_TOKEN secret (a fine-grained
+# token with contents and pull-requests write on this repo).
+on:
+  schedule:
+    - cron: "0 7 * * 1" # Mondays, 07:00 UTC: an hour after the template's own update
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: template-update
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v10.3.3
+
+      - name: Pull the latest template
+        id: copier
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          before=$(grep '^_commit:' .copier-answers.yml)
+          uvx copier update --defaults --skip-answered --conflict inline
+          after=$(grep '^_commit:' .copier-answers.yml)
+          echo "from=${before#_commit: }" >> "$GITHUB_OUTPUT"
+          echo "to=${after#_commit: }" >> "$GITHUB_OUTPUT"
+          if git grep -lE '^(<<<<<<<|>>>>>>>) ' -- . ':!.github/workflows/template-update.yml' > "$RUNNER_TEMP/conflicts"; then
+            echo "conflicts=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "conflicts=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Re-lock and check
+        id: check
+        if: steps.copier.outputs.conflicts == 'false'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          {
+            uv lock
+            uv sync --locked
+            uv run ruff format --check .
+            uv run ruff check .
+            if [ -d tests ]; then uv run pytest; fi
+          } 2>&1 | tee "$RUNNER_TEMP/check.log"
+
+      - name: Write PR description
+        env:
+          FROM: ${{ steps.copier.outputs.from }}
+          TO: ${{ steps.copier.outputs.to }}
+          CONFLICTS: ${{ steps.copier.outputs.conflicts }}
+          CHECK: ${{ steps.check.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "Updates this project from SpiriProjectTemplates \`$FROM\` to \`$TO\` with \`copier update\`."
+            echo
+            if [ "$CONFLICTS" = true ]; then
+              echo "⚠️ The template changed lines this project has also changed. Resolve the"
+              echo "conflict markers in these files, then run \`uv lock\` and mark this ready:"
+              echo
+              while read -r file; do echo "- \`$file\`"; done < "$RUNNER_TEMP/conflicts"
+            elif [ "$CHECK" = success ]; then
+              echo "✅ Re-locked; lint and tests pass ([run]($RUN_URL))."
+            else
+              echo "❌ Lint or tests fail on the updated project ([run]($RUN_URL)):"
+              echo
+              echo '```'
+              tail -30 "$RUNNER_TEMP/check.log"
+              echo '```'
+            fi
+          } > "$RUNNER_TEMP/body.md"
+
+      - name: Open or update the PR
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.TEMPLATE_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+          branch: automation/template-update
+          delete-branch: true
+          commit-message: "chore: update from SpiriProjectTemplates ${{ steps.copier.outputs.to }}"
+          title: "chore: update from SpiriProjectTemplates ${{ steps.copier.outputs.to }}"
+          body-path: ${{ runner.temp }}/body.md
+          draft: ${{ steps.copier.outputs.conflicts == 'true' || steps.check.outcome == 'failure' }}
+          labels: template-update

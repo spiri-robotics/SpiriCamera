@@ -14,9 +14,7 @@ class TestDeclaredObjects:
     def test_finds_a_declaration(self) -> None:
         template = "{# object: battery = azrael/battery_monitor #}\n<svg></svg>"
 
-        assert overlay.declared_objects(template) == {
-            "battery": "azrael/battery_monitor"
-        }
+        assert overlay.declared_objects(template) == {"battery": "azrael/battery_monitor"}
 
     def test_finds_several_declarations(self) -> None:
         template = (
@@ -45,14 +43,9 @@ class TestResolveObjects:
     """Cross-checking what a template reads against what it declares."""
 
     def test_resolves_a_declared_and_used_alias(self) -> None:
-        template = (
-            "{# object: battery = azrael/battery_monitor #}\n"
-            "{{ objects.battery.voltage }}"
-        )
+        template = "{# object: battery = azrael/battery_monitor #}\n{{ objects.battery.voltage }}"
 
-        assert overlay.resolve_objects(template) == {
-            "battery": "azrael/battery_monitor"
-        }
+        assert overlay.resolve_objects(template) == {"battery": "azrael/battery_monitor"}
 
     def test_ignores_a_declared_but_unused_alias(self) -> None:
         """Declaring an object is not the same as mirroring it -- only
@@ -82,9 +75,7 @@ class TestResolveObjects:
             "{{ objects.battery.voltage }} {{ objects.battery.current }}"
         )
 
-        assert overlay.resolve_objects(template) == {
-            "battery": "azrael/battery_monitor"
-        }
+        assert overlay.resolve_objects(template) == {"battery": "azrael/battery_monitor"}
 
 
 class FakeCamera:
@@ -104,9 +95,7 @@ class TestCameraMetricsWidget:
     """The ready-made widget showing a camera's own live stats."""
 
     def test_topic_is_derived_from_the_camera(self) -> None:
-        camera = FakeCamera(
-            "spiricamera_testimage", "spiri-cam-01/spiricamera_testimage"
-        )
+        camera = FakeCamera("spiricamera_testimage", "spiri-cam-01/spiricamera_testimage")
 
         widget = overlay.camera_metrics_widget(camera)
         try:
@@ -172,9 +161,7 @@ class TestTigerWidget:
     """The ready-made percentage-sized example widget."""
 
     def test_topic_is_derived_from_the_camera(self) -> None:
-        camera = FakeCamera(
-            "spiricamera_testimage", "spiri-cam-01/spiricamera_testimage"
-        )
+        camera = FakeCamera("spiricamera_testimage", "spiri-cam-01/spiricamera_testimage")
 
         widget = overlay.tiger_widget(camera)
         try:
@@ -255,9 +242,7 @@ class TestRenderSvg:
 
     def test_malformed_template_raises(self) -> None:
         with pytest.raises(overlay.OverlayError):
-            overlay.render_svg(
-                "{{ unterminated", objects={}, exif_tags={}, frame_info={}
-            )
+            overlay.render_svg("{{ unterminated", objects={}, exif_tags={}, frame_info={})
 
 
 class TestRasterize:
@@ -436,9 +421,7 @@ class TestNormalizeSvgSize:
 
         result = overlay._normalize_svg_size(svg, 80, 40)
 
-        assert result.startswith(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40">'
-        )
+        assert result.startswith('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40">')
         assert '<rect width="40" height="20" fill="red"/>' in result
 
     def test_percent_size_is_replaced(self) -> None:
@@ -466,9 +449,7 @@ class TestNormalizeSvgSize:
 
         result = overlay._normalize_svg_size(svg, 20, 20)
 
-        assert result.startswith(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">'
-        )
+        assert result.startswith('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">')
         assert '<svg width="5" height="5">' in result
 
 

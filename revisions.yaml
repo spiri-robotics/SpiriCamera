@@ -1,0 +1,30 @@
+# The revision history of the SpiriCamera documentation, a controlled
+# document (spiri-docs, as for every Spiri manual).
+#
+# This file is the single source for the cover page, the PDF footer, the PDF
+# filename, and the revision table in the document. Nothing else records the
+# document's revision -- do not put one anywhere else, it will drift.
+#
+# The document's revision is not the software's version: the docs are revised
+# when what they say changes, the software on every release. Each software
+# release (a `vX.Y.Z` tag) attaches the PDF of whatever revision is current, and
+# the PDF names its own revision -- and says DRAFT if it is one.
+#
+# Dates are unquoted ISO dates (YYYY-MM-DD). Quoting one makes it a string, and
+# the build will reject it rather than guess at the format.
+
+document_number: SPIRI-SPIRICAMERA-001
+regulator_facing: false
+distribution_statement: Uncontrolled when printed.
+
+revisions:
+  - revision: "0.1"
+    # Set this to the date of the initial draft.
+    date: 2026-01-01
+    summary: Initial draft.
+    author: Alex Davies
+    # A draft is marked as one on the cover page, in the PDF footer, and in the
+    # PDF filename, so a printed copy cannot be mistaken for an issued document.
+    #
+    # Remove this line to issue the revision.
+    draft: true

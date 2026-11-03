@@ -1,23 +1,20 @@
 # SpiriCamera Docker Compose - Development Override
 #
-# Dev override: builds from local source with src/ mounted for hot-reloading.
-#   Start with: docker compose -f docker/compose.yaml -f docker/compose.dev.yaml up --build
+# Builds from local source, with the package mounted so code changes need only a restart:
+#   docker compose -f docker/compose.yaml -f docker/compose.dev.yaml up --build
 #
-# Local development without SpiriConfig:
-#   docker compose -f docker/compose.yaml -f docker/compose.dev.yaml up --build
-#   docker compose -f docker/compose.yaml -f docker/compose.dev.yaml up --build
-#   docker compose -f docker/compose.yaml -f docker/compose.dev.yaml up --build
-#   docker compose -f docker/compose.yaml -f docker/compose.dev.yaml ps
+# Needs the `spirisynq` network, which the zenoh-router app creates. Without it:
+#   docker network create spirisynq
 
 services:
   app:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: SpiriCamera:dev
+      target: dev
+    image: spiricamera:dev
     volumes:
-      - ./src:/app/src:ro
+      - ../src:/app/src:ro
     environment:
-      - GREETING=${GREETING:-Hello from SpiriCamera}
-      - ENVIRONMENT=development
-      - LOG_LEVEL=DEBUG
+      - SPIRICAMERA_ENVIRONMENT=development
+      - SPIRICAMERA_DEBUG=true

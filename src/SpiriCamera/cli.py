@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import sys
 import time
 from typing import Annotated
@@ -65,7 +66,7 @@ def _set_lens(cam: Camera) -> None:
         cam.set_intrinsics("manual", **lens)
     except ValueError as exc:
         typer.echo(f"Error: SPIRICAMERA_ lens settings: {exc}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
 
 def _set_mount(cam: Camera) -> None:
@@ -77,7 +78,7 @@ def _set_mount(cam: Camera) -> None:
         cam.relative_to, cam.mount = Link(relative_to), Pose()
     except ValueError as exc:
         typer.echo(f"Error: SPIRICAMERA_RELATIVE_TO: {exc}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
 
 @app.command()
@@ -106,7 +107,7 @@ def validate(source: SourceArgument = "") -> None:
         info = describe_source(source)
     except SourceError as exc:
         typer.echo(f"Invalid source: {exc}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
     typer.echo(f"Source:       {info.url}")
     typer.echo(f"Scheme:       {info.scheme}")
@@ -120,7 +121,7 @@ def validate(source: SourceArgument = "") -> None:
     except CameraError as exc:
         typer.echo("Connected:    False")
         typer.echo(f"Error:        {exc}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
     typer.echo("Connected:    True")
     typer.echo(f"Capture:      {cam.describe_capabilities()}")
@@ -130,10 +131,8 @@ def validate(source: SourceArgument = "") -> None:
         typer.echo(f"Serial:       {cam.serial_number}")
     if cam.intrinsics is None:
         # A field of view becomes a lens at the first frame's size.
-        try:
+        with contextlib.suppress(CameraError):
             cam.read()
-        except CameraError:
-            pass
     lens = cam.intrinsics
     typer.echo(f"Lens:         {f'{lens} ({lens.origin})' if lens else 'unknown'}")
     cam.stop()
@@ -166,7 +165,7 @@ def run(source: SourceArgument = "") -> None:
         cam.start()
     except CameraError as exc:
         typer.echo(f"Error: {exc}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
     logger.info(f"Publishing on {cam.synq_topic}, press Ctrl-C to stop")
     try:
@@ -183,9 +182,7 @@ def run(source: SourceArgument = "") -> None:
 @app.command()
 def capture(
     source: SourceArgument = "",
-    frames: Annotated[
-        int, typer.Option("-f", "--frames", help="Number of frames to capture")
-    ] = 1,
+    frames: Annotated[int, typer.Option("-f", "--frames", help="Number of frames to capture")] = 1,
     quality: Annotated[int, typer.Option("-q", "--quality", help="JPEG quality")] = 80,
     output: Annotated[
         str,
@@ -209,10 +206,11 @@ def capture(
         cam.start(background=False)
     except CameraError as exc:
         typer.echo(f"Error: {exc}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
     captured = 0
-    handle = open(output, "wb") if output else sys.stdout.buffer
+    # Not a `with`: it may be stdout, which isn't ours to close. Closed in `finally`.
+    handle = open(output, "wb") if output else sys.stdout.buffer  # noqa: SIM115
     logger.info(f"Writing {frames} frame(s) to {output or 'stdout'}")
 
     try:
@@ -263,7 +261,7 @@ def whep_serve(
         cam.start()
     except CameraError as exc:
         typer.echo(f"Error: {exc}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
     logger.info(f"Serving {cam.synq_topic} for WHEP on http://{host}:{port}/whep")
     try:

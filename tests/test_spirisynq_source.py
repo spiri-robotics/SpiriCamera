@@ -84,9 +84,7 @@ class TestResolution:
         with pytest.raises(SourceError, match="No topic"):
             resolve_source(source)
 
-    def test_scripted_start_refuses_an_unpublished_topic(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_scripted_start_refuses_an_unpublished_topic(self, camera: CameraFactory) -> None:
         cam = camera("spirisynq://nobody-home/spiricamera_nothing")
         with pytest.raises(CameraError, match="nothing is published"):
             cam.start(background=False)
@@ -200,18 +198,14 @@ class TestFrames:
 class TestTags:
     """Upstream frame metadata surviving the re-encode."""
 
-    def test_inherits_upstream_tags(
-        self, proxy: Callable[..., Camera], upstream: Camera
-    ) -> None:
+    def test_inherits_upstream_tags(self, proxy: Callable[..., Camera], upstream: Camera) -> None:
         upstream.exif_set_tags("gps", {"gps_latitude": "45.5017"})
         wait_for(lambda: "gps_latitude" in upstream.exif_tags)
         cam = proxy()
         wait_for(lambda: "gps_latitude" in exif.extract(cam.read()))
         assert cam.exif_tags["gps_latitude"] == "45.5017"
 
-    def test_keeps_the_upstream_capture_time(
-        self, proxy: Callable[..., Camera]
-    ) -> None:
+    def test_keeps_the_upstream_capture_time(self, proxy: Callable[..., Camera]) -> None:
         cam = proxy()
         cam.read()
         handler = cam.handler

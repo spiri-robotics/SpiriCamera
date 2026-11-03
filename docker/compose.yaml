@@ -1,22 +1,30 @@
 # SpiriCamera Docker Compose - Production
 #
-# Deployed form: pulls image from registry.
-#   Start with: docker compose -f docker/compose.yaml up -d
+# Pulls the published image:
+#   docker compose -f docker/compose.yaml up -d
 #
-# Deployed as SpiriConfig plugin (when spiri_config_plugin=true):
-#   - Registers with SpiriConfig for management
-#   - Label-based discovery
-#   - Port 8337
-#
-# Deployed as standalone app (default):
-#   - Regular docker compose service
+# Joins the `spirisynq` network rather than relying on LAN multicast (which a
+# docker bridge doesn't pass); the zenoh-router app bridges it into the rest
+# of SpiriSynq. Install zenoh-router first.
 
 services:
   app:
-    image: ${COMPONENT_IMAGE:-SpiriCamera:latest}
+    image: ${COMPONENT_IMAGE:-ghcr.io/spiri-robotics/spiricamera:latest}
     restart: unless-stopped
+    # Captures and publishes, like the camera-ingress app; SOURCE picks the camera.
+    command: ["SpiriCamera", "run"]
+    networks:
+      - spirisynq
+    volumes:
+      # The host's hostname, so SpiriSynq names this robot after the machine
+      # and not the container. Not over /etc/hostname: that would clobber the
+      # container's own.
+      - /etc/hostname:/etc/spirisynq_base_topic:ro
     environment:
-      - GREETING=${GREETING:-Hello from SpiriCamera}
-      - ENVIRONMENT=${ENVIRONMENT:-production}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - SPIRICAMERA_ENVIRONMENT=${ENVIRONMENT:-production}
+      - SPIRICAMERA_SOURCE=${SOURCE:-testimage://pm5544}
 
+networks:
+  spirisynq:
+    name: spirisynq
+    external: true

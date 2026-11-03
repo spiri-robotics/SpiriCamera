@@ -1,20 +1,21 @@
 {
-  description = "SpiriCamera development environment";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
+  description = "SpiriCamera development shell";
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; };
-      in
-      with pkgs;
-      {
-        devShell.default =
-          mkShell {
-            buildInputs = [ python313 uv pytest pytest-asyncio pytest-cov ];
-            PYTHONPATH = "\${PWD}/src";
-          };
-      }
-    );
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+  # uv manages the Python environment itself; the shell only provides the tools.
+  #   nix develop ./nix
+  outputs = { self, nixpkgs }:
+    let
+      systems = [ "x86_64-linux" "aarch64-linux" ];
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+    in
+    {
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShell {
+          packages = [ pkgs.python3 pkgs.uv pkgs.gnumake ];
+          env.UV_PYTHON_DOWNLOADS = "never";
+        };
+      });
+    };
 }

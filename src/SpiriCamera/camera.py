@@ -226,7 +226,7 @@ class CameraBase(OverlayMixin, Position):
         that has reported one, or ``None`` when nothing has.  Its size is
         the source's native one where known; scale it to
         ``received_width`` x ``received_height`` to use it on a frame.
-    """
+    """  # noqa: E501 - an RST definition term must stay on one line
 
     #: Fields excluded from SpiriSynq, on top of the base class's own.
     #:
@@ -487,8 +487,7 @@ class Camera(CameraBase):
 
         if is_rehydrate:
             logger.debug(
-                f"{self.synq_topic}: rebuilt from a rehydrate reply, "
-                "not resolving source locally"
+                f"{self.synq_topic}: rebuilt from a rehydrate reply, not resolving source locally"
             )
         else:
             self._resolve(source_str)
@@ -533,9 +532,7 @@ class Camera(CameraBase):
         """
         if not source_str or not source_str.strip():
             self._handler = None
-            self.source.update(
-                SourceInfo.unresolved(source_str, "No source configured")
-            )
+            self.source.update(SourceInfo.unresolved(source_str, "No source configured"))
             self.status = "no source configured"
             return
 
@@ -682,8 +679,7 @@ class Camera(CameraBase):
         self._waiting_for = ""
         self._set_status_if_active(STATUS_RUNNING)
         logger.info(
-            f"{self.synq_topic} capturing | {self.source.url} | "
-            f"{self.describe_capabilities()}"
+            f"{self.synq_topic} capturing | {self.source.url} | {self.describe_capabilities()}"
         )
 
     def _wait_for_source(self, error: SourceError) -> None:
@@ -692,9 +688,7 @@ class Camera(CameraBase):
         self._set_status_if_active(f"{STATUS_WAITING}: {reason}")
         if reason != self._waiting_for:
             self._waiting_for = reason
-            logger.warning(
-                f"{self.synq_topic}: waiting for {self.source.url}, {reason}"
-            )
+            logger.warning(f"{self.synq_topic}: waiting for {self.source.url}, {reason}")
 
     def _set_status_if_active(self, status: str) -> None:
         """Set ``status`` unless a concurrent :py:meth:`stop` got there first.
@@ -729,8 +723,7 @@ class Camera(CameraBase):
             thread.join(timeout=_STOP_TIMEOUT)
             if thread.is_alive():
                 logger.warning(
-                    f"{self.synq_topic}: capture thread did not exit within "
-                    f"{_STOP_TIMEOUT}s"
+                    f"{self.synq_topic}: capture thread did not exit within {_STOP_TIMEOUT}s"
                 )
 
         with self._lock:
@@ -933,11 +926,7 @@ class Camera(CameraBase):
             size = f"{self.max_supported_width}x{self.max_supported_height}"
         else:
             size = "any size"
-        rate = (
-            f"{self.max_supported_framerate}fps"
-            if self.max_supported_framerate
-            else "any rate"
-        )
+        rate = f"{self.max_supported_framerate}fps" if self.max_supported_framerate else "any rate"
         return f"{size} @ {rate}"
 
     def read_frame(self) -> np.ndarray | None:
@@ -957,9 +946,7 @@ class Camera(CameraBase):
         """
         handler = self._handler
         if not self._active or handler is None:
-            raise CameraNotStartedError(
-                f"{self.synq_topic}: not started, call start() first"
-            )
+            raise CameraNotStartedError(f"{self.synq_topic}: not started, call start() first")
         frame = handler.read(self.capture_settings())
         if frame is not None:
             self._follow_source_lens(handler)
@@ -991,9 +978,7 @@ class Camera(CameraBase):
         frame = self.read_frame()
         if frame is None:
             if not self.image:
-                raise FrameUnavailableError(
-                    f"{self.synq_topic}: source produced no frame"
-                )
+                raise FrameUnavailableError(f"{self.synq_topic}: source produced no frame")
             return self.image
 
         if not self.overlay_client_render:
@@ -1033,8 +1018,7 @@ class Camera(CameraBase):
                 self.status = f"capture failing: {exc}"
                 if failures == 1 or failures % _ERROR_LOG_INTERVAL == 0:
                     logger.warning(
-                        f"{self.synq_topic}: capture failed "
-                        f"({failures} in a row): {exc}"
+                        f"{self.synq_topic}: capture failed ({failures} in a row): {exc}"
                     )
 
             interval = 1.0 / _positive(self.max_framerate)
@@ -1239,9 +1223,7 @@ class Camera(CameraBase):
         tags = dict(inherited)
         tags |= {
             exif.TIMESTAMP_TAG: f"{captured:.6f}",
-            exif.DATETIME_TAG: time.strftime(
-                "%Y:%m:%d %H:%M:%S", time.localtime(captured)
-            ),
+            exif.DATETIME_TAG: time.strftime("%Y:%m:%d %H:%M:%S", time.localtime(captured)),
             "software": f"SpiriCamera {_VERSION}",
             "source": self.source.url or self.source_str,
             # The full SpiriSynq path, which is what names this camera on
@@ -1328,8 +1310,7 @@ class Camera(CameraBase):
                 # jittery on individual ones.
                 smoothing = 0.3
                 self.received_framerate = round(
-                    smoothing * instantaneous
-                    + (1 - smoothing) * self.received_framerate
+                    smoothing * instantaneous + (1 - smoothing) * self.received_framerate
                     if self.received_framerate
                     else instantaneous,
                     2,
@@ -1399,9 +1380,7 @@ class Camera(CameraBase):
             return
         if frame:
             if placed != Link(frame):
-                logger.info(
-                    f"{self.synq_topic}: seeing through {frame}, following its pose"
-                )
+                logger.info(f"{self.synq_topic}: seeing through {frame}, following its pose")
                 self.relative_to, self.mount = Link(frame), Pose()
             self._placed_by_source = frame
         elif placed is not None:

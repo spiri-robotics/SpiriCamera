@@ -234,14 +234,10 @@ DEFAULT_FONT = "Miracode"
 #: browser's rendering of ``DEFAULT_FONT`` visually identical to thorvg's
 #: rather than falling back to whatever generic font the browser picks
 #: for an unresolvable ``font-family``.
-DEFAULT_FONT_PATH = importlib.resources.files("SpiriCamera").joinpath(
-    "assets/Miracode.ttf"
-)
+DEFAULT_FONT_PATH = importlib.resources.files("SpiriCamera").joinpath("assets/Miracode.ttf")
 _font_result = thorvg.Text(_engine).font_load(str(DEFAULT_FONT_PATH))
 if _font_result != thorvg.Result.SUCCESS:
-    logger.warning(
-        f"overlay: could not load bundled font {DEFAULT_FONT!r}: {_font_result}"
-    )
+    logger.warning(f"overlay: could not load bundled font {DEFAULT_FONT!r}: {_font_result}")
 
 # Three more thorvg SVG-parser gaps, same family as the font-loading one
 # above, all affecting how `<text>` renders:
@@ -354,8 +350,7 @@ def declared_objects(svg_template: str) -> dict[str, str]:
         template with none declares nothing.
     """
     return {
-        match["alias"]: match["topic"]
-        for match in _OBJECT_DECLARATION_RE.finditer(svg_template)
+        match["alias"]: match["topic"] for match in _OBJECT_DECLARATION_RE.finditer(svg_template)
     }
 
 
@@ -479,9 +474,7 @@ def world_placement(svg_template: str) -> WorldPlacement:
     if len(anchors) > 1:
         raise OverlayError("a widget has one anchor, this one declares several")
     if anchors and project:
-        raise OverlayError(
-            "a widget is either anchored on an object or projects objects, not both"
-        )
+        raise OverlayError("a widget is either anchored on an object or projects objects, not both")
     placement = WorldPlacement(project=project)
     if anchors:
         match = anchors[0]
@@ -556,9 +549,7 @@ def render_svg(
         return _env.render_str(
             svg_template,
             **{
-                OBJECTS_NAME: {
-                    alias: dict(fields) for alias, fields in objects.items()
-                },
+                OBJECTS_NAME: {alias: dict(fields) for alias, fields in objects.items()},
                 EXIF_NAME: dict(exif_tags),
                 FRAME_NAME: dict(frame_info),
                 **({VIEW_NAME: dict(view)} if view is not None else {}),
@@ -629,11 +620,7 @@ def _correct_text_baseline(svg: str) -> str:
         if y_match is None:
             return tag
         font_size_match = _FONT_SIZE_ATTR_RE.search(tag)
-        font_size = (
-            float(font_size_match.group(1))
-            if font_size_match
-            else _DEFAULT_TEXT_FONT_SIZE
-        )
+        font_size = float(font_size_match.group(1)) if font_size_match else _DEFAULT_TEXT_FONT_SIZE
         correction = round(_TEXT_BASELINE_SLOPE * font_size + _TEXT_BASELINE_INTERCEPT)
         if correction <= 0:
             return tag
@@ -708,9 +695,7 @@ def _load_and_measure(
     # collector: whoever holds the returned picture must hand it to a
     # canvas (which then owns it) or release it with unref(True).
     picture = thorvg.Picture(_engine)
-    result = picture.load_data(
-        svg.encode("utf-8"), mimetype="svg", rpath=None, copy=True
-    )
+    result = picture.load_data(svg.encode("utf-8"), mimetype="svg", rpath=None, copy=True)
     if result != 0:
         picture.unref(True)
         raise OverlayError(f"thorvg could not parse overlay SVG (result {result})")
@@ -718,9 +703,7 @@ def _load_and_measure(
     _, natural_width, natural_height = picture.get_size()
     if natural_width <= 0 or natural_height <= 0:
         picture.unref(True)
-        raise OverlayError(
-            f"overlay SVG has no natural size ({natural_width}x{natural_height})"
-        )
+        raise OverlayError(f"overlay SVG has no natural size ({natural_width}x{natural_height})")
 
     if percent_size is not None:
         width_pct, height_pct = percent_size
@@ -752,9 +735,7 @@ def measure_size(
 
     Parameters, return value, and exceptions: see :py:func:`rasterize`.
     """
-    picture, natural_width, natural_height = _load_and_measure(
-        svg, frame_width, frame_height
-    )
+    picture, natural_width, natural_height = _load_and_measure(svg, frame_width, frame_height)
     picture.unref(True)
     width, height = math.ceil(natural_width), math.ceil(natural_height)
     if width <= 0 or height <= 0:
@@ -822,9 +803,7 @@ def rasterize(
         against.
     """
     svg = _correct_text_baseline(svg)
-    picture, natural_width, natural_height = _load_and_measure(
-        svg, frame_width, frame_height
-    )
+    picture, natural_width, natural_height = _load_and_measure(svg, frame_width, frame_height)
 
     width, height = math.ceil(natural_width), math.ceil(natural_height)
     if width <= 0 or height <= 0:
@@ -1044,7 +1023,7 @@ def camera_metrics_widget(camera: Camera, *, anchor: str = "bottom_left") -> Hud
       >{{{{ frame.width }}}}x{{{{ frame.height }}}} {{{{ frame.framerate }}}}fps q={{{{ objects.cam.quality }}}}</text>
   <text x="8" y="40" font-family="{DEFAULT_FONT}" font-size="16" fill="white"
       >{{{{ exif.timestamp | default("untagged") }}}}</text>
-</svg>"""
+</svg>"""  # noqa: E501 - SVG, and its text lines are clearer whole
 
     return HudWidget(
         synq_topic=f"{camera.synq_topic}_metrics",
@@ -1185,9 +1164,7 @@ class OverlayMixin:
         """
         return sorted(
             self._overlay_widgets.items(),
-            key=lambda item: self.overlay_widgets.get(item[0], {}).get(
-                "z_index", item[1].z_index
-            ),
+            key=lambda item: self.overlay_widgets.get(item[0], {}).get("z_index", item[1].z_index),
         )
 
     def _overlay_sync_widgets(self) -> None:
@@ -1326,9 +1303,7 @@ class OverlayMixin:
         for widget_topic, widget in self._overlay_widgets.items():
             usage = self.overlay_widgets.get(widget_topic, {})
             overrides = usage.get("bindings", {})
-            for alias, default_topic in self._cached_declared_objects(
-                widget_topic, widget
-            ).items():
+            for alias, default_topic in self._cached_declared_objects(widget_topic, widget).items():
                 object_topic = overrides.get(alias) or default_topic
                 if object_topic:
                     wanted_topics.add(object_topic)
@@ -1350,15 +1325,11 @@ class OverlayMixin:
             if topic in self._overlay_objects:
                 continue
             try:
-                self._overlay_objects[topic] = self.synq_session.from_topic_untyped(
-                    topic
-                )
+                self._overlay_objects[topic] = self.synq_session.from_topic_untyped(topic)
             except Exception as exc:
                 self._overlay_complain(topic, f"overlay object unavailable, {exc}")
 
-    def _overlay_object_values_for(
-        self, widget: HudWidget
-    ) -> dict[str, dict[str, object]]:
+    def _overlay_object_values_for(self, widget: HudWidget) -> dict[str, dict[str, object]]:
         """Latest known field values, keyed by alias, for each object
         ``widget`` declares and reads.
 
@@ -1372,9 +1343,7 @@ class OverlayMixin:
         overrides = self.overlay_widgets.get(widget_topic, {}).get("bindings", {})
 
         values: dict[str, dict[str, object]] = {}
-        for alias, default_topic in self._cached_resolve_objects(
-            widget_topic, widget
-        ).items():
+        for alias, default_topic in self._cached_resolve_objects(widget_topic, widget).items():
             object_topic = overrides.get(alias) or default_topic
             obj = self._overlay_objects.get(object_topic) if object_topic else None
             complaint_key = f"{widget_topic}#{alias}"
@@ -1441,12 +1410,8 @@ class OverlayMixin:
             views = {}
             for alias in placement.project:
                 default = self._cached_declared_objects(topic, widget)[alias]
-                obj = self._overlay_objects.get(
-                    self._overlay_bound_topic(topic, alias, default)
-                )
-                view = (
-                    self._overlay_view(obj, width, height) if obj is not None else None
-                )
+                obj = self._overlay_objects.get(self._overlay_bound_topic(topic, alias, default))
+                view = self._overlay_view(obj, width, height) if obj is not None else None
                 views[alias] = asdict(view) if view is not None else None
             return [(render(view=views), None)]
         if placement.anchor is None:
@@ -1521,9 +1486,7 @@ class OverlayMixin:
         result = frame
         for topic, widget in self._overlay_ordered_widgets():
             try:
-                for svg, centre in self._overlay_renders(
-                    topic, widget, frame_info, (1.0, 1.0)
-                ):
+                for svg, centre in self._overlay_renders(topic, widget, frame_info, (1.0, 1.0)):
                     premultiplied, inverse_alpha = _rasterize_for_blend(
                         svg, frame_width, frame_height
                     )
@@ -1616,12 +1579,8 @@ class OverlayMixin:
         for topic, widget in self._overlay_ordered_widgets():
             try:
                 placed = []
-                for svg, centre in self._overlay_renders(
-                    topic, widget, frame_info, scale
-                ):
-                    widget_width, widget_height = measure_size(
-                        svg, canvas_width, canvas_height
-                    )
+                for svg, centre in self._overlay_renders(topic, widget, frame_info, scale):
+                    widget_width, widget_height = measure_size(svg, canvas_width, canvas_height)
                     x, y = self._overlay_position(
                         topic,
                         widget,

@@ -66,9 +66,7 @@ class TestIsolation:
         ("section", "key"),
         [("scouting/multicast", "enabled"), ("scouting/gossip", "enabled")],
     )
-    def test_discovery_is_off(
-        self, synq_session: Session, section: str, key: str
-    ) -> None:
+    def test_discovery_is_off(self, synq_session: Session, section: str, key: str) -> None:
         """Nothing announces itself to the local network."""
         import json
 

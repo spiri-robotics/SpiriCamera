@@ -7,24 +7,25 @@ requires-python = ">=3.13"
 authors = [{name = "Alex Davies", email = "alex.davies@spirirobotics.com"}]
 license = "GPL-3.0-or-later"
 dependencies = [
-    "loguru>=0.7.3",
-    "numpy>=1.26.0",
-    "opencv-python-headless>=4.8.0",
-    "pydantic-settings>=2.14.2",
-    "resvg-py>=0.5.0",
-    "typer>=0.26.8",
-    "SpiriSynq>=0.6.0",
-    "piexif>=1.1.3",
-    "minijinja>=3.0.5",
-    "thorvg-python>=1.1.3",
     "aiortc>=1.15.0",
     "fastapi>=0.141.1",
-    "uvicorn>=0.52.4",
     "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "minijinja>=3.0.5",
+    # The camera-debug-ui app (python -m SpiriCamera.ui) runs from the same image.
+    "nicegui>=3.18.0",
+    "numpy>=1.26.0",
+    "opencv-python-headless>=4.8.0",
+    "piexif>=1.1.3",
+    "pydantic-settings>=2.14.2",
+    "resvg-py>=0.5.0",
+    "SpiriSynq>=0.6.0",
+    "thorvg-python>=1.1.3",
+    "typer>=0.26.8",
+    "uvicorn>=0.52.4",
 ]
+
 [project.optional-dependencies]
-docs = ["sphinx>=9.1.0", "furo>=2024.0", "myst-parser>=5.1.0"]
-ui = ["nicegui>=2.0.0"]
 examples = ["ultralytics>=8.3.0"]
 
 [project.scripts]
@@ -37,19 +38,6 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/SpiriCamera"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["."]
-asyncio_mode = "auto"
-
-[dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-    "pytest-asyncio>=1.4.0",
-    "pytest-cov>=7.1.0",
-    "coverage>=7.0.0",
-]
-
 [tool.uv]
 # ultralytics (the "examples" extra) depends on GUI opencv-python, which
 # installs a conflicting copy of the cv2 package alongside
@@ -57,3 +45,40 @@ dev = [
 # X server. Void that dependency instead -- headless already provides
 # everything ultralytics needs.
 override-dependencies = ["opencv-python; sys_platform == 'never'"]
+# Without this, `uv run sphinx-build` in a fresh clone fails to find Sphinx: uv
+# installs only the `dev` group unless told otherwise.
+default-groups = ["dev", "docs"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM"]
+# N999: the package is named like the repo (SpiriGateway, SpiriCamera).
+# B008: typer's idiom. SIM117: nested `with` blocks are how NiceGUI lays out a page.
+ignore = ["N999", "B008", "SIM117"]
+
+[tool.ruff.lint.per-file-ignores]
+# The SpiriSynq namespace has to be set before SpiriSynq is imported.
+"tests/conftest.py" = ["E402"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.3",
+]
+docs = [
+    "furo>=2025.12.19",
+    "myst-parser>=5.1.0",
+    "sphinx>=9.2.0",
+    # Document control, PDF footer and naming, safety panels: the same extension
+    # every Spiri manual uses. https://github.com/spiri-robotics/spiri-docs-tooling
+    "spiri-docs>=0.2.0",
+]

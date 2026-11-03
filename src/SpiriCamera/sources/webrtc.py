@@ -72,9 +72,7 @@ class WHEPSource(SourceBase):
         try:
             pc = webrtc.pull_sync(endpoint)
         except Exception as exc:
-            raise SourceError(
-                f"could not negotiate WHEP session with {endpoint}: {exc}"
-            ) from exc
+            raise SourceError(f"could not negotiate WHEP session with {endpoint}: {exc}") from exc
 
         receivers = pc.getReceivers()
         if not receivers:

@@ -25,9 +25,7 @@ def camera(yaw: float = 0.0, pitch: float = 0.0) -> Pose:
     )
 
 
-def ned(
-    north: float, east: float, down: float, accuracy: Accuracy | None = None
-) -> Pose:
+def ned(north: float, east: float, down: float, accuracy: Accuracy | None = None) -> Pose:
     """A point *north*, *east* and *down* metres from the camera."""
     local = Offset(north, east, down).rotate_by(Orientation.ned_to_ecef(LAT, LON))
     return Pose(

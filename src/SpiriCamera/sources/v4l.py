@@ -59,9 +59,7 @@ class V4LSource(OpenCVSource):
         if url.scheme:
             return False
         return (
-            url.target.isdigit()
-            or _is_video_device(url.target)
-            or _is_device_node_name(url.target)
+            url.target.isdigit() or _is_video_device(url.target) or _is_device_node_name(url.target)
         )
 
     @classmethod
@@ -123,7 +121,7 @@ class V4LSource(OpenCVSource):
         lost device.
         """
         if self.target.isdigit():
-            return not _SYSFS_ROOT.is_dir() or _sysfs_node_for(self.target) is not None
+            return _sysfs_unavailable() or _sysfs_node_for(self.target) is not None
         return Path(self.target).exists()
 
     def capture_target(self) -> str | int:
@@ -195,13 +193,18 @@ def list_devices() -> list[dict[str, str]]:
         if not _is_character_device(path):
             continue
         metadata = V4LSource(SourceURL.parse(path)).device_metadata()
-        identity = " ".join(
-            filter(None, (metadata.get("vendor"), metadata.get("model")))
-        )
-        devices.append(
-            {"path": path, "label": f"{identity} ({path})" if identity else path}
-        )
+        identity = " ".join(filter(None, (metadata.get("vendor"), metadata.get("model"))))
+        devices.append({"path": path, "label": f"{identity} ({path})" if identity else path})
     return devices
+
+
+def _sysfs_unavailable() -> bool:
+    """Whether sysfs can't be consulted at all, as in a container without /sys.
+
+    Not the same as ``video4linux`` being absent: with sysfs mounted, that
+    means the kernel knows no cameras, and nothing is one.
+    """
+    return not _SYSFS_ROOT.parent.is_dir()
 
 
 def _sysfs_node_for(target: str) -> Path | None:
@@ -252,7 +255,7 @@ def _is_video_device(path: str) -> bool:
     """
     if not _is_character_device(path):
         return False
-    if not _SYSFS_ROOT.is_dir():
+    if _sysfs_unavailable():
         return True
     return _sysfs_node_for(path) is not None
 

@@ -127,12 +127,10 @@ class FakeCapture:
         self.framerate = framerate
         self.properties: dict[int, float] = {}
         self.released = False
-        self._frames = (
-            frames if frames is not None else [np.zeros((height, width, 3), np.uint8)]
-        )
+        self._frames = frames if frames is not None else [np.zeros((height, width, 3), np.uint8)]
         self._reads = 0
 
-    def isOpened(self) -> bool:
+    def isOpened(self) -> bool:  # noqa: N802 - cv2.VideoCapture's name
         """Whether the device is open."""
         return self.opened and not self.released
 

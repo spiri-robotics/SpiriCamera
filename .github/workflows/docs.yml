@@ -1,24 +1,119 @@
-name: Build and Deploy Docs
+name: Docs
 
+# The docs are a controlled document (spiri-docs, as for every Spiri manual):
+#
+# - HTML is built on every PR (warnings fail it) and published to GitHub Pages
+#   from main, at https://spiri-robotics.github.io/SpiriCamera/
+# - The PDF is built on every run too, so a release never finds a broken PDF for
+#   the first time; a `vX.Y.Z` release tag attaches it to the release. That
+#   release asset is the controlled copy. It's named for the document number and
+#   revision in revisions.yaml, and says DRAFT if the revision is one.
+# - Prose is checked with Vale. Advisory: it reports, never blocks.
+#
+# One-time setup: Settings > Pages > Build and deployment > Source: GitHub Actions.
 on:
   push:
     branches: [main]
+    tags: ["v*.*.*"]
   pull_request:
-    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  docs:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - name: Install project
-        run: uv sync
-      - name: Add docs requirements
-        run: pip install -r docs/requirements.txt
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - name: Install project and docs dependencies
+        run: uv sync --locked --group docs
+      # Also validates revisions.yaml: a regulator-facing revision with no
+      # approver or effective date fails here rather than reaching a reader.
       - name: Build HTML
-        run: sphinx-build -b html docs docs/_build/html
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        run: uv run sphinx-build -W --keep-going -b html docs docs/_build/html
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/_build/html
+
+  pdf:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.doc.outputs.name }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - name: Install project and docs dependencies
+        run: uv sync --locked --group docs
+      # The file name comes from revisions.yaml via spiri_docs, the same call
+      # that names the PDF, rather than being spelled out again here.
+      - name: Read the document name
+        id: doc
+        run: uv run python -m spiri_docs fields >> "$GITHUB_OUTPUT"
+      # texlive-latex-extra carries the packages Sphinx's LaTeX output expects;
+      # librsvg2-bin converts the SVG cover logo, which pdflatex can't read.
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk texlive-latex-recommended texlive-latex-extra \
+            texlive-fonts-recommended tex-gyre librsvg2-bin
+      - name: Build PDF
+        run: |
+          uv run sphinx-build -W --keep-going -b latex docs docs/_build/latex
+          make -C docs/_build/latex all-pdf
+      - name: Upload PDF
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.doc.outputs.name }}
+          path: docs/_build/latex/${{ steps.doc.outputs.name }}.pdf
+          if-no-files-found: error
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: pdf
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.pdf.outputs.name }}
+      - name: Attach the PDF to the release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: ${{ needs.pdf.outputs.name }}.pdf
+          generate_release_notes: true
+
+  prose:
+    runs-on: ubuntu-latest
+    # Advisory: reports style-guide findings without blocking a merge.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: errata-ai/vale-action@v2
+        with:
+          files: docs
+          fail_on_error: false
+          reporter: github-pr-check
