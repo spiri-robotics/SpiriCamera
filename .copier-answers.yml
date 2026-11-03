@@ -1,0 +1,24 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v0.5.0
+_src_path: gh:spiri-robotics/SpiriProjectTemplates
+audience: customer
+author_email: alex.davies@spirirobotics.com
+author_name: Alex Davies
+description: Work with Cameras in SpiriSynq
+distribution_statement: Uncontrolled when printed.
+document_number: SPIRI-SPIRICAMERA-001
+github_org: spiri-robotics
+include_docs: true
+include_nix: true
+include_tests: true
+kind: app
+license: GPL-3.0-or-later
+project_name: SpiriCamera
+python_package_name: SpiriCamera
+python_version: '3.13'
+scaffold: false
+spiri_config_plugin: false
+spirisynq: true
+use_spiri_brand: true
+use_vale: true
+version: 0.1.0

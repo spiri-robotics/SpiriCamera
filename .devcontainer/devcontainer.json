@@ -1,12 +1,10 @@
 {
   "name": "SpiriCamera",
-  "dockerComposeFile": ["../templates/compose.dev.yaml"],
+  "dockerComposeFile": ["../docker/compose.yaml", "../docker/compose.dev.yaml"],
   "service": "app",
   "workspaceFolder": "/app",
-  "remoteEnv": {
-    "COMPONENT_IMAGE": "SpiriCamera:dev"
-  },
-  "postCreateCommand": "cd /app && uv sync --no-dev && cp .copier-answers.yml .copier-answers.yml.bak 2>/dev/null; true",
+  "overrideCommand": true,
+  "postCreateCommand": "uv sync",
   "remoteUser": "root",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
@@ -15,6 +13,5 @@
     "vscode": {
       "extensions": ["charliermarsh.ruff", "ms-python.python"]
     }
-  },
-  "forwardPorts": [8337]
+  }
 }

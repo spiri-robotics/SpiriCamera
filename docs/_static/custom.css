@@ -26,6 +26,7 @@
  */
 
 /* -- Palette ------------------------------------------------------------- */
+
 /* Brand palette, from the design-assets repo:
  *
  *   yellow #fac529   blue #9edfec   orange #dd5935   grey #899ca3
@@ -66,6 +67,7 @@ body {
     }
   }
 }
+
 /* -- Logo ---------------------------------------------------------------- */
 
 /* The lockup is a square with the dots sitting right on the viewBox edges, so
@@ -96,6 +98,7 @@ body {
   margin: 27px auto 27px
     max(0px, calc(27px - var(--sidebar-item-spacing-horizontal)));
 }
+
 /* -- Content ------------------------------------------------------------- */
 
 /* Revision history: dense, tabular, readable at a glance. */

@@ -2,95 +2,79 @@
 
 Work with Cameras in SpiriSynq
 
-## Getting Started
+Documentation: https://spiri-robotics.github.io/SpiriCamera/
 
-### Installation
+## Usage
 
-```console
-# Install dependencies
-uv sync
-
-# Generate lock file
-uv lock
-```
-
-### Run
-
-```console
-SpiriCamera --help
-```
-
-### Run as module
-
-```console
-python -m SpiriCamera
-```
-
-## Camera Usage
-
-### Python API
+From Python, attach to a camera another process is running, by its SpiriSynq topic:
 
 ```python
 from SpiriCamera import Camera
 
-cam = Camera("/dev/video0", quality=85)
-cam.start()
-frame_bytes = cam.read()
-cam.stop()
+cam = Camera.from_topic("some-host/dev-video0")
+frame_jpeg = cam.image  # the latest frame, kept up to date in the background
 ```
 
-### CLI
+Or own a device yourself:
+
+```python
+with Camera("/dev/video0", quality=85) as cam:
+    frame_jpeg = cam.image
+```
+
+From the command line:
 
 ```console
-# Validate a source
 SpiriCamera validate --source "/dev/video0"
-
-# Capture frames
 SpiriCamera capture --source "rtsp://host/stream" --frames=10 -o out.jpg
-
-# Run live capture
 SpiriCamera run --source "/dev/video0"
+uv run python -m SpiriCamera.ui   # NiceGUI debug UI
 ```
 
-### NiceGUI Web UI
+## Apps
 
-```console
-uv run python -m SpiriCamera.ui
-```
+The image runs as two SpiriConfig apps, each with its own compose file:
 
-Install the optional UI dependency:
-
-```console
-uv pip install SpiriCamera[ui]
-```
+- [camera-ingress/](camera-ingress/compose.yaml) captures from a source and publishes frames
+  onto SpiriSynq.
+- [camera-debug-ui/](camera-debug-ui/compose.yaml) is a SpiriConfig plugin page for inspecting
+  a camera's frames and editing its overlays.
 
 ## Development
 
 ```console
-# Run tests
-python -m pytest
-python -m pytest --cov=SpiriCamera
-
-# Run type checking
-python -m mypy src/ 2>/dev/null
+uv sync          # creates .venv and uv.lock; commit uv.lock
+make check       # what CI runs: lint, tests, docs
 ```
 
-## Documentation
+Run it in docker, built from this checkout:
 
 ```console
-# Install docs dependencies
-uv sync
-python -m pip install -r docs/requirements.txt
-
-# Build HTML docs
-sphinx-build -b html docs docs/_build
-
-# View docs locally
-python -m http.server --directory docs/_build 8888
+docker compose -f docker/compose.yaml -f docker/compose.dev.yaml up --build
 ```
 
+It joins the `spirisynq` docker network, which the zenoh-router app creates. Without that app
+installed, create the network by hand: `docker network create spirisynq`.
+
+## Releasing
+
+1. Move the `## Unreleased` entries in `CHANGES.md` under the new version.
+2. Bump `version` in `pyproject.toml`, then `uv lock`.
+3. Tag `vX.Y.Z` and push the tag. CI then:
+   - publishes the image to `ghcr.io/spiri-robotics/spiricamera` as `X.Y.Z`,
+     `X.Y` and `latest`;
+   - attaches the docs' controlled PDF to the release.
+
+## First-time GitHub setup
+
+Docs are published to GitHub Pages by `.github/workflows/docs.yml`. Turn it on once, in
+**Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+## Template
+
+Generated from [SpiriProjectTemplates](https://github.com/spiri-robotics/SpiriProjectTemplates).
+Pull in template changes with `uvx copier update`.
 
 ## License
 
 Licensed under the GNU General Public License v3.0 or later.
-
