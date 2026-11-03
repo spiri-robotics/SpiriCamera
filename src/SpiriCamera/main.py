@@ -122,7 +122,9 @@ def setup_logging(level: str = "INFO") -> None:
     logger.add(
         sys.stderr,
         level=level,
-        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}",
+        format=(
+            "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}"
+        ),
     )
 
 

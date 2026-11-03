@@ -1023,7 +1023,7 @@ def camera_metrics_widget(camera: Camera, *, anchor: str = "bottom_left") -> Hud
       >{{{{ frame.width }}}}x{{{{ frame.height }}}} {{{{ frame.framerate }}}}fps q={{{{ objects.cam.quality }}}}</text>
   <text x="8" y="40" font-family="{DEFAULT_FONT}" font-size="16" fill="white"
       >{{{{ exif.timestamp | default("untagged") }}}}</text>
-</svg>"""
+</svg>"""  # noqa: E501 - SVG, and its text lines are clearer whole
 
     return HudWidget(
         synq_topic=f"{camera.synq_topic}_metrics",

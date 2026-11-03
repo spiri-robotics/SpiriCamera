@@ -63,6 +63,10 @@ select = ["E", "F", "W", "I", "B", "UP", "N", "SIM"]
 # B008: typer's idiom. SIM117: nested `with` blocks are how NiceGUI lays out a page.
 ignore = ["N999", "B008", "SIM117"]
 
+[tool.ruff.lint.per-file-ignores]
+# The SpiriSynq namespace has to be set before SpiriSynq is imported.
+"tests/conftest.py" = ["E402"]
+
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",

@@ -364,7 +364,7 @@ _UI_WIDGET_SUBTOPIC = "ui_widgets"
 _NEW_WIDGET_TEMPLATE = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50">
   <rect width="200" height="50" fill="black" fill-opacity="0.5"/>
   <text x="8" y="30" font-family="{DEFAULT_FONT}" font-size="18" fill="white">Hello, {{{{ exif.topic }}}}</text>
-</svg>'''
+</svg>'''  # noqa: E501 - SVG, and its text line is clearer whole
 
 #: Embeds the same font file thorvg loads server-side as a browser
 #: ``@font-face``, so `refresh_overlay`'s client-rendered SVG (widgets'
@@ -376,7 +376,8 @@ _NEW_WIDGET_TEMPLATE = f'''<svg xmlns="http://www.w3.org/2000/svg" width="200" h
 #: runtime, and this avoids standing up static file serving just for it.
 _DEFAULT_FONT_FACE_CSS = (
     f"@font-face {{ font-family: '{DEFAULT_FONT}'; "
-    f"src: url(data:font/ttf;base64,{base64.b64encode(DEFAULT_FONT_PATH.read_bytes()).decode()}); }}"
+    "src: url(data:font/ttf;base64,"
+    f"{base64.b64encode(DEFAULT_FONT_PATH.read_bytes()).decode()}); }}"
 )
 
 

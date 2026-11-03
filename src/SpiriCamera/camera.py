@@ -145,7 +145,8 @@ class CameraBase(OverlayMixin, Position):
         everything else here — nothing in SpiriSynq is truly read-only —
         though a value set by hand does not reconfigure the device and
         is overwritten the next time the source opens.
-    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` / ``exif_enabled``
+    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` /
+    ``exif_enabled``
         The requested capture and encoding settings.  These are live:
         changing them takes effect on the next frame.
     ``received_*`` / ``_exif_tags`` / ``_exif_timestamp``
