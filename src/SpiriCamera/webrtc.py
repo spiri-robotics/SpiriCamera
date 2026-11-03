@@ -243,9 +243,7 @@ class _RateController:
         self.estimate = max(lower, min(self.estimate, upper))
         target = self.target
         self.fps = _MAX_FPS * min(1.0, self.estimate / target)
-        self.max_height = next(
-            cap for minimum, cap in _HEIGHT_CAPS if target >= minimum
-        )
+        self.max_height = next(cap for minimum, cap in _HEIGHT_CAPS if target >= minimum)
 
     def install(self, sender: RTCRtpSender) -> None:
         """Hook ``sender``'s RTCP handling and start the stall watchdog."""
@@ -253,9 +251,7 @@ class _RateController:
 
         async def _send_remb() -> None:
             fci = pack_remb_fci(self.target, [sender._ssrc])
-            await original(
-                RtcpPsfbPacket(fmt=RTCP_PSFB_APP, ssrc=0, media_ssrc=0, fci=fci)
-            )
+            await original(RtcpPsfbPacket(fmt=RTCP_PSFB_APP, ssrc=0, media_ssrc=0, fci=fci))
 
         async def _handle_rtcp_packet(packet: object) -> None:
             if isinstance(packet, RtcpPsfbPacket) and packet.fmt == RTCP_PSFB_APP:
@@ -285,9 +281,7 @@ class _RateController:
                     and time.monotonic() - self._last_report > _STALL_TIMEOUT
                 ):
                     self.on_stall()
-                    logger.debug(
-                        f"webrtc: no receiver report, estimate {self.estimate:.0f}"
-                    )
+                    logger.debug(f"webrtc: no receiver report, estimate {self.estimate:.0f}")
                     await _send_remb()
 
         sender._handle_rtcp_packet = _handle_rtcp_packet  # type: ignore[method-assign]
@@ -365,11 +359,7 @@ class _CameraVideoTrack(VideoStreamTrack):
         channel = self._tags_channel.get("channel")
         if channel is not None and channel.readyState == "open":
             tags = exif.extract(image) if image else {}
-            channel.send(
-                json.dumps(
-                    {"timestamp": tags.get(exif.TIMESTAMP_TAG, ""), "tags": tags}
-                )
-            )
+            channel.send(json.dumps({"timestamp": tags.get(exif.TIMESTAMP_TAG, ""), "tags": tags}))
 
         return frame
 

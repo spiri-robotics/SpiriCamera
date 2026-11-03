@@ -107,9 +107,7 @@ class TestConstruction:
 
     def test_settings_are_stored(self, camera: CameraFactory) -> None:
         """Constructor arguments land on the synced fields."""
-        cam = camera(
-            "testimage://", quality=55, max_width=320, max_height=240, max_framerate=12
-        )
+        cam = camera("testimage://", quality=55, max_width=320, max_height=240, max_framerate=12)
         assert (cam.quality, cam.max_width, cam.max_height, cam.max_framerate) == (
             55,
             320,
@@ -408,9 +406,7 @@ class TestReceivedDimensions:
 class TestEncoding:
     """Turning frames into bytes."""
 
-    def test_reuses_the_encode_for_an_unchanged_frame(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_reuses_the_encode_for_an_unchanged_frame(self, camera: CameraFactory) -> None:
         """A static source is encoded once, not once per read.
 
         Tagging is off because a tag carries a capture time, which makes
@@ -481,17 +477,13 @@ class TestLiveSettings:
         assert cam.capture_settings().max_width == 640
 
     @pytest.mark.parametrize("value", [None, 0, -5, "nonsense"])
-    def test_rejects_unusable_bounds(
-        self, camera: CameraFactory, value: object
-    ) -> None:
+    def test_rejects_unusable_bounds(self, camera: CameraFactory, value: object) -> None:
         """A cleared or nonsensical field never yields a zero dimension."""
         cam = camera("testimage://")
         cam.max_width = value
         assert cam.capture_settings().max_width >= 1
 
-    def test_resolution_change_applies_to_next_frame(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_resolution_change_applies_to_next_frame(self, camera: CameraFactory) -> None:
         """No restart is needed to re-render at a new size."""
         cam = camera("testimage://", max_width=320, max_height=240)
         cam.start(background=False)
@@ -712,9 +704,7 @@ class TestRetargeting:
 
         assert cam.running is False
 
-    def test_resumes_without_a_thread_when_scripted(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_resumes_without_a_thread_when_scripted(self, camera: CameraFactory) -> None:
         """A camera started with background=False resumes the same way."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
@@ -824,9 +814,7 @@ class TestReceivedIsDerivedFromTheFrame:
         assert (cam.received_width, cam.received_height) == (320, 240)
         assert cam.received_ratio == pytest.approx(4 / 3, abs=1e-4)
 
-    def test_a_mirror_derives_them_from_bytes_alone(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_a_mirror_derives_them_from_bytes_alone(self, camera: CameraFactory) -> None:
         """A peer handed only the image works the rest out for itself.
 
         This is what buys the guarantee: no separate field can arrive
@@ -1016,9 +1004,7 @@ class TestExifProviders:
 
         assert "b" not in cam.exif_tags
 
-    def test_two_providers_do_not_clobber_each_other(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_two_providers_do_not_clobber_each_other(self, camera: CameraFactory) -> None:
         """Setting one provider's tags must not touch another's."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
@@ -1030,9 +1016,7 @@ class TestExifProviders:
         assert cam.exif_tags["mission"] == "probe-1"
         assert cam.exif_tags["battery"] == "88"
 
-    def test_clearing_one_provider_leaves_the_other(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_clearing_one_provider_leaves_the_other(self, camera: CameraFactory) -> None:
         """exif_clear_tags removes exactly one provider's bucket."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
@@ -1045,9 +1029,7 @@ class TestExifProviders:
         assert "mission" not in cam.exif_tags
         assert cam.exif_tags["battery"] == "88"
 
-    def test_clearing_an_unknown_provider_is_not_an_error(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_clearing_an_unknown_provider_is_not_an_error(self, camera: CameraFactory) -> None:
         """Nothing to remove is not a failure."""
         camera("testimage://").exif_clear_tags("nobody-set-this")
 
@@ -1086,18 +1068,14 @@ class TestExifProviders:
 
         assert cam.exif_tags["clash"] == "from zulu"
 
-    def test_exif_tag_providers_lists_active_providers(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_exif_tag_providers_lists_active_providers(self, camera: CameraFactory) -> None:
         """Introspection for whoever is debugging a clash."""
         cam = camera("testimage://")
         cam.exif_set_tags("logger", {"mission": "probe-1"})
 
         assert cam.exif_tag_providers() == frozenset({"logger"})
 
-    def test_exif_update_and_exif_set_tags_share_no_bucket(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_exif_update_and_exif_set_tags_share_no_bucket(self, camera: CameraFactory) -> None:
         """exif_update's default bucket is its own provider, unnamed."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
@@ -1141,9 +1119,7 @@ class TestExifProviders:
 
         assert cam.exif_tags == {"gps": "45.0,-63.0"}
 
-    def test_an_override_returning_nothing_disables_tagging(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_an_override_returning_nothing_disables_tagging(self, camera: CameraFactory) -> None:
         """No tags is a valid answer, and costs no EXIF segment."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.exif_tags_for_frame = lambda frame: {}
@@ -1331,9 +1307,7 @@ class TestOverlays:
         finally:
             widget.close()
 
-    def test_client_render_toggle_skips_baking_in_the_widget(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_client_render_toggle_skips_baking_in_the_widget(self, camera: CameraFactory) -> None:
         """`overlay_client_render` set means the browser is expected to
         render the widget itself -- the server-side frame stays plain."""
         from SpiriCamera.overlay import HudWidget
@@ -1366,17 +1340,13 @@ class TestOverlays:
             blue, green, red = (int(c) for c in decoded[5, 5])
             assert not (red > 200 and blue < 60 and green < 60)
 
-            markup = cam.render_overlays_for_client(
-                cam.received_width, cam.received_height
-            )
+            markup = cam.render_overlays_for_client(cam.received_width, cam.received_height)
             assert 'transform="translate(0,0)"' in markup
             assert 'fill="red"' in markup
         finally:
             widget.close()
 
-    def test_client_render_canvas_separates_layout_from_frame(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_client_render_canvas_separates_layout_from_frame(self, camera: CameraFactory) -> None:
         """A canvas size moves anchoring into that coordinate space, while
         templates still see the real frame size."""
         from SpiriCamera.overlay import HudWidget
@@ -1410,9 +1380,7 @@ class TestOverlays:
         finally:
             widget.close()
 
-    def test_unresolvable_topic_does_not_stop_frames(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_unresolvable_topic_does_not_stop_frames(self, camera: CameraFactory) -> None:
         """A typo'd or not-yet-published overlay topic is a per-frame
         annoyance, not a reason to stop the camera."""
         cam = camera(
@@ -1437,9 +1405,7 @@ class TestOverlays:
 
         assert data.startswith(b"\xff\xd8")
 
-    def test_camera_can_render_its_own_metrics_widget(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_camera_can_render_its_own_metrics_widget(self, camera: CameraFactory) -> None:
         """A camera can mirror camera_metrics_widget(itself) -- a
         self-referential mirror, since the widget's declared ``cam``
         alias defaults to the same camera's own topic, read back over
@@ -1515,18 +1481,13 @@ class TestOverlays:
             cam.quality = 42
 
             assert wait_for(
-                lambda: (
-                    cam._overlay_object_values_for(widget).get("cam", {}).get("quality")
-                    == 42
-                ),
+                lambda: cam._overlay_object_values_for(widget).get("cam", {}).get("quality") == 42,
                 timeout=3.0,
             )
         finally:
             widget.close()
 
-    def test_widget_cache_invalidated_on_template_change(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_widget_cache_invalidated_on_template_change(self, camera: CameraFactory) -> None:
         """declared_objects()/resolve_objects() are cached per mirrored
         widget, keyed on that widget's own ``events.svg_template`` signal
         -- not recomputed from the raw template string on every frame.
@@ -1571,9 +1532,7 @@ class TestOverlays:
                 "<text>{{ objects.b.value }}</text></svg>"
             )
 
-            assert wait_for(
-                lambda: topic not in cam._overlay_resolved_cache, timeout=3.0
-            )
+            assert wait_for(lambda: topic not in cam._overlay_resolved_cache, timeout=3.0)
 
             cam.read()
             assert cam._overlay_resolved_cache[topic] == {"b": "other/topic"}

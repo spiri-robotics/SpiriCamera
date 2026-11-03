@@ -84,9 +84,7 @@ def pixel(lens: Intrinsics, local: Offset) -> tuple[float, float] | None:
     return lens.cx + lens.fx * local.y / local.x, lens.cy + lens.fy * local.z / local.x
 
 
-def project(
-    camera: Pose, lens: Intrinsics, point: Pose, width: int, height: int
-) -> View | None:
+def project(camera: Pose, lens: Intrinsics, point: Pose, width: int, height: int) -> View | None:
     """Where *point* is in a ``width`` x ``height`` frame from *camera*.
 
     *camera* and *point* are root-frame (ECEF) poses, *lens* the camera's
@@ -137,12 +135,8 @@ def _level_axes(point: Offset) -> tuple[Offset, Offset, Offset]:
     lat, lon, _ = point.to_geodetic()
     phi, lam = math.radians(lat), math.radians(lon)
     east = Offset(-math.sin(lam), math.cos(lam), 0.0)
-    north = Offset(
-        -math.sin(phi) * math.cos(lam), -math.sin(phi) * math.sin(lam), math.cos(phi)
-    )
-    up = Offset(
-        math.cos(phi) * math.cos(lam), math.cos(phi) * math.sin(lam), math.sin(phi)
-    )
+    north = Offset(-math.sin(phi) * math.cos(lam), -math.sin(phi) * math.sin(lam), math.cos(phi))
+    up = Offset(math.cos(phi) * math.cos(lam), math.cos(phi) * math.sin(lam), math.sin(phi))
     return east, north, up
 
 

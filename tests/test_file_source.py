@@ -31,9 +31,7 @@ def still(tmp_path: Path) -> Path:
 def clip(tmp_path: Path) -> Path:
     """Write a short video to disk, skipping if no encoder is available."""
     path = tmp_path / "clip.mp4"
-    writer = cv2.VideoWriter(
-        str(path), cv2.VideoWriter_fourcc(*"mp4v"), 10.0, (160, 120)
-    )
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"mp4v"), 10.0, (160, 120))
     if not writer.isOpened():
         pytest.skip("no mp4v encoder available")
     for index in range(CLIP_FRAMES):
@@ -51,9 +49,7 @@ class TestClaims:
         """A plain path to a real file is a file source."""
         assert isinstance(resolve_source(str(still)), FileSource)
 
-    def test_claims_a_relative_path(
-        self, still: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_claims_a_relative_path(self, still: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Files are just files, including relative ones."""
         monkeypatch.chdir(still.parent)
         assert isinstance(resolve_source(still.name), FileSource)
@@ -65,9 +61,7 @@ class TestClaims:
         assert isinstance(source, FileSource)
         assert source.target == str(still)
 
-    def test_declines_a_bare_index(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_declines_a_bare_index(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """A bare number is a camera index even if such a file exists.
 
         The OpenCV convention predates this handler, so the index wins;

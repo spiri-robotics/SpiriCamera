@@ -44,9 +44,7 @@ from SpiriCamera.sources.base import (
 )
 
 
-def fit_within(
-    width: int, height: int, max_width: int, max_height: int
-) -> tuple[int, int]:
+def fit_within(width: int, height: int, max_width: int, max_height: int) -> tuple[int, int]:
     """Shrink a frame size to fit a bounding box, keeping its aspect ratio.
 
     Never enlarges: an upstream frame that already fits is left at its
@@ -190,9 +188,7 @@ class SpiriSynqSource(SourceBase):
     @classmethod
     def from_url(cls, url: SourceURL) -> SpiriSynqSource:
         if not url.target.strip("/"):
-            raise SourceError(
-                f"No topic given in {url.raw!r}; expected spirisynq://<host>/<topic>"
-            )
+            raise SourceError(f"No topic given in {url.raw!r}; expected spirisynq://<host>/<topic>")
         return cls(url)
 
     @property
@@ -215,9 +211,7 @@ class SpiriSynqSource(SourceBase):
         except SourceError:
             raise
         except Exception as exc:
-            raise SourceError(
-                f"could not reach SpiriSynq topic {self.target!r}: {exc}"
-            ) from exc
+            raise SourceError(f"could not reach SpiriSynq topic {self.target!r}: {exc}") from exc
 
         events = getattr(upstream, "events", None)
         if not hasattr(upstream, "image") or not hasattr(events, "image"):

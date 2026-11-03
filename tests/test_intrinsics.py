@@ -68,9 +68,7 @@ class TestOrigins:
     def test_full_model(self, camera: CameraFactory) -> None:
         cam = camera()
         cam.set_intrinsics("mavlink", width=640, height=480, fx=205.4696)
-        assert cam.intrinsics == Intrinsics(
-            640, 480, 205.4696, 205.4696, 320, 240, "mavlink"
-        )
+        assert cam.intrinsics == Intrinsics(640, 480, 205.4696, 205.4696, 320, 240, "mavlink")
 
     def test_fov_waits_for_a_frame_size(self, camera: CameraFactory) -> None:
         cam = camera(max_width=320, max_height=240)
@@ -121,9 +119,7 @@ class TestOrigins:
         cam.set_intrinsics("manual", hfov=60)
         assert cam.intrinsics is not None and cam.intrinsics.origin == "manual"
 
-    def test_refuses_unknown_origins_and_bad_numbers(
-        self, camera: CameraFactory
-    ) -> None:
+    def test_refuses_unknown_origins_and_bad_numbers(self, camera: CameraFactory) -> None:
         cam = camera()
         with pytest.raises(ValueError):
             cam.set_intrinsics("guess", hfov=60)
@@ -133,9 +129,7 @@ class TestOrigins:
             cam.set_intrinsics("manual", fx=200)  # no size
         assert cam.intrinsics is None
 
-    def test_survives_a_rehydrate(
-        self, camera: CameraFactory, synq_session: object
-    ) -> None:
+    def test_survives_a_rehydrate(self, camera: CameraFactory, synq_session: object) -> None:
         cam = camera()
         cam.sync()
         cam.set_intrinsics("manual", width=640, height=480, fx=205.4696)

@@ -43,9 +43,7 @@ class TestV4LClaims:
         """A schemeless path is claimed when Linux calls it a camera."""
         assert V4LSource.handles(SourceURL.parse("/dev/null"))
 
-    @pytest.mark.parametrize(
-        "source", ["rtsp://host/s", "testimage://", "http://host/f"]
-    )
+    @pytest.mark.parametrize("source", ["rtsp://host/s", "testimage://", "http://host/f"])
     def test_declines_other_schemes(self, source: str) -> None:
         """A URL belonging to another scheme is left alone."""
         assert not V4LSource.handles(SourceURL.parse(source))
@@ -99,9 +97,7 @@ class TestV4LClaims:
         assert holder.capture.target == 0
         assert isinstance(holder.capture.target, int)
 
-    def test_device_path_opens_by_path(
-        self, fake_capture: Callable[..., CaptureHolder]
-    ) -> None:
+    def test_device_path_opens_by_path(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """A device path is passed through as a string."""
         holder = fake_capture()
         resolve_source("v4l:///dev/video0").open(SETTINGS)
@@ -171,9 +167,7 @@ class TestV4LMetadata:
 class TestOpenCVSourceLifecycle:
     """Behaviour shared by the V4L2 and network handlers."""
 
-    def test_applies_requested_settings(
-        self, fake_capture: Callable[..., CaptureHolder]
-    ) -> None:
+    def test_applies_requested_settings(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """The bounds are pushed onto the device at open time."""
         holder = fake_capture()
         resolve_source("v4l:///dev/video0").open(SETTINGS)
@@ -195,18 +189,14 @@ class TestOpenCVSourceLifecycle:
         assert capabilities.max_supported_height == 480
         assert capabilities.max_supported_framerate == 15
 
-    def test_failure_to_open_raises(
-        self, fake_capture: Callable[..., CaptureHolder]
-    ) -> None:
+    def test_failure_to_open_raises(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """A device that will not open is a SourceError."""
         fake_capture(opened=False)
 
         with pytest.raises(SourceError, match="Failed to open"):
             resolve_source("v4l:///dev/video0").open(SETTINGS)
 
-    def test_open_is_idempotent(
-        self, fake_capture: Callable[..., CaptureHolder]
-    ) -> None:
+    def test_open_is_idempotent(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """Opening twice does not replace a working capture."""
         holder = fake_capture()
         source = resolve_source("v4l:///dev/video0")
@@ -238,9 +228,7 @@ class TestOpenCVSourceLifecycle:
         with pytest.raises(SourceError, match="not open"):
             resolve_source("v4l:///dev/video0").read(SETTINGS)
 
-    def test_read_returns_frame(
-        self, fake_capture: Callable[..., CaptureHolder]
-    ) -> None:
+    def test_read_returns_frame(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """A successful grab returns the device's array."""
         frame = np.full((480, 640, 3), 7, np.uint8)
         fake_capture(frames=[frame])
@@ -249,9 +237,7 @@ class TestOpenCVSourceLifecycle:
 
         assert source.read(SETTINGS) is frame
 
-    def test_dropped_frame_returns_none(
-        self, fake_capture: Callable[..., CaptureHolder]
-    ) -> None:
+    def test_dropped_frame_returns_none(self, fake_capture: Callable[..., CaptureHolder]) -> None:
         """A failed grab is a transient None, not an exception."""
         fake_capture(frames=[None])
         source = resolve_source("v4l:///dev/video0")

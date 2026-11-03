@@ -52,9 +52,7 @@ class TestMissingSource:
         assert result.exit_code == 1
         assert "SPIRICAMERA_SOURCE" in result.output
 
-    def test_falls_back_to_the_environment(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_falls_back_to_the_environment(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """An unspecified source comes from the environment."""
         monkeypatch.setenv("SPIRICAMERA_SOURCE", "testimage://")
         result = runner.invoke(app, ["validate"])
@@ -65,9 +63,7 @@ class TestMissingSource:
 class TestRun:
     """The run command."""
 
-    def test_topic_comes_from_the_environment(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_topic_comes_from_the_environment(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """SPIRICAMERA_TOPIC names the camera's topic instead of the source."""
         from SpiriCamera import cli
         from SpiriCamera.camera import CameraError
@@ -129,9 +125,7 @@ class TestCapture:
         """Requested frames are written out as image data."""
         output = tmp_path / "frames.jpg"
 
-        result = runner.invoke(
-            app, ["capture", "testimage://", "-f", "2", "-o", str(output)]
-        )
+        result = runner.invoke(app, ["capture", "testimage://", "-f", "2", "-o", str(output)])
 
         assert result.exit_code == 0
         assert output.exists()

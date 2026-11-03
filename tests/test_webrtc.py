@@ -73,9 +73,7 @@ async def test_negotiate_publishes_video_and_tags(camera) -> None:
         session_id, answer_sdp, answer_type = await webrtc.negotiate_async(
             cam, viewer.localDescription.sdp, viewer.localDescription.type
         )
-        await viewer.setRemoteDescription(
-            RTCSessionDescription(sdp=answer_sdp, type=answer_type)
-        )
+        await viewer.setRemoteDescription(RTCSessionDescription(sdp=answer_sdp, type=answer_type))
 
         frame = await asyncio.wait_for(received_frame, 5.0)
         assert frame.width > 0
@@ -126,9 +124,7 @@ async def test_negotiate_without_tags_channel_still_publishes_video(camera) -> N
             cam, viewer.localDescription.sdp, viewer.localDescription.type
         )
         assert "m=application" not in answer_sdp
-        await viewer.setRemoteDescription(
-            RTCSessionDescription(sdp=answer_sdp, type=answer_type)
-        )
+        await viewer.setRemoteDescription(RTCSessionDescription(sdp=answer_sdp, type=answer_type))
 
         frame = await asyncio.wait_for(received_frame, 5.0)
         assert frame.width > 0
@@ -237,9 +233,7 @@ async def test_session_adapts_encoder_to_receiver_reports(camera) -> None:
         session_id, answer_sdp, answer_type = await webrtc.negotiate_async(
             cam, viewer.localDescription.sdp, viewer.localDescription.type
         )
-        await viewer.setRemoteDescription(
-            RTCSessionDescription(sdp=answer_sdp, type=answer_type)
-        )
+        await viewer.setRemoteDescription(RTCSessionDescription(sdp=answer_sdp, type=answer_type))
         await asyncio.wait_for(received_frame, 5.0)
 
         rate = webrtc._RATES[session_id]

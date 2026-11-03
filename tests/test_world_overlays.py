@@ -68,9 +68,7 @@ def published() -> Iterator[Callable[..., SyncableObject]]:
     made: list[SyncableObject] = []
 
     def publish(cls: type, **fields: object) -> SyncableObject:
-        obj = cls(
-            synq_topic=f"world/{uuid.uuid4().hex[:8]}", synq_authoritive=True, **fields
-        )
+        obj = cls(synq_topic=f"world/{uuid.uuid4().hex[:8]}", synq_authoritive=True, **fields)
         made.append(obj)
         return obj
 
@@ -203,17 +201,14 @@ class TestAnchor:
         behind, ahead = target(ned(-100, 0, 0)), target(ned(100, 0, 0))
         w = widget(
             published,
-            f"{{# object: t = {behind.synq_absolute_path} #}}{{# anchor: t #}}"
-            + SQUARE,
+            f"{{# object: t = {behind.synq_absolute_path} #}}{{# anchor: t #}}" + SQUARE,
         )
         cam = view_from(w)
         wait_for(lambda: behind.synq_absolute_path in cam._overlay_objects)
         assert cam.render_overlays_for_client(160, 120) == ""
 
         # Rebound to one ahead, the same widget shows.
-        cam.overlay_widgets[w.synq_absolute_path] = {
-            "bindings": {"t": ahead.synq_absolute_path}
-        }
+        cam.overlay_widgets[w.synq_absolute_path] = {"bindings": {"t": ahead.synq_absolute_path}}
         assert "translate(70,50)" in markup_of(cam, "translate(")
 
     def test_out_of_shot_is_not_drawn(self, published, target, view_from) -> None:
@@ -258,9 +253,7 @@ class TestAnchor:
         cam = view_from(w)
         markup_of(cam, "translate(")
 
-        assert "translate(166,110)" in cam.render_overlays_for_client(
-            160, 120, 320, 240
-        )
+        assert "translate(166,110)" in cam.render_overlays_for_client(160, 120, 320, 240)
 
     def test_burned_into_the_frame(self, published, target, camera) -> None:
         """The server-rendered path places it the same way."""
@@ -288,9 +281,7 @@ class TestAnchor:
         cam.start(background=False)
 
         def red_at_centre() -> bool:
-            decoded = cv2.imdecode(
-                np.frombuffer(cam.read(), np.uint8), cv2.IMREAD_COLOR
-            )
+            decoded = cv2.imdecode(np.frombuffer(cam.read(), np.uint8), cv2.IMREAD_COLOR)
             blue, green, red = (int(c) for c in decoded[60, 80])
             return red > 200 and blue < 60 and green < 60
 

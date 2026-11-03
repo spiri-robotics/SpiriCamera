@@ -183,9 +183,7 @@ def run(source: SourceArgument = "") -> None:
 @app.command()
 def capture(
     source: SourceArgument = "",
-    frames: Annotated[
-        int, typer.Option("-f", "--frames", help="Number of frames to capture")
-    ] = 1,
+    frames: Annotated[int, typer.Option("-f", "--frames", help="Number of frames to capture")] = 1,
     quality: Annotated[int, typer.Option("-q", "--quality", help="JPEG quality")] = 80,
     output: Annotated[
         str,

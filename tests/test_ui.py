@@ -83,9 +83,7 @@ class TestFrameRoute:
     @pytest.fixture
     def served_camera(self, monkeypatch: pytest.MonkeyPatch) -> Camera:
         """Install a known camera as the process-wide one."""
-        cam = Camera(
-            "testimage://", max_width=160, max_height=120, synq_auto_start=False
-        )
+        cam = Camera("testimage://", max_width=160, max_height=120, synq_auto_start=False)
         monkeypatch.setattr(camera_ui, "_camera", cam)
         yield cam
         cam.stop()
@@ -138,9 +136,7 @@ class TestSharedCamera:
         assert camera_ui.get_camera() is cam
         assert camera_ui.get_camera() is camera_ui.get_camera()
 
-    def test_the_real_camera_is_authoritative(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_the_real_camera_is_authoritative(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """This process runs the device; its topic must say so.
 
         A non-authoritative camera never prefixes its topic with this
@@ -215,9 +211,7 @@ class TestModeSwitching:
         assert cam.synq_authoritive is False
         assert cam.image == b""
 
-    def test_set_mirror_fetches_the_given_topic(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_set_mirror_fetches_the_given_topic(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """A topic (typed by hand or picked from discovery) is mirrored.
 
         ``Camera.from_topic`` performs a real RPC round trip over zenoh;
@@ -428,9 +422,7 @@ class TestExtraTagEntry:
     @pytest.fixture
     def cam(self) -> Camera:
         """A camera that touches neither a device nor the network."""
-        return Camera(
-            "testimage://", max_width=160, max_height=120, synq_auto_start=False
-        )
+        return Camera("testimage://", max_width=160, max_height=120, synq_auto_start=False)
 
     def _tagged(self, cam: Camera) -> dict[str, str]:
         """The tags that would land on the next frame."""
@@ -499,9 +491,9 @@ class TestFrameAge:
         """The capture time is whatever the frame's own EXIF says."""
         captured = time.time() - 0.25
 
-        assert camera_ui._frame_timestamp(
-            self._jpeg(timestamp=f"{captured:.6f}")
-        ) == pytest.approx(captured)
+        assert camera_ui._frame_timestamp(self._jpeg(timestamp=f"{captured:.6f}")) == pytest.approx(
+            captured
+        )
 
     def test_an_unreadable_timestamp_is_not_fatal(self) -> None:
         """A tag is free-form text and may hold anything at all."""
@@ -583,9 +575,7 @@ class TestFrameAge:
             (3600, "60 min old"),
         ],
     )
-    def test_age_is_rendered_at_a_readable_resolution(
-        self, seconds: float, rendered: str
-    ) -> None:
+    def test_age_is_rendered_at_a_readable_resolution(self, seconds: float, rendered: str) -> None:
         """A stopped camera ages out of milliseconds fairly quickly."""
         assert camera_ui._format_age(seconds) == rendered
 
@@ -614,9 +604,7 @@ class TestStaleFrames:
         a lock, two threads can both read the old value before either
         writes the new one, and both decide the frame is new.
         """
-        cam = Camera(
-            "testimage://", max_width=160, max_height=120, synq_auto_start=False
-        )
+        cam = Camera("testimage://", max_width=160, max_height=120, synq_auto_start=False)
         monkeypatch.setattr(camera_ui, "_camera", cam)
         cam.start(background=False)
         cam.read()
@@ -639,17 +627,13 @@ class TestStaleFrames:
         # assert on the sample count directly instead.
         assert len(camera_ui.frame_meter._samples) == 1
 
-    def test_re_serving_one_frame_counts_once(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_re_serving_one_frame_counts_once(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Polling a stopped camera hands out the same frame repeatedly.
 
         Counting each response would report a busy framerate for a camera
         that has produced nothing since it was stopped.
         """
-        cam = Camera(
-            "testimage://", max_width=160, max_height=120, synq_auto_start=False
-        )
+        cam = Camera("testimage://", max_width=160, max_height=120, synq_auto_start=False)
         monkeypatch.setattr(camera_ui, "_camera", cam)
         cam.start(background=False)
         cam.read()
@@ -660,13 +644,9 @@ class TestStaleFrames:
 
         assert camera_ui.frame_meter.rates() == (0.0, 0.0)
 
-    def test_distinct_frames_are_all_counted(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_distinct_frames_are_all_counted(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """De-duplication is by identity, so real frames still count."""
-        cam = Camera(
-            "testimage://", max_width=160, max_height=120, synq_auto_start=False
-        )
+        cam = Camera("testimage://", max_width=160, max_height=120, synq_auto_start=False)
         monkeypatch.setattr(camera_ui, "_camera", cam)
         cam.start(background=False)
 

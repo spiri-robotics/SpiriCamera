@@ -89,9 +89,7 @@ class TestStandardTags:
 
     def test_foreign_exif_is_recovered(self, jpeg: bytes) -> None:
         """A JPEG this package did not write still yields what it can."""
-        foreign = piexif.dump(
-            {"0th": {piexif.ImageIFD.Make: b"Somebody Else"}, "Exif": {}}
-        )
+        foreign = piexif.dump({"0th": {piexif.ImageIFD.Make: b"Somebody Else"}, "Exif": {}})
         sink = io.BytesIO()
         piexif.insert(foreign, jpeg, sink)
 
@@ -133,9 +131,7 @@ class TestRefusals:
 class TestImageSize:
     """Reading dimensions out of the container header."""
 
-    @pytest.mark.parametrize(
-        ("width", "height"), [(64, 48), (1, 1), (1920, 1080), (3, 7)]
-    )
+    @pytest.mark.parametrize(("width", "height"), [(64, 48), (1, 1), (1920, 1080), (3, 7)])
     def test_reports_encoded_dimensions(self, width: int, height: int) -> None:
         """The header is read without decoding the picture."""
         frame = np.zeros((height, width, 3), np.uint8)

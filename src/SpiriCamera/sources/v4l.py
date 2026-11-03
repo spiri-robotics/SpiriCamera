@@ -59,9 +59,7 @@ class V4LSource(OpenCVSource):
         if url.scheme:
             return False
         return (
-            url.target.isdigit()
-            or _is_video_device(url.target)
-            or _is_device_node_name(url.target)
+            url.target.isdigit() or _is_video_device(url.target) or _is_device_node_name(url.target)
         )
 
     @classmethod
@@ -195,12 +193,8 @@ def list_devices() -> list[dict[str, str]]:
         if not _is_character_device(path):
             continue
         metadata = V4LSource(SourceURL.parse(path)).device_metadata()
-        identity = " ".join(
-            filter(None, (metadata.get("vendor"), metadata.get("model")))
-        )
-        devices.append(
-            {"path": path, "label": f"{identity} ({path})" if identity else path}
-        )
+        identity = " ".join(filter(None, (metadata.get("vendor"), metadata.get("model"))))
+        devices.append({"path": path, "label": f"{identity} ({path})" if identity else path})
     return devices
 
 

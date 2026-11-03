@@ -235,9 +235,7 @@ def _dump(tags: Mapping[str, str]) -> bytes:
     matters upstream: an unchanged frame with unchanged tags encodes to
     the same image, which is what lets psygnal suppress a republish.
     """
-    text = json.dumps(
-        {str(k): str(v) for k, v in tags.items()}, sort_keys=True, ensure_ascii=True
-    )
+    text = json.dumps({str(k): str(v) for k, v in tags.items()}, sort_keys=True, ensure_ascii=True)
     zeroth: dict[int, bytes] = {}
     exif: dict[int, bytes] = {piexif.ExifIFD.UserComment: _ASCII_PREFIX + text.encode()}
 
@@ -248,9 +246,7 @@ def _dump(tags: Mapping[str, str]) -> bytes:
         target = zeroth if ifd == "0th" else exif
         target[tag] = str(value).encode("ascii", errors="replace")
 
-    return piexif.dump(
-        {"0th": zeroth, "Exif": exif, "GPS": {}, "1st": {}, "thumbnail": None}
-    )
+    return piexif.dump({"0th": zeroth, "Exif": exif, "GPS": {}, "1st": {}, "thumbnail": None})
 
 
 __all__ = [

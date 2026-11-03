@@ -64,9 +64,7 @@ def test_images() -> dict[str, str]:
         logger.warning(f"No test image directory at {directory}")
         return {}
 
-    images = {
-        svg.stem: svg.read_text(encoding="utf-8") for svg in directory.glob("*.svg")
-    }
+    images = {svg.stem: svg.read_text(encoding="utf-8") for svg in directory.glob("*.svg")}
     logger.debug(f"Loaded {len(images)} test image(s): {', '.join(sorted(images))}")
     return images
 
@@ -108,9 +106,7 @@ def _load_raster(path: Path) -> np.ndarray:
     return image
 
 
-def _pan_window(
-    width: int, height: int, crop_width: int, crop_height: int
-) -> tuple[int, int]:
+def _pan_window(width: int, height: int, crop_width: int, crop_height: int) -> tuple[int, int]:
     """Slide a crop window slowly around the centre of an image, in a circle.
 
     Parameters
@@ -308,12 +304,9 @@ class TestImageSource(SourceBase):
         self._invalidate()
         self._open = True
         logger.info(
-            f"{self!r} serving {self._image_name} at "
-            f"{settings.max_width}x{settings.max_height}"
+            f"{self!r} serving {self._image_name} at {settings.max_width}x{settings.max_height}"
         )
-        return SourceCapabilities(
-            vendor="SpiriCamera", model=f"testimage:{self._image_name}"
-        )
+        return SourceCapabilities(vendor="SpiriCamera", model=f"testimage:{self._image_name}")
 
     def close(self) -> None:
         """Stop serving and drop the cached render."""
@@ -350,11 +343,7 @@ class TestImageSource(SourceBase):
             max(1, settings.max_width),
             max(1, settings.max_height),
         )
-        if (
-            not self._animated
-            and self._frame is not None
-            and self._frame_resolution == resolution
-        ):
+        if not self._animated and self._frame is not None and self._frame_resolution == resolution:
             return self._frame
 
         self._frame = self._render(resolution)
@@ -416,21 +405,13 @@ class TestImageSource(SourceBase):
 
         width, height = resolution
         try:
-            png_bytes = resvg_py.svg_to_bytes(
-                svg_string=svg, width=width, height=height
-            )
+            png_bytes = resvg_py.svg_to_bytes(svg_string=svg, width=width, height=height)
         except Exception as exc:
-            raise SourceError(
-                f"Failed to render test image {self._image_name!r}: {exc}"
-            ) from exc
+            raise SourceError(f"Failed to render test image {self._image_name!r}: {exc}") from exc
 
-        frame = cv2.imdecode(
-            np.frombuffer(bytes(png_bytes), dtype=np.uint8), cv2.IMREAD_COLOR
-        )
+        frame = cv2.imdecode(np.frombuffer(bytes(png_bytes), dtype=np.uint8), cv2.IMREAD_COLOR)
         if frame is None:
-            raise SourceError(
-                f"Rendered test image {self._image_name!r} could not be decoded"
-            )
+            raise SourceError(f"Rendered test image {self._image_name!r} could not be decoded")
         return frame
 
     def _render_raster(self, resolution: tuple[int, int]) -> np.ndarray:
