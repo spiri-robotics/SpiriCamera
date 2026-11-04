@@ -10,7 +10,7 @@ help:
 	@echo "make test        run pytest"
 	@echo "make docs        build HTML docs into docs/_build/html"
 	@echo "make docs-serve  build docs and serve them on http://127.0.0.1:8000"
-	@echo "make pdf         build the controlled PDF (needs LaTeX: latexmk, texlive, rsvg-convert)"
+	@echo "make pdf         build the controlled PDF (needs LaTeX: latexmk, texlive with XeLaTeX, rsvg-convert)"
 	@echo "make lint-docs   check the docs' prose with Vale"
 	@echo "make docker      build the runtime image"
 	@echo "make clean       remove build output"

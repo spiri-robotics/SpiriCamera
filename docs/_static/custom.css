@@ -99,6 +99,40 @@ body {
     max(0px, calc(27px - var(--sidebar-item-spacing-horizontal)));
 }
 
+/* -- Version switcher (docs/_templates/versions.html) -------------------- */
+
+.spiri-versions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal);
+  border-bottom: 1px solid var(--color-sidebar-search-border);
+  font-size: var(--sidebar-item-font-size);
+}
+
+/* `display: flex` would otherwise beat the `hidden` attribute, and a local
+ * build, with no versions.json, must not show an empty switcher. */
+.spiri-versions[hidden],
+.spiri-versions__pdf[hidden] {
+  display: none;
+}
+
+.spiri-versions__select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.15rem 0.25rem;
+  font: inherit;
+  color: var(--color-foreground-primary);
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-background-border);
+  border-radius: 0.2rem;
+}
+
+.spiri-versions__pdf {
+  flex-basis: 100%;
+}
+
 /* -- Content ------------------------------------------------------------- */
 
 /* Revision history: dense, tabular, readable at a glance. */

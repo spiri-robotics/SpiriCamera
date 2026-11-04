@@ -8,11 +8,14 @@ name: Template Update
 # Where the template and local edits touch the same lines, copier leaves
 # conflict markers; the PR then opens as a draft for a person to resolve.
 #
-# One-time setup: Settings > Actions > General > "Allow GitHub Actions to
-# create and approve pull requests". PRs opened with the default token don't
-# trigger other workflows, hence the checks run here too. To have the normal
-# CI run on the PR as well, add a TEMPLATE_UPDATE_TOKEN secret (a fine-grained
-# token with contents and pull-requests write on this repo).
+# One-time setup:
+# - Settings > Actions > General > "Allow GitHub Actions to create and approve
+#   pull requests".
+# - A TEMPLATE_UPDATE_TOKEN secret, best set once for the whole org: a token with
+#   contents, pull-requests and workflows write. It's required in practice, not
+#   optional: GitHub refuses to let the default token change a workflow file, and
+#   most template updates do. It also has the normal CI run on the PR, which a PR
+#   opened with the default token wouldn't trigger; hence the checks here too.
 on:
   schedule:
     - cron: "0 7 * * 1" # Mondays, 07:00 UTC: an hour after the template's own update

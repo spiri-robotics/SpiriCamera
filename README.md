@@ -63,12 +63,15 @@ installed, create the network by hand: `docker network create spirisynq`.
 3. Tag `vX.Y.Z` and push the tag. CI then:
    - publishes the image to `ghcr.io/spiri-robotics/spiricamera` as `X.Y.Z`,
      `X.Y` and `latest`;
+   - publishes the docs for that version, with its PDF, beside the others on GitHub Pages;
    - attaches the docs' controlled PDF to the release.
 
 ## First-time GitHub setup
 
-Docs are published to GitHub Pages by `.github/workflows/docs.yml`. Turn it on once, in
-**Settings → Pages → Build and deployment → Source: GitHub Actions**.
+Docs are published to GitHub Pages by `.github/workflows/docs.yml`, every version side by
+side on the `gh-pages` branch. Once the first run on `main` has created that branch, turn
+Pages on in **Settings → Pages → Build and deployment → Source: Deploy from a branch →
+`gh-pages`, `/ (root)`**.
 
 ## Template
 

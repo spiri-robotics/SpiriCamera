@@ -69,7 +69,25 @@ html_theme = "furo"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_title = "SpiriCamera"
-html_baseurl = "https://spiri-robotics.github.io/SpiriCamera/"
+# Versions are published side by side (.github/scripts/publish_docs.py), and
+# latest/ is always the newest release: the one a search engine should show.
+html_baseurl = "https://spiri-robotics.github.io/SpiriCamera/latest/"
+
+# Furo's sidebar, with the version switcher and PDF link (_templates/versions.html)
+# under the search box.
+templates_path = ["_templates"]
+html_sidebars = {
+    "**": [
+        "sidebar/brand.html",
+        "sidebar/search.html",
+        "versions.html",
+        "sidebar/scroll-start.html",
+        "sidebar/navigation.html",
+        "sidebar/ethical-ads.html",
+        "sidebar/scroll-end.html",
+        "sidebar/variant-selector.html",
+    ]
+}
 
 html_theme_options = {
     "navigation_with_keys": True,
@@ -81,12 +99,17 @@ html_theme_options = {
 }
 
 # -- PDF --------------------------------------------------------------------
-# The cover logo. pdflatex cannot read SVG, so spiri_docs converts this one to
-# PDF during a LaTeX build. The light variant is correct: a cover is printed.
+# The cover logo. LaTeX cannot read SVG, so spiri_docs converts this one to PDF
+# during a LaTeX build. The light variant is correct: a cover is printed.
 spiri_docs_logo = "_static/spiri-logo-light.svg"
 # spiri_docs sets latex_documents (so the file is named for the document number
 # and revision) and appends the document-control preamble. What is left here is
-# page setup.
+# the engine and page setup.
+#
+# XeLaTeX rather than pdflatex: it reads Unicode natively, so a docstring with
+# "∘" or "→" in it is typeset instead of stopping the build. pdflatex knows only
+# the characters it has been told about, one at a time.
+latex_engine = "xelatex"
 latex_elements = {
     "papersize": "letterpaper",
     "pointsize": "11pt",

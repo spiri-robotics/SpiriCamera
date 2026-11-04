@@ -1,0 +1,53 @@
+{#
+  The version switcher and PDF link, under the search box (html_sidebars in conf.py).
+
+  It fills itself from versions.json at the root of the published site, which
+  .github/scripts/publish_docs.py writes. A local build has none, so here it stays
+  hidden.
+#}
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">{{ _("Version") }}</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>{{ _("Download PDF") }}</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script>

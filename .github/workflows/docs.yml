@@ -2,15 +2,21 @@ name: Docs
 
 # The docs are a controlled document (spiri-docs, as for every Spiri manual):
 #
-# - HTML is built on every PR (warnings fail it) and published to GitHub Pages
-#   from main, at https://spiri-robotics.github.io/SpiriCamera/
-# - The PDF is built on every run too, so a release never finds a broken PDF for
-#   the first time; a `vX.Y.Z` release tag attaches it to the release. That
-#   release asset is the controlled copy. It's named for the document number and
-#   revision in revisions.yaml, and says DRAFT if the revision is one.
+# - HTML and the PDF are built on every PR (warnings fail it), so a release never
+#   finds a broken PDF for the first time.
+# - Every version is published side by side on GitHub Pages, at
+#   https://spiri-robotics.github.io/SpiriCamera/: main as dev/, each
+#   `vX.Y.Z` tag as its own directory, and latest/ as the newest release. Each
+#   carries its PDF, and a switcher in the sidebar moves between them.
+#   .github/scripts/publish_docs.py lays the site out on the gh-pages branch.
+# - A release tag also attaches the PDF to the GitHub release. That PDF is named
+#   for the document number and revision in revisions.yaml, and says DRAFT if the
+#   revision is one.
 # - Prose is checked with Vale. Advisory: it reports, never blocks.
 #
-# One-time setup: Settings > Pages > Build and deployment > Source: GitHub Actions.
+# One-time setup, after the first run on main has created the gh-pages branch:
+# Settings > Pages > Build and deployment > Source: Deploy from a branch,
+# gh-pages, / (root).
 on:
   push:
     branches: [main]
@@ -37,10 +43,12 @@ jobs:
       # approver or effective date fails here rather than reaching a reader.
       - name: Build HTML
         run: uv run sphinx-build -W --keep-going -b html docs docs/_build/html
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
+      - name: Upload HTML
+        uses: actions/upload-artifact@v7
         with:
+          name: html
           path: docs/_build/html
+          if-no-files-found: error
 
   pdf:
     runs-on: ubuntu-latest
@@ -57,13 +65,16 @@ jobs:
         id: doc
         run: uv run python -m spiri_docs fields >> "$GITHUB_OUTPUT"
       # texlive-latex-extra carries the packages Sphinx's LaTeX output expects;
-      # librsvg2-bin converts the SVG cover logo, which pdflatex can't read.
+      # texlive-xetex, FreeFont and xindy are what Sphinx's XeLaTeX output uses
+      # (engine, fonts, index); librsvg2-bin converts the SVG cover logo, which
+      # LaTeX can't read.
       - name: Install LaTeX
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             latexmk texlive-latex-recommended texlive-latex-extra \
-            texlive-fonts-recommended tex-gyre librsvg2-bin
+            texlive-fonts-recommended texlive-xetex fonts-freefont-otf xindy \
+            librsvg2-bin
       - name: Build PDF
         run: |
           uv run sphinx-build -W --keep-going -b latex docs docs/_build/latex
@@ -75,20 +86,54 @@ jobs:
           path: docs/_build/latex/${{ steps.doc.outputs.name }}.pdf
           if-no-files-found: error
 
-  deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
+  publish:
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    needs: [build, pdf]
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      contents: write
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        with:
+          name: html
+          path: ${{ runner.temp }}/html
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.pdf.outputs.name }}
+          path: ${{ runner.temp }}/pdf
+      - name: Publish this version to gh-pages
+        env:
+          PDF: ${{ runner.temp }}/pdf/${{ needs.pdf.outputs.name }}.pdf
+          HTML: ${{ runner.temp }}/html
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then version=$GITHUB_REF_NAME; else version=dev; fi
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Two runs can publish at once (a tag and main, say). Each starts from
+          # gh-pages as it is and retries on a rejected push, so neither
+          # overwrites the other's version.
+          for attempt in 1 2 3 4 5; do
+            if git fetch --depth 1 origin gh-pages; then
+              git worktree add --detach "$RUNNER_TEMP/site" FETCH_HEAD
+            else
+              git worktree add --orphan -b "gh-pages-$attempt" "$RUNNER_TEMP/site"
+            fi
+            python3 .github/scripts/publish_docs.py "$RUNNER_TEMP/site" "$version" "$HTML" "$PDF"
+            git -C "$RUNNER_TEMP/site" add -A
+            # Nothing to commit if this exact build is already published (a re-run).
+            git -C "$RUNNER_TEMP/site" diff --cached --quiet ||
+              git -C "$RUNNER_TEMP/site" commit -q -m "docs: publish $version from $GITHUB_SHA"
+            if git -C "$RUNNER_TEMP/site" push origin HEAD:refs/heads/gh-pages; then
+              exit 0
+            fi
+            git worktree remove --force "$RUNNER_TEMP/site"
+            sleep $((attempt * 5))
+          done
+          echo "::error::Couldn't publish $version to gh-pages."
+          exit 1
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
