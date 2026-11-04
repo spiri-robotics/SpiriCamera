@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Page not found</title>
+<script>
+  const [, project, first, ...rest] = location.pathname.split("/");
+  if (!["latest", "dev"].includes(first)) {
+    location.replace(`/${project}/latest/${[first, ...rest].join("/")}${location.hash}`);
+  }
+</script>
+<h1>Page not found</h1>
+<p>This version of the documentation has no such page.
+<a href="/" id="home">Go to the latest documentation</a>.</p>
+<script>
+  document.getElementById("home").href = `/${location.pathname.split("/")[1]}/latest/`;
+</script>

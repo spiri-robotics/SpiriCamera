@@ -1,0 +1,183 @@
+/* ANSI Z535 safety colours and signal word panels.
+ *
+ * This file ships with the extension rather than with the template, and that is
+ * the whole point of it. A signal word panel is a compliance surface: if a
+ * manual's DANGER panel can be restyled by someone tidying `custom.css`
+ * eighteen months after generation, the manual stops meeting the standard and
+ * nothing says so. Colours that answer to a standard belong where they cannot
+ * drift; `custom.css` stays the seam for house style, which is a different
+ * decision owned by different people.
+ *
+ * -- Why these are panels, not coloured text -------------------------------
+ *
+ * Furo's default admonition draws the accent colour as *title text* on a light
+ * tint. The Z535 colours cannot be used that way. Safety yellow measures
+ * 1.90:1 against white -- it is a fill colour and always has been, and using it
+ * as type produces a CAUTION heading nobody can read. So the accent becomes the
+ * panel and the type goes black or white on top of it, which is also what the
+ * standard's own figures show.
+ *
+ * -- Why there is no dark mode ----------------------------------------------
+ *
+ * A safety colour is a specification, not a palette entry. There is no dark
+ * variant of safety red; a lightened red is simply not safety red any more.
+ * Because the type sits on the panel rather than on the page, the panels read
+ * correctly on Furo's near-black without adjustment, so these values are
+ * deliberately theme-invariant and there is no dark block below.
+ */
+
+/* -- Palette --------------------------------------------------------------
+ *
+ * The colours are not declared here. They live in `safety.py` and arrive as
+ * `--spiri-ansi-*`, `--spiri-signal-*` and `--spiri-signal-on-*` from the
+ * generated `spiri-safety-icon.css`, because the PDF needs the same five values
+ * as LaTeX colour definitions and two hand-maintained copies would eventually
+ * disagree -- giving a manual whose web build and PDF disagree about what colour
+ * a hazard is.
+ *
+ * The pairings that file emits are measured, not assumed:
+ *
+ *   white on red     6.88:1      black on orange   5.96:1
+ *   black on yellow 11.03:1      white on blue     6.57:1
+ *   white on green   6.68:1
+ *
+ * All five clear WCAG AA for normal-size text, and panel type is larger than
+ * that. This is not a compromise made for contrast -- it is what the standard
+ * shows, and it happens to measure well.
+ */
+
+/* -- Mapping onto Furo -----------------------------------------------------
+ *
+ * Furo builds an admonition from two custom properties per level: one for the
+ * title bar background, one for the border and the icon. Setting the background
+ * to the full colour rather than a tint is what turns a Furo admonition into a
+ * signal word panel, so most of the work here is done by the two variables and
+ * only the type and icon colours need real rules.
+ */
+
+body {
+  --color-admonition-title--danger: var(--spiri-signal-danger);
+  --color-admonition-title-background--danger: var(--spiri-signal-danger);
+
+  --color-admonition-title--warning: var(--spiri-signal-warning);
+  --color-admonition-title-background--warning: var(--spiri-signal-warning);
+
+  --color-admonition-title--caution: var(--spiri-signal-caution);
+  --color-admonition-title-background--caution: var(--spiri-signal-caution);
+}
+
+/* Signal words are set in capitals by the standard. Doing it in CSS rather than
+ * in the directive keeps the accessible name intact: a screen reader announces
+ * "Danger", not "D-A-N-G-E-R", which some voices spell out.
+ *
+ */
+.admonition.danger > .admonition-title,
+.admonition.warning > .admonition-title,
+.admonition.caution > .admonition-title {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.admonition.danger > .admonition-title {
+  color: var(--spiri-signal-on-danger);
+}
+
+.admonition.warning > .admonition-title {
+  color: var(--spiri-signal-on-warning);
+}
+
+.admonition.caution > .admonition-title {
+  color: var(--spiri-signal-on-caution);
+}
+
+/* -- The safety alert symbol ----------------------------------------------
+ *
+ * Furo ships Material Design's icon set and varies the glyph by level: a
+ * lightning bolt in a circle for DANGER and CAUTION, a triangle for WARNING.
+ * Both halves of that are wrong here. The bolt is not a safety symbol at all,
+ * and Material's triangle only resembles the safety alert symbol -- resembling
+ * it is not the same as being it, and the geometry is specified.
+ *
+ * More importantly, varying the glyph by level inverts what the symbol is for.
+ * There is one safety alert symbol and it means "personal injury hazard". It is
+ * not a severity indicator -- the signal word carries severity. So all three
+ * injury levels take the identical symbol, and NOTICE takes none, because
+ * NOTICE is property damage and marking it as an injury hazard is the failure
+ * an auditor looks for first.
+ *
+ * Furo draws the icon as a mask filled with `background-color`, which the
+ * variables above have just set to the panel colour -- leaving it invisible
+ * against its own background. So each level sets both the mask and the fill. */
+.admonition.danger > .admonition-title::before,
+.admonition.warning > .admonition-title::before,
+.admonition.caution > .admonition-title::before {
+  /* Defined in spiri-safety-icon.css, which the extension generates from
+   * safety-alert.svg on every build. See safety.py for why it cannot simply be
+   * `url("safety-alert.svg")` here. */
+  -webkit-mask-image: var(--spiri-icon-safety-alert);
+  mask-image: var(--spiri-icon-safety-alert);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.admonition.danger > .admonition-title::before {
+  background-color: var(--spiri-signal-on-danger);
+}
+
+.admonition.warning > .admonition-title::before {
+  background-color: var(--spiri-signal-on-warning);
+}
+
+.admonition.caution > .admonition-title::before {
+  background-color: var(--spiri-signal-on-caution);
+}
+
+/* -- NOTICE and SAFETY INSTRUCTIONS ----------------------------------------
+ *
+ * The two panels docutils has no equivalent for, supplied by the `notice` and
+ * `safety-instructions` directives.
+ *
+ * Neither carries the safety alert symbol, and for the same reason: neither is
+ * a hazard alert. NOTICE is property damage, SAFETY INSTRUCTIONS is how to work
+ * safely. The symbol means "a person can be hurt here", so putting it on either
+ * would say something untrue.
+ *
+ * Furo reserves 2rem of left padding on a title for an icon it is about to
+ * draw. With no icon that reads as a missing glyph, so the padding comes back
+ * down and the word starts where the eye expects it. */
+.admonition.notice > .admonition-title,
+.admonition.safety-instructions > .admonition-title {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  padding-left: 0.5rem;
+}
+
+.admonition.notice > .admonition-title::before,
+.admonition.safety-instructions > .admonition-title::before {
+  content: none;
+}
+
+.admonition.notice {
+  border-left-color: var(--spiri-signal-notice);
+}
+
+.admonition.notice > .admonition-title {
+  background-color: var(--spiri-signal-notice);
+  color: var(--spiri-signal-on-notice);
+  /* Italic, as the standard's figures set it -- the one panel that is not
+   * upright, which is itself a cue that it is not an injury hazard. */
+  font-style: italic;
+}
+
+.admonition.safety-instructions {
+  border-left-color: var(--spiri-signal-safety-instructions);
+}
+
+.admonition.safety-instructions > .admonition-title {
+  background-color: var(--spiri-signal-safety-instructions);
+  color: var(--spiri-signal-on-safety-instructions);
+}

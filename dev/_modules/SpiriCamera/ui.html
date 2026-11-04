@@ -1,0 +1,1665 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/_modules/SpiriCamera/ui.html">
+        <link rel="prefetch" href="../../_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="../../_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>SpiriCamera.ui - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="../../_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">2. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">3. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">4. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for SpiriCamera.ui</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""NiceGUI test UI for SpiriCamera.</span>
+
+<span class="sd">Frames are served over a plain HTTP route and pulled by an</span>
+<span class="sd">``ui.interactive_image``, rather than pushed as base64 data URLs over</span>
+<span class="sd">the websocket.  Two reasons, both of which showed up as visible</span>
+<span class="sd">artefacts:</span>
+
+<span class="sd">* ``ui.image`` wraps Quasar's ``QImg``, which cross-fades every time its</span>
+<span class="sd">  source changes.  At video framerates that fade never finishes, so the</span>
+<span class="sd">  picture looks permanently dimmed and pulses at a constant rate.</span>
+<span class="sd">  ``ui.interactive_image`` has no transition.</span>
+<span class="sd">* A data URL is pushed to every client for every frame whether or not</span>
+<span class="sd">  the browser can keep up.  Pulling instead lets the component skip</span>
+<span class="sd">  frames it cannot load in time, which is what makes it adapt to the</span>
+<span class="sd">  available bandwidth.</span>
+
+<span class="sd">See https://nicegui.io/documentation/interactive_image and NiceGUI's</span>
+<span class="sd">``examples/opencv_webcam``.</span>
+
+<span class="sd">Every control on this page binds two-way with ``bind_value``, including</span>
+<span class="sd">the fields the camera normally fills in for itself.  This is deliberate:</span>
+<span class="sd">no SpiriSynq property is truly read-only, a remote peer can write any of</span>
+<span class="sd">them already, and this page exists to debug that.  Use ``bind_value``,</span>
+<span class="sd">not ``bind_value_from``, unless a field genuinely has nowhere to write</span>
+<span class="sd">back to.  Two things here qualify: the bandwidth meter, which is a</span>
+<span class="sd">measurement taken at the HTTP route, and the frame tags, which are read</span>
+<span class="sd">out of a frame that has already been encoded and sent.  Both have a</span>
+<span class="sd">writable counterpart nearby — the camera's own settings, and Extra Tags.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nicegui</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">ui</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">exif</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.overlay</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ANCHORS</span><span class="p">,</span>
+    <span class="n">DEFAULT_FONT</span><span class="p">,</span>
+    <span class="n">DEFAULT_FONT_PATH</span><span class="p">,</span>
+    <span class="n">HudWidget</span><span class="p">,</span>
+    <span class="n">camera_metrics_widget</span><span class="p">,</span>
+    <span class="n">declared_objects</span><span class="p">,</span>
+    <span class="n">tiger_widget</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.sources.testimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">raster_test_images</span><span class="p">,</span> <span class="n">test_images</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.sources.v4l</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_devices</span>
+
+<span class="c1">#: Route the browser pulls frames from.</span>
+<span class="n">FRAME_ROUTE</span> <span class="o">=</span> <span class="s2">"/camera/frame"</span>
+
+<span class="c1">#: Seconds of history the bandwidth meter averages over.</span>
+<span class="n">METER_WINDOW</span> <span class="o">=</span> <span class="mf">3.0</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RateMeter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Rolling-window meter for what the frame route actually serves.</span>
+
+<span class="sd">    Measured at the HTTP route, so it reports what the browsers are</span>
+<span class="sd">    really pulling rather than what the camera hoped to publish.  Shared</span>
+<span class="sd">    by every client, matching the one-camera-per-process model.</span>
+
+<span class="sd">    This is the documented exception to the two-way binding rule in the</span>
+<span class="sd">    module docstring: it is a derived measurement with nowhere to write</span>
+<span class="sd">    back to, so the UI reads it and nothing more.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">METER_WINDOW</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a meter.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        window : float</span>
+<span class="sd">            Seconds of history to average over.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="o">=</span> <span class="n">window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">:</span> <span class="n">deque</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_newest_capture</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">captured</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Record one served frame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        size : int</span>
+<span class="sd">            Size of the served frame in bytes.</span>
+<span class="sd">        captured : float</span>
+<span class="sd">            Unix timestamp the frame was captured at, from its own EXIF.</span>
+<span class="sd">            Zero for an untagged frame, whose age is unknowable.</span>
+<span class="sd">        """</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="c1"># Clamped: a camera whose clock is ahead of ours must not produce</span>
+        <span class="c1"># a frame from the future.</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">captured</span><span class="p">)</span> <span class="k">if</span> <span class="n">captured</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">now</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">age</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_newest_capture</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_newest_capture</span><span class="p">,</span> <span class="n">captured</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prune</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">rates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return the current rates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple[float, float]</span>
+<span class="sd">            Frames per second and bytes per second over the window.</span>
+<span class="sd">        """</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prune</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+            <span class="n">span</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">size</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">span</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">count</span> <span class="o">/</span> <span class="n">span</span><span class="p">,</span> <span class="n">total</span> <span class="o">/</span> <span class="n">span</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean_age</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the mean capture-to-serve age over the window.</span>
+
+<span class="sd">        Averaged rather than sampled.  A frame's age sweeps from zero to</span>
+<span class="sd">        a full frame interval as it waits to be fetched, so reading it at</span>
+<span class="sd">        one arbitrary instant measures the phase between the capture loop</span>
+<span class="sd">        and whatever clock did the reading — a number that slides and</span>
+<span class="sd">        wraps and says nothing about latency.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Seconds, or ``0.0`` if no tagged frame has been served in the</span>
+<span class="sd">            window.</span>
+<span class="sd">        """</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prune</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+            <span class="n">ages</span> <span class="o">=</span> <span class="p">[</span><span class="n">age</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">age</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="k">if</span> <span class="n">age</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ages</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ages</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">ages</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the age to report for the frame currently on screen.</span>
+
+<span class="sd">        The larger of two readings of the same thing, because a displayed</span>
+<span class="sd">        age must never claim the picture is fresher than it is:</span>
+
+<span class="sd">        * the mean over the window, which is the stable answer while</span>
+<span class="sd">          frames are flowing and the only one that does not slide about;</span>
+<span class="sd">        * the true age of the newest frame seen, which is what the mean</span>
+<span class="sd">          decays away from once frames stop arriving.  A camera that</span>
+<span class="sd">          stopped ten minutes ago is still showing a ten-minute-old</span>
+<span class="sd">          picture, and that is the useful thing to say about it.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Seconds, or ``0.0`` if no tagged frame has ever been served.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">newest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newest_capture</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">newest</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_age</span><span class="p">(),</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">newest</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Drop samples older than the window; caller holds the lock."""</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+
+<span class="c1">#: Meter for the frame route, shared across clients.</span>
+<span class="n">frame_meter</span> <span class="o">=</span> <span class="n">RateMeter</span><span class="p">()</span>
+
+<span class="c1">#: 1x1 black PNG, served before the first frame exists.</span>
+<span class="n">PLACEHOLDER</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span>
+    <span class="n">content</span><span class="o">=</span><span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span>
+        <span class="s2">"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"</span>
+        <span class="s2">"YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="</span>
+    <span class="p">),</span>
+    <span class="n">media_type</span><span class="o">=</span><span class="s2">"image/png"</span><span class="p">,</span>
+    <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Cache-Control"</span><span class="p">:</span> <span class="s2">"no-store"</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">_camera</span><span class="p">:</span> <span class="n">Camera</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_authoritive</span><span class="p">(</span><span class="n">source_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Camera</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Build a fresh authoritative camera pointed at ``source_str``.</span>
+
+<span class="sd">    Encode settings are read from the process's own configuration, not</span>
+<span class="sd">    carried over from whatever camera this replaces -- an authoritative</span>
+<span class="sd">    camera is this process actually running a device, and that device's</span>
+<span class="sd">    settings come from how the process was configured, not from</span>
+<span class="sd">    whatever a mirror happened to be showing a moment ago.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source_str : str</span>
+<span class="sd">        Source URL or device path to open.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Camera</span>
+<span class="sd">        A new, authoritative camera.</span>
+<span class="sd">    """</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">Camera</span><span class="p">(</span>
+        <span class="n">source_str</span><span class="p">,</span>
+        <span class="n">quality</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
+        <span class="n">max_width</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="p">,</span>
+        <span class="n">max_height</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="p">,</span>
+        <span class="n">max_framerate</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="p">,</span>
+        <span class="c1"># This process actually runs the device; Camera already defaults</span>
+        <span class="c1"># to this for a normal construction, but it is spelled out here</span>
+        <span class="c1"># because getting it wrong silently drops the hostname prefix on</span>
+        <span class="c1"># its topic and disables its RPCs.</span>
+        <span class="n">synq_authoritive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_camera">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.get_camera">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_camera</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Camera</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the process-wide camera, creating it on first use.</span>
+
+<span class="sd">    One camera per process, not one per page: a camera is a device, and</span>
+<span class="sd">    every instance declares its own SpiriSynq topic.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Camera</span>
+<span class="sd">        The shared camera instance.</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_camera</span>
+    <span class="k">if</span> <span class="n">_camera</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
+        <span class="n">_camera</span> <span class="o">=</span> <span class="n">_make_authoritive</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">source</span> <span class="ow">or</span> <span class="s2">"testimage://"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_camera</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_camera</span><span class="p">(</span><span class="n">new_camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Camera</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Install ``new_camera`` as the process-wide one, closing the old.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    new_camera : Camera</span>
+<span class="sd">        The camera to install.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Camera</span>
+<span class="sd">        ``new_camera``, for chaining.</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_camera</span>
+    <span class="n">old</span><span class="p">,</span> <span class="n">_camera</span> <span class="o">=</span> <span class="n">_camera</span><span class="p">,</span> <span class="n">new_camera</span>
+    <span class="k">if</span> <span class="n">old</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">old</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_camera</span>
+
+
+<div class="viewcode-block" id="set_authoritive">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.set_authoritive">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_authoritive</span><span class="p">(</span><span class="n">source_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Camera</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Switch to running a device ourselves, replacing any mirror.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source_str : str</span>
+<span class="sd">        Source to open.  Defaults to the test image when switching out</span>
+<span class="sd">        of mirror mode, which never has a local source string of its</span>
+<span class="sd">        own to fall back to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Camera</span>
+<span class="sd">        The new authoritative camera.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">_replace_camera</span><span class="p">(</span><span class="n">_make_authoritive</span><span class="p">(</span><span class="n">source_str</span> <span class="ow">or</span> <span class="s2">"testimage://"</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="set_mirror">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.set_mirror">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_mirror</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Camera</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Switch to mirroring another node's camera, replacing any device.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    topic : str</span>
+<span class="sd">        Absolute SpiriSynq topic of the camera to mirror, as reported by</span>
+<span class="sd">        :py:func:`discover_cameras`.  Empty to drop into mirror mode</span>
+<span class="sd">        without yet picking one, e.g. to browse what is available.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Camera</span>
+<span class="sd">        The new, non-authoritative camera.  A stopped device with</span>
+<span class="sd">        nothing to show until a topic is given: its fields sit at their</span>
+<span class="sd">        defaults rather than mirroring anything.</span>
+<span class="sd">    """</span>
+    <span class="n">new_camera</span> <span class="o">=</span> <span class="n">Camera</span><span class="o">.</span><span class="n">from_topic</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span> <span class="k">if</span> <span class="n">topic</span> <span class="k">else</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">synq_authoritive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_replace_camera</span><span class="p">(</span><span class="n">new_camera</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="discover_cameras">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.discover_cameras">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">discover_cameras</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""List Camera objects other nodes are currently advertising.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cam : Camera</span>
+<span class="sd">        Any camera on the session to query from -- discovery is a</span>
+<span class="sd">        property of the SpiriSynq session, not of a particular camera.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[dict]</span>
+<span class="sd">        One metadata dict per discovered camera, each with at least</span>
+<span class="sd">        ``topic`` and ``authoritive_node``.  Only authoritative cameras</span>
+<span class="sd">        ever answer this query, so a mirror never lists itself.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cam</span><span class="o">.</span><span class="n">synq_session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">synq_session</span><span class="o">.</span><span class="n">list_topics</span><span class="p">(</span><span class="n">type_filter</span><span class="o">=</span><span class="s2">"Camera"</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="discover_widgets">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.discover_widgets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">discover_widgets</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""List HudWidget objects other nodes are currently advertising.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cam : Camera</span>
+<span class="sd">        Any camera on the session to query from; see</span>
+<span class="sd">        :py:func:`discover_cameras`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[dict]</span>
+<span class="sd">        One metadata dict per discovered widget, each with at least</span>
+<span class="sd">        ``topic``.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cam</span><span class="o">.</span><span class="n">synq_session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">synq_session</span><span class="o">.</span><span class="n">list_topics</span><span class="p">(</span><span class="n">type_filter</span><span class="o">=</span><span class="s2">"HudWidget"</span><span class="p">))</span></div>
+
+
+
+<span class="c1">#: Sub-topic a widget created from this page publishes under, keyed by</span>
+<span class="c1">#: name -- kept distinct from a camera's own topic and from</span>
+<span class="c1">#: camera_metrics_widget's `f"{topic}_metrics"` so the three can never</span>
+<span class="c1">#: collide. Not related to `Camera.overlay_widgets` (the per-camera field</span>
+<span class="c1">#: naming which widgets to mirror) despite the similar name -- this is</span>
+<span class="c1">#: only where a widget *this page creates* is published.</span>
+<span class="n">_UI_WIDGET_SUBTOPIC</span> <span class="o">=</span> <span class="s2">"ui_widgets"</span>
+
+<span class="c1">#: Starting point for a freshly created widget -- small enough to read</span>
+<span class="c1">#: at a glance, and a working example of `exif.*` templating rather than</span>
+<span class="c1">#: an empty box. No `objects.*` example: that needs a real default topic</span>
+<span class="c1">#: to declare (`{# object: alias = real/topic #}`, see overlay.py's</span>
+<span class="c1">#: module docstring), which this generic starting point has no way to</span>
+<span class="c1">#: guess.</span>
+<span class="n">_NEW_WIDGET_TEMPLATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'''&lt;svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"&gt;</span>
+<span class="s1">  &lt;rect width="200" height="50" fill="black" fill-opacity="0.5"/&gt;</span>
+<span class="s1">  &lt;text x="8" y="30" font-family="</span><span class="si">{</span><span class="n">DEFAULT_FONT</span><span class="si">}</span><span class="s1">" font-size="18" fill="white"&gt;Hello, </span><span class="se">{{{{</span><span class="s1"> exif.topic </span><span class="se">}}}}</span><span class="s1">&lt;/text&gt;</span>
+<span class="s1">&lt;/svg&gt;'''</span>  <span class="c1"># noqa: E501 - SVG, and its text line is clearer whole</span>
+
+<span class="c1">#: Embeds the same font file thorvg loads server-side as a browser</span>
+<span class="c1">#: ``@font-face``, so `refresh_overlay`'s client-rendered SVG (widgets'</span>
+<span class="c1">#: ``font-family="{DEFAULT_FONT}"``) resolves to Miracode in the browser</span>
+<span class="c1">#: instead of silently falling back to a generic font -- which otherwise</span>
+<span class="c1">#: makes overlay text look different between `overlay_client_render`</span>
+<span class="c1">#: on and off even though every other pixel of placement matches.</span>
+<span class="c1">#: A data URI rather than a static route: the font never changes at</span>
+<span class="c1">#: runtime, and this avoids standing up static file serving just for it.</span>
+<span class="n">_DEFAULT_FONT_FACE_CSS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sa">f</span><span class="s2">"@font-face </span><span class="se">{{</span><span class="s2"> font-family: '</span><span class="si">{</span><span class="n">DEFAULT_FONT</span><span class="si">}</span><span class="s2">'; "</span>
+    <span class="s2">"src: url(data:font/ttf;base64,"</span>
+    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">DEFAULT_FONT_PATH</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">); </span><span class="se">}}</span><span class="s2">"</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_overlay_topic_list</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Absolute topics of every widget ``cam`` currently mirrors."""</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_overlay_add_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Start mirroring the widget at ``topic``, if not already."""</span>
+    <span class="k">if</span> <span class="n">topic</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">:</span>
+        <span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_overlay_remove_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Stop mirroring the widget at ``topic``, leaving the others."""</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<span class="c1">#: Widgets this page created, keyed by absolute topic, so "remove" can</span>
+<span class="c1">#: actually close them instead of merely detaching them from</span>
+<span class="c1">#: overlay_widgets -- a widget discovered from elsewhere on the network</span>
+<span class="c1">#: is never in here, and removing one of those only ever detaches it.</span>
+<span class="n">_ui_widgets</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HudWidget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="create_overlay_widget">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.create_overlay_widget">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_overlay_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HudWidget</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Publish a new, editable HudWidget and add it to ``cam.overlay_widgets``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cam : Camera</span>
+<span class="sd">        The camera to attach the new widget to.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        A short name for the widget, used to build its topic. Slugified</span>
+<span class="sd">        the same way :py:func:`~SpiriCamera.camera.topic_for_source`</span>
+<span class="sd">        slugifies a source string, so anything typeable works.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    HudWidget</span>
+<span class="sd">        The published widget, already added to ``cam.overlay_widgets``.</span>
+<span class="sd">    """</span>
+    <span class="n">slug</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[^A-Za-z0-9]+"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">"widget"</span>
+    <span class="n">widget</span> <span class="o">=</span> <span class="n">HudWidget</span><span class="p">(</span>
+        <span class="n">synq_topic</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">_UI_WIDGET_SUBTOPIC</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">slug</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="n">synq_authoritive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">svg_template</span><span class="o">=</span><span class="n">_NEW_WIDGET_TEMPLATE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_ui_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span>
+    <span class="n">_overlay_add_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">widget</span></div>
+
+
+
+<div class="viewcode-block" id="add_metrics_widget">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.add_metrics_widget">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_metrics_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HudWidget</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Publish a :py:func:`~SpiriCamera.overlay.camera_metrics_widget` for</span>
+<span class="sd">    ``cam`` and add it to its own ``overlay_widgets``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cam : Camera</span>
+<span class="sd">        The camera to describe and attach the widget to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    HudWidget</span>
+<span class="sd">        The published widget, already added to ``cam.overlay_widgets``.</span>
+<span class="sd">    """</span>
+    <span class="n">widget</span> <span class="o">=</span> <span class="n">camera_metrics_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
+    <span class="n">_ui_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span>
+    <span class="n">_overlay_add_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">widget</span></div>
+
+
+
+<div class="viewcode-block" id="add_tiger_widget">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.add_tiger_widget">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_tiger_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HudWidget</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Publish a :py:func:`~SpiriCamera.overlay.tiger_widget` for ``cam``</span>
+<span class="sd">    and add it to its own ``overlay_widgets``.</span>
+
+<span class="sd">    A worked example of percentage sizing (see</span>
+<span class="sd">    :py:func:`~SpiriCamera.overlay.rasterize`) alongside the pixel-sized</span>
+<span class="sd">    ``camera_metrics_widget`` example next to it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cam : Camera</span>
+<span class="sd">        The camera to attach the widget to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    HudWidget</span>
+<span class="sd">        The published widget, already added to ``cam.overlay_widgets``.</span>
+<span class="sd">    """</span>
+    <span class="n">widget</span> <span class="o">=</span> <span class="n">tiger_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
+    <span class="n">_ui_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span>
+    <span class="n">_overlay_add_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">widget</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_overlay_widget_usage</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""This camera's current per-widget override dict for ``topic``.</span>
+
+<span class="sd">    A copy, not the live dict -- callers build on it and write the whole</span>
+<span class="sd">    thing back via :py:func:`_overlay_set_position`/</span>
+<span class="sd">    :py:func:`_overlay_set_binding`, since only ``EventedDict``'s own</span>
+<span class="sd">    ``__setitem__`` is instrumented for sync; mutating a plain dict</span>
+<span class="sd">    nested inside one of its values in place would not publish.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="p">{}))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_overlay_set_position</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Set (both given) or clear (either ``None``) this camera's position</span>
+<span class="sd">    override for the widget at ``topic``, falling back to the widget's</span>
+<span class="sd">    own anchor when cleared."""</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="n">_overlay_widget_usage</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usage</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"x"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">usage</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"y"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usage</span><span class="p">[</span><span class="s2">"x"</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">usage</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="n">usage</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_overlay_set_binding</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">object_topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Set (non-empty) or clear (empty) this camera's binding override</span>
+<span class="sd">    for ``alias`` on the widget at ``topic``, falling back to that</span>
+<span class="sd">    alias's own declared default when cleared."""</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="n">_overlay_widget_usage</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+    <span class="n">bindings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"bindings"</span><span class="p">,</span> <span class="p">{}))</span>
+    <span class="k">if</span> <span class="n">object_topic</span><span class="p">:</span>
+        <span class="n">bindings</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_topic</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bindings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bindings</span><span class="p">:</span>
+        <span class="n">usage</span><span class="p">[</span><span class="s2">"bindings"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bindings</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usage</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"bindings"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="n">usage</span>
+
+
+<div class="viewcode-block" id="remove_overlay_widget">
+<a class="viewcode-back" href="../../api/SpiriCamera.ui.html#SpiriCamera.ui.remove_overlay_widget">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_overlay_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Detach ``topic`` from ``cam.overlay_widgets``, closing it if this</span>
+<span class="sd">    page is the one that created it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cam : Camera</span>
+<span class="sd">        The camera to detach the widget from.</span>
+<span class="sd">    topic : str</span>
+<span class="sd">        Absolute topic of the widget to remove, as it appears in</span>
+<span class="sd">        ``cam.overlay_widgets``.</span>
+<span class="sd">    """</span>
+    <span class="n">_overlay_remove_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+    <span class="n">widget</span> <span class="o">=</span> <span class="n">_ui_widgets</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_frame_timestamp</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The Unix timestamp ``frame`` was captured at, per its own EXIF.</span>
+
+<span class="sd">    Read off the bytes in hand rather than from ``camera.exif_timestamp``,</span>
+<span class="sd">    which by the time it is read may already describe a later frame.</span>
+<span class="sd">    An untagged frame, or one whose timestamp is not a number, has no</span>
+<span class="sd">    knowable capture time rather than a capture time of zero.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : bytes</span>
+<span class="sd">        The encoded frame about to be served.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Unix seconds, or ``0.0`` if the frame does not say.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">exif</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">exif</span><span class="o">.</span><span class="n">TIMESTAMP_TAG</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_age</span><span class="p">(</span><span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Render a frame age at a resolution that suits its size.</span>
+
+<span class="sd">    A stopped camera's frame keeps ageing, and milliseconds stop being</span>
+<span class="sd">    a readable unit long before it is interesting again.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seconds : float</span>
+<span class="sd">        The age to render.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Something like ``26 ms old`` or ``4.2 s old``.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">seconds</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ms old"</span>
+    <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s old"</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">seconds</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> min old"</span>
+
+
+<span class="c1">#: The frame object last counted by the meter, to recognise a re-serve.</span>
+<span class="c1">#:</span>
+<span class="c1">#: Compared by identity, not equality: the camera binds a fresh ``bytes``</span>
+<span class="c1">#: to ``image`` for every frame it captures, so two captures that happen</span>
+<span class="c1">#: to encode identically are still two frames, while the same object</span>
+<span class="c1">#: handed out twice is one.</span>
+<span class="n">_last_counted</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1">#: Guards the check-and-set on ``_last_counted``.</span>
+<span class="c1">#:</span>
+<span class="c1">#: Two clients polling at once can both land in ``serve_frame`` between</span>
+<span class="c1">#: the read and the write, both see the old value, and both count the</span>
+<span class="c1">#: same frame -- doubling the reported fps and KiB/s for as long as a</span>
+<span class="c1">#: second tab stays open. The lock closes that window rather than just</span>
+<span class="c1">#: documenting it.</span>
+<span class="n">_last_counted_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">FRAME_ROUTE</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">serve_frame</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Serve the most recent frame as an image response.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Response</span>
+<span class="sd">        The latest encoded frame, or a placeholder if none exists yet.</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_last_counted</span>
+
+    <span class="n">camera</span> <span class="o">=</span> <span class="n">get_camera</span><span class="p">()</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">image</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">frame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PLACEHOLDER</span>
+
+    <span class="c1"># Only new frames are metered. A stopped camera keeps its last frame</span>
+    <span class="c1"># in `image`, and any browser still polling would otherwise have that</span>
+    <span class="c1"># one frame counted over and over -- reporting a busy 30fps for a</span>
+    <span class="c1"># camera that has produced nothing since it was stopped.</span>
+    <span class="k">with</span> <span class="n">_last_counted_lock</span><span class="p">:</span>
+        <span class="n">is_new</span> <span class="o">=</span> <span class="n">frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_last_counted</span>
+        <span class="n">_last_counted</span> <span class="o">=</span> <span class="n">frame</span>
+    <span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
+        <span class="n">frame_meter</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">),</span> <span class="n">_frame_timestamp</span><span class="p">(</span><span class="n">frame</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
+        <span class="n">media_type</span><span class="o">=</span><span class="n">camera</span><span class="o">.</span><span class="n">mimetype</span><span class="p">,</span>
+        <span class="c1"># force_reload() already cache-busts with a timestamp; this stops</span>
+        <span class="c1"># any proxy in between from holding on to a frame.</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Cache-Control"</span><span class="p">:</span> <span class="s2">"no-store"</span><span class="p">},</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Render frame tags one per line, for the read-only display.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tags : dict[str, str]</span>
+<span class="sd">        The tags read out of the current frame.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        One ``name: value`` per line, or a placeholder when untagged.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tags</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"untagged"</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tags</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+
+<span class="c1">#: Provider name this page's own "Extra Tags" box tags under.</span>
+<span class="c1">#:</span>
+<span class="c1">#: A name of its own, rather than the default bucket exif_update() uses,</span>
+<span class="c1">#: so a human poking at this debug field never clobbers tags some other</span>
+<span class="c1">#: piece of software attached with exif_set_tags(); see</span>
+<span class="c1">#: Camera.exif_set_tags for the general mechanism.</span>
+<span class="n">_UI_EXIF_PROVIDER</span> <span class="o">=</span> <span class="s2">"ui"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_extra_tags</span><span class="p">(</span><span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Parse ``name=value`` pairs from a text field onto the camera.</span>
+
+<span class="sd">    Ignores anything without an ``=``, so a half-typed entry does not</span>
+<span class="sd">    throw away the tags already set.  Replaces only this page's own</span>
+<span class="sd">    provider bucket -- see :py:data:`_UI_EXIF_PROVIDER` -- so it can</span>
+<span class="sd">    never erase a tag another piece of software is managing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    camera : Camera</span>
+<span class="sd">        The camera to tag.</span>
+<span class="sd">    text : str</span>
+<span class="sd">        Comma-separated ``name=value`` pairs.</span>
+<span class="sd">    """</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="p">(</span><span class="n">text</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">):</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">pair</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"="</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">separator</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="n">tags</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">camera</span><span class="o">.</span><span class="n">exif_set_tags</span><span class="p">(</span><span class="n">_UI_EXIF_PROVIDER</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_source_options</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Map each known source string to a human label, for the picker.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict[str, str]</span>
+<span class="sd">        ``source_str -&gt; label``, covering every bundled test pattern and</span>
+<span class="sd">        every V4L2 device currently plugged in.</span>
+<span class="sd">    """</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"testimage://</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Test pattern: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">test_images</span><span class="p">())}</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">raster_test_images</span><span class="p">()):</span>
+        <span class="n">options</span><span class="p">[</span><span class="sa">f</span><span class="s2">"testimage://</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Test photo: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">list_devices</span><span class="p">():</span>
+        <span class="n">options</span><span class="p">[</span><span class="n">device</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">device</span><span class="p">[</span><span class="s2">"label"</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">options</span>
+
+
+<span class="nd">@ui</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_page</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Build the camera test UI page."""</span>
+    <span class="n">ui</span><span class="o">.</span><span class="n">add_head_html</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;style&gt;</span><span class="si">{</span><span class="n">_DEFAULT_FONT_FACE_CSS</span><span class="si">}</span><span class="s2">&lt;/style&gt;"</span><span class="p">)</span>
+    <span class="c1"># Deep-link/history sync when embedded as a SpiriConfig plugin iframe;</span>
+    <span class="c1"># a no-op outside that context. Absolute path on purpose -- it's the</span>
+    <span class="c1"># shell's URL, not ours, so it must not be prefix-rewritten.</span>
+    <span class="n">ui</span><span class="o">.</span><span class="n">add_head_html</span><span class="p">(</span><span class="s1">'&lt;script src="/plugin-sdk/shell.js"&gt;&lt;/script&gt;'</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># How this browser tab lays out client-rendered overlays. Page-local</span>
+    <span class="c1"># rather than a Camera field: the viewport being scaled to is this</span>
+    <span class="c1"># tab's own, so two viewers of one camera can reasonably differ.</span>
+    <span class="c1"># "box" is the overlay element's on-screen size in CSS pixels, kept</span>
+    <span class="c1"># current by a ResizeObserver set up next to the frame viewer.</span>
+    <span class="n">overlay_view</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"scale_to_viewport"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"box"</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_all</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Rebuild every camera-bound panel after the camera is swapped."""</span>
+        <span class="n">top_controls</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="n">settings_panels</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">toggle_authoritive</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Rebuild the process-wide camera as a device, or as a mirror."""</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">set_authoritive</span><span class="p">(</span><span class="n">get_camera</span><span class="p">()</span><span class="o">.</span><span class="n">source_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">set_mirror</span><span class="p">()</span>
+        <span class="n">refresh_all</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pick_source</span><span class="p">(</span><span class="n">source_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Retarget the current camera at a source picked from the list."""</span>
+        <span class="k">if</span> <span class="n">source_str</span><span class="p">:</span>
+            <span class="n">get_camera</span><span class="p">()</span><span class="o">.</span><span class="n">source_str</span> <span class="o">=</span> <span class="n">source_str</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">mirror</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Start mirroring a camera, discovered or typed in by hand."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">topic</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">set_mirror</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">refresh_all</span><span class="p">()</span>
+
+    <span class="nd">@ui</span><span class="o">.</span><span class="n">refreshable</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">top_controls</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The device/mirror switch and whatever it puts above the frame.</span>
+
+<span class="sd">        Split out from :py:func:`settings_panels` only so the frame</span>
+<span class="sd">        viewer can sit between the two, matching where it always has --</span>
+<span class="sd">        both panels are rebuilt together, by :py:func:`refresh_all`,</span>
+<span class="sd">        whenever the camera is swapped out from under the page.</span>
+<span class="sd">        """</span>
+        <span class="n">cam</span> <span class="o">=</span> <span class="n">get_camera</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full flex-shrink-0"</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center"</span><span class="p">):</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span>
+                    <span class="s2">"Authoritative"</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">cam</span><span class="o">.</span><span class="n">synq_authoritive</span><span class="p">,</span>
+                    <span class="n">on_change</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">toggle_authoritive</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">cam</span><span class="o">.</span><span class="n">synq_authoritive</span><span class="p">:</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Start"</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"bg-green-600 text-white"</span><span class="p">)</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Stop"</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="n">cam</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"bg-red-600 text-white"</span><span class="p">)</span>
+                    <span class="c1"># Debounced: every keystroke would otherwise retarget the camera.</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Source string"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"source_str"</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span>
+                        <span class="s2">"debounce=500"</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                        <span class="n">_source_options</span><span class="p">(),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="s2">"Known sources"</span><span class="p">,</span>
+                        <span class="n">on_change</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">pick_source</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-64"</span><span class="p">)</span>
+                <span class="c1"># Says "running", "stopped", or why it is neither.</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">()</span><span class="o">.</span><span class="n">bind_text_from</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"px-2 font-mono"</span><span class="p">)</span>
+
+        <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">()</span><span class="o">.</span><span class="n">bind_text_from</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_visibility_from</span><span class="p">(</span>
+            <span class="n">cam</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"error"</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full text-red-600 px-2"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cam</span><span class="o">.</span><span class="n">synq_authoritive</span><span class="p">:</span>
+            <span class="c1"># A mirror has no device of its own to start, and retargeting</span>
+            <span class="c1"># its source_str would try to resolve it against *this*</span>
+            <span class="c1"># machine's devices -- what mirroring means here is picking</span>
+            <span class="c1"># someone else's camera, not editing this one's fields.</span>
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full flex-shrink-0"</span><span class="p">):</span>
+                <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center justify-between"</span><span class="p">):</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Cameras on the network"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold"</span><span class="p">)</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">icon</span><span class="o">=</span><span class="s2">"refresh"</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="n">top_controls</span><span class="o">.</span><span class="n">refresh</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">"flat round"</span><span class="p">)</span>
+
+                <span class="c1"># Discovery is best-effort -- it relies on zenoh scouting</span>
+                <span class="c1"># reaching the other node, which multicast-free networks,</span>
+                <span class="c1"># routed links, and simple timing all defeat. Typing the</span>
+                <span class="c1"># topic by hand is not a fallback for rare cases; it is</span>
+                <span class="c1"># the one path that always works, so it is offered</span>
+                <span class="c1"># alongside the list rather than hidden behind it.</span>
+                <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                    <span class="n">topic_input</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+                        <span class="s2">"Topic"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"hostname/spiricamera_testimage"</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Mirror"</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">mirror</span><span class="p">(</span><span class="n">topic_input</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+                <span class="n">discovered</span> <span class="o">=</span> <span class="n">discover_cameras</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">discovered</span><span class="p">:</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"No other camera is currently advertising itself."</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                        <span class="s2">"opacity-70"</span>
+                    <span class="p">)</span>
+                <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">discovered</span><span class="p">:</span>
+                    <span class="n">topic</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"topic"</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span>
+                    <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                        <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"font-mono flex-1"</span><span class="p">)</span>
+                        <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"authoritive_node"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)))</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                            <span class="s2">"opacity-70 text-xs"</span>
+                        <span class="p">)</span>
+                        <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Mirror"</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">:</span> <span class="n">mirror</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
+
+    <span class="nd">@ui</span><span class="o">.</span><span class="n">refreshable</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">settings_panels</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The three detail cards below the frame, bound to the camera.</span>
+
+<span class="sd">        Kept out of :py:func:`top_controls` only so the frame viewer can</span>
+<span class="sd">        sit between the two; see that function's docstring.</span>
+<span class="sd">        """</span>
+        <span class="n">cam</span> <span class="o">=</span> <span class="n">get_camera</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full gap-2 flex-shrink-0"</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">):</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Image Settings"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Quality"</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2 flex-nowrap"</span><span class="p">):</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"quality"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                        <span class="s2">"flex-1"</span>
+                    <span class="p">)</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"quality"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                        <span class="s2">"w-20"</span>
+                    <span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Width"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_width"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Height"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_height"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Framerate"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_framerate"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                    <span class="s2">"w-full"</span>
+                <span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Mimetype"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"mimetype"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="s2">"Tag frames"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"exif_enabled"</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">):</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Device"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Vendor"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"vendor"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Model"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"model"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Serial Number"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"serial_number"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+
+                <span class="c1"># Every field here is two-way on purpose. The source</span>
+                <span class="c1"># overwrites the max_supported_* values each time it</span>
+                <span class="c1"># opens, but nothing in SpiriSynq is truly read-only and</span>
+                <span class="c1"># this is a debugging tool: being able to type a wrong</span>
+                <span class="c1"># value in and watch what downstream does with it is the</span>
+                <span class="c1"># point.</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Capabilities"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold pt-2"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Supported Width"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_supported_width"</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span>
+                    <span class="s1">'suffix="px"'</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Supported Height"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_supported_height"</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span>
+                    <span class="s1">'suffix="px"'</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Supported Framerate"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span>
+                    <span class="n">cam</span><span class="p">,</span> <span class="s2">"max_supported_framerate"</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s1">'suffix="fps"'</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+
+                <span class="c1"># What actually arrived, as opposed to what was asked for</span>
+                <span class="c1"># or advertised.</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Received"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold pt-2"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Received Width"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"received_width"</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span>
+                    <span class="s1">'suffix="px"'</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Received Height"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"received_height"</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span>
+                    <span class="s1">'suffix="px"'</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Received Ratio"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"received_ratio"</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span>
+                    <span class="s2">"step=0.0001"</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Synq Topic"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"synq_topic"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">):</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Resolved Source"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Status"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Scheme"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"scheme"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Target"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"target"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Handler"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"handler"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Error"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+
+                <span class="c1"># Read out of the current frame's EXIF rather than synced</span>
+                <span class="c1"># as fields of their own, so they cannot disagree with the</span>
+                <span class="c1"># picture above. There is nowhere to write back to — the</span>
+                <span class="c1"># frame already happened — which makes this the second</span>
+                <span class="c1"># documented exception to the two-way binding rule, the</span>
+                <span class="c1"># writable counterpart being Extra Tags below.</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Frame Tags"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold pt-2"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">()</span><span class="o">.</span><span class="n">bind_text_from</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"exif_tags"</span><span class="p">,</span> <span class="n">backward</span><span class="o">=</span><span class="n">_format_tags</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                    <span class="s2">"w-full font-mono text-xs whitespace-pre-wrap"</span>
+                <span class="p">)</span>
+
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+                    <span class="s2">"Extra Tags"</span><span class="p">,</span>
+                    <span class="n">placeholder</span><span class="o">=</span><span class="s2">"mission=probe-1, operator=alex"</span><span class="p">,</span>
+                    <span class="n">on_change</span><span class="o">=</span><span class="k">lambda</span> <span class="n">event</span><span class="p">:</span> <span class="n">_apply_extra_tags</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">"debounce=500"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+
+    <span class="nd">@ui</span><span class="o">.</span><span class="n">refreshable</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overlay_panel</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""See, create, and edit the HudWidgets baked into this camera.</span>
+
+<span class="sd">        ``@ui.refreshable`` tears down and rebuilds every element inside</span>
+<span class="sd">        this function on ``.refresh()`` -- the right tool for a</span>
+<span class="sd">        *structural* change (a widget added or removed changes how many</span>
+<span class="sd">        rows exist), the wrong one for a value that only needs to update</span>
+<span class="sd">        in place. Editable fields below use ``bind_value`` instead, which</span>
+<span class="sd">        NiceGUI already keeps live on its own polling loop without ever</span>
+<span class="sd">        recreating the element -- the same way Quality or Max Width bind</span>
+<span class="sd">        two-way elsewhere on this page. ``.refresh()`` is therefore only</span>
+<span class="sd">        called after an action that actually adds or removes a row</span>
+<span class="sd">        (Create, Add, remove), plus the explicit refresh button below for</span>
+<span class="sd">        "did an unresolved topic resolve yet" -- never on a timer, which</span>
+<span class="sd">        previously blew away whatever you were typing (the new-widget</span>
+<span class="sd">        name field, an in-progress SVG edit) every second.</span>
+<span class="sd">        """</span>
+        <span class="n">cam</span> <span class="o">=</span> <span class="n">get_camera</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full flex-shrink-0"</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center justify-between"</span><span class="p">):</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Overlays"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="n">icon</span><span class="o">=</span><span class="s2">"refresh"</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">"flat round"</span><span class="p">)</span>
+            <span class="n">ui</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="s2">"Render overlays in browser"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"overlay_client_render"</span><span class="p">)</span>
+            <span class="c1"># Off: widgets are laid out in image pixels and scale with</span>
+            <span class="c1"># the image, same as burned-in overlays. On: laid out in</span>
+            <span class="c1"># screen pixels, so they stay the same on-screen size however</span>
+            <span class="c1"># large the frame or viewport is. Browser rendering only --</span>
+            <span class="c1"># a burned-in overlay has no viewport to scale to.</span>
+            <span class="n">ui</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="s2">"Scale overlays to viewport"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span>
+                <span class="n">overlay_view</span><span class="p">,</span> <span class="s2">"scale_to_viewport"</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">bind_enabled_from</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"overlay_client_render"</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                <span class="n">add_topic</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+                    <span class="s2">"Add widget by topic"</span><span class="p">,</span>
+                    <span class="n">placeholder</span><span class="o">=</span><span class="s2">"hostname/spiricamera_testimage_metrics"</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
+                    <span class="s2">"Add"</span><span class="p">,</span>
+                    <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">_overlay_add_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">add_topic</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span>
+                            <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">(),</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">add_topic</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="k">else</span> <span class="kc">None</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                <span class="n">new_widget_name</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"New widget name"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
+                    <span class="s2">"Create &amp; Add"</span><span class="p">,</span>
+                    <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">create_overlay_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">new_widget_name</span><span class="o">.</span><span class="n">value</span> <span class="ow">or</span> <span class="s2">"widget"</span><span class="p">),</span>
+                        <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">(),</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
+                    <span class="s2">"Add CameraMetrics"</span><span class="p">,</span>
+                    <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="n">add_metrics_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">),</span> <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">()),</span>
+                <span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
+                    <span class="s2">"Add Tiger"</span><span class="p">,</span>
+                    <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="n">add_tiger_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">),</span> <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">()),</span>
+                <span class="p">)</span>
+
+            <span class="n">active</span> <span class="o">=</span> <span class="n">_overlay_topic_list</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"No overlay topics configured."</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"opacity-70"</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">active</span><span class="p">:</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">_overlay_widgets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">"flat bordered"</span><span class="p">):</span>
+                    <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                        <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"font-mono flex-1 text-xs"</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"unresolved"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-orange-600 text-xs"</span><span class="p">)</span>
+                        <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
+                            <span class="n">icon</span><span class="o">=</span><span class="s2">"delete"</span><span class="p">,</span>
+                            <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="n">remove_overlay_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">topic</span><span class="p">),</span>
+                                <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">(),</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">"flat round color=red"</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                            <span class="n">ui</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                                <span class="nb">list</span><span class="p">(</span><span class="n">ANCHORS</span><span class="p">),</span>
+                                <span class="n">label</span><span class="o">=</span><span class="s2">"Anchor (default)"</span><span class="p">,</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s2">"anchor"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-40"</span><span class="p">)</span>
+                            <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"X % (default)"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span>
+                                <span class="n">widget</span><span class="p">,</span> <span class="s2">"custom_anchor_x"</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">bind_visibility_from</span><span class="p">(</span>
+                                <span class="n">widget</span><span class="p">,</span> <span class="s2">"anchor"</span><span class="p">,</span> <span class="n">backward</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">==</span> <span class="s2">"custom"</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-24"</span><span class="p">)</span>
+                            <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Y % (default)"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span>
+                                <span class="n">widget</span><span class="p">,</span> <span class="s2">"custom_anchor_y"</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">bind_visibility_from</span><span class="p">(</span>
+                                <span class="n">widget</span><span class="p">,</span> <span class="s2">"anchor"</span><span class="p">,</span> <span class="n">backward</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">==</span> <span class="s2">"custom"</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-24"</span><span class="p">)</span>
+
+                        <span class="n">usage</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="p">{})</span>
+                        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                            <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Position override (this camera only):"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                                <span class="s2">"text-xs opacity-70"</span>
+                            <span class="p">)</span>
+                            <span class="n">override_x</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"X %"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">usage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"x"</span><span class="p">))</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-24"</span><span class="p">)</span>
+                            <span class="n">override_y</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Y %"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">usage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"y"</span><span class="p">))</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-24"</span><span class="p">)</span>
+                            <span class="n">override_x</span><span class="o">.</span><span class="n">on_value_change</span><span class="p">(</span>
+                                <span class="k">lambda</span> <span class="n">event</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">override_y</span><span class="p">:</span> <span class="n">_overlay_set_position</span><span class="p">(</span>
+                                    <span class="n">cam</span><span class="p">,</span>
+                                    <span class="n">topic</span><span class="p">,</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                    <span class="n">y</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="n">override_y</span><span class="o">.</span><span class="n">on_value_change</span><span class="p">(</span>
+                                <span class="k">lambda</span> <span class="n">event</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">override_x</span><span class="p">:</span> <span class="n">_overlay_set_position</span><span class="p">(</span>
+                                    <span class="n">cam</span><span class="p">,</span>
+                                    <span class="n">topic</span><span class="p">,</span>
+                                    <span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
+                                <span class="s2">"Clear"</span><span class="p">,</span>
+                                <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">:</span> <span class="p">(</span>
+                                    <span class="n">_overlay_set_position</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                    <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">(),</span>
+                                <span class="p">),</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">"flat dense"</span><span class="p">)</span>
+
+                        <span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">default_topic</span> <span class="ow">in</span> <span class="n">declared_objects</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">svg_template</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">bound_to</span> <span class="o">=</span> <span class="n">usage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"bindings"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+                            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2"> (default: </span><span class="si">{</span><span class="n">default_topic</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                                    <span class="s2">"font-mono text-xs flex-1"</span>
+                                <span class="p">)</span>
+                                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+                                    <span class="s2">"Override object topic"</span><span class="p">,</span>
+                                    <span class="n">value</span><span class="o">=</span><span class="n">bound_to</span><span class="p">,</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="s2">"debounce=500"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span><span class="o">.</span><span class="n">on_value_change</span><span class="p">(</span>
+                                    <span class="k">lambda</span> <span class="n">event</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">:</span> <span class="n">_overlay_set_binding</span><span class="p">(</span>
+                                        <span class="n">cam</span><span class="p">,</span>
+                                        <span class="n">topic</span><span class="p">,</span>
+                                        <span class="n">alias</span><span class="p">,</span>
+                                        <span class="n">event</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+
+                        <span class="n">ui</span><span class="o">.</span><span class="n">codemirror</span><span class="p">(</span><span class="n">language</span><span class="o">=</span><span class="s2">"XML"</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s2">"basicDark"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span>
+                            <span class="n">widget</span><span class="p">,</span> <span class="s2">"svg_template"</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+
+            <span class="n">discovered</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"topic"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">discover_widgets</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"topic"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="ow">and</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"topic"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">active</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">discovered</span><span class="p">:</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Discovered widgets"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-md font-bold pt-2"</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">discovered</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
+                        <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"font-mono flex-1 text-xs"</span><span class="p">)</span>
+                        <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
+                            <span class="s2">"Add"</span><span class="p">,</span>
+                            <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="n">_overlay_add_topic</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">topic</span><span class="p">),</span>
+                                <span class="n">overlay_panel</span><span class="o">.</span><span class="n">refresh</span><span class="p">(),</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+
+    <span class="c1"># Natural height, not h-screen: the frame is sized by width and the page</span>
+    <span class="c1"># scrolls, rather than the frame being squeezed into whatever vertical</span>
+    <span class="c1"># space the controls leave over.</span>
+    <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">column</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full gap-2 p-2"</span><span class="p">):</span>
+        <span class="n">top_controls</span><span class="p">()</span>
+
+        <span class="c1"># interactive_image's inner &lt;img&gt; is width:100%;height:100% with no</span>
+        <span class="c1"># object-fit, so it stretches to whatever shape its box is. Letterbox</span>
+        <span class="c1"># rather than warp, and let the wrapper's own aspect-ratio set the</span>
+        <span class="c1"># height so the frame fills the available width instead of being</span>
+        <span class="c1"># bounded by a short card.</span>
+        <span class="n">ui</span><span class="o">.</span><span class="n">add_css</span><span class="p">(</span><span class="s2">".camera-frame img { object-fit: contain; }"</span><span class="p">)</span>
+
+        <span class="c1"># Plain CSS resize handle (bottom-right corner drag) rather than a</span>
+        <span class="c1"># custom JS drag handler -- the browser already tracks the pointer</span>
+        <span class="c1"># and clamps to min-width/min-height for us. interactive_image</span>
+        <span class="c1"># normally derives its own height from the loaded image's aspect</span>
+        <span class="c1"># ratio (nicegui/elements/interactive_image.js), which ignores</span>
+        <span class="c1"># whatever height the card is dragged to; fill the card instead and</span>
+        <span class="c1"># let object-fit letterbox any mismatch with the image's own ratio.</span>
+        <span class="n">ui</span><span class="o">.</span><span class="n">add_css</span><span class="p">(</span><span class="s2">"""</span>
+<span class="s2">            .camera-viewport {</span>
+<span class="s2">                resize: both;</span>
+<span class="s2">                overflow: hidden;</span>
+<span class="s2">                min-width: 160px;</span>
+<span class="s2">                min-height: 90px;</span>
+<span class="s2">                height: 360px;</span>
+<span class="s2">            }</span>
+<span class="s2">            .camera-wrap {</span>
+<span class="s2">                position: relative;</span>
+<span class="s2">                height: 100%;</span>
+<span class="s2">            }</span>
+<span class="s2">            .camera-frame {</span>
+<span class="s2">                height: 100% !important;</span>
+<span class="s2">            }</span>
+<span class="s2">            .overlay-svg {</span>
+<span class="s2">                position: absolute;</span>
+<span class="s2">                inset: 0;</span>
+<span class="s2">                width: 100%;</span>
+<span class="s2">                height: 100%;</span>
+<span class="s2">                pointer-events: none;</span>
+<span class="s2">            }</span>
+<span class="s2">        """</span><span class="p">)</span>
+        <span class="n">ui</span><span class="o">.</span><span class="n">add_css</span><span class="p">(</span><span class="sa">f</span><span class="s2">".overlay-svg </span><span class="se">{{</span><span class="s2"> font-family: '</span><span class="si">{</span><span class="n">DEFAULT_FONT</span><span class="si">}</span><span class="s2">', monospace; </span><span class="se">}}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="c1"># The overlay lives in its own element, laid over interactive_image</span>
+        <span class="c1"># rather than injected into interactive_image's own &lt;svg&gt; (see</span>
+        <span class="c1"># nicegui/elements/interactive_image.js): that &lt;svg&gt; is hardcoded</span>
+        <span class="c1"># to preserveAspectRatio="none", stretching non-uniformly to fill</span>
+        <span class="c1"># its box, so anything nested inside it inherits that same skew and</span>
+        <span class="c1"># can't be un-distorted by giving the nested content its own</span>
+        <span class="c1"># preserveAspectRatio. Two siblings sharing one box, each doing its</span>
+        <span class="c1"># own "contain"/"meet" letterboxing against that same box, agree on</span>
+        <span class="c1"># where the letterboxing falls without either needing to know about</span>
+        <span class="c1"># the other.</span>
+        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"camera-viewport w-full p-0"</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">element</span><span class="p">(</span><span class="s2">"div"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"camera-wrap w-full"</span><span class="p">)</span> <span class="k">as</span> <span class="n">wrap</span><span class="p">:</span>
+                <span class="n">frame</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">interactive_image</span><span class="p">(</span><span class="n">FRAME_ROUTE</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"camera-frame w-full"</span><span class="p">)</span>
+                <span class="c1"># sanitize=False: this is our own server-rendered overlay</span>
+                <span class="c1"># SVG, not user-supplied HTML, and ui.html's default</span>
+                <span class="c1"># sanitizer (the browser's native Sanitizer API) doesn't</span>
+                <span class="c1"># reliably pass through SVG the way interactive_image's own</span>
+                <span class="c1"># DOMPurify-with-svg-profile sanitizer did.</span>
+                <span class="n">overlay</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">html</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">sanitize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"overlay-svg"</span><span class="p">)</span>
+
+        <span class="c1"># Report the viewer box's on-screen size back to the server for</span>
+        <span class="c1"># "Scale overlays to viewport" -- the server otherwise has no idea</span>
+        <span class="c1"># how big the frame is being drawn. Fires once on observe, then</span>
+        <span class="c1"># on every resize (window, layout, or the card's drag handle).</span>
+        <span class="n">ui</span><span class="o">.</span><span class="n">on</span><span class="p">(</span>
+            <span class="s2">"overlay_box"</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">overlay_view</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s2">"width"</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s2">"height"</span><span class="p">])),</span>
+            <span class="n">throttle</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ui</span><span class="o">.</span><span class="n">timer</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="n">ui</span><span class="o">.</span><span class="n">run_javascript</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""</span>
+<span class="s2">                new ResizeObserver(([entry]) =&gt; emitEvent("overlay_box", </span><span class="se">{{</span>
+<span class="s2">                    width: entry.contentRect.width,</span>
+<span class="s2">                    height: entry.contentRect.height,</span>
+<span class="s2">                </span><span class="se">}}</span><span class="s2">)).observe(getHtmlElement(</span><span class="si">{</span><span class="n">wrap</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">));</span>
+<span class="s2">            """</span><span class="p">),</span>
+            <span class="n">once</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">bandwidth</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full px-2 font-mono text-sm opacity-70"</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">refresh_frame</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">"""Pull the next frame, tracking the camera's current framerate."""</span>
+            <span class="n">timer</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_camera</span><span class="p">()</span><span class="o">.</span><span class="n">max_framerate</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">frame</span><span class="o">.</span><span class="n">force_reload</span><span class="p">()</span>
+            <span class="n">refresh_overlay</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">refresh_overlay</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">"""Push live overlay SVG into the ``overlay`` element.</span>
+
+<span class="sd">            Only does anything when ``overlay_client_render`` is set --</span>
+<span class="sd">            otherwise the overlay, if any, is already burned into the</span>
+<span class="sd">            frame itself server-side, and this clears any stale content</span>
+<span class="sd">            left over from the switch having just been turned off.</span>
+<span class="sd">            """</span>
+            <span class="n">cam</span> <span class="o">=</span> <span class="n">get_camera</span><span class="p">()</span>
+            <span class="n">body</span> <span class="o">=</span> <span class="s2">""</span>
+            <span class="k">if</span> <span class="n">cam</span><span class="o">.</span><span class="n">overlay_client_render</span> <span class="ow">and</span> <span class="n">cam</span><span class="o">.</span><span class="n">received_width</span> <span class="ow">and</span> <span class="n">cam</span><span class="o">.</span><span class="n">received_height</span><span class="p">:</span>
+                <span class="n">canvas_width</span><span class="p">,</span> <span class="n">canvas_height</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">received_width</span><span class="p">,</span> <span class="n">cam</span><span class="o">.</span><span class="n">received_height</span>
+                <span class="n">box_width</span><span class="p">,</span> <span class="n">box_height</span> <span class="o">=</span> <span class="n">overlay_view</span><span class="p">[</span><span class="s2">"box"</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">overlay_view</span><span class="p">[</span><span class="s2">"scale_to_viewport"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">box_width</span> <span class="ow">and</span> <span class="n">box_height</span><span class="p">:</span>
+                    <span class="c1"># The frame's letterboxed on-screen size, i.e. what</span>
+                    <span class="c1"># object-fit: contain draws it at inside the box.</span>
+                    <span class="n">scale</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">box_width</span> <span class="o">/</span> <span class="n">canvas_width</span><span class="p">,</span> <span class="n">box_height</span> <span class="o">/</span> <span class="n">canvas_height</span><span class="p">)</span>
+                    <span class="n">canvas_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">canvas_width</span> <span class="o">*</span> <span class="n">scale</span><span class="p">))</span>
+                    <span class="n">canvas_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">canvas_height</span> <span class="o">*</span> <span class="n">scale</span><span class="p">))</span>
+                <span class="n">body</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">render_overlays_for_client</span><span class="p">(</span>
+                    <span class="n">cam</span><span class="o">.</span><span class="n">received_width</span><span class="p">,</span> <span class="n">cam</span><span class="o">.</span><span class="n">received_height</span><span class="p">,</span> <span class="n">canvas_width</span><span class="p">,</span> <span class="n">canvas_height</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
+                    <span class="c1"># Own top-level &lt;svg&gt;, sized against the same box as</span>
+                    <span class="c1"># the image (see the .camera-frame CSS above) and</span>
+                    <span class="c1"># letterboxed with "xMidYMid meet" against the frame's</span>
+                    <span class="c1"># aspect ratio -- matching the image's object-fit:</span>
+                    <span class="c1"># contain letterboxing without either element needing</span>
+                    <span class="c1"># to know about the other. In viewport mode the canvas</span>
+                    <span class="c1"># already is the letterboxed size, so this is 1:1.</span>
+                    <span class="n">body</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'&lt;svg viewBox="0 0 </span><span class="si">{</span><span class="n">canvas_width</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">canvas_height</span><span class="si">}</span><span class="s1">" '</span>
+                        <span class="sa">f</span><span class="s1">'width="100%" height="100%" preserveAspectRatio="xMidYMid meet"&gt;'</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">&lt;/svg&gt;"</span>
+                    <span class="p">)</span>
+            <span class="n">overlay</span><span class="o">.</span><span class="n">set_content</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">refresh_bandwidth</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">"""Show the frame that arrived, and what the route is delivering.</span>
+
+<span class="sd">            Three kinds of number share this line, and they part company</span>
+<span class="sd">            when the camera stops.  The rates are rolling averages, so</span>
+<span class="sd">            they fall to zero once no new frames are arriving — a stopped</span>
+<span class="sd">            camera reads 0 fps even while a browser keeps polling and</span>
+<span class="sd">            being handed the frame it already has.  The size and shape</span>
+<span class="sd">            are an account of the last frame, which does not stop being</span>
+<span class="sd">            true just because no frame followed it, so they stay put.</span>
+<span class="sd">            The age is neither: the frame on screen really is getting</span>
+<span class="sd">            older, so it keeps counting up.</span>
+<span class="sd">            """</span>
+            <span class="n">cam</span> <span class="o">=</span> <span class="n">get_camera</span><span class="p">()</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">cam</span><span class="o">.</span><span class="n">received_width</span> <span class="ow">and</span> <span class="n">cam</span><span class="o">.</span><span class="n">received_height</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cam</span><span class="o">.</span><span class="n">received_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">cam</span><span class="o">.</span><span class="n">received_height</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cam</span><span class="o">.</span><span class="n">received_ratio</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+            <span class="c1"># Age of the frame on screen, measured at the route where</span>
+            <span class="c1"># frames actually leave. Against a remote camera it is only</span>
+            <span class="c1"># as accurate as the two machines' clocks agree.</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="n">frame_meter</span><span class="o">.</span><span class="n">age</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">age</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_format_age</span><span class="p">(</span><span class="n">age</span><span class="p">))</span>
+
+            <span class="n">fps</span><span class="p">,</span> <span class="n">bytes_per_second</span> <span class="o">=</span> <span class="n">frame_meter</span><span class="o">.</span><span class="n">rates</span><span class="p">()</span>
+            <span class="c1"># Both units: KiB/s for comparing against frame sizes and</span>
+            <span class="c1"># disk, kb/s (SI kilobits) for comparing against link</span>
+            <span class="c1"># budgets and encoder bitrates, which are quoted that way.</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bytes_per_second</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> KiB/s"</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bytes_per_second</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> kb/s"</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">fps</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> fps"</span><span class="p">)</span>
+
+            <span class="c1"># Off the frame in hand, not off the rates: bytes-per-second</span>
+            <span class="c1"># divided by frames-per-second is nothing at all once both are</span>
+            <span class="c1"># zero, but the last frame is still exactly this big.</span>
+            <span class="k">if</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> KiB/frame"</span><span class="p">)</span>
+
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"requested </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">max_framerate</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> fps"</span><span class="p">)</span>
+
+            <span class="n">bandwidth</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">" · "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+
+        <span class="n">timer</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">timer</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_camera</span><span class="p">()</span><span class="o">.</span><span class="n">max_framerate</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">refresh_frame</span><span class="p">)</span>
+        <span class="c1"># Filled in before the first tick, so the line reads 0 fps rather</span>
+        <span class="c1"># than being blank for half a second on every page load.</span>
+        <span class="n">refresh_bandwidth</span><span class="p">()</span>
+        <span class="n">ui</span><span class="o">.</span><span class="n">timer</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">refresh_bandwidth</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">tabs</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span> <span class="k">as</span> <span class="n">tabs</span><span class="p">:</span>
+            <span class="n">image_tab</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="s2">"Image"</span><span class="p">)</span>
+            <span class="n">overlay_tab</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="s2">"Overlay"</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">tab_panels</span><span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">image_tab</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">tab_panel</span><span class="p">(</span><span class="n">image_tab</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full gap-2 p-0"</span><span class="p">):</span>
+                <span class="n">settings_panels</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">tab_panel</span><span class="p">(</span><span class="n">overlay_tab</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full gap-2 p-0"</span><span class="p">):</span>
+                <span class="n">overlay_panel</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">ui</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"SpiriCamera Test UI"</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dark</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"FRAME_ROUTE"</span><span class="p">,</span>
+    <span class="s2">"add_metrics_widget"</span><span class="p">,</span>
+    <span class="s2">"add_tiger_widget"</span><span class="p">,</span>
+    <span class="s2">"build_page"</span><span class="p">,</span>
+    <span class="s2">"create_overlay_widget"</span><span class="p">,</span>
+    <span class="s2">"discover_cameras"</span><span class="p">,</span>
+    <span class="s2">"discover_widgets"</span><span class="p">,</span>
+    <span class="s2">"get_camera"</span><span class="p">,</span>
+    <span class="s2">"remove_overlay_widget"</span><span class="p">,</span>
+    <span class="s2">"serve_frame"</span><span class="p">,</span>
+    <span class="s2">"set_authoritive"</span><span class="p">,</span>
+    <span class="s2">"set_mirror"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=1b390748"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
