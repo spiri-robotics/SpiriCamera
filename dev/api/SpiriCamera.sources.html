@@ -565,6 +565,27 @@ when their transport exposes device identity.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.capture_params">
+<span class="sig-name descname"><span class="pre">capture_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.capture_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.capture_params" title="Link to this definition">¶</a></dt>
+<dd><p>Return extra <code class="docutils literal notranslate"><span class="pre">cv2.VideoCapture</span></code> open parameters.</p>
+<p>The default implementation passes none.  Subclasses override to
+set properties that only take effect when given at open time,
+such as FFmpeg’s open and read timeouts.</p>
+<section id="id3">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>list[int]</dt><dd><p>Alternating <code class="docutils literal notranslate"><span class="pre">cv2.CAP_PROP_*</span></code> ids and values.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.is_open">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_open</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.is_open" title="Link to this definition">¶</a></dt>
@@ -575,15 +596,15 @@ when their transport exposes device identity.</p>
 <dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.open">
 <span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.open" title="Link to this definition">¶</a></dt>
 <dd><p>Open the capture device and negotiate settings.</p>
-<section id="id3">
-<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<section id="id4">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>Requested resolution and framerate.</p>
 </dd>
 </dl>
 </section>
-<section id="id4">
-<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<section id="id5">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>SourceCapabilities</dt><dd><p>What the device actually negotiated.</p>
 </dd>
@@ -628,22 +649,22 @@ next <code class="docutils literal notranslate"><span class="pre">open()</span><
 mid-stream; one that does not simply keeps delivering its
 current size, which <code class="xref py py-attr docutils literal notranslate"><span class="pre">CameraBase.received_width</span></code> and
 friends will still report correctly.</p>
-<section id="id5">
-<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<section id="id6">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>Requested capture settings.</p>
 </dd>
 </dl>
 </section>
-<section id="id6">
-<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<section id="id7">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>np.ndarray | None</dt><dd><p>The frame, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the device produced nothing.</p>
 </dd>
 </dl>
 </section>
-<section id="id7">
-<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<section id="id8">
+<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source was never opened.</p>
 </dd>
@@ -675,8 +696,8 @@ subclass that has been imported.</p>
 implement <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a>, <a class="reference internal" href="#SpiriCamera.sources.SourceBase.close" title="SpiriCamera.sources.SourceBase.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a>, <a class="reference internal" href="#SpiriCamera.sources.SourceBase.read" title="SpiriCamera.sources.SourceBase.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, and
 <a class="reference internal" href="#SpiriCamera.sources.SourceBase.is_open" title="SpiriCamera.sources.SourceBase.is_open"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_open</span></code></a>.  A handler that accepts schemeless strings (such
 as a V4L2 device path) also overrides <a class="reference internal" href="#SpiriCamera.sources.SourceBase.handles" title="SpiriCamera.sources.SourceBase.handles"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handles()</span></code></a>.</p>
-<section id="id8">
-<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<section id="id9">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>schemes<span class="classifier">ClassVar[tuple[str, …]]</span></dt><dd><p>URL schemes this handler claims, without the <code class="docutils literal notranslate"><span class="pre">://</span></code> separator.</p>
 </dd>
@@ -692,15 +713,15 @@ as a V4L2 device path) also overrides <a class="reference internal" href="#Spiri
 <dd><p>Report whether this handler recognises a source URL.</p>
 <p>The default implementation matches <a class="reference internal" href="#SpiriCamera.sources.SourceBase.schemes" title="SpiriCamera.sources.SourceBase.schemes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schemes</span></code></a>.  Override
 to accept schemeless forms.</p>
-<section id="id9">
-<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<section id="id10">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>url<span class="classifier">SourceURL</span></dt><dd><p>The parsed source string.</p>
 </dd>
 </dl>
 </section>
-<section id="id10">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<section id="id11">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>bool</dt><dd><p>True if this handler can serve the URL.</p>
 </dd>
@@ -722,22 +743,22 @@ to accept schemeless forms.</p>
 <dd><p>Instantiate this handler for a source URL it has claimed.</p>
 <p>Override when a handler needs to validate or normalise the
 target before construction.</p>
-<section id="id11">
-<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<section id="id12">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>url<span class="classifier">SourceURL</span></dt><dd><p>The parsed source string.</p>
 </dd>
 </dl>
 </section>
-<section id="id12">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<section id="id13">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>Self</dt><dd><p>A handler instance, not yet opened.</p>
 </dd>
 </dl>
 </section>
-<section id="id13">
-<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<section id="id14">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the target is malformed for this scheme.</p>
 </dd>
@@ -774,8 +795,8 @@ target before construction.</p>
 <dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.describe">
 <span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.describe" title="Link to this definition">¶</a></dt>
 <dd><p>Summarise this source for the camera’s synced state.</p>
-<section id="id14">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<section id="id15">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceInfo</dt><dd><p>A network-transparent description of this handler.</p>
 </dd>
@@ -800,22 +821,22 @@ target before construction.</p>
 <dd><p>Open the underlying device and negotiate capture settings.</p>
 <p>Calling <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> on an already-open source is a no-op that
 re-reports the current capabilities.</p>
-<section id="id15">
-<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<section id="id16">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>The resolution and framerate the camera is asking for.</p>
 </dd>
 </dl>
 </section>
-<section id="id16">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
+<section id="id17">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceCapabilities</dt><dd><p>What the source will actually deliver.</p>
 </dd>
 </dl>
 </section>
-<section id="id17">
-<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<section id="id18">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the device cannot be opened.</p>
 </dd>
@@ -849,8 +870,8 @@ re-reports the current capabilities.</p>
 <dd><p>Produce a single frame.</p>
 <p>Handlers return raw pixels; JPEG encoding and publication belong
 to the camera layer.</p>
-<section id="id18">
-<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
+<section id="id19">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>The resolution and framerate currently requested.  Sources
 that render on demand should honour this on every call so
@@ -858,8 +879,8 @@ that live resolution changes take effect.</p>
 </dd>
 </dl>
 </section>
-<section id="id19">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
+<section id="id20">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>np.ndarray | None</dt><dd><p>A BGR frame, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when no new frame is available.
 Returning the <em>same</em> array object on consecutive calls tells
@@ -868,8 +889,8 @@ previous encode.</p>
 </dd>
 </dl>
 </section>
-<section id="id20">
-<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h3>
+<section id="id21">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source has failed in a way a retry will not fix.</p>
 </dd>
@@ -894,8 +915,8 @@ here – another camera’s output, say – so the metadata survives
 being decoded and re-encoded.  The camera merges these under its
 own tags; see
 <a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.Camera.exif_tags_for_frame" title="SpiriCamera.camera.Camera.exif_tags_for_frame"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exif_tags_for_frame()</span></code></a>.</p>
-<section id="id21">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
+<section id="id22">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>dict[str, str]</dt><dd><p>The inherited tags.  The default reports none.</p>
 </dd>
@@ -915,8 +936,8 @@ own tags; see
 <p>For sources whose lens can change while open – another camera’s
 output, whose lens zooms – so the camera follows it rather than
 keeping the one <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> reported.</p>
-<section id="id22">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h3>
+<section id="id23">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>Intrinsics | None</dt><dd><p>The lens now, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to keep the last one reported.  The
 default keeps what <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> said.</p>
@@ -951,8 +972,8 @@ device advertises, not a guarantee about any particular frame,
 and they are copied verbatim onto the matching
 <a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.CameraBase" title="SpiriCamera.camera.CameraBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CameraBase</span></code></a> fields.</p>
 </div>
-<section id="id23">
-<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h2>
+<section id="id24">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>max_supported_width<span class="classifier">int | None</span></dt><dd><p>Largest width the source can deliver, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it renders
 at whatever size it is asked for.</p>
@@ -1052,8 +1073,8 @@ itself.  Empty for a source that is the camera.</p>
 <p>This is the source-shaped half of the camera’s synced state: it
 travels over SpiriSynq so a remote peer can see what a camera is
 pointed at without having to parse the source string itself.</p>
-<section id="id24">
-<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h2>
+<section id="id25">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>url<span class="classifier">str</span></dt><dd><p>The source string this description was resolved from.</p>
 </dd>
@@ -1096,8 +1117,8 @@ could not be resolved.</p>
 <dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.unresolved">
 <span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unresolved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceInfo.unresolved"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.unresolved" title="Link to this definition">¶</a></dt>
 <dd><p>Build a description for a source string that could not be resolved.</p>
-<section id="id25">
-<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
+<section id="id26">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>url<span class="classifier">str</span></dt><dd><p>The offending source string.</p>
 </dd>
@@ -1105,8 +1126,8 @@ could not be resolved.</p>
 </dd>
 </dl>
 </section>
-<section id="id26">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h3>
+<section id="id27">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceInfo</dt><dd><p>A description carrying only <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code>.</p>
 </dd>
@@ -1133,8 +1154,8 @@ could not be resolved.</p>
 bindings and sync subscriptions attached to this instance
 survive a source change, and only the fields that actually
 changed are published.</p>
-<section id="id27">
-<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
+<section id="id28">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>other<span class="classifier">SourceInfo</span></dt><dd><p>The description to copy from.</p>
 </dd>
@@ -1169,8 +1190,8 @@ changed are published.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">SourceURL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceURL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceURL" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A source string split into its scheme and target.</p>
-<section id="id28">
-<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h2>
+<section id="id29">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>raw<span class="classifier">str</span></dt><dd><p>The original (stripped) source string.</p>
 </dd>
@@ -1199,22 +1220,22 @@ changed are published.</p>
 <dt class="sig sig-object py" id="SpiriCamera.sources.SourceURL.parse">
 <span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceURL.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceURL.parse" title="Link to this definition">¶</a></dt>
 <dd><p>Split a source string into scheme and target.</p>
-<section id="id29">
-<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h3>
+<section id="id30">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>The source string to parse.</p>
 </dd>
 </dl>
 </section>
-<section id="id30">
-<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h3>
+<section id="id31">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceURL</dt><dd><p>The split representation.</p>
 </dd>
 </dl>
 </section>
-<section id="id31">
-<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h3>
+<section id="id32">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source string is empty or whitespace only.</p>
 </dd>
@@ -1253,22 +1274,22 @@ changed are published.</p>
 <dt class="sig sig-object py" id="SpiriCamera.sources.describe_source">
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">describe_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#describe_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.describe_source" title="Link to this definition">¶</a></dt>
 <dd><p>Resolve a source string and describe it without opening anything.</p>
-<section id="id32">
-<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h2>
+<section id="id33">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>The source string to inspect.</p>
 </dd>
 </dl>
 </section>
-<section id="id33">
-<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h2>
+<section id="id34">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>SourceInfo</dt><dd><p>A network-transparent description of the resolved source.</p>
 </dd>
 </dl>
 </section>
-<section id="id34">
-<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h2>
+<section id="id35">
+<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source string cannot be resolved.</p>
 </dd>
@@ -1288,8 +1309,8 @@ changed are published.</p>
 <dt class="sig sig-object py" id="SpiriCamera.sources.known_schemes">
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">known_schemes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#known_schemes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.known_schemes" title="Link to this definition">¶</a></dt>
 <dd><p>List the URL schemes the registered handlers claim.</p>
-<section id="id35">
-<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h2>
+<section id="id36">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>list[str]</dt><dd><p>Sorted scheme names, formatted as <code class="docutils literal notranslate"><span class="pre">scheme://</span></code>.</p>
 </dd>
@@ -1306,8 +1327,8 @@ changed are published.</p>
 <dt class="sig sig-object py" id="SpiriCamera.sources.registered_sources">
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">registered_sources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#registered_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.registered_sources" title="Link to this definition">¶</a></dt>
 <dd><p>List every concrete source handler currently importable.</p>
-<section id="id36">
-<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h2>
+<section id="id37">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>list[type[SourceBase]]</dt><dd><p>Concrete <a class="reference internal" href="#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.SourceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceBase</span></code></a> subclasses, depth-first.</p>
 </dd>
@@ -1327,23 +1348,23 @@ changed are published.</p>
 <p>Handlers that claim the URL’s explicit scheme win over handlers that
 match schemeless strings, so <code class="docutils literal notranslate"><span class="pre">v4l://0</span></code> and <code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code> both
 land on the V4L2 handler without either rule shadowing the other.</p>
-<section id="id37">
-<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h2>
+<section id="id38">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>Source string such as <code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code>, <code class="docutils literal notranslate"><span class="pre">rtsp://host/stream</span></code>,
 or <code class="docutils literal notranslate"><span class="pre">testimage://pm5544</span></code>.</p>
 </dd>
 </dl>
 </section>
-<section id="id38">
-<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h2>
+<section id="id39">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>SourceBase</dt><dd><p>A handler instance, not yet opened.</p>
 </dd>
 </dl>
 </section>
-<section id="id39">
-<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h2>
+<section id="id40">
+<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id40" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source string is empty or malformed for its scheme.</p>
 </dd>
@@ -1442,6 +1463,7 @@ or <code class="docutils literal notranslate"><span class="pre">testimage://pm55
 <li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource"><code class="docutils literal notranslate"><span class="pre">OpenCVSource</span></code></a><ul>
 <li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.capture_target"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.capture_target()</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.device_metadata"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.device_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.capture_params"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.capture_params()</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.is_open"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.is_open</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.open"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.open()</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.close"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.close()</span></code></a></li>

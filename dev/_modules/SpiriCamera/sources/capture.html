@@ -376,6 +376,23 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
 
+<div class="viewcode-block" id="OpenCVSource.capture_params">
+<a class="viewcode-back" href="../../../api/SpiriCamera.sources.html#SpiriCamera.sources.OpenCVSource.capture_params">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">capture_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return extra ``cv2.VideoCapture`` open parameters.</span>
+
+<span class="sd">        The default implementation passes none.  Subclasses override to</span>
+<span class="sd">        set properties that only take effect when given at open time,</span>
+<span class="sd">        such as FFmpeg's open and read timeouts.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[int]</span>
+<span class="sd">            Alternating ``cv2.CAP_PROP_*`` ids and values.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Lifecycle</span>
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -412,7 +429,10 @@
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">capture_target</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> opening capture target </span><span class="si">{</span><span class="n">target</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="n">capture</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">capture_params</span><span class="p">()</span>
+        <span class="n">capture</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CAP_ANY</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">capture</span><span class="o">.</span><span class="n">isOpened</span><span class="p">():</span>
             <span class="n">capture</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">SourceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to open capture source: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">raw</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>

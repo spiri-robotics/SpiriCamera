@@ -397,7 +397,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">importlib.resources</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -483,6 +484,13 @@
     <span class="sa">r</span><span class="s2">"\{#\s*project:\s*(?P&lt;aliases&gt;[A-Za-z_][A-Za-z0-9_]*"</span>
     <span class="sa">r</span><span class="s2">"(?:\s*,\s*[A-Za-z_][A-Za-z0-9_]*)*)\s*#\}"</span>
 <span class="p">)</span>
+
+<span class="c1">#: How long to wait before trying again to mirror a widget or object</span>
+<span class="c1">#: topic that did not resolve. Mirroring runs on the capture thread, and</span>
+<span class="c1">#: a failed attempt costs SpiriSynq's retries, so a topic that does not</span>
+<span class="c1">#: exist -- half-typed, or a widget deleted while still listed -- must</span>
+<span class="c1">#: not be retried every frame.</span>
+<span class="n">_OVERLAY_RETRY_INTERVAL</span> <span class="o">=</span> <span class="mf">2.0</span>
 
 <span class="n">_env</span> <span class="o">=</span> <span class="n">minijinja</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
 <span class="c1"># Default ("chainable") undefined behavior renders a bare missing value as</span>
@@ -697,11 +705,15 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    OverlayError</span>
-<span class="sd">        If the template reads ``objects.&lt;alias&gt;`` for an alias with no</span>
+<span class="sd">        If the template is malformed -- as it is part way through an</span>
+<span class="sd">        edit -- or reads ``objects.&lt;alias&gt;`` for an alias with no</span>
 <span class="sd">        matching declaration.</span>
 <span class="sd">    """</span>
     <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">OBJECTS_NAME</span><span class="si">}</span><span class="s2">."</span>
-    <span class="n">names</span> <span class="o">=</span> <span class="n">_env</span><span class="o">.</span><span class="n">undeclared_variables_in_str</span><span class="p">(</span><span class="n">svg_template</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">_env</span><span class="o">.</span><span class="n">undeclared_variables_in_str</span><span class="p">(</span><span class="n">svg_template</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OverlayError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"could not parse overlay template: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
     <span class="n">used</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
@@ -1538,9 +1550,14 @@
             <span class="k">if</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_widgets</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">widget</span> <span class="o">=</span> <span class="n">HudWidget</span><span class="o">.</span><span class="n">from_topic</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">synq_session</span><span class="p">)</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_fetch</span><span class="p">(</span>
+                    <span class="n">topic</span><span class="p">,</span>
+                    <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">HudWidget</span><span class="o">.</span><span class="n">from_topic</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">synq_session</span><span class="p">),</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_complain</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"overlay topic unavailable, </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_widgets</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_complaints</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1667,9 +1684,39 @@
             <span class="k">if</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_objects</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_objects</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">synq_session</span><span class="o">.</span><span class="n">from_topic_untyped</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_fetch</span><span class="p">(</span>
+                    <span class="n">topic</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synq_session</span><span class="o">.</span><span class="n">from_topic_untyped</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_complain</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"overlay object unavailable, </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_objects</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_overlay_fetch</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fetch</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""``fetch()`` *topic*, unless it failed within :py:data:`_OVERLAY_RETRY_INTERVAL`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        T | None</span>
+<span class="sd">            What ``fetch`` returned, or ``None`` while waiting to retry.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        Exception</span>
+<span class="sd">            Whatever ``fetch`` raised; *topic* is then not tried again</span>
+<span class="sd">            until the interval has passed.</span>
+<span class="sd">        """</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_retry_at</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">now</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_retry_at</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="n">_OVERLAY_RETRY_INTERVAL</span>
+            <span class="k">raise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_retry_at</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_overlay_object_values_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">:</span> <span class="n">HudWidget</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Latest known field values, keyed by alias, for each object</span>
@@ -1994,6 +2041,7 @@
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_objects</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_objects</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_retry_at</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_declared_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_resolved_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_placement_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>

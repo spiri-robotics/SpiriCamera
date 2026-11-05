@@ -799,6 +799,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_widgets</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">overlay</span><span class="o">.</span><span class="n">HudWidget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_complaints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Topics that failed to mirror, and when to next try -- see</span>
+        <span class="c1"># OverlayMixin._overlay_fetch.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overlay_retry_at</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Per-widget declared_objects()/resolve_objects() results, cached</span>
         <span class="c1"># until that widget's own svg_template signal says it changed --</span>
         <span class="c1"># see OverlayMixin._overlay_invalidate_widget_cache.</span>
