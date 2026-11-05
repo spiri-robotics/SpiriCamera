@@ -1,10 +1,12 @@
 """WHEP (WebRTC-HTTP Egress Protocol) exposure for a single camera.
 
-This is the HTTP door onto the same session machinery
-:py:meth:`SpiriCamera.camera.Camera.webrtc_offer` uses over zenoh --
-both call straight into :py:mod:`SpiriCamera.webrtc`, so a viewer that
-came in over HTTP and one that came in over SpiriSynq get the same
-video track and tags data channel.
+This is the HTTP door onto
+:py:meth:`SpiriCamera.camera.Camera.webrtc_offer` and
+:py:meth:`~SpiriCamera.camera.Camera.webrtc_close`, the same RPCs a
+viewer uses over zenoh, so a viewer that came in over HTTP and one that
+came in over SpiriSynq get the same video track and tags data channel,
+from the camera's one encode.  Given a mirror, it only signals: the
+camera's own process answers and sends the video.
 
 Deliberately minimal: one camera per app (:py:func:`create_whep_app`
 takes a callable returning it, matching the "expose *a* topic over
@@ -25,11 +27,13 @@ from collections.abc import Callable
 
 from fastapi import FastAPI, HTTPException, Request, Response
 
-from SpiriCamera import webrtc
 from SpiriCamera.camera import Camera
 
 #: Media type both the offer and the answer are carried in, per WHEP.
 SDP_MEDIA_TYPE = "application/sdp"
+
+#: Seconds to wait for the camera's answer, which waits up to 5 for ICE.
+_NEGOTIATE_TIMEOUT = 15.0
 
 
 def create_whep_app(get_camera: Callable[[], Camera]) -> FastAPI:
@@ -60,19 +64,21 @@ def create_whep_app(get_camera: Callable[[], Camera]) -> FastAPI:
         if not offer_sdp:
             raise HTTPException(400, "Request body must be an SDP offer")
 
-        session_id, answer_sdp, answer_type = await webrtc.negotiate_async(
-            get_camera(), offer_sdp, "offer"
+        # Through the camera's own RPC: a mirror's reaches the camera's
+        # process, which does the camera's one encode.
+        answer = await (
+            get_camera().webrtc_offer.timeout(_NEGOTIATE_TIMEOUT).as_async(offer_sdp, "offer")
         )
         return Response(
-            content=answer_sdp,
+            content=answer["sdp"],
             media_type=SDP_MEDIA_TYPE,
             status_code=201,
-            headers={"Location": f"/whep/{session_id}"},
+            headers={"Location": f"/whep/{answer['session_id']}"},
         )
 
     @app.delete("/whep/{session_id}", status_code=204)
     async def whep_terminate(session_id: str) -> Response:
-        closed = await webrtc.close_session_async(session_id)
+        closed = await get_camera().webrtc_close.as_async(session_id)
         if not closed:
             raise HTTPException(404, "No such WHEP session")
         return Response(status_code=204)

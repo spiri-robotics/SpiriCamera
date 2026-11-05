@@ -776,7 +776,9 @@ class Camera(CameraBase):
         The zenoh-native counterpart to :py:mod:`SpiriCamera.whep`'s
         HTTP route: both end up in
         :py:func:`SpiriCamera.webrtc.negotiate_sync`, so a viewer
-        reached either way gets the same video track and tags channel.
+        reached either way gets the same video track and tags channel,
+        from the camera's one H.264 encode.  Called on a mirror, it runs
+        in the camera's own process, which does that encode.
 
         Parameters
         ----------
@@ -794,6 +796,19 @@ class Camera(CameraBase):
 
         session_id, answer_sdp, answer_type = webrtc.negotiate_sync(self, sdp, type)
         return {"session_id": session_id, "sdp": answer_sdp, "type": answer_type}
+
+    @remote_method()
+    def webrtc_close(self, session_id: str) -> bool:
+        """End a session :py:meth:`webrtc_offer` opened.
+
+        Returns
+        -------
+        bool
+            ``False`` if there was no such session (any more).
+        """
+        from SpiriCamera import webrtc  # local: keeps this module aiortc-free
+
+        return webrtc.close_session_sync(session_id)
 
     # ------------------------------------------------------------------
     # Intrinsics

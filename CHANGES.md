@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+### Features
+
+- `SpiriCamera run` serves the camera for WHEP playback too, at `/whep` on
+  `SPIRICAMERA_WHEP_PORT`, so MediaMTX or a cloud can pull it with no separate `whep-serve`
+  or mirror process.
+- `SPIRICAMERA_H264_PRESET` picks x264's speed preset for WebRTC/WHEP, `veryfast` by
+  default. aiortc left it at x264's `medium`, over two cores of a Raspberry Pi 4 at 720p30;
+  `veryfast` takes about one, `ultrafast` half.
+
+### Improvements
+
+- A camera is encoded to H.264 once, however many WebRTC/WHEP viewers it has: every session
+  shares one encoder, which suits the worst viewer's link (lowest bitrate, frame rate and
+  height). Each session had its own encoder before. A viewer that joins, falls behind or
+  asks for one gets a keyframe.
+- A mirror no longer publishes WebRTC itself, which was a second encode of the camera. A
+  WHEP app over a mirror (cloud-link's camera-whep) now only signals: the offer goes to the
+  camera's own process over SpiriSynq (`webrtc_offer`, and a new `webrtc_close`), which
+  answers and sends the video.
+- WebRTC is H.264 only: an offer without H.264 is refused, rather than given VP8.
+
 ## 0.2.2 (2026-11-05)
 
 ### Fixes
