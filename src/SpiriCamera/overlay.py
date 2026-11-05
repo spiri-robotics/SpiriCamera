@@ -93,7 +93,8 @@ import functools
 import importlib.resources
 import math
 import re
-from collections.abc import Mapping
+import time
+from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING
 
@@ -179,6 +180,13 @@ _PROJECT_DECLARATION_RE = re.compile(
     r"\{#\s*project:\s*(?P<aliases>[A-Za-z_][A-Za-z0-9_]*"
     r"(?:\s*,\s*[A-Za-z_][A-Za-z0-9_]*)*)\s*#\}"
 )
+
+#: How long to wait before trying again to mirror a widget or object
+#: topic that did not resolve. Mirroring runs on the capture thread, and
+#: a failed attempt costs SpiriSynq's retries, so a topic that does not
+#: exist -- half-typed, or a widget deleted while still listed -- must
+#: not be retried every frame.
+_OVERLAY_RETRY_INTERVAL = 2.0
 
 _env = minijinja.Environment()
 # Default ("chainable") undefined behavior renders a bare missing value as
@@ -382,11 +390,15 @@ def resolve_objects(svg_template: str) -> dict[str, str]:
     Raises
     ------
     OverlayError
-        If the template reads ``objects.<alias>`` for an alias with no
+        If the template is malformed -- as it is part way through an
+        edit -- or reads ``objects.<alias>`` for an alias with no
         matching declaration.
     """
     prefix = f"{OBJECTS_NAME}."
-    names = _env.undeclared_variables_in_str(svg_template, nested=True)
+    try:
+        names = _env.undeclared_variables_in_str(svg_template, nested=True)
+    except Exception as exc:
+        raise OverlayError(f"could not parse overlay template: {exc}") from exc
     used: set[str] = set()
     for name in names:
         if not name.startswith(prefix):
@@ -1196,9 +1208,14 @@ class OverlayMixin:
             if topic in self._overlay_widgets:
                 continue
             try:
-                widget = HudWidget.from_topic(topic, session=self.synq_session)
+                widget = self._overlay_fetch(
+                    topic,
+                    functools.partial(HudWidget.from_topic, topic, session=self.synq_session),
+                )
             except Exception as exc:
                 self._overlay_complain(topic, f"overlay topic unavailable, {exc}")
+                continue
+            if widget is None:
                 continue
             self._overlay_widgets[topic] = widget
             self._overlay_complaints.pop(topic, None)
@@ -1325,9 +1342,39 @@ class OverlayMixin:
             if topic in self._overlay_objects:
                 continue
             try:
-                self._overlay_objects[topic] = self.synq_session.from_topic_untyped(topic)
+                obj = self._overlay_fetch(
+                    topic, functools.partial(self.synq_session.from_topic_untyped, topic)
+                )
             except Exception as exc:
                 self._overlay_complain(topic, f"overlay object unavailable, {exc}")
+                continue
+            if obj is not None:
+                self._overlay_objects[topic] = obj
+
+    def _overlay_fetch[T](self, topic: str, fetch: Callable[[], T]) -> T | None:
+        """``fetch()`` *topic*, unless it failed within :py:data:`_OVERLAY_RETRY_INTERVAL`.
+
+        Returns
+        -------
+        T | None
+            What ``fetch`` returned, or ``None`` while waiting to retry.
+
+        Raises
+        ------
+        Exception
+            Whatever ``fetch`` raised; *topic* is then not tried again
+            until the interval has passed.
+        """
+        now = time.monotonic()
+        if self._overlay_retry_at.get(topic, 0.0) > now:
+            return None
+        try:
+            result = fetch()
+        except Exception:
+            self._overlay_retry_at[topic] = now + _OVERLAY_RETRY_INTERVAL
+            raise
+        self._overlay_retry_at.pop(topic, None)
+        return result
 
     def _overlay_object_values_for(self, widget: HudWidget) -> dict[str, dict[str, object]]:
         """Latest known field values, keyed by alias, for each object
@@ -1649,6 +1696,7 @@ class OverlayMixin:
         for obj in self._overlay_objects.values():
             obj.close()
         self._overlay_objects.clear()
+        self._overlay_retry_at.clear()
         self._overlay_declared_cache.clear()
         self._overlay_resolved_cache.clear()
         self._overlay_placement_cache.clear()

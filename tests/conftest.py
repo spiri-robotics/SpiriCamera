@@ -171,6 +171,8 @@ class CaptureHolder:
 
     capture: FakeCapture | None = None
     present: bool = True
+    #: The open parameters the source passed alongside the target.
+    params: list[int] = []
 
 
 @pytest.fixture
@@ -188,8 +190,9 @@ def fake_capture(monkeypatch: pytest.MonkeyPatch) -> Callable[..., CaptureHolder
     def install(**kwargs: object) -> CaptureHolder:
         holder = CaptureHolder()
 
-        def factory(target: object) -> FakeCapture:
+        def factory(target: object, api: int = 0, params: list[int] | None = None) -> FakeCapture:
             holder.capture = FakeCapture(target, **kwargs)  # type: ignore[arg-type]
+            holder.params = params or []
             return holder.capture
 
         monkeypatch.setattr("SpiriCamera.sources.capture.cv2.VideoCapture", factory)

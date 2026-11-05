@@ -64,6 +64,20 @@ class OpenCVSource(SourceBase):
         """
         return {}
 
+    def capture_params(self) -> list[int]:
+        """Return extra ``cv2.VideoCapture`` open parameters.
+
+        The default implementation passes none.  Subclasses override to
+        set properties that only take effect when given at open time,
+        such as FFmpeg's open and read timeouts.
+
+        Returns
+        -------
+        list[int]
+            Alternating ``cv2.CAP_PROP_*`` ids and values.
+        """
+        return []
+
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
@@ -98,7 +112,10 @@ class OpenCVSource(SourceBase):
         target = self.capture_target()
         logger.debug(f"{self!r} opening capture target {target!r}")
 
-        capture = cv2.VideoCapture(target)
+        params = self.capture_params()
+        capture = (
+            cv2.VideoCapture(target, cv2.CAP_ANY, params) if params else cv2.VideoCapture(target)
+        )
         if not capture.isOpened():
             capture.release()
             raise SourceError(f"Failed to open capture source: {self.url.raw!r}")

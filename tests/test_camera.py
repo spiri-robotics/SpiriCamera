@@ -1396,6 +1396,67 @@ class TestOverlays:
 
         assert data.startswith(b"\xff\xd8")
 
+    def test_unresolvable_topic_is_not_retried_every_frame(
+        self, camera: CameraFactory, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Mirroring runs on the capture thread, and a failed attempt
+        costs SpiriSynq's retries -- a fraction of a second each, which
+        retried every frame dropped a real camera to a few fps."""
+        from SpiriCamera.overlay import HudWidget
+
+        attempts = []
+
+        def unavailable(topic: str, session: object = None) -> HudWidget:
+            attempts.append(topic)
+            raise RuntimeError("channel is empty and closed")
+
+        monkeypatch.setattr(HudWidget, "from_topic", unavailable)
+        cam = camera(
+            "testimage://",
+            max_width=160,
+            max_height=120,
+            overlay_widgets={"overlays/does_not_exist": {}},
+        )
+        cam.start(background=False)
+        attempts.clear()
+
+        for _ in range(5):
+            assert cam.read().startswith(b"\xff\xd8")
+
+        assert attempts == []
+
+        cam._overlay_retry_at["overlays/does_not_exist"] = 0.0
+        cam.read()
+
+        assert attempts == ["overlays/does_not_exist"]
+
+    def test_half_typed_template_does_not_stop_frames(self, camera: CameraFactory) -> None:
+        """A widget's template is edited live, so it is malformed part way
+        through an edit -- that widget is skipped, the frame still goes out."""
+        from SpiriCamera.overlay import HudWidget
+
+        widget = HudWidget(
+            synq_topic="overlays/half_typed",
+            synq_authoritive=True,
+            svg_template='<svg><text fill="{{">{{ frame.width }}</text></svg>',
+        )
+        try:
+            cam = camera(
+                "testimage://",
+                max_width=160,
+                max_height=120,
+                overlay_widgets={widget.synq_absolute_path: {}},
+                synq_auto_start=True,
+            )
+            cam.start(background=False)
+
+            data = cam.read()
+
+            assert data.startswith(b"\xff\xd8")
+            assert "not rendered" in cam._overlay_complaints[widget.synq_absolute_path]
+        finally:
+            widget.close()
+
     def test_no_overlay_widgets_is_unaffected(self, camera: CameraFactory) -> None:
         """The common case -- no overlays configured -- costs nothing."""
         cam = camera("testimage://", max_width=160, max_height=120)

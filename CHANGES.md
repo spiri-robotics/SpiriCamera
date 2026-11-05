@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.2.1 (2026-11-05)
+
+### Fixes
+
+- A network stream that stops delivering frames is reconnected after 5 seconds. An RTSP
+  server that dropped the session left the camera frozen on its last frame until restarted,
+  each read waiting out FFmpeg's 30-second timeout.
+- A HUD widget's template, malformed part way through a live edit, no longer stops the
+  camera publishing frames; that widget is skipped until the template parses.
+- An overlay widget or object topic that does not resolve is retried every 2 seconds, not
+  every frame. Each attempt blocked the capture thread for SpiriSynq's retries, dropping the
+  camera to a few frames a second while a widget was missing.
+
 ### Improvements
 
 - The image is built from SpiriProjectTemplates' Dockerfile: uv pinned, a `dev` stage the

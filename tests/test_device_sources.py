@@ -320,3 +320,54 @@ class TestNetworkSource:
         """A scheme with no host cannot be opened, so it fails early."""
         with pytest.raises(SourceError, match="No host given"):
             resolve_source("rtsp://")
+
+    def test_bounds_ffmpeg_s_read_timeout(self, fake_capture: Callable[..., CaptureHolder]) -> None:
+        """FFmpeg's default waits 30 seconds per read of a dead stream."""
+        holder = fake_capture()
+        resolve_source("rtsp://10.0.0.5/stream").open(SETTINGS)
+
+        params = dict(zip(holder.params[::2], holder.params[1::2], strict=True))
+        assert params[cv2.CAP_PROP_READ_TIMEOUT_MSEC] == 5000
+
+    def test_a_dropped_frame_is_not_a_lost_stream(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """One failed read on a stream that was just delivering is a dropped frame."""
+        holder = fake_capture(frames=[None])
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(SETTINGS)
+
+        assert source.read(SETTINGS) is None
+        assert holder.capture is not None and not holder.capture.released
+
+    def test_a_stalled_stream_closes_itself(
+        self, fake_capture: Callable[..., CaptureHolder], monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An RTSP server that dropped the session never sends again on
+        that capture, so the source closes for the camera to reconnect."""
+        holder = fake_capture(frames=[None])
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(SETTINGS)
+        clock = iter([100.0, 106.0])
+        monkeypatch.setattr("SpiriCamera.sources.network.time.monotonic", lambda: next(clock))
+        source._last_frame_at = 100.0  # type: ignore[attr-defined]
+
+        with pytest.raises(SourceError, match="no frame for 6s"):
+            source.read(SETTINGS)
+        assert not source.is_open
+        assert holder.capture is not None and holder.capture.released
+
+    def test_a_frame_that_waited_out_the_timeout_is_stale(
+        self, fake_capture: Callable[..., CaptureHolder], monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """After the server drops the session, FFmpeg still hands back a
+        few buffered frames, each only after the full read timeout."""
+        fake_capture()
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(SETTINGS)
+        clock = iter([100.0, 105.0])
+        monkeypatch.setattr("SpiriCamera.sources.network.time.monotonic", lambda: next(clock))
+        source._last_frame_at = 100.0  # type: ignore[attr-defined]
+
+        with pytest.raises(SourceError, match="reconnecting"):
+            source.read(SETTINGS)

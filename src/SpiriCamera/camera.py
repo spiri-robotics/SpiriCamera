@@ -478,6 +478,9 @@ class Camera(CameraBase):
         self._overlay_widgets: dict[str, overlay.HudWidget] = {}
         self._overlay_objects: dict[str, object] = {}
         self._overlay_complaints: dict[str, str] = {}
+        # Topics that failed to mirror, and when to next try -- see
+        # OverlayMixin._overlay_fetch.
+        self._overlay_retry_at: dict[str, float] = {}
         # Per-widget declared_objects()/resolve_objects() results, cached
         # until that widget's own svg_template signal says it changed --
         # see OverlayMixin._overlay_invalidate_widget_cache.
