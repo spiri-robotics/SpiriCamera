@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.2.2 (2026-11-05)
+
+### Fixes
+
+- A `spirisynq://` source takes a topic relative to this host's base topic,
+  `spirisynq://./camera1`, as SpiriSynq topics do elsewhere. It never found its upstream:
+  the relative topic was compared, unresolved, against the absolute ones published.
+
 ## 0.2.1 (2026-11-05)
 
 ### Fixes
