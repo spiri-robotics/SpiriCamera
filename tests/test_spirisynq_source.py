@@ -120,6 +120,12 @@ class TestFrames:
         cam.read()
         assert (cam.received_width, cam.received_height) == (320, 240)
 
+    def test_a_relative_topic_is_this_host_s(self, camera: CameraFactory, upstream: Camera) -> None:
+        cam = camera(f"spirisynq://./{upstream.synq_topic}", max_width=320, max_height=320)
+        cam.start(background=False)
+        cam.read()
+        assert (cam.received_width, cam.received_height) == (320, 240)
+
     def test_does_not_upscale(self, proxy: Callable[..., Camera]) -> None:
         cam = proxy(max_width=1920, max_height=1080)
         cam.read()

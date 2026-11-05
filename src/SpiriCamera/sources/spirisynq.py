@@ -175,6 +175,7 @@ class SpiriSynqSource(SourceBase):
         self._upstream: object | None = None
         self._session: Session | None = None
         self._node: str = ""
+        self._topic: str = ""
         self._gone = threading.Event()
         self._last_arrival = 0.0
         self._last_probe = 0.0
@@ -193,7 +194,11 @@ class SpiriSynqSource(SourceBase):
 
     @property
     def target(self) -> str:
-        """The upstream camera's absolute SpiriSynq topic."""
+        """The upstream camera's SpiriSynq topic, as given.
+
+        Absolute, or relative to this session's base topic (``./camera1``,
+        this host's camera1); :py:meth:`open` resolves it.
+        """
         return self.url.target.strip("/")
 
     @property
@@ -207,16 +212,20 @@ class SpiriSynqSource(SourceBase):
 
         session = current_session.get()
         try:
-            upstream, metadata = mirror_topic(session, self.target)
+            self._topic = session.resolve_topic(self.target)
+        except ValueError as exc:
+            raise SourceError(str(exc)) from exc
+        try:
+            upstream, metadata = mirror_topic(session, self._topic)
         except SourceError:
             raise
         except Exception as exc:
-            raise SourceError(f"could not reach SpiriSynq topic {self.target!r}: {exc}") from exc
+            raise SourceError(f"could not reach SpiriSynq topic {self._topic!r}: {exc}") from exc
 
         events = getattr(upstream, "events", None)
         if not hasattr(upstream, "image") or not hasattr(events, "image"):
             upstream.close()  # type: ignore[attr-defined]
-            raise SourceError(f"{self.target!r} is not a camera: it has no image")
+            raise SourceError(f"{self._topic!r} is not a camera: it has no image")
 
         now = time.monotonic()
         with self._lock:
@@ -231,7 +240,7 @@ class SpiriSynqSource(SourceBase):
         if tombstone is not None:
             tombstone.connect(self._gone.set)
         self._upstream = upstream
-        logger.info(f"{self!r} consuming {self.target}")
+        logger.info(f"{self!r} consuming {self._topic}")
         return self._capabilities(upstream)
 
     def _on_upstream_image(self, image: bytes) -> None:
@@ -316,7 +325,7 @@ class SpiriSynqSource(SourceBase):
         self._last_probe = now
 
         assert self._session is not None
-        metadata = find_published(self._session, self.target)
+        metadata = find_published(self._session, self._topic)
         if metadata is None:
             self._lose("stopped answering")
         elif str(metadata.get("authoritive_node", "")) != self._node:
@@ -325,7 +334,7 @@ class SpiriSynqSource(SourceBase):
     def _lose(self, reason: str) -> None:
         """Give up on the current upstream mirror."""
         self.close()
-        raise SourceError(f"upstream {self.target!r} {reason}")
+        raise SourceError(f"upstream {self._topic!r} {reason}")
 
     def frame_tags(self) -> dict[str, str]:
         """The EXIF tags the upstream wrote into the frame last read."""
@@ -339,7 +348,7 @@ class SpiriSynqSource(SourceBase):
         """Pass the upstream's own reported limits, identity, lens and pose through."""
         return SourceCapabilities(
             intrinsics=_lens(getattr(upstream, "intrinsics", None)),
-            frame=self.target,
+            frame=self._topic,
             max_supported_width=getattr(upstream, "max_supported_width", None),
             max_supported_height=getattr(upstream, "max_supported_height", None),
             max_supported_framerate=getattr(upstream, "max_supported_framerate", None),
