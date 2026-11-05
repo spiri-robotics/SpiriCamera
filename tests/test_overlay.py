@@ -60,6 +60,12 @@ class TestResolveObjects:
         with pytest.raises(overlay.OverlayError):
             overlay.resolve_objects("{{ objects.battery.voltage }}")
 
+    def test_raises_overlay_error_on_a_malformed_template(self) -> None:
+        """A template part way through an edit is the widget's problem,
+        reported the same way as any other, not MiniJinja's own error."""
+        with pytest.raises(overlay.OverlayError, match="could not parse"):
+            overlay.resolve_objects('<text fill="{{">{{ frame.width }}</text>')
+
     def test_ignores_exif_and_other_names(self) -> None:
         template = "{{ exif.make }} {{ standalone }}"
 
