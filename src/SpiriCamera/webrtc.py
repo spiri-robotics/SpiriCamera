@@ -85,6 +85,7 @@ from av.video.frame import PictureType
 from loguru import logger
 
 from SpiriCamera import exif
+from SpiriCamera.sources.spirisynq import shrink
 
 #: Label a viewer's offer must use for its data channel to receive tags.
 TAGS_CHANNEL_LABEL = "spiricamera-tags"
@@ -327,10 +328,11 @@ class _Subscriber:
 class _SharedEncoder:
     """A camera's one H.264 encode, shared by every session publishing it.
 
-    Reads :py:attr:`~SpiriCamera.camera.CameraBase.image` -- already
-    JPEG-encoded and EXIF-tagged by ``Camera`` -- at the encode's frame
-    rate, so viewers see the same frame every other consumer (the debug
-    UI, a mirror) sees, tags included.  Each frame is encoded once, by
+    Reads :py:attr:`~SpiriCamera.camera.Camera.latest_frame` at the
+    encode's frame rate -- the array the camera's JPEG
+    :py:attr:`~SpiriCamera.camera.CameraBase.image` was encoded from,
+    rather than decoding that again -- so viewers see the same frame every
+    other consumer (the debug UI, a mirror) sees, tags included.  Each frame is encoded once, by
     libx264 at ``SPIRICAMERA_H264_PRESET``, and its packets go to every
     session's queue; aiortc only packetizes them.
 
@@ -391,11 +393,17 @@ class _SharedEncoder:
                 # Fell behind; carry on from now rather than bursting.
                 due = now
 
-            image: bytes = self._camera.image  # type: ignore[attr-defined]
+            # The array the camera encoded its image from, so its own JPEG
+            # isn't decoded again; only an object without one is.
+            latest = getattr(self._camera, "latest_frame", None)
+            if latest is not None:
+                image, array = latest
+            else:
+                image, array = self._camera.image, None  # type: ignore[attr-defined]
             keyframe, self._keyframe = self._keyframe, False
             pts = int((due - started) * VIDEO_CLOCK_RATE)
             packets = await loop.run_in_executor(
-                None, self._encode, image, target, min(caps, default=None), keyframe, pts
+                None, self._encode, image, array, target, min(caps, default=None), keyframe, pts
             )
             subscribers = list(self._subscribers.values())
             tags = exif.extract(image) if image and any(s.wants_tags for s in subscribers) else {}
@@ -419,23 +427,34 @@ class _SharedEncoder:
                 return
 
     def _encode(
-        self, image: bytes, target: int, cap: int | None, keyframe: bool, pts: int
+        self,
+        image: bytes,
+        array: np.ndarray | None,
+        target: int,
+        cap: int | None,
+        keyframe: bool,
+        pts: int,
     ) -> list[Packet]:
         """Encode one frame; runs in an executor, off the event loop."""
         with self._encoding:
-            return self._encode_locked(image, target, cap, keyframe, pts)
+            return self._encode_locked(image, array, target, cap, keyframe, pts)
 
     def _encode_locked(
-        self, image: bytes, target: int, cap: int | None, keyframe: bool, pts: int
+        self,
+        image: bytes,
+        array: np.ndarray | None,
+        target: int,
+        cap: int | None,
+        keyframe: bool,
+        pts: int,
     ) -> list[Packet]:
-        array = None
-        if image:
+        if array is None and image:
             array = cv2.imdecode(np.frombuffer(image, dtype=np.uint8), cv2.IMREAD_COLOR)
         if array is None:
             array = _BLANK_FRAME
         if cap is not None and array.shape[0] > cap:
             width = round(array.shape[1] * cap / array.shape[0])
-            array = cv2.resize(array, (width, cap), interpolation=cv2.INTER_AREA)
+            array = shrink(array, (width, cap))
         # yuv420p needs even sides.
         height, width = array.shape[0] // 2 * 2, array.shape[1] // 2 * 2
         array = array[:height, :width]

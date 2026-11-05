@@ -22,6 +22,12 @@
   camera's own process over SpiriSynq (`webrtc_offer`, and a new `webrtc_close`), which
   answers and sends the video.
 - WebRTC is H.264 only: an offer without H.264 is refused, rather than given VP8.
+- The H.264 encode starts from the frame the camera just encoded its JPEG from
+  (`Camera.latest_frame`), rather than decoding that JPEG again: a quarter of a Raspberry Pi
+  4 core at 720p30.
+- A `spirisynq://` camera that shrinks its upstream's frames, as a HUD variant does, resizes
+  bilinearly down to half size, area-averaging only below that: 2.3 ms a 720p frame on a
+  Raspberry Pi 4 where area-averaging took 12.3.
 
 ## 0.2.2 (2026-11-05)
 

@@ -373,3 +373,38 @@ def test_h264_preset_must_be_x264_s(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SPIRICAMERA_H264_PRESET", "speedy")
     with pytest.raises(ValidationError):
         Settings()
+
+
+def test_latest_frame_pairs_the_image_with_its_array(camera) -> None:
+    cam = camera(max_width=160, max_height=120)
+    assert cam.latest_frame is None
+    cam.start(background=False)
+    image = cam.read()
+    latest = cam.latest_frame
+    assert latest is not None
+    assert latest[0] is image
+    assert latest[1].shape[:2] == (120, 160)
+    cam.stop()
+    assert cam.latest_frame is None
+
+
+async def test_the_encode_does_not_decode_the_camera_s_own_jpeg(
+    camera, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The camera's array is already there; decoding its JPEG again was a quarter core."""
+    decodes: list[None] = []
+    real_imdecode = webrtc.cv2.imdecode
+
+    def counting_imdecode(*args: object, **kwargs: object) -> object:
+        decodes.append(None)
+        return real_imdecode(*args, **kwargs)
+
+    cam = await _started(camera)
+    try:
+        monkeypatch.setattr(webrtc.cv2, "imdecode", counting_imdecode)
+        viewer, session_id = await _view(cam)
+        assert decodes == []
+        await webrtc.close_session_async(session_id)
+        await viewer.close()
+    finally:
+        cam.stop()

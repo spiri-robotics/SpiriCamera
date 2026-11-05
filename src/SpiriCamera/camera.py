@@ -450,6 +450,8 @@ class Camera(CameraBase):
         self._cached_frame: np.ndarray | None = None
         self._cached_encoding: tuple[str, int] | None = None
         self._cached_image: bytes = b""
+        # See latest_frame.
+        self._latest_frame: tuple[bytes, np.ndarray] | None = None
         # Last EXIF failure reported, so a source that cannot be tagged
         # says so once rather than at the full framerate.
         self._exif_complaint: str = ""
@@ -735,6 +737,7 @@ class Camera(CameraBase):
             self._cached_frame = None
             self._cached_encoding = None
             self._cached_image = b""
+            self._latest_frame = None
 
         logger.debug(f"{self.synq_topic} stopped")
 
@@ -1003,7 +1006,21 @@ class Camera(CameraBase):
             frame = self._render_overlays(frame)
         encoded = self._tag(self._encode(frame), frame)
         self.image = encoded
+        self._latest_frame = (encoded, frame)
         return encoded
+
+    @property
+    def latest_frame(self) -> tuple[bytes, np.ndarray] | None:
+        """The last frame published, as ``(image, frame)``.
+
+        The tagged bytes :py:attr:`~CameraBase.image` was set to and the
+        BGR array they were encoded from, overlays drawn, in one tuple
+        so they are always read as a pair.  This process's own WebRTC
+        encode starts from the array rather than decoding ``image``
+        again.  Never synced: a mirror has none, and ``None`` until the
+        camera has published a frame.
+        """
+        return self._latest_frame
 
     def _capture_loop(self) -> None:
         """Capture at ``max_framerate`` until stopped.
