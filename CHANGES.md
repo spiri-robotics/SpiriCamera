@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.2.2 (2026-11-05)
+
 ### Fixes
 
 - A `spirisynq://` source takes a topic relative to this host's base topic,
