@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import sys
+import threading
 import time
 from typing import Annotated
 
@@ -167,6 +168,26 @@ def run(source: SourceArgument = "") -> None:
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(1) from exc
 
+    whep = None
+    if settings.whep_port:
+        import uvicorn
+
+        from SpiriCamera.whep import create_whep_app
+
+        # In this process, so a WHEP viewer shares the camera's one encode.
+        whep = uvicorn.Server(
+            uvicorn.Config(
+                create_whep_app(lambda: cam, settings.whep_path),
+                host="0.0.0.0",
+                port=settings.whep_port,
+                log_level="warning",
+            )
+        )
+        threading.Thread(target=whep.run, name="whep", daemon=True).start()
+        logger.info(
+            f"Serving {cam.synq_topic} for WHEP on :{settings.whep_port}{settings.whep_path}"
+        )
+
     logger.info(f"Publishing on {cam.synq_topic}, press Ctrl-C to stop")
     try:
         # The camera captures on its own thread; just stay alive.
@@ -175,6 +196,8 @@ def run(source: SourceArgument = "") -> None:
     except KeyboardInterrupt:
         pass
     finally:
+        if whep is not None:
+            whep.should_exit = True
         cam.stop()
         logger.info("Camera stopped")
 

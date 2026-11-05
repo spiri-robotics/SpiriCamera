@@ -3,11 +3,25 @@
 from __future__ import annotations
 
 import sys
+from typing import Literal
 
 from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from SpiriCamera import __version__
+
+#: x264's speed presets, fastest first.
+H264Preset = Literal[
+    "ultrafast",
+    "superfast",
+    "veryfast",
+    "faster",
+    "fast",
+    "medium",
+    "slow",
+    "slower",
+    "veryslow",
+]
 
 
 class Settings(BaseSettings):
@@ -59,6 +73,18 @@ class Settings(BaseSettings):
         ``mount`` over SpiriSynq for any other mounting.  Empty leaves
         the camera unplaced, unless its source places it (a
         ``spirisynq://`` relay follows the camera it relays).
+    h264_preset : str
+        x264's speed preset for the camera's one H.264 encode, the one
+        every WebRTC/WHEP viewer of it shares (default ``veryfast``).
+        Faster presets cost less CPU for a slightly worse picture at the
+        same bitrate: at 720p30 on a Raspberry Pi 4, ``veryfast`` takes
+        about 90% of a core, ``ultrafast`` 50%, and x264's own default
+        ``medium`` over 200%.
+    whep_port : int
+        ``SpiriCamera run`` also serves the camera for WHEP playback on
+        this port, as ``whep-serve`` does; ``0`` (the default) serves none.
+    whep_path : str
+        Where on ``whep_port`` the endpoint is (default ``/whep``).
     """
 
     model_config = SettingsConfigDict(
@@ -93,6 +119,11 @@ class Settings(BaseSettings):
 
     # What the camera is mounted on; see Camera's relative_to.
     relative_to: str = ""
+
+    # The WebRTC encode; see SpiriCamera.webrtc._SharedEncoder.
+    h264_preset: H264Preset = "veryfast"
+    whep_port: int = 0
+    whep_path: str = "/whep"
 
     def intrinsics(self) -> dict[str, float] | None:
         """The configured lens as ``Camera.set_intrinsics`` arguments, if any."""

@@ -402,6 +402,45 @@ class TestReceivedDimensions:
 
         assert (cam.received_width, cam.received_height) == (640, 480)
 
+    def test_shrinks_what_a_stream_sends_bigger(
+        self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """FFmpeg ignores a network stream's requested size; the frame is held to it."""
+        fake_capture(width=1280, height=720)
+        cam = camera("rtsp://camera/stream", max_width=1920, max_height=480)
+        cam.start(background=False)
+
+        cam.read()
+
+        assert (cam.received_width, cam.received_height) == (853, 480)
+        assert cam.latest_frame is not None
+        assert cam.latest_frame[1].shape[:2] == (480, 853)
+
+    def test_shrinks_a_static_frame_once(
+        self,
+        camera: CameraFactory,
+        fake_capture: Callable[..., CaptureHolder],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """The same frame again is not shrunk again (nor, so, encoded again)."""
+        import SpiriCamera.camera as camera_module
+
+        calls: list[tuple[int, int]] = []
+        real_shrink = camera_module.shrink
+
+        def counting_shrink(frame: np.ndarray, size: tuple[int, int]) -> np.ndarray:
+            calls.append(size)
+            return real_shrink(frame, size)
+
+        monkeypatch.setattr(camera_module, "shrink", counting_shrink)
+        fake_capture(width=1280, height=720)
+        cam = camera("rtsp://camera/stream", max_width=640, max_height=360)
+        cam.start(background=False)
+
+        cam.read()
+        cam.read()
+        assert calls == [(640, 360)]
+
 
 class TestEncoding:
     """Turning frames into bytes."""

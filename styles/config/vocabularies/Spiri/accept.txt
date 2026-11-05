@@ -10,3 +10,7 @@ waypoint
 zenoh
 SpiriSynq
 SpiriConfig
+aiortc
+[Pp]acketize[sd]?
+[Bb]itrates?
+[Kk]eyframes?

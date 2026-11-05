@@ -2,6 +2,40 @@
 
 ## Unreleased
 
+### Features
+
+- `SpiriCamera run` serves the camera for WHEP playback too, on `SPIRICAMERA_WHEP_PORT` at
+  `SPIRICAMERA_WHEP_PATH` (`/whep` by default; Spiri Cloud's Frigate pulls `/camera/whep`),
+  so MediaMTX or a cloud can pull it with no separate `whep-serve` or mirror process.
+- `SPIRICAMERA_H264_PRESET` picks x264's speed preset for WebRTC/WHEP, `veryfast` by
+  default. aiortc left it at x264's `medium`, over two cores of a Raspberry Pi 4 at 720p30;
+  `veryfast` takes about one, `ultrafast` half.
+
+### Improvements
+
+- A camera is encoded to H.264 once, however many WebRTC/WHEP viewers it has: every session
+  shares one encoder, which suits the worst viewer's link (lowest bitrate, frame rate and
+  height). Each session had its own encoder before. A viewer that joins, falls behind or
+  asks for one gets a keyframe.
+- A mirror no longer publishes WebRTC itself, which was a second encode of the camera. A
+  WHEP app over a mirror (cloud-link's camera-whep) now only signals: the offer goes to the
+  camera's own process over SpiriSynq (`webrtc_offer`, and a new `webrtc_close`), which
+  answers and sends the video.
+- WebRTC is H.264 only: an offer without H.264 is refused, rather than given VP8.
+- The H.264 encode starts from the frame the camera just encoded its JPEG from
+  (`Camera.latest_frame`), rather than decoding that JPEG again: a quarter of a Raspberry Pi
+  4 core at 720p30.
+- A `spirisynq://` camera that shrinks its upstream's frames, as a HUD variant does, resizes
+  bilinearly down to half size, area-averaging only below that: 2.3 ms a 720p frame on a
+  Raspberry Pi 4 where area-averaging took 12.3.
+
+### Fixes
+
+- A camera's frames are held to `max_width` x `max_height` (`SPIRICAMERA_FRAME_WIDTH`/
+  `_HEIGHT`) whatever its source sends: a bigger frame is shrunk, keeping its aspect ratio,
+  before it is drawn on and encoded. The size was only ever asked of the source, which
+  FFmpeg ignores for a network stream, so an RTSP camera published its stream's own size.
+
 ## 0.2.2 (2026-11-05)
 
 ### Fixes

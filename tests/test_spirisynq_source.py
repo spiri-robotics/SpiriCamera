@@ -11,6 +11,7 @@ import time
 import uuid
 from collections.abc import Callable
 
+import numpy as np
 import pytest
 from SpiriSynq.example_types.position import Offset, Pose, RootFrame
 from SpiriSynq.link import Link
@@ -354,3 +355,16 @@ class TestRetryingTopics:
 def cam_path(topic: str) -> str:
     """Absolute path a camera on the test session publishes ``topic`` at."""
     return f"{current_session.get().base_topic}/{topic}"
+
+
+def test_shrink_is_bilinear_to_half_and_area_below() -> None:
+    from SpiriCamera.sources.spirisynq import shrink
+
+    # A one-pixel checkerboard: area-averaging greys it out, bilinear
+    # sampling at an exact half keeps picking one colour.
+    board = (np.indices((480, 640)).sum(axis=0) % 2 * 255).astype(np.uint8)
+    frame = np.dstack([board] * 3)
+    assert shrink(frame, (320, 240)).shape == (240, 320, 3)
+    quarter = shrink(frame, (160, 120))
+    assert quarter.shape == (120, 160, 3)
+    assert abs(int(quarter.mean()) - 127) <= 2

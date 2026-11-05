@@ -41,30 +41,9 @@ from SpiriCamera.sources.base import (
     SourceCapabilities,
     SourceError,
     SourceURL,
+    fit_within,
+    shrink,
 )
-
-
-def fit_within(width: int, height: int, max_width: int, max_height: int) -> tuple[int, int]:
-    """Shrink a frame size to fit a bounding box, keeping its aspect ratio.
-
-    Never enlarges: an upstream frame that already fits is left at its
-    own size, since upscaling only spends bandwidth on pixels that carry
-    no more detail than the originals.
-
-    Parameters
-    ----------
-    width, height : int
-        The frame's own size.
-    max_width, max_height : int
-        The bounding box.
-
-    Returns
-    -------
-    tuple[int, int]
-        The fitted size, each at least 1.
-    """
-    scale = min(1.0, max_width / width, max_height / height)
-    return max(1, round(width * scale)), max(1, round(height * scale))
 
 
 def find_published(session: Session, topic: str) -> dict | None:
@@ -304,7 +283,7 @@ class SpiriSynqSource(SourceBase):
         height, width = decoded.shape[:2]
         size = fit_within(width, height, settings.max_width, settings.max_height)
         if size != (width, height):
-            decoded = cv2.resize(decoded, size, interpolation=cv2.INTER_AREA)
+            decoded = shrink(decoded, size)
 
         self._frame = decoded
         self._frame_bounds = bounds

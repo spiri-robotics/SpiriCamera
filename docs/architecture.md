@@ -314,12 +314,27 @@ signaling doors that use it:
   — a single `@remote_method`, reachable over zenoh like any other RPC.
 - {py:mod}`SpiriCamera.whep` — a standalone FastAPI app implementing
   WHEP (`POST /whep`, `DELETE /whep/{session_id}`), independent of
-  `ui.py`'s NiceGUI app, run via `SpiriCamera whep-serve`.
+  `ui.py`'s NiceGUI app, run via `SpiriCamera whep-serve`, or alongside
+  the camera by `SpiriCamera run` when `SPIRICAMERA_WHEP_PORT` is set.
 
 Both call the same `SpiriCamera.webrtc._negotiate`, so a viewer that
 arrives over zenoh and one that arrives over HTTP land in the same
 session registry and get the same video track and tags channel — the
 signaling transport is the only thing that differs.
+
+**One encode per camera, however many viewers.** Every session of a
+camera takes its video from that camera's one `_SharedEncoder`: libx264,
+at `SPIRICAMERA_H264_PRESET` (default `veryfast`), whose packets each
+session's track hands aiortc to packetize as they are. H.264 is the only
+codec offered; an offer without it is refused. The encode suits the
+worst viewer, the lowest bitrate, frame rate and height any session's
+`_RateController` allows, and a session that joins, falls a second
+behind, or sends PLI/FIR gets a keyframe and nothing before it. Only
+the camera's own process can publish it: `_negotiate` refuses a mirror,
+since its session would be a second encode, and a mirror's
+`webrtc_offer` reaches the camera itself over SpiriSynq anyway.
+`whep-serve` and `SpiriCamera run`'s WHEP port serve the camera they
+run, so they share its encode too.
 
 **The shared background event loop.** An `RTCPeerConnection` has to
 keep running after the call that created it returns, but the zenoh RPC
@@ -386,8 +401,8 @@ on every retry.
 
 [MediaMTX](https://github.com/bluenviron/mediamtx) can pull a WHEP
 stream directly as a path source — no WHIP push, no extra code on our
-side. Point a path at whatever `SpiriCamera whep-serve` is listening
-on:
+side. Point a path at whatever `SpiriCamera whep-serve`, or `SpiriCamera
+run` with `SPIRICAMERA_WHEP_PORT`, is listening on:
 
 ```yaml
 # mediamtx.yml
