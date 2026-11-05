@@ -1,0 +1,1538 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6.2.6. SpiriCamera.webrtc" href="SpiriCamera.webrtc.html"><link rel="prev" title="6.2.4. SpiriCamera.projection" href="SpiriCamera.projection.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.sources.html">
+        <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>6.2.5. SpiriCamera.sources - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="../_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="../_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">6.2.5. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/SpiriCamera.sources.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-SpiriCamera.sources">
+<span id="spiricamera-sources"></span><h1><span class="section-number">6.2.5. </span>SpiriCamera.sources<a class="headerlink" href="#module-SpiriCamera.sources" title="Link to this heading">¶</a></h1>
+<p>Source handler registry and resolution.</p>
+<p>Handlers register themselves simply by being imported: the registry
+walks <a class="reference internal" href="#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.base.SourceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceBase</span></code></a> subclasses and
+asks each one whether it recognises a given source string.  Adding a
+new protocol means adding a module here — no dispatch table to update,
+and no protocol-specific knowledge anywhere but the handler itself.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.sources.CaptureSettings">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">CaptureSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1920</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#CaptureSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.CaptureSettings" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>What the camera is asking the source to produce.</p>
+<p>These are upper bounds, not exact dimensions: a source is free to
+deliver something smaller, and reports what it settled on through
+<a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities" title="SpiriCamera.sources.SourceCapabilities"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceCapabilities</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not shorten these to <code class="docutils literal notranslate"><span class="pre">width</span></code> / <code class="docutils literal notranslate"><span class="pre">height</span></code> / <code class="docutils literal notranslate"><span class="pre">framerate</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">max_</span></code> prefix is the contract: a source may answer a
+request for 1920x1080 with a 640x480 frame and still be correct.
+A bare <code class="docutils literal notranslate"><span class="pre">width</span></code> would read as “the width you will get”, which is
+a promise no source makes.  The names also match the
+<a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.CameraBase" title="SpiriCamera.camera.CameraBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CameraBase</span></code></a> fields they are
+copied from, so the two stay greppable together.</p>
+</div>
+<section id="attributes">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>max_width<span class="classifier">int</span></dt><dd><p>Largest acceptable frame width in pixels.</p>
+</dd>
+<dt>max_height<span class="classifier">int</span></dt><dd><p>Largest acceptable frame height in pixels.</p>
+</dd>
+<dt>max_framerate<span class="classifier">int</span></dt><dd><p>Highest requested frames per second.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.CaptureSettings.max_width">
+<span class="sig-name descname"><span class="pre">max_width</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1920</span></span><a class="headerlink" href="#SpiriCamera.sources.CaptureSettings.max_width" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.CaptureSettings.max_height">
+<span class="sig-name descname"><span class="pre">max_height</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1080</span></span><a class="headerlink" href="#SpiriCamera.sources.CaptureSettings.max_height" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.CaptureSettings.max_framerate">
+<span class="sig-name descname"><span class="pre">max_framerate</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></span><a class="headerlink" href="#SpiriCamera.sources.CaptureSettings.max_framerate" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_width</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>max_height</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>max_framerate</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">Intrinsics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#Intrinsics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.Intrinsics" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A pinhole camera model, at the resolution it was measured at.</p>
+<p>The model is in pixels of a <code class="docutils literal notranslate"><span class="pre">width</span></code> x <code class="docutils literal notranslate"><span class="pre">height</span></code> image.  A frame of
+another size with the same aspect – a camera asked for a smaller
+<code class="docutils literal notranslate"><span class="pre">max_width</span></code>, say – uses <a class="reference internal" href="#SpiriCamera.sources.Intrinsics.scaled" title="SpiriCamera.sources.Intrinsics.scaled"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scaled()</span></code></a> to that size, rather than
+the numbers as they are.</p>
+<p>Synced as one value, not field by field, so a peer never sees one
+report’s focal length with another’s size.</p>
+<section id="id1">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>width<span class="classifier">int</span></dt><dd><p>Image width the model is in, in pixels.</p>
+</dd>
+<dt>height<span class="classifier">int</span></dt><dd><p>Image height the model is in, in pixels.</p>
+</dd>
+<dt>fx<span class="classifier">float</span></dt><dd><p>Horizontal focal length, in pixels.</p>
+</dd>
+<dt>fy<span class="classifier">float</span></dt><dd><p>Vertical focal length, in pixels.</p>
+</dd>
+<dt>cx<span class="classifier">float</span></dt><dd><p>Principal point, horizontally, in pixels from the left edge.</p>
+</dd>
+<dt>cy<span class="classifier">float</span></dt><dd><p>Principal point, vertically, in pixels from the top edge.</p>
+</dd>
+<dt>origin<span class="classifier">str</span></dt><dd><p>Where it came from: <code class="docutils literal notranslate"><span class="pre">manual</span></code> (the camera’s settings), <code class="docutils literal notranslate"><span class="pre">source</span></code>
+(the source reported it, e.g. a Gazebo sensor’s <code class="docutils literal notranslate"><span class="pre">camera_info</span></code>)
+or <code class="docutils literal notranslate"><span class="pre">mavlink</span></code> (the camera’s MAVLink component or autopilot,
+through SpiriMav).  See <a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.INTRINSICS_ORIGINS" title="SpiriCamera.camera.INTRINSICS_ORIGINS"><code class="xref py py-data docutils literal notranslate"><span class="pre">INTRINSICS_ORIGINS</span></code></a>.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.width">
+<span class="sig-name descname"><span class="pre">width</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.width" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.height">
+<span class="sig-name descname"><span class="pre">height</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.height" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.fx">
+<span class="sig-name descname"><span class="pre">fx</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.fx" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.fy">
+<span class="sig-name descname"><span class="pre">fy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.fy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.cx">
+<span class="sig-name descname"><span class="pre">cx</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.cx" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.cy">
+<span class="sig-name descname"><span class="pre">cy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.cy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.origin">
+<span class="sig-name descname"><span class="pre">origin</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.origin" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.from_fov">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hfov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vfov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#Intrinsics.from_fov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.from_fov" title="Link to this definition">¶</a></dt>
+<dd><p>The model of a centred lens with a given field of view.</p>
+<section id="parameters">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>width, height<span class="classifier">int</span></dt><dd><p>Image size to express the model in.</p>
+</dd>
+<dt>hfov<span class="classifier">float</span></dt><dd><p>Horizontal field of view, in degrees.</p>
+</dd>
+<dt>vfov<span class="classifier">float</span></dt><dd><p>Vertical field of view, in degrees.  <code class="docutils literal notranslate"><span class="pre">0</span></code> assumes square
+pixels, so it follows from <code class="docutils literal notranslate"><span class="pre">hfov</span></code> and the image’s aspect.</p>
+</dd>
+<dt>origin<span class="classifier">str</span></dt><dd><p>See the class attributes.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>hfov</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
+<li><p><strong>vfov</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
+<li><p><strong>origin</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.Intrinsics" title="SpiriCamera.sources.base.Intrinsics"><em>Intrinsics</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.hfov">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">hfov</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.hfov" title="Link to this definition">¶</a></dt>
+<dd><p>Horizontal field of view through the principal point, in degrees.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.vfov">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">vfov</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.vfov" title="Link to this definition">¶</a></dt>
+<dd><p>Vertical field of view through the principal point, in degrees.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.Intrinsics.scaled">
+<span class="sig-name descname"><span class="pre">scaled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#Intrinsics.scaled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.Intrinsics.scaled" title="Link to this definition">¶</a></dt>
+<dd><p>The same lens, for an image resized to <code class="docutils literal notranslate"><span class="pre">width</span></code> x <code class="docutils literal notranslate"><span class="pre">height</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.Intrinsics" title="SpiriCamera.sources.base.Intrinsics"><em>Intrinsics</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>fx</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
+<li><p><strong>fy</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
+<li><p><strong>cx</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
+<li><p><strong>cy</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
+<li><p><strong>origin</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">OpenCVSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.base.SourceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceBase</span></code></a></p>
+<p>Base for sources backed by <code class="docutils literal notranslate"><span class="pre">cv2.VideoCapture</span></code>.</p>
+<p>Subclasses supply the capture target via <a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.capture_target" title="SpiriCamera.sources.OpenCVSource.capture_target"><code class="xref py py-meth docutils literal notranslate"><span class="pre">capture_target()</span></code></a>
+and may extend <a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.device_metadata" title="SpiriCamera.sources.OpenCVSource.device_metadata"><code class="xref py py-meth docutils literal notranslate"><span class="pre">device_metadata()</span></code></a> to report vendor, model,
+and serial number.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.capture_target">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">capture_target</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.capture_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.capture_target" title="Link to this definition">¶</a></dt>
+<dd><p>Return the argument to hand to <code class="docutils literal notranslate"><span class="pre">cv2.VideoCapture</span></code>.</p>
+<section id="returns">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>str | int</dt><dd><p>A device path, stream URL, or numeric camera index.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.device_metadata">
+<span class="sig-name descname"><span class="pre">device_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.device_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.device_metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Look up vendor, model, and serial number for the open device.</p>
+<p>The default implementation reports nothing.  Subclasses override
+when their transport exposes device identity.</p>
+<section id="id2">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>dict[str, str]</dt><dd><p>Any of <code class="docutils literal notranslate"><span class="pre">vendor</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, and <code class="docutils literal notranslate"><span class="pre">serial_number</span></code>.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)">dict</a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.capture_params">
+<span class="sig-name descname"><span class="pre">capture_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.capture_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.capture_params" title="Link to this definition">¶</a></dt>
+<dd><p>Return extra <code class="docutils literal notranslate"><span class="pre">cv2.VideoCapture</span></code> open parameters.</p>
+<p>The default implementation passes none.  Subclasses override to
+set properties that only take effect when given at open time,
+such as FFmpeg’s open and read timeouts.</p>
+<section id="id3">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>list[int]</dt><dd><p>Alternating <code class="docutils literal notranslate"><span class="pre">cv2.CAP_PROP_*</span></code> ids and values.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.is_open">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_open</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.is_open" title="Link to this definition">¶</a></dt>
+<dd><p>Whether the capture object is open.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.open">
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.open" title="Link to this definition">¶</a></dt>
+<dd><p>Open the capture device and negotiate settings.</p>
+<section id="id4">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>Requested resolution and framerate.</p>
+</dd>
+</dl>
+</section>
+<section id="id5">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>SourceCapabilities</dt><dd><p>What the device actually negotiated.</p>
+</dd>
+</dl>
+</section>
+<section id="raises">
+<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the device cannot be opened.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<a class="reference internal" href="#SpiriCamera.sources.CaptureSettings" title="SpiriCamera.sources.base.CaptureSettings"><em>CaptureSettings</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities" title="SpiriCamera.sources.base.SourceCapabilities"><em>SourceCapabilities</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.close" title="Link to this definition">¶</a></dt>
+<dd><p>Release the capture device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.OpenCVSource.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/capture.html#OpenCVSource.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.OpenCVSource.read" title="Link to this definition">¶</a></dt>
+<dd><p>Grab a single BGR frame from the device.</p>
+<p>Re-applies <code class="docutils literal notranslate"><span class="pre">settings</span></code> first if they differ from what is
+currently on the device, so a live change to <code class="docutils literal notranslate"><span class="pre">max_width</span></code> and
+friends takes effect on the next frame rather than only at the
+next <code class="docutils literal notranslate"><span class="pre">open()</span></code>.  Most devices accept a resolution change
+mid-stream; one that does not simply keeps delivering its
+current size, which <code class="xref py py-attr docutils literal notranslate"><span class="pre">CameraBase.received_width</span></code> and
+friends will still report correctly.</p>
+<section id="id6">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>Requested capture settings.</p>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>np.ndarray | None</dt><dd><p>The frame, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the device produced nothing.</p>
+</dd>
+</dl>
+</section>
+<section id="id8">
+<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the source was never opened.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<a class="reference internal" href="#SpiriCamera.sources.CaptureSettings" title="SpiriCamera.sources.base.CaptureSettings"><em>CaptureSettings</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ndarray</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">SourceBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract base for camera source handlers.</p>
+<p>A handler is responsible for its own protocol end to end: deciding
+whether it recognises a source string, parsing it, opening the
+underlying device, and producing raw BGR frames.  Registration is
+implicit — <a class="reference internal" href="#module-SpiriCamera.sources" title="SpiriCamera.sources"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.sources</span></code></a> discovers every concrete
+subclass that has been imported.</p>
+<p>Subclasses declare the schemes they own via <a class="reference internal" href="#SpiriCamera.sources.SourceBase.schemes" title="SpiriCamera.sources.SourceBase.schemes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schemes</span></code></a> and
+implement <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a>, <a class="reference internal" href="#SpiriCamera.sources.SourceBase.close" title="SpiriCamera.sources.SourceBase.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a>, <a class="reference internal" href="#SpiriCamera.sources.SourceBase.read" title="SpiriCamera.sources.SourceBase.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, and
+<a class="reference internal" href="#SpiriCamera.sources.SourceBase.is_open" title="SpiriCamera.sources.SourceBase.is_open"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_open</span></code></a>.  A handler that accepts schemeless strings (such
+as a V4L2 device path) also overrides <a class="reference internal" href="#SpiriCamera.sources.SourceBase.handles" title="SpiriCamera.sources.SourceBase.handles"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handles()</span></code></a>.</p>
+<section id="id9">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>schemes<span class="classifier">ClassVar[tuple[str, …]]</span></dt><dd><p>URL schemes this handler claims, without the <code class="docutils literal notranslate"><span class="pre">://</span></code> separator.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.schemes">
+<span class="sig-name descname"><span class="pre">schemes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.15)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceBase.schemes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.handles">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.handles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.handles" title="Link to this definition">¶</a></dt>
+<dd><p>Report whether this handler recognises a source URL.</p>
+<p>The default implementation matches <a class="reference internal" href="#SpiriCamera.sources.SourceBase.schemes" title="SpiriCamera.sources.SourceBase.schemes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">schemes</span></code></a>.  Override
+to accept schemeless forms.</p>
+<section id="id10">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>url<span class="classifier">SourceURL</span></dt><dd><p>The parsed source string.</p>
+</dd>
+</dl>
+</section>
+<section id="id11">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>bool</dt><dd><p>True if this handler can serve the URL.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> (<a class="reference internal" href="#SpiriCamera.sources.SourceURL" title="SpiriCamera.sources.base.SourceURL"><em>SourceURL</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.from_url">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.from_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.from_url" title="Link to this definition">¶</a></dt>
+<dd><p>Instantiate this handler for a source URL it has claimed.</p>
+<p>Override when a handler needs to validate or normalise the
+target before construction.</p>
+<section id="id12">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>url<span class="classifier">SourceURL</span></dt><dd><p>The parsed source string.</p>
+</dd>
+</dl>
+</section>
+<section id="id13">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>Self</dt><dd><p>A handler instance, not yet opened.</p>
+</dd>
+</dl>
+</section>
+<section id="id14">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the target is malformed for this scheme.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> (<a class="reference internal" href="#SpiriCamera.sources.SourceURL" title="SpiriCamera.sources.base.SourceURL"><em>SourceURL</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.15)"><em>Self</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.scheme">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scheme</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#SpiriCamera.sources.SourceBase.scheme" title="Link to this definition">¶</a></dt>
+<dd><p>Normalised scheme name, filled in for schemeless sources.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.target">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">target</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#SpiriCamera.sources.SourceBase.target" title="Link to this definition">¶</a></dt>
+<dd><p>device path, stream URL, or image name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Scheme-specific target</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.describe">
+<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.describe" title="Link to this definition">¶</a></dt>
+<dd><p>Summarise this source for the camera’s synced state.</p>
+<section id="id15">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceInfo</dt><dd><p>A network-transparent description of this handler.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#SpiriCamera.sources.SourceInfo" title="SpiriCamera.sources.base.SourceInfo"><em>SourceInfo</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.is_open">
+<span class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_open</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#SpiriCamera.sources.SourceBase.is_open" title="Link to this definition">¶</a></dt>
+<dd><p>Whether the underlying device is currently open.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.open">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.open" title="Link to this definition">¶</a></dt>
+<dd><p>Open the underlying device and negotiate capture settings.</p>
+<p>Calling <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> on an already-open source is a no-op that
+re-reports the current capabilities.</p>
+<section id="id16">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>The resolution and framerate the camera is asking for.</p>
+</dd>
+</dl>
+</section>
+<section id="id17">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceCapabilities</dt><dd><p>What the source will actually deliver.</p>
+</dd>
+</dl>
+</section>
+<section id="id18">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the device cannot be opened.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<a class="reference internal" href="#SpiriCamera.sources.CaptureSettings" title="SpiriCamera.sources.base.CaptureSettings"><em>CaptureSettings</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities" title="SpiriCamera.sources.base.SourceCapabilities"><em>SourceCapabilities</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.close">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.close" title="Link to this definition">¶</a></dt>
+<dd><p>Release the underlying device.</p>
+<p>Closing an already-closed source is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.read">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.read" title="Link to this definition">¶</a></dt>
+<dd><p>Produce a single frame.</p>
+<p>Handlers return raw pixels; JPEG encoding and publication belong
+to the camera layer.</p>
+<section id="id19">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>The resolution and framerate currently requested.  Sources
+that render on demand should honour this on every call so
+that live resolution changes take effect.</p>
+</dd>
+</dl>
+</section>
+<section id="id20">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>np.ndarray | None</dt><dd><p>A BGR frame, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when no new frame is available.
+Returning the <em>same</em> array object on consecutive calls tells
+the camera the frame is unchanged and lets it reuse its
+previous encode.</p>
+</dd>
+</dl>
+</section>
+<section id="id21">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the source has failed in a way a retry will not fix.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<a class="reference internal" href="#SpiriCamera.sources.CaptureSettings" title="SpiriCamera.sources.base.CaptureSettings"><em>CaptureSettings</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ndarray</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.frame_tags">
+<span class="sig-name descname"><span class="pre">frame_tags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.frame_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.frame_tags" title="Link to this definition">¶</a></dt>
+<dd><p>Tags that arrived with the frame <a class="reference internal" href="#SpiriCamera.sources.SourceBase.read" title="SpiriCamera.sources.SourceBase.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a> last returned.</p>
+<p>For sources whose frames were already tagged before they got
+here – another camera’s output, say – so the metadata survives
+being decoded and re-encoded.  The camera merges these under its
+own tags; see
+<a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.Camera.exif_tags_for_frame" title="SpiriCamera.camera.Camera.exif_tags_for_frame"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exif_tags_for_frame()</span></code></a>.</p>
+<section id="id22">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>dict[str, str]</dt><dd><p>The inherited tags.  The default reports none.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)">dict</a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceBase.frame_intrinsics">
+<span class="sig-name descname"><span class="pre">frame_intrinsics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.frame_intrinsics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceBase.frame_intrinsics" title="Link to this definition">¶</a></dt>
+<dd><p>The lens of the frame <a class="reference internal" href="#SpiriCamera.sources.SourceBase.read" title="SpiriCamera.sources.SourceBase.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a> last returned, if it changes.</p>
+<p>For sources whose lens can change while open – another camera’s
+output, whose lens zooms – so the camera follows it rather than
+keeping the one <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> reported.</p>
+<section id="id23">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>Intrinsics | None</dt><dd><p>The lens now, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to keep the last one reported.  The
+default keeps what <a class="reference internal" href="#SpiriCamera.sources.SourceBase.open" title="SpiriCamera.sources.SourceBase.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> said.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#SpiriCamera.sources.Intrinsics" title="SpiriCamera.sources.base.Intrinsics"><em>Intrinsics</em></a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> (<a class="reference internal" href="#SpiriCamera.sources.SourceURL" title="SpiriCamera.sources.SourceURL"><em>SourceURL</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">SourceCapabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_supported_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vendor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serial_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrinsics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceCapabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>What a source reports it can provide, once opened.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These keep the <code class="docutils literal notranslate"><span class="pre">max_supported_</span></code> prefix for the same reason
+<a class="reference internal" href="#SpiriCamera.sources.CaptureSettings" title="SpiriCamera.sources.CaptureSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">CaptureSettings</span></code></a> keeps <code class="docutils literal notranslate"><span class="pre">max_</span></code>: they are ceilings the
+device advertises, not a guarantee about any particular frame,
+and they are copied verbatim onto the matching
+<a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.CameraBase" title="SpiriCamera.camera.CameraBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CameraBase</span></code></a> fields.</p>
+</div>
+<section id="id24">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>max_supported_width<span class="classifier">int | None</span></dt><dd><p>Largest width the source can deliver, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it renders
+at whatever size it is asked for.</p>
+</dd>
+<dt>max_supported_height<span class="classifier">int | None</span></dt><dd><p>Largest height the source can deliver, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it is
+resolution independent.</p>
+</dd>
+<dt>max_supported_framerate<span class="classifier">int | None</span></dt><dd><p>Highest framerate the source can deliver, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+unconstrained.</p>
+</dd>
+<dt>vendor<span class="classifier">str</span></dt><dd><p>Device vendor, when the source can determine one.</p>
+</dd>
+<dt>model<span class="classifier">str</span></dt><dd><p>Device model, when the source can determine one.</p>
+</dd>
+<dt>serial_number<span class="classifier">str</span></dt><dd><p>Device serial number, when the source can determine one.</p>
+</dd>
+<dt>intrinsics<span class="classifier">Intrinsics | None</span></dt><dd><p>The lens, when the source knows it – a simulated camera does,
+exactly; most devices don’t say.  Its <code class="docutils literal notranslate"><span class="pre">origin</span></code> is filled in
+by the camera.</p>
+</dd>
+<dt>frame<span class="classifier">str</span></dt><dd><p>The SpiriSynq topic of the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Position</span></code> the frames
+are seen from, when they are some other object’s view: a relayed
+camera’s.  The camera follows its pose unless it has been placed
+itself.  Empty for a source that is the camera.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.max_supported_width">
+<span class="sig-name descname"><span class="pre">max_supported_width</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.max_supported_width" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.max_supported_height">
+<span class="sig-name descname"><span class="pre">max_supported_height</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.max_supported_height" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.max_supported_framerate">
+<span class="sig-name descname"><span class="pre">max_supported_framerate</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.max_supported_framerate" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.vendor">
+<span class="sig-name descname"><span class="pre">vendor</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.vendor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.model">
+<span class="sig-name descname"><span class="pre">model</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.model" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.serial_number">
+<span class="sig-name descname"><span class="pre">serial_number</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.serial_number" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.intrinsics">
+<span class="sig-name descname"><span class="pre">intrinsics</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#SpiriCamera.sources.Intrinsics" title="SpiriCamera.sources.base.Intrinsics"><span class="pre">Intrinsics</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.intrinsics" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceCapabilities.frame">
+<span class="sig-name descname"><span class="pre">frame</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceCapabilities.frame" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_supported_width</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>max_supported_height</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>max_supported_framerate</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>vendor</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>serial_number</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>intrinsics</strong> (<a class="reference internal" href="#SpiriCamera.sources.Intrinsics" title="SpiriCamera.sources.base.Intrinsics"><em>Intrinsics</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>frame</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">SourceError</span></span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Base class for source resolution, open, and read failures.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">SourceInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceInfo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SubSyncableDataclass</span></code></p>
+<p>Network-transparent description of a camera’s resolved source.</p>
+<p>This is the source-shaped half of the camera’s synced state: it
+travels over SpiriSynq so a remote peer can see what a camera is
+pointed at without having to parse the source string itself.</p>
+<section id="id25">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>url<span class="classifier">str</span></dt><dd><p>The source string this description was resolved from.</p>
+</dd>
+<dt>scheme<span class="classifier">str</span></dt><dd><p>Normalised scheme (<code class="docutils literal notranslate"><span class="pre">v4l</span></code>, <code class="docutils literal notranslate"><span class="pre">rtsp</span></code>, <code class="docutils literal notranslate"><span class="pre">testimage</span></code>, …).</p>
+</dd>
+<dt>target<span class="classifier">str</span></dt><dd><p>Scheme-specific target: device path, stream URL, or image name.</p>
+</dd>
+<dt>handler<span class="classifier">str</span></dt><dd><p>Name of the handler class that claimed the source.</p>
+</dd>
+<dt>error<span class="classifier">str</span></dt><dd><p>Empty when the source resolved cleanly, otherwise the reason it
+could not be resolved.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.url">
+<span class="sig-name descname"><span class="pre">url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.scheme">
+<span class="sig-name descname"><span class="pre">scheme</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.scheme" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.target">
+<span class="sig-name descname"><span class="pre">target</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.target" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.handler">
+<span class="sig-name descname"><span class="pre">handler</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.handler" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.unresolved">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unresolved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceInfo.unresolved"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.unresolved" title="Link to this definition">¶</a></dt>
+<dd><p>Build a description for a source string that could not be resolved.</p>
+<section id="id26">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>url<span class="classifier">str</span></dt><dd><p>The offending source string.</p>
+</dd>
+<dt>error<span class="classifier">str</span></dt><dd><p>Human-readable reason the source was rejected.</p>
+</dd>
+</dl>
+</section>
+<section id="id27">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceInfo</dt><dd><p>A description carrying only <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code>.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>error</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.SourceInfo" title="SpiriCamera.sources.base.SourceInfo"><em>SourceInfo</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceInfo.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceInfo.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceInfo.update" title="Link to this definition">¶</a></dt>
+<dd><p>Copy another description’s fields into this one, field by field.</p>
+<p>Updating in place keeps the object identity stable, so UI
+bindings and sync subscriptions attached to this instance
+survive a source change, and only the fields that actually
+changed are published.</p>
+<section id="id28">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>other<span class="classifier">SourceInfo</span></dt><dd><p>The description to copy from.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#SpiriCamera.sources.SourceInfo" title="SpiriCamera.sources.base.SourceInfo"><em>SourceInfo</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>scheme</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>handler</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>error</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceURL">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">SourceURL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceURL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceURL" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A source string split into its scheme and target.</p>
+<section id="id29">
+<h2><span class="section-number">6.2.5. </span>Attributes<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>raw<span class="classifier">str</span></dt><dd><p>The original (stripped) source string.</p>
+</dd>
+<dt>scheme<span class="classifier">str</span></dt><dd><p>Lowercased scheme, or <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> for schemeless strings such as
+<code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code> or a bare camera index.</p>
+</dd>
+<dt>target<span class="classifier">str</span></dt><dd><p>Everything after <code class="docutils literal notranslate"><span class="pre">://</span></code>, or the whole string when schemeless.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceURL.raw">
+<span class="sig-name descname"><span class="pre">raw</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#SpiriCamera.sources.SourceURL.raw" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceURL.scheme">
+<span class="sig-name descname"><span class="pre">scheme</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#SpiriCamera.sources.SourceURL.scheme" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceURL.target">
+<span class="sig-name descname"><span class="pre">target</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#SpiriCamera.sources.SourceURL.target" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.sources.SourceURL.parse">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceURL.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.SourceURL.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Split a source string into scheme and target.</p>
+<section id="id30">
+<h3><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>source_str<span class="classifier">str</span></dt><dd><p>The source string to parse.</p>
+</dd>
+</dl>
+</section>
+<section id="id31">
+<h3><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceURL</dt><dd><p>The split representation.</p>
+</dd>
+</dl>
+</section>
+<section id="id32">
+<h3><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the source string is empty or whitespace only.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source_str</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.SourceURL" title="SpiriCamera.sources.base.SourceURL"><em>SourceURL</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>scheme</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="SpiriCamera.sources.UnknownSourceError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">UnknownSourceError</span></span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#UnknownSourceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.UnknownSourceError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#SpiriCamera.sources.SourceError" title="SpiriCamera.sources.base.SourceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceError</span></code></a></p>
+<p>Raised when no registered handler recognises a source string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SpiriCamera.sources.describe_source">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">describe_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#describe_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.describe_source" title="Link to this definition">¶</a></dt>
+<dd><p>Resolve a source string and describe it without opening anything.</p>
+<section id="id33">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>source_str<span class="classifier">str</span></dt><dd><p>The source string to inspect.</p>
+</dd>
+</dl>
+</section>
+<section id="id34">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>SourceInfo</dt><dd><p>A network-transparent description of the resolved source.</p>
+</dd>
+</dl>
+</section>
+<section id="id35">
+<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the source string cannot be resolved.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source_str</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.SourceInfo" title="SpiriCamera.sources.base.SourceInfo"><em>SourceInfo</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SpiriCamera.sources.known_schemes">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">known_schemes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#known_schemes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.known_schemes" title="Link to this definition">¶</a></dt>
+<dd><p>List the URL schemes the registered handlers claim.</p>
+<section id="id36">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>list[str]</dt><dd><p>Sorted scheme names, formatted as <code class="docutils literal notranslate"><span class="pre">scheme://</span></code>.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SpiriCamera.sources.registered_sources">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">registered_sources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#registered_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.registered_sources" title="Link to this definition">¶</a></dt>
+<dd><p>List every concrete source handler currently importable.</p>
+<section id="id37">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>list[type[SourceBase]]</dt><dd><p>Concrete <a class="reference internal" href="#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.SourceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceBase</span></code></a> subclasses, depth-first.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)">type</a>[<a class="reference internal" href="#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.base.SourceBase"><em>SourceBase</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SpiriCamera.sources.resolve_source">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.sources.</span></span><span class="sig-name descname"><span class="pre">resolve_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#resolve_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.sources.resolve_source" title="Link to this definition">¶</a></dt>
+<dd><p>Find and instantiate the handler for a source string.</p>
+<p>Handlers that claim the URL’s explicit scheme win over handlers that
+match schemeless strings, so <code class="docutils literal notranslate"><span class="pre">v4l://0</span></code> and <code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code> both
+land on the V4L2 handler without either rule shadowing the other.</p>
+<section id="id38">
+<h2><span class="section-number">6.2.5. </span>Parameters<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>source_str<span class="classifier">str</span></dt><dd><p>Source string such as <code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code>, <code class="docutils literal notranslate"><span class="pre">rtsp://host/stream</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">testimage://pm5544</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="id39">
+<h2><span class="section-number">6.2.5. </span>Returns<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>SourceBase</dt><dd><p>A handler instance, not yet opened.</p>
+</dd>
+</dl>
+</section>
+<section id="id40">
+<h2><span class="section-number">6.2.5. </span>Raises<a class="headerlink" href="#id40" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>SourceError</dt><dd><p>If the source string is empty or malformed for its scheme.</p>
+</dd>
+<dt>UnknownSourceError</dt><dd><p>If no registered handler recognises the source string.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source_str</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.base.SourceBase"><em>SourceBase</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="SpiriCamera.webrtc.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">6.2.6. </span>SpiriCamera.webrtc</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="SpiriCamera.projection.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">6.2.4. </span>SpiriCamera.projection</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">6.2.5. SpiriCamera.sources</a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.CaptureSettings"><code class="docutils literal notranslate"><span class="pre">CaptureSettings</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.CaptureSettings.max_width"><code class="docutils literal notranslate"><span class="pre">CaptureSettings.max_width</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.CaptureSettings.max_height"><code class="docutils literal notranslate"><span class="pre">CaptureSettings.max_height</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.CaptureSettings.max_framerate"><code class="docutils literal notranslate"><span class="pre">CaptureSettings.max_framerate</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics"><code class="docutils literal notranslate"><span class="pre">Intrinsics</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.width"><code class="docutils literal notranslate"><span class="pre">Intrinsics.width</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.height"><code class="docutils literal notranslate"><span class="pre">Intrinsics.height</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.fx"><code class="docutils literal notranslate"><span class="pre">Intrinsics.fx</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.fy"><code class="docutils literal notranslate"><span class="pre">Intrinsics.fy</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.cx"><code class="docutils literal notranslate"><span class="pre">Intrinsics.cx</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.cy"><code class="docutils literal notranslate"><span class="pre">Intrinsics.cy</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.origin"><code class="docutils literal notranslate"><span class="pre">Intrinsics.origin</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.from_fov"><code class="docutils literal notranslate"><span class="pre">Intrinsics.from_fov()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.hfov"><code class="docutils literal notranslate"><span class="pre">Intrinsics.hfov</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.vfov"><code class="docutils literal notranslate"><span class="pre">Intrinsics.vfov</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.Intrinsics.scaled"><code class="docutils literal notranslate"><span class="pre">Intrinsics.scaled()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource"><code class="docutils literal notranslate"><span class="pre">OpenCVSource</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.capture_target"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.capture_target()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.device_metadata"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.device_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.capture_params"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.capture_params()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.is_open"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.is_open</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.open"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.open()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.close"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.close()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.OpenCVSource.read"><code class="docutils literal notranslate"><span class="pre">OpenCVSource.read()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase"><code class="docutils literal notranslate"><span class="pre">SourceBase</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.schemes"><code class="docutils literal notranslate"><span class="pre">SourceBase.schemes</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.handles"><code class="docutils literal notranslate"><span class="pre">SourceBase.handles()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.from_url"><code class="docutils literal notranslate"><span class="pre">SourceBase.from_url()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.scheme"><code class="docutils literal notranslate"><span class="pre">SourceBase.scheme</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.target"><code class="docutils literal notranslate"><span class="pre">SourceBase.target</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.describe"><code class="docutils literal notranslate"><span class="pre">SourceBase.describe()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.is_open"><code class="docutils literal notranslate"><span class="pre">SourceBase.is_open</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.open"><code class="docutils literal notranslate"><span class="pre">SourceBase.open()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.close"><code class="docutils literal notranslate"><span class="pre">SourceBase.close()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.read"><code class="docutils literal notranslate"><span class="pre">SourceBase.read()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.frame_tags"><code class="docutils literal notranslate"><span class="pre">SourceBase.frame_tags()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceBase.frame_intrinsics"><code class="docutils literal notranslate"><span class="pre">SourceBase.frame_intrinsics()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.max_supported_width"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.max_supported_width</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.max_supported_height"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.max_supported_height</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.max_supported_framerate"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.max_supported_framerate</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.vendor"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.vendor</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.model"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.model</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.serial_number"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.serial_number</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.intrinsics"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.intrinsics</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceCapabilities.frame"><code class="docutils literal notranslate"><span class="pre">SourceCapabilities.frame</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceError"><code class="docutils literal notranslate"><span class="pre">SourceError</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo"><code class="docutils literal notranslate"><span class="pre">SourceInfo</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo.url"><code class="docutils literal notranslate"><span class="pre">SourceInfo.url</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo.scheme"><code class="docutils literal notranslate"><span class="pre">SourceInfo.scheme</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo.target"><code class="docutils literal notranslate"><span class="pre">SourceInfo.target</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo.handler"><code class="docutils literal notranslate"><span class="pre">SourceInfo.handler</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo.error"><code class="docutils literal notranslate"><span class="pre">SourceInfo.error</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo.unresolved"><code class="docutils literal notranslate"><span class="pre">SourceInfo.unresolved()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceInfo.update"><code class="docutils literal notranslate"><span class="pre">SourceInfo.update()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceURL"><code class="docutils literal notranslate"><span class="pre">SourceURL</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceURL.raw"><code class="docutils literal notranslate"><span class="pre">SourceURL.raw</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceURL.scheme"><code class="docutils literal notranslate"><span class="pre">SourceURL.scheme</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceURL.target"><code class="docutils literal notranslate"><span class="pre">SourceURL.target</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.SourceURL.parse"><code class="docutils literal notranslate"><span class="pre">SourceURL.parse()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.sources.UnknownSourceError"><code class="docutils literal notranslate"><span class="pre">UnknownSourceError</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.describe_source"><code class="docutils literal notranslate"><span class="pre">describe_source()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.known_schemes"><code class="docutils literal notranslate"><span class="pre">known_schemes()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.registered_sources"><code class="docutils literal notranslate"><span class="pre">registered_sources()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.sources.resolve_source"><code class="docutils literal notranslate"><span class="pre">resolve_source()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

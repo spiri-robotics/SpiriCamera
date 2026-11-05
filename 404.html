@@ -3,7 +3,7 @@
 <title>Page not found</title>
 <script>
   const [, project, first, ...rest] = location.pathname.split("/");
-  if (!["latest", "v0.2.1", "dev"].includes(first)) {
+  if (!["latest", "v0.2.2", "v0.2.1", "dev"].includes(first)) {
     location.replace(`/${project}/latest/${[first, ...rest].join("/")}${location.hash}`);
   }
 </script>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill-rule="evenodd">
+  <!-- The ANSI Z535 safety alert symbol: an equilateral triangle with an
+       exclamation mark knocked out of it.
+
+       Used as a CSS mask, so the triangle takes the panel's type colour and the
+       knocked-out exclamation lets the panel show through: a white triangle
+       with a red exclamation on DANGER, a black triangle with an orange one on
+       WARNING. That is the presentation the standard's own figures show.
+
+       Geometry: base 23.1 by height 20.0, equilateral to within a twentieth of
+       a unit. Corners are left sharp.
+
+       Note for editors: no double hyphen anywhere in this comment. XML forbids
+       it, and a malformed SVG fails silently as a mask, leaving a panel with
+       space reserved for a symbol that never appears.
+
+       This is a faithful rendition, not the standard's artwork. If Spiri
+       licenses the official symbol, replace this file and nothing else changes;
+       the CSS refers to it by name. -->
+  <path d="M12 1.8 L23.55 21.8 L0.45 21.8 Z
+           M10.7 8.0 h2.6 v7.6 h-2.6 Z
+           M12 17.15 a1.45 1.45 0 1 1 0 2.9 a1.45 1.45 0 1 1 0 -2.9 Z"/>
+</svg>
