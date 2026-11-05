@@ -35,6 +35,7 @@ from SpiriCamera.sources import (
     SourceInfo,
     resolve_source,
 )
+from SpiriCamera.sources.base import fit_within, shrink
 
 #: Mimetypes the camera can encode to, mapped to an OpenCV extension.
 #:
@@ -354,9 +355,11 @@ class Camera(CameraBase):
         quality : int
             Encode quality for JPEG frames, 1-100.
         max_width : int
-            Requested capture width.
+            The most pixels wide a published frame is.  The source is
+            asked for no more; whatever it delivers, a bigger frame is
+            shrunk to fit, keeping its aspect ratio, never enlarged.
         max_height : int
-            Requested capture height.
+            The most pixels high a published frame is, likewise.
         max_framerate : int
             Requested capture framerate, and the rate of the capture
             thread.
@@ -452,6 +455,8 @@ class Camera(CameraBase):
         self._cached_image: bytes = b""
         # See latest_frame.
         self._latest_frame: tuple[bytes, np.ndarray] | None = None
+        # The last frame _fit shrank, its size, and the result.
+        self._shrunk: tuple[np.ndarray, tuple[int, int], np.ndarray] | None = None
         # Last EXIF failure reported, so a source that cannot be tagged
         # says so once rather than at the full framerate.
         self._exif_complaint: str = ""
@@ -738,6 +743,7 @@ class Camera(CameraBase):
             self._cached_encoding = None
             self._cached_image = b""
             self._latest_frame = None
+            self._shrunk = None
 
         logger.debug(f"{self.synq_topic} stopped")
 
@@ -1002,6 +1008,9 @@ class Camera(CameraBase):
                 raise FrameUnavailableError(f"{self.synq_topic}: source produced no frame")
             return self.image
 
+        # Asking the source for the size is only a request (FFmpeg ignores it
+        # for a network stream); the published frame is held to it here.
+        frame = self._fit(frame)
         if not self.overlay_client_render:
             frame = self._render_overlays(frame)
         encoded = self._tag(self._encode(frame), frame)
@@ -1021,6 +1030,24 @@ class Camera(CameraBase):
         camera has published a frame.
         """
         return self._latest_frame
+
+    def _fit(self, frame: np.ndarray) -> np.ndarray:
+        """Shrink ``frame`` to fit ``max_width`` x ``max_height``, if it doesn't.
+
+        The same array in gives the same array out, as long as the bounds
+        hold, so a static source's frame is shrunk (and encoded) once.
+        """
+        settings = self.capture_settings()
+        height, width = frame.shape[:2]
+        size = fit_within(width, height, settings.max_width, settings.max_height)
+        if size == (width, height):
+            return frame
+        cached = self._shrunk
+        if cached is not None and cached[0] is frame and cached[1] == size:
+            return cached[2]
+        shrunk = shrink(frame, size)
+        self._shrunk = (frame, size, shrunk)
+        return shrunk
 
     def _capture_loop(self) -> None:
         """Capture at ``max_framerate`` until stopped.

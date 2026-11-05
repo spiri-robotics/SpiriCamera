@@ -85,7 +85,7 @@ from av.video.frame import PictureType
 from loguru import logger
 
 from SpiriCamera import exif
-from SpiriCamera.sources.spirisynq import shrink
+from SpiriCamera.sources.base import shrink
 
 #: Label a viewer's offer must use for its data channel to receive tags.
 TAGS_CHANNEL_LABEL = "spiricamera-tags"

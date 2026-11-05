@@ -29,6 +29,13 @@
   bilinearly down to half size, area-averaging only below that: 2.3 ms a 720p frame on a
   Raspberry Pi 4 where area-averaging took 12.3.
 
+### Fixes
+
+- A camera's frames are held to `max_width` x `max_height` (`SPIRICAMERA_FRAME_WIDTH`/
+  `_HEIGHT`) whatever its source sends: a bigger frame is shrunk, keeping its aspect ratio,
+  before it is drawn on and encoded. The size was only ever asked of the source, which
+  FFmpeg ignores for a network stream, so an RTSP camera published its stream's own size.
+
 ## 0.2.2 (2026-11-05)
 
 ### Fixes
