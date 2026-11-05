@@ -279,7 +279,8 @@ export SPIRICAMERA_QUALITY=90      # JPEG quality [1-100]
 export SPIRICAMERA_FRAME_WIDTH=1280 # Capture width
 export SPIRICAMERA_FRAME_HEIGHT=720 # Capture height
 export SPIRICAMERA_FRAMERATE=30     # Capture framerate
-export SPIRICAMERA_WHEP_PORT=8889   # `run` also serves WHEP at :8889/whep (0: off)
+export SPIRICAMERA_WHEP_PORT=8889   # `run` also serves WHEP on this port (0: off)
+export SPIRICAMERA_WHEP_PATH=/whep  # ...at this path
 export SPIRICAMERA_H264_PRESET=veryfast # x264 preset of the one WebRTC/WHEP encode
 ```
 

@@ -177,14 +177,16 @@ def run(source: SourceArgument = "") -> None:
         # In this process, so a WHEP viewer shares the camera's one encode.
         whep = uvicorn.Server(
             uvicorn.Config(
-                create_whep_app(lambda: cam),
+                create_whep_app(lambda: cam, settings.whep_path),
                 host="0.0.0.0",
                 port=settings.whep_port,
                 log_level="warning",
             )
         )
         threading.Thread(target=whep.run, name="whep", daemon=True).start()
-        logger.info(f"Serving {cam.synq_topic} for WHEP on :{settings.whep_port}/whep")
+        logger.info(
+            f"Serving {cam.synq_topic} for WHEP on :{settings.whep_port}{settings.whep_path}"
+        )
 
     logger.info(f"Publishing on {cam.synq_topic}, press Ctrl-C to stop")
     try:

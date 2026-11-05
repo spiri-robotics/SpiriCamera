@@ -144,3 +144,12 @@ def test_whep_answers_options() -> None:
     response = client.options("/whep")
     assert response.status_code == 204
     assert "POST" in response.headers["Allow"]
+
+
+def test_whep_serves_at_its_path() -> None:
+    """Spiri Cloud's Frigate pulls /camera/whep, not /whep."""
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_whep_app(lambda: None, "camera/whep/"))
+    assert client.options("/camera/whep").status_code == 204
+    assert client.options("/whep").status_code == 404

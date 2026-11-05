@@ -4,9 +4,9 @@
 
 ### Features
 
-- `SpiriCamera run` serves the camera for WHEP playback too, at `/whep` on
-  `SPIRICAMERA_WHEP_PORT`, so MediaMTX or a cloud can pull it with no separate `whep-serve`
-  or mirror process.
+- `SpiriCamera run` serves the camera for WHEP playback too, on `SPIRICAMERA_WHEP_PORT` at
+  `SPIRICAMERA_WHEP_PATH` (`/whep` by default; Spiri Cloud's Frigate pulls `/camera/whep`),
+  so MediaMTX or a cloud can pull it with no separate `whep-serve` or mirror process.
 - `SPIRICAMERA_H264_PRESET` picks x264's speed preset for WebRTC/WHEP, `veryfast` by
   default. aiortc left it at x264's `medium`, over two cores of a Raspberry Pi 4 at 720p30;
   `veryfast` takes about one, `ultrafast` half.

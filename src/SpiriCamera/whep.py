@@ -36,7 +36,7 @@ SDP_MEDIA_TYPE = "application/sdp"
 _NEGOTIATE_TIMEOUT = 15.0
 
 
-def create_whep_app(get_camera: Callable[[], Camera]) -> FastAPI:
+def create_whep_app(get_camera: Callable[[], Camera], path: str = "/whep") -> FastAPI:
     """Build a WHEP app publishing whatever ``get_camera()`` returns.
 
     Parameters
@@ -44,21 +44,25 @@ def create_whep_app(get_camera: Callable[[], Camera]) -> FastAPI:
     get_camera : Callable[[], Camera]
         Called on every request, so the camera it returns can be
         swapped or reconfigured out from under a long-lived app.
+    path : str
+        Where the endpoint is, ``/whep`` unless a client expects another
+        (Spiri Cloud's Frigate pulls ``/camera/whep``).
 
     Returns
     -------
     FastAPI
-        An app with ``POST /whep`` and ``DELETE /whep/{session_id}``.
+        An app with ``POST <path>`` and ``DELETE <path>/{session_id}``.
     """
+    path = "/" + path.strip("/")
     app = FastAPI(title="SpiriCamera WHEP")
 
     # WHEP clients may ask first, for CORS or the server's ICE servers (we
     # have none to offer). Some, like MediaMTX's, give up if this fails.
-    @app.options("/whep", status_code=204)
+    @app.options(path, status_code=204)
     async def whep_options() -> Response:
         return Response(status_code=204, headers={"Allow": "OPTIONS, POST"})
 
-    @app.post("/whep", status_code=201)
+    @app.post(path, status_code=201)
     async def whep_offer(request: Request) -> Response:
         offer_sdp = (await request.body()).decode("utf-8")
         if not offer_sdp:
@@ -73,10 +77,10 @@ def create_whep_app(get_camera: Callable[[], Camera]) -> FastAPI:
             content=answer["sdp"],
             media_type=SDP_MEDIA_TYPE,
             status_code=201,
-            headers={"Location": f"/whep/{answer['session_id']}"},
+            headers={"Location": f"{path}/{answer['session_id']}"},
         )
 
-    @app.delete("/whep/{session_id}", status_code=204)
+    @app.delete(path + "/{session_id}", status_code=204)
     async def whep_terminate(session_id: str) -> Response:
         closed = await get_camera().webrtc_close.as_async(session_id)
         if not closed:

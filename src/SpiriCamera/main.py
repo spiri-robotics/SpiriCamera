@@ -82,8 +82,9 @@ class Settings(BaseSettings):
         ``medium`` over 200%.
     whep_port : int
         ``SpiriCamera run`` also serves the camera for WHEP playback on
-        this port, at ``/whep``, as ``whep-serve`` does; ``0`` (the
-        default) serves none.
+        this port, as ``whep-serve`` does; ``0`` (the default) serves none.
+    whep_path : str
+        Where on ``whep_port`` the endpoint is (default ``/whep``).
     """
 
     model_config = SettingsConfigDict(
@@ -122,6 +123,7 @@ class Settings(BaseSettings):
     # The WebRTC encode; see SpiriCamera.webrtc._SharedEncoder.
     h264_preset: H264Preset = "veryfast"
     whep_port: int = 0
+    whep_path: str = "/whep"
 
     def intrinsics(self) -> dict[str, float] | None:
         """The configured lens as ``Camera.set_intrinsics`` arguments, if any."""
