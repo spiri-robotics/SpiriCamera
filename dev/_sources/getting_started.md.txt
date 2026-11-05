@@ -82,7 +82,7 @@ small = Camera(
 small.start()
 ```
 
-`spirisynq://` takes the same topic `Camera.from_topic` does. Each upstream frame is decoded and scaled down to fit inside `max_width` x `max_height` (keeping its aspect ratio; it never scales up), then goes through this camera like any source's frame: its own `overlay_widgets` are baked in, it is re-encoded at its own `quality`, and it is published on its own topic. The upstream is untouched, so any number of these can hang off one device. Frame tags carry over too — see {doc}`exif`.
+`spirisynq://` takes the same topic `Camera.from_topic` does, absolute or relative to this host's base topic: `spirisynq://./camera1` is this host's `camera1`. Each upstream frame is decoded and scaled down to fit inside `max_width` x `max_height` (keeping its aspect ratio; it never scales up), then goes through this camera like any source's frame: its own `overlay_widgets` are baked in, it is re-encoded at its own `quality`, and it is published on its own topic. The upstream is untouched, so any number of these can hang off one device. Frame tags carry over too — see {doc}`exif`.
 
 The upstream does not have to exist yet, and may come and go: the camera waits for the topic, and reconnects when an upstream that shut down, crashed, or restarted is back — see "Waiting for a Source" below. An upstream that is merely stopped is kept; its last frame stays up until it starts again.
 
