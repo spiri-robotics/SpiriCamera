@@ -1,0 +1,814 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="5. Tutorial: YOLO detection boxes as a live overlay" href="tutorials/yolo_overlay.html"><link rel="prev" title="3. Drawing on things in the world" href="world_overlays.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/architecture.html">
+        <link rel="prefetch" href="_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>4. Architecture - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exif.html">2. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">3. Drawing on things in the world</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">4. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/architecture.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="architecture">
+<h1><span class="section-number">4. </span>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h1>
+<p>This page is for anyone changing SpiriCamera itself, rather than just
+using a <code class="docutils literal notranslate"><span class="pre">Camera</span></code>. It covers the things that only live in scattered
+docstrings today: how the package is split into domains, how a
+<code class="docutils literal notranslate"><span class="pre">Camera</span></code> behaves as a SpiriSynq object, how to add a new source
+handler, and what the debug UI’s bandwidth/latency readout actually
+measures.</p>
+<section id="domain-split-camera-vs-sources">
+<h2><span class="section-number">4.1. </span>Domain split: camera vs. sources<a class="headerlink" href="#domain-split-camera-vs-sources" title="Link to this heading">¶</a></h2>
+<p>The package has one dependency direction, enforced by convention, not
+by tooling:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>SpiriCamera.camera  -&gt;  SpiriCamera.sources  -&gt;  SpiriCamera.sources.base
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SpiriCamera.sources</span></code></strong> (and its handler modules — <code class="docutils literal notranslate"><span class="pre">v4l</span></code>, <code class="docutils literal notranslate"><span class="pre">network</span></code>,
+<code class="docutils literal notranslate"><span class="pre">file</span></code>, <code class="docutils literal notranslate"><span class="pre">testimage</span></code>) owns <em>how to reach a device</em>: parsing a source
+string, opening it, and handing back raw BGR <code class="docutils literal notranslate"><span class="pre">numpy</span></code> arrays. A
+handler never imports <a class="reference internal" href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera" title="SpiriCamera.camera.Camera"><code class="xref py py-class docutils literal notranslate"><span class="pre">Camera</span></code></a> and
+knows nothing about JPEG encoding, SpiriSynq, or EXIF.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SpiriCamera.camera</span></code></strong> owns <em>what happens to a frame once you have
+one</em>: the capture thread, encoding to JPEG, tagging, and publishing
+via <code class="docutils literal notranslate"><span class="pre">SyncableObject</span></code>. It talks to a source only through the
+<a class="reference internal" href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.base.SourceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceBase</span></code></a> contract.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SpiriCamera.exif</span></code></strong> is used by <code class="docutils literal notranslate"><span class="pre">camera.py</span></code> to embed/extract tags,
+and by <code class="docutils literal notranslate"><span class="pre">ui.py</span></code> to read a frame’s capture timestamp back out. It does
+not know about <code class="docutils literal notranslate"><span class="pre">Camera</span></code> or sources either.</p></li>
+</ul>
+<p>If you find yourself importing <code class="docutils literal notranslate"><span class="pre">SpiriCamera.camera</span></code> from inside
+<code class="docutils literal notranslate"><span class="pre">SpiriCamera/sources/</span></code>, that’s the layering breaking — a source should
+never need to know it’s being driven by a <code class="docutils literal notranslate"><span class="pre">Camera</span></code>.</p>
+</section>
+<section id="camera-as-a-spirisynq-object">
+<h2><span class="section-number">4.2. </span>Camera as a SpiriSynq object<a class="headerlink" href="#camera-as-a-spirisynq-object" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Camera</span></code> is a <code class="docutils literal notranslate"><span class="pre">SyncableObject</span></code> (<a class="reference internal" href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase" title="SpiriCamera.camera.CameraBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CameraBase</span></code></a>
+declares the synced fields; <code class="docutils literal notranslate"><span class="pre">Camera</span></code> adds behaviour on top). It is a
+SpiriSynq <code class="docutils literal notranslate"><span class="pre">Position</span></code> in particular: <code class="docutils literal notranslate"><span class="pre">relative_to</span></code> and <code class="docutils literal notranslate"><span class="pre">mount</span></code> say what
+it is mounted on and how, and <code class="docutils literal notranslate"><span class="pre">pose</span></code> is where it is and which way it
+looks, which is what lets an overlay draw on things in the world
+(<a class="reference internal" href="world_overlays.html#world-overlays"><span class="std std-ref">Drawing on things in the world</span></a>). Two things about it are easy to get wrong:</p>
+<p><strong>Nothing is read-only.</strong> Fields like <code class="docutils literal notranslate"><span class="pre">max_supported_width</span></code> or
+<code class="docutils literal notranslate"><span class="pre">received_width</span></code> are described as “what the device reported” or “what
+was actually received”, but they are ordinary writable fields — a
+remote peer can already set any of them over SpiriSynq, so a property
+setter or a one-way binding would only hide that, not enforce it. This
+is why <code class="docutils literal notranslate"><span class="pre">ui.py</span></code> binds every field two-way with <code class="docutils literal notranslate"><span class="pre">bind_value</span></code> rather than
+<code class="docutils literal notranslate"><span class="pre">bind_value_from</span></code>: being able to type a wrong value in and watch what
+downstream does with it is a deliberate debugging feature, not an
+oversight. The only fields with a one-way binding in the debug UI are
+ones with no meaningful counterpart to write back to — the bandwidth
+meter and the read-out frame tags (see below).</p>
+<p><strong>Authoritative vs. mirror.</strong> A <code class="docutils literal notranslate"><span class="pre">Camera</span></code> you construct normally
+(<code class="docutils literal notranslate"><span class="pre">Camera(&quot;/dev/video0&quot;)</span></code>) is <em>authoritative</em>: it actually owns the
+device, and SpiriSynq prefixes its topic with this machine’s hostname
+and exposes its <code class="docutils literal notranslate"><span class="pre">&#64;remote_method</span></code> RPCs. A <code class="docutils literal notranslate"><span class="pre">Camera</span></code> rebuilt from a
+SpiriSynq rehydrate reply (<code class="docutils literal notranslate"><span class="pre">Camera.from_topic(...)</span></code> on a remote peer)
+is a <em>mirror</em>: same synced fields, but it never resolves <code class="docutils literal notranslate"><span class="pre">source_str</span></code>
+into a local handler, because a device path on the mirror’s machine
+may mean something completely different (or nothing at all) locally.
+A mirror therefore always starts with <code class="docutils literal notranslate"><span class="pre">handler</span> <span class="pre">is</span> <span class="pre">None</span></code> and cannot
+<code class="docutils literal notranslate"><span class="pre">start()</span></code> — it exists to observe, not to capture. This is controlled
+by the <code class="docutils literal notranslate"><span class="pre">synq_authoritive</span></code> constructor argument, which defaults to the
+right answer for both cases; pass it explicitly only if you’re doing
+something unusual (see <code class="docutils literal notranslate"><span class="pre">ui.py</span></code>’s <code class="docutils literal notranslate"><span class="pre">get_camera()</span></code> for an example of
+spelling it out for clarity even though the default already does the
+right thing).</p>
+<p><strong>Frame-derived fields never travel as their own field.</strong> <code class="docutils literal notranslate"><span class="pre">received_width</span></code>,
+<code class="docutils literal notranslate"><span class="pre">received_height</span></code>, <code class="docutils literal notranslate"><span class="pre">received_ratio</span></code>, and the EXIF-derived
+<code class="docutils literal notranslate"><span class="pre">exif_tags</span></code>/<code class="docutils literal notranslate"><span class="pre">exif_timestamp</span></code> all describe one specific frame. SpiriSynq
+syncs each field independently with no ordering guarantee between two
+fields, so publishing “this frame is 1920x1080” next to “here is the
+image” is a race — a peer can read the width against a <em>different</em>
+image than the one it names. Instead these values are written into the
+JPEG’s EXIF by <a class="reference internal" href="api/SpiriCamera.exif.html#module-SpiriCamera.exif" title="SpiriCamera.exif"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.exif</span></code></a> and read back out of
+<code class="docutils literal notranslate"><span class="pre">cam.image</span></code> by <code class="docutils literal notranslate"><span class="pre">Camera._on_image_changed</span></code>, identically on the
+authoritative node and on every mirror. If you add a new field that
+describes “the current frame” rather than “the camera’s settings”, it
+almost certainly belongs in EXIF, not as a new synced attribute — copy
+the pattern of <code class="docutils literal notranslate"><span class="pre">received_width</span></code> rather than adding a sibling to
+<code class="docutils literal notranslate"><span class="pre">max_width</span></code>.</p>
+</section>
+<section id="adding-a-new-source-handler">
+<h2><span class="section-number">4.3. </span>Adding a new source handler<a class="headerlink" href="#adding-a-new-source-handler" title="Link to this heading">¶</a></h2>
+<p>A handler is a <code class="docutils literal notranslate"><span class="pre">SourceBase</span></code> subclass that gets discovered automatically
+by being imported — there’s no registry to edit. Concretely, to add
+one:</p>
+<ol class="arabic simple">
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">src/SpiriCamera/sources/my_protocol.py</span></code>.</p></li>
+<li><p>Subclass <a class="reference internal" href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.base.SourceBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceBase</span></code></a> (or
+<a class="reference internal" href="api/SpiriCamera.sources.html#SpiriCamera.sources.OpenCVSource" title="SpiriCamera.sources.capture.OpenCVSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenCVSource</span></code></a> if
+<code class="docutils literal notranslate"><span class="pre">cv2.VideoCapture</span></code> can already speak your protocol — this is what
+<code class="docutils literal notranslate"><span class="pre">v4l.py</span></code> and <code class="docutils literal notranslate"><span class="pre">network.py</span></code> do; only write against the raw
+<code class="docutils literal notranslate"><span class="pre">SourceBase</span></code> contract if you need something OpenCV can’t do, the
+way <code class="docutils literal notranslate"><span class="pre">testimage.py</span></code> renders SVGs itself).</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">schemes</span> <span class="pre">=</span> <span class="pre">(&quot;myproto&quot;,)</span></code> and implement <code class="docutils literal notranslate"><span class="pre">open</span></code>, <code class="docutils literal notranslate"><span class="pre">close</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">is_open</span></code>. Override <code class="docutils literal notranslate"><span class="pre">handles()</span></code> too if you need to claim
+schemeless strings the way <code class="docutils literal notranslate"><span class="pre">v4l.py</span></code> claims bare device paths.</p></li>
+<li><p>Import the module from <code class="docutils literal notranslate"><span class="pre">src/SpiriCamera/sources/__init__.py</span></code>’s
+<code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Importing</span> <span class="pre">these</span> <span class="pre">modules</span> <span class="pre">is</span> <span class="pre">what</span> <span class="pre">registers</span> <span class="pre">their</span> <span class="pre">handlers</span></code> block.</p></li>
+</ol>
+<p>Minimal skeleton, modeled on the real handlers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""My protocol camera source."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.sources.base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CaptureSettings</span><span class="p">,</span>
+    <span class="n">SourceBase</span><span class="p">,</span>
+    <span class="n">SourceCapabilities</span><span class="p">,</span>
+    <span class="n">SourceError</span><span class="p">,</span>
+    <span class="n">SourceURL</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyProtocolSource</span><span class="p">(</span><span class="n">SourceBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Reads frames from my-protocol://&lt;target&gt;."""</span>
+
+    <span class="n">schemes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"myproto"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">SourceURL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">CaptureSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceCapabilities</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">_connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SourceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"could not open </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">return</span> <span class="n">SourceCapabilities</span><span class="p">(</span>
+            <span class="n">max_supported_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">max_supported_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">CaptureSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Honour `settings` on every call, not just at open() -- this is</span>
+        <span class="c1"># what lets a live resolution/framerate change take effect</span>
+        <span class="c1"># without restarting the camera.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">grab_frame</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A few contract details that are easy to miss because they only show up
+as bugs in a UI far from the handler:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">read()</span></code> may return <code class="docutils literal notranslate"><span class="pre">None</span></code></strong> when there’s no new frame yet (e.g. a
+network stream that hasn’t delivered one). <code class="docutils literal notranslate"><span class="pre">Camera.read()</span></code> then
+re-serves the previous <code class="docutils literal notranslate"><span class="pre">cam.image</span></code> rather than raising, so returning
+<code class="docutils literal notranslate"><span class="pre">None</span></code> is the normal way to say “nothing changed”, not an error.</p></li>
+<li><p><strong>Return the <em>same</em> array object</strong> for an unchanged frame (a static
+test pattern, a paused file) rather than an equal-but-distinct copy.
+<code class="docutils literal notranslate"><span class="pre">Camera._encode</span></code> caches by identity (<code class="docutils literal notranslate"><span class="pre">is</span></code>, not <code class="docutils literal notranslate"><span class="pre">==</span></code>) specifically so
+a source that isn’t producing new pixels doesn’t pay for re-encoding
+every capture tick.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">open()</span></code> on an already-open source must be a no-op</strong> that just
+re-reports capabilities — <code class="docutils literal notranslate"><span class="pre">Camera.start()</span></code> on an already-running
+camera doesn’t call <code class="docutils literal notranslate"><span class="pre">open()</span></code> at all, but a source can still see a
+redundant <code class="docutils literal notranslate"><span class="pre">open()</span></code> from other paths and must not double-acquire the
+device.</p></li>
+<li><p><strong>Never raise from resolution</strong> (<code class="docutils literal notranslate"><span class="pre">handles</span></code>/<code class="docutils literal notranslate"><span class="pre">from_url</span></code> aside from a
+genuinely malformed target) — an unresolvable or not-yet-openable
+source should surface through <code class="docutils literal notranslate"><span class="pre">SourceError</span></code> at <code class="docutils literal notranslate"><span class="pre">open()</span></code>/<code class="docutils literal notranslate"><span class="pre">read()</span></code>
+time, because <code class="docutils literal notranslate"><span class="pre">Camera</span></code> is designed to be constructed from a
+half-typed, live-edited source string without raising. If your
+handler needs validation, do it in <code class="docutils literal notranslate"><span class="pre">open()</span></code>, not in the constructor.</p></li>
+</ul>
+</section>
+<section id="the-overlay-layer">
+<span id="id1"></span><h2><span class="section-number">4.4. </span>The overlay layer<a class="headerlink" href="#the-overlay-layer" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="api/SpiriCamera.overlay.html#module-SpiriCamera.overlay" title="SpiriCamera.overlay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.overlay</span></code></a> bakes SVG “HUD” widgets into a frame before
+it is encoded. A widget (<a class="reference internal" href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.HudWidget" title="SpiriCamera.overlay.HudWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">HudWidget</span></code></a>) is
+its own <code class="docutils literal notranslate"><span class="pre">SyncableObject</span></code>, published wherever its author runs (a UI
+panel, an ML detector) — a camera never creates one, it only mirrors
+the widgets named in its <code class="docutils literal notranslate"><span class="pre">overlay_widgets</span></code> field
+(<a class="reference internal" href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.OverlayMixin" title="SpiriCamera.overlay.OverlayMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OverlayMixin</span></code></a>, mixed into
+<a class="reference internal" href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase" title="SpiriCamera.camera.CameraBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CameraBase</span></code></a>). This split — author owns
+the widget, camera only opts in — is what lets several cameras share
+one widget definition while each binds it to its own data and
+placement.</p>
+<p>A widget’s SVG is templated with MiniJinja against three separate
+namespaces (plus <code class="docutils literal notranslate"><span class="pre">view</span></code> and <code class="docutils literal notranslate"><span class="pre">item</span></code> for a widget placed on the world;
+see below), and <em>why there are three</em> is the one thing worth
+understanding before touching this code:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exif</span></code> — the current frame’s tags.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">frame</span></code> — the current frame’s actual, as-received width/height/
+framerate and a render-time timestamp. These are injected directly
+rather than read through <code class="docutils literal notranslate"><span class="pre">objects</span></code> because they are exactly the
+fields the “Frame-derived fields never travel as their own field”
+rule above forbids publishing as synced attributes — there is no
+topic a widget could declare to reach them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects</span></code> — the latest field values of any other SpiriSynq object a
+widget declares for itself, by alias, via a
+<code class="docutils literal notranslate"><span class="pre">{#</span> <span class="pre">object:</span> <span class="pre">&lt;alias&gt;</span> <span class="pre">=</span> <span class="pre">&lt;default</span> <span class="pre">topic&gt;</span> <span class="pre">#}</span></code> comment next to where the
+alias is used. The alias exists because a real topic can contain
+characters (a hyphen in a hostname) that are not valid inside a
+<code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">}}</span></code> expression, and because a camera rendering the widget can
+rebind an alias to a different concrete object without touching the
+shared widget definition (see <code class="docutils literal notranslate"><span class="pre">overlay_widgets</span></code>’ <code class="docutils literal notranslate"><span class="pre">&quot;bindings&quot;</span></code> key).</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">SpiriCamera.overlay.resolve_objects</span></code> cross-checks MiniJinja’s own
+static analysis of what a template <em>reads</em> against what it
+<em>declares</em>, and raises immediately if an alias is used with no
+matching declaration — a widget author gets that error at authoring
+time rather than a silently blank value baked into every frame.</p>
+<p><strong>Rendering never scales.</strong> <code class="docutils literal notranslate"><span class="pre">rasterize()</span></code> renders each widget at its
+own natural pixel size (<code class="docutils literal notranslate"><span class="pre">Picture.get_size()</span></code>); <code class="docutils literal notranslate"><span class="pre">composite()</span></code> alpha
+blends it onto the frame at whatever position <code class="docutils literal notranslate"><span class="pre">anchor_position()</span></code>
+computes and clips the rest. A widget author who writes
+<code class="docutils literal notranslate"><span class="pre">font-size=&quot;24&quot;</span></code> gets a real 24px regardless of the camera’s
+resolution — scaling the raster to fit a declared box was rejected
+because it either blurs small text or makes it illegible on a 4K
+frame. Text is drawn by <code class="docutils literal notranslate"><span class="pre">thorvg</span></code>, using the bundled <code class="docutils literal notranslate"><span class="pre">Miracode</span></code> font
+registered once at import time; <code class="docutils literal notranslate"><span class="pre">thorvg</span></code> never falls back to an
+OS-installed font, so a widget that references an unloaded font family
+renders nothing for that text, silently.</p>
+<p><strong>Failure is per-widget, per-frame, and never fatal.</strong> A widget that
+fails to render — a template error, a declared object with no value
+yet — is skipped for that frame and logged once
+(<code class="docutils literal notranslate"><span class="pre">OverlayMixin._overlay_complain</span></code> de-duplicates by message so a
+persistently-broken widget does not spam the log every frame). One
+broken overlay is not allowed to stop the camera from publishing.</p>
+<p><strong>Mirroring is lazy and cheap to re-check.</strong> <code class="docutils literal notranslate"><span class="pre">_overlay_sync_widgets</span></code>
+and <code class="docutils literal notranslate"><span class="pre">_overlay_sync_objects</span></code> run once per frame but only do network work
+(mirroring a widget or a data-source object) the first time a topic is
+seen; anything already mirrored is trusted to update itself live via
+its own SpiriSynq subscription. That is what makes it safe to call
+every frame, which is how newly-added or newly-rebound
+<code class="docutils literal notranslate"><span class="pre">overlay_widgets</span></code> entries get picked up promptly without wiring
+fine-grained <code class="docutils literal notranslate"><span class="pre">EventedDict</span></code> change signals.</p>
+<p><strong>Placing a widget on the world is opt-in, and the template never does
+the geometry.</strong> A widget that declares <code class="docutils literal notranslate"><span class="pre">{#</span> <span class="pre">anchor:</span> <span class="pre">...</span> <span class="pre">#}</span></code> or
+<code class="docutils literal notranslate"><span class="pre">{#</span> <span class="pre">project:</span> <span class="pre">...</span> <span class="pre">#}</span></code> (<code class="docutils literal notranslate"><span class="pre">world_placement()</span></code>) is drawn by where its objects
+are in the frame tree: <code class="docutils literal notranslate"><span class="pre">_overlay_renders()</span></code> projects their poses through
+the camera’s own pose and lens (<a class="reference internal" href="api/SpiriCamera.projection.html#module-SpiriCamera.projection" title="SpiriCamera.projection"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.projection</span></code></a>), and
+either centres a copy of the widget on each, or hands a frame-wide
+widget the pixels as <code class="docutils literal notranslate"><span class="pre">view</span></code>. That is why a camera is a <code class="docutils literal notranslate"><span class="pre">Position</span></code>. A
+relay camera follows its upstream’s pose and lens through the source
+contract (<code class="docutils literal notranslate"><span class="pre">SourceCapabilities.frame</span></code>, <code class="docutils literal notranslate"><span class="pre">SourceBase.frame_intrinsics()</span></code>), so
+a source never reaches back into the camera. Both render paths, burned
+in and client-side, go through <code class="docutils literal notranslate"><span class="pre">_overlay_renders()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">_overlay_position()</span></code>, so they place widgets the same way. The guide for
+widget authors is <a class="reference internal" href="world_overlays.html#world-overlays"><span class="std std-ref">Drawing on things in the world</span></a>.</p>
+<p>See the <a class="reference internal" href="api/SpiriCamera.overlay.html#module-SpiriCamera.overlay" title="SpiriCamera.overlay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.overlay</span></code></a> module docstring for the full
+reasoning, and <a class="reference internal" href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.camera_metrics_widget" title="SpiriCamera.overlay.camera_metrics_widget"><code class="xref py py-func docutils literal notranslate"><span class="pre">camera_metrics_widget()</span></code></a>
+for a worked example of a ready-made widget that reads both <code class="docutils literal notranslate"><span class="pre">frame</span></code>
+and its own camera’s live fields via <code class="docutils literal notranslate"><span class="pre">objects</span></code>.</p>
+</section>
+<section id="the-debug-ui-s-bandwidth-and-latency-readout">
+<h2><span class="section-number">4.5. </span>The debug UI’s bandwidth and latency readout<a class="headerlink" href="#the-debug-ui-s-bandwidth-and-latency-readout" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpiriCamera.ui</span></code> runs one <code class="docutils literal notranslate"><span class="pre">Camera</span></code> per process (<code class="docutils literal notranslate"><span class="pre">get_camera()</span></code>, module
+global) and serves its frames over a plain HTTP route
+(<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/camera/frame</span></code>) rather than pushing them over the websocket as
+base64 — <code class="docutils literal notranslate"><span class="pre">ui.image</span></code>/<code class="docutils literal notranslate"><span class="pre">QImg</span></code> cross-fades on every source change, which at
+video framerate looks like a permanent dim pulse, and pushing to every
+client regardless of whether it can keep up defeats the point of a
+pull-based readout. Read the module docstring in
+<a class="reference internal" href="api/SpiriCamera.ui.html#module-SpiriCamera.ui" title="SpiriCamera.ui"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.ui</span></code></a> for the full reasoning; the parts worth
+knowing if you’re debugging the numbers it shows:</p>
+<ul class="simple">
+<li><p><strong>fps / KiB/s / kb/s</strong> come from <code class="docutils literal notranslate"><span class="pre">RateMeter</span></code>, which is fed only when
+<code class="docutils literal notranslate"><span class="pre">serve_frame()</span></code> sees a <em>new</em> frame object (compared by identity, via
+<code class="docutils literal notranslate"><span class="pre">_last_counted</span></code>) — a stopped camera being polled repeatedly reports
+0 fps rather than the rate of the polling. <code class="docutils literal notranslate"><span class="pre">_last_counted_lock</span></code>
+exists because two browser tabs can both read the stale value before
+either writes the new one, which without the lock double-counts a
+single frame across two concurrent requests.</p></li>
+<li><p><strong>Frame age</strong> is <em>not</em> “now minus this frame’s timestamp” sampled
+once — that number saws between zero and a full frame interval
+depending on when exactly you read it, and says more about polling
+phase than actual latency. <code class="docutils literal notranslate"><span class="pre">RateMeter.age()</span></code> instead reports
+<code class="docutils literal notranslate"><span class="pre">max(mean_age_over_window,</span> <span class="pre">true_age_of_newest_frame_seen)</span></code>: the mean
+is the stable number while frames are flowing, and the true age is
+what it decays into once they stop — a camera that died five minutes
+ago should read “5 min old”, not fall back to a rolling average of
+zero.</p></li>
+<li><p><strong>Clock skew</strong>: age is computed from the frame’s own EXIF capture
+timestamp against <code class="docutils literal notranslate"><span class="pre">time.time()</span></code> on the machine serving the debug UI,
+clamped at zero. Against a remote/mirrored camera this is only as
+good as the agreement between the two machines’ clocks — an age of
+“0 ms” on a badly-skewed pair doesn’t mean zero latency, it means the
+remote clock is ahead.</p></li>
+</ul>
+</section>
+<section id="webrtc-egress-ingest-and-whep">
+<h2><span class="section-number">4.6. </span>WebRTC egress, ingest, and WHEP<a class="headerlink" href="#webrtc-egress-ingest-and-whep" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpiriCamera.webrtc</span></code> is where every bit of aiortc lives; nothing else
+in the package imports aiortc/FastAPI at module scope except the two
+signaling doors that use it:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.webrtc_offer" title="SpiriCamera.camera.Camera.webrtc_offer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Camera.webrtc_offer</span></code></a>
+— a single <code class="docutils literal notranslate"><span class="pre">&#64;remote_method</span></code>, reachable over zenoh like any other RPC.</p></li>
+<li><p><a class="reference internal" href="api/SpiriCamera.whep.html#module-SpiriCamera.whep" title="SpiriCamera.whep"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.whep</span></code></a> — a standalone FastAPI app implementing
+WHEP (<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/whep</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/whep/{session_id}</span></code>), independent of
+<code class="docutils literal notranslate"><span class="pre">ui.py</span></code>’s NiceGUI app, run via <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">whep-serve</span></code>.</p></li>
+</ul>
+<p>Both call the same <code class="docutils literal notranslate"><span class="pre">SpiriCamera.webrtc._negotiate</span></code>, so a viewer that
+arrives over zenoh and one that arrives over HTTP land in the same
+session registry and get the same video track and tags channel — the
+signaling transport is the only thing that differs.</p>
+<p><strong>The shared background event loop.</strong> An <code class="docutils literal notranslate"><span class="pre">RTCPeerConnection</span></code> has to
+keep running after the call that created it returns, but the zenoh RPC
+path calls into <code class="docutils literal notranslate"><span class="pre">webrtc_offer</span></code> synchronously from a queryable callback
+thread with no event loop at all. <code class="docutils literal notranslate"><span class="pre">SpiriCamera.webrtc.get_loop()</span></code>
+starts one daemon thread running its own loop forever, the first time
+anything asks for it, and every peer connection this module creates
+lives there for good. <code class="docutils literal notranslate"><span class="pre">negotiate_sync</span></code> blocks the calling thread for a
+result; <code class="docutils literal notranslate"><span class="pre">negotiate_async</span></code> is the same call awaited from a caller that
+already has a loop (uvicorn’s, in <code class="docutils literal notranslate"><span class="pre">whep.py</span></code>).</p>
+<p><strong>Tags only travel one way.</strong> A single SDP answer can only describe
+<code class="docutils literal notranslate"><span class="pre">m=</span></code> sections the offer already listed — an answerer cannot add a data
+channel that was not in the offer without a second negotiation round.
+So the <em>viewer</em> has to create the data channel (labelled
+<code class="docutils literal notranslate"><span class="pre">spiricamera-tags</span></code>) before sending its offer; <code class="docutils literal notranslate"><span class="pre">SpiriCamera.webrtc</span></code>
+listens for it arriving via the <code class="docutils literal notranslate"><span class="pre">&quot;datachannel&quot;</span></code> event and, if it never
+does, simply sends video with no tags. This means a generic WHEP player
+(a browser, <code class="docutils literal notranslate"><span class="pre">ffplay</span></code>) gets video only; only a SpiriCamera-aware client
+gets the per-frame <code class="docutils literal notranslate"><span class="pre">{&quot;timestamp&quot;:</span> <span class="pre">...,</span> <span class="pre">&quot;tags&quot;:</span> <span class="pre">{...}}</span></code> JSON, read
+straight out of that frame’s EXIF via <code class="docutils literal notranslate"><span class="pre">SpiriCamera.exif.extract</span></code> — the
+same tags already embedded per the “Frame-derived fields never travel
+as their own field” rule above, not a second copy of them.</p>
+<p><strong>Ingest is a source handler.</strong> <code class="docutils literal notranslate"><span class="pre">SpiriCamera.sources.webrtc.WHEPSource</span></code>
+is the mirror image: a <code class="docutils literal notranslate"><span class="pre">whep+http://host/path</span></code> or <code class="docutils literal notranslate"><span class="pre">whep+https://...</span></code>
+source string (compound schemes, since <code class="docutils literal notranslate"><span class="pre">NetworkSource</span></code> already claims
+bare <code class="docutils literal notranslate"><span class="pre">http</span></code>/<code class="docutils literal notranslate"><span class="pre">https</span></code>) pulls a remote WHEP publisher’s stream in as an
+ordinary <code class="docutils literal notranslate"><span class="pre">SourceBase</span></code>, negotiating on <code class="docutils literal notranslate"><span class="pre">open()</span></code> and reading decoded
+frames off a background task on the same shared loop.</p>
+<p><strong>Another camera is a source too.</strong> <code class="docutils literal notranslate"><span class="pre">SpiriCamera.sources.spirisynq.SpiriSynqSource</span></code>
+(<code class="docutils literal notranslate"><span class="pre">spirisynq://&lt;topic&gt;</span></code>) mirrors an upstream camera on <code class="docutils literal notranslate"><span class="pre">open()</span></code> and
+returns its latest frame, decoded and fitted to the requested bounds.
+It never imports <code class="docutils literal notranslate"><span class="pre">camera.py</span></code>: it looks the upstream’s type tag up with
+<code class="docutils literal notranslate"><span class="pre">Session.list_topics</span></code> and mirrors it with whatever class the session has
+registered under it (the real <code class="docutils literal notranslate"><span class="pre">Camera</span></code>, in any process running one),
+falling back to <code class="docutils literal notranslate"><span class="pre">from_topic_untyped</span></code> only when there is none. The order
+matters — <code class="docutils literal notranslate"><span class="pre">from_topic_untyped</span></code> re-registers the tag with a synthesized
+class, which breaks every later <code class="docutils literal notranslate"><span class="pre">Camera.from_topic</span></code> on that session.
+<code class="docutils literal notranslate"><span class="pre">Camera.start()</span></code> opens its handler under <code class="docutils literal notranslate"><span class="pre">synq_session.as_default()</span></code>,
+so the mirror lands on the camera’s own session even when a remote
+<code class="docutils literal notranslate"><span class="pre">running</span> <span class="pre">=</span> <span class="pre">True</span></code> triggers the start from a zenoh thread. Upstream frame
+tags come through <code class="docutils literal notranslate"><span class="pre">SourceBase.frame_tags()</span></code>, merged under the camera’s
+own.</p>
+<p><strong>Sources that are not there yet, or any more.</strong> A background camera
+treats a <code class="docutils literal notranslate"><span class="pre">SourceError</span></code> from <code class="docutils literal notranslate"><span class="pre">open()</span></code> as “not yet”: it stays <code class="docutils literal notranslate"><span class="pre">running</span></code>,
+reports <code class="docutils literal notranslate"><span class="pre">waiting</span> <span class="pre">for</span> <span class="pre">source:</span> <span class="pre">&lt;reason&gt;</span></code>, and the capture loop retries
+the open every <code class="docutils literal notranslate"><span class="pre">_SOURCE_RETRY_INTERVAL</span></code>. The loop reopens any handler
+whose <code class="docutils literal notranslate"><span class="pre">is_open</span></code> goes false, so the contract for a source that loses
+its device mid-stream is simply to close itself and raise from
+<code class="docutils literal notranslate"><span class="pre">read()</span></code>. <code class="docutils literal notranslate"><span class="pre">V4LSource</span></code> does that when a failed read finds its device
+node gone (a failed read with the node present is only a dropped
+frame). <code class="docutils literal notranslate"><span class="pre">SpiriSynqSource</span></code> does it on the upstream’s tombstone (a clean
+shutdown), or — since a crash sends none — when no frame has arrived
+for <code class="docutils literal notranslate"><span class="pre">STALE_AFTER</span></code> seconds and the topic no longer answers
+<code class="docutils literal notranslate"><span class="pre">list_topics</span></code>, or answers from a different process. It uses
+<code class="docutils literal notranslate"><span class="pre">list_topics</span></code> rather than an <code class="docutils literal notranslate"><span class="pre">sr_metadata</span></code> RPC for this because an
+absent topic is silently no reply there, where the RPC logs an error
+on every retry.</p>
+<section id="hooking-a-whep-serve-camera-up-to-mediamtx">
+<h3><span class="section-number">4.6.1. </span>Hooking a <code class="docutils literal notranslate"><span class="pre">whep-serve</span></code> camera up to MediaMTX<a class="headerlink" href="#hooking-a-whep-serve-camera-up-to-mediamtx" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/bluenviron/mediamtx">MediaMTX</a> can pull a WHEP
+stream directly as a path source — no WHIP push, no extra code on our
+side. Point a path at whatever <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">whep-serve</span></code> is listening
+on:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># mediamtx.yml</span>
+<span class="nt">paths</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">spiricamera</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">whep://127.0.0.1:8889/whep</span>
+</pre></div>
+</div>
+<p>MediaMTX acts as the WHEP <em>client</em> here (the same role our own
+<code class="docutils literal notranslate"><span class="pre">SpiriCamera.sources.webrtc.WHEPSource</span></code> plays), and re-serves the
+video to as many RTSP/HLS/WebRTC/etc. viewers as you like from that
+one path.</p>
+<p><strong>The <code class="docutils literal notranslate"><span class="pre">spiricamera-tags</span></code> data channel does not survive this hop.</strong>
+MediaMTX’s WHEP-pull offer only asks for a recvonly video track — no
+data channel — so per the one-way rule above (offer decides which
+<code class="docutils literal notranslate"><span class="pre">m=</span></code> sections can exist), our answer never includes one, and there is
+nothing to carry the tags through. This isn’t a bug to work around: as
+of the current release, MediaMTX’s WebRTC implementation has no data
+channel support at all (checked its full config reference for
+<code class="docutils literal notranslate"><span class="pre">datachannel</span></code>/<code class="docutils literal notranslate"><span class="pre">metadata</span></code>/<code class="docutils literal notranslate"><span class="pre">sei</span></code> — nothing), so no WHEP offer it sends
+will ever open one. A viewer that needs tags has to talk to
+<code class="docutils literal notranslate"><span class="pre">whep-serve</span></code> directly, bypassing MediaMTX, so its own offer can open
+the channel.</p>
+<p>The one metadata path MediaMTX <em>does</em> carry end-to-end is KLV — it
+implements RFC 6597 (<code class="docutils literal notranslate"><span class="pre">SMPTE336M/90000</span></code>) as a first-class RTSP track
+type, cross-muxing between MPEG-TS/SRT ingest and RTSP output. That
+would mean encoding our tags as MISB ST 0601 KLV and giving
+SpiriCamera an RTSP/SRT <em>output</em> carrying a synchronous KLV track —
+unrelated to WHEP/WebRTC entirely, and not implemented yet (see
+<code class="docutils literal notranslate"><span class="pre">todo.md</span></code>).</p>
+</section>
+</section>
+<section id="where-things-are-tested">
+<h2><span class="section-number">4.7. </span>Where things are tested<a class="headerlink" href="#where-things-are-tested" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">tests/</span></code> exercises the source handlers and <code class="docutils literal notranslate"><span class="pre">Camera</span></code> against real
+<code class="docutils literal notranslate"><span class="pre">SpiriSynq</span></code> peers over a namespaced zenoh session (see recent history
+around “namespace the test suite’s zenoh peer” for why — tests must not
+collide with a zenoh session already running on the same machine). Run
+the full suite with:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pytest</span>
+<span class="go">python -m pytest --cov=SpiriCamera</span>
+</pre></div>
+</div>
+<p>When adding a new source handler, add a corresponding test module
+alongside the existing ones rather than folding it into
+<code class="docutils literal notranslate"><span class="pre">test_camera.py</span></code> — handler tests exercise <code class="docutils literal notranslate"><span class="pre">open</span></code>/<code class="docutils literal notranslate"><span class="pre">close</span></code>/<code class="docutils literal notranslate"><span class="pre">read</span></code> in
+isolation from the capture thread, which is what makes it possible to
+test protocol edge cases without racing a background thread.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="tutorials/yolo_overlay.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">5. </span>Tutorial: YOLO detection boxes as a live overlay</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="world_overlays.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">3. </span>Drawing on things in the world</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">4. Architecture</a><ul>
+<li><a class="reference internal" href="#domain-split-camera-vs-sources">4.1. Domain split: camera vs. sources</a></li>
+<li><a class="reference internal" href="#camera-as-a-spirisynq-object">4.2. Camera as a SpiriSynq object</a></li>
+<li><a class="reference internal" href="#adding-a-new-source-handler">4.3. Adding a new source handler</a></li>
+<li><a class="reference internal" href="#the-overlay-layer">4.4. The overlay layer</a></li>
+<li><a class="reference internal" href="#the-debug-ui-s-bandwidth-and-latency-readout">4.5. The debug UI’s bandwidth and latency readout</a></li>
+<li><a class="reference internal" href="#webrtc-egress-ingest-and-whep">4.6. WebRTC egress, ingest, and WHEP</a><ul>
+<li><a class="reference internal" href="#hooking-a-whep-serve-camera-up-to-mediamtx">4.6.1. Hooking a <code class="docutils literal notranslate"><span class="pre">whep-serve</span></code> camera up to MediaMTX</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#where-things-are-tested">4.7. Where things are tested</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=1b390748"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

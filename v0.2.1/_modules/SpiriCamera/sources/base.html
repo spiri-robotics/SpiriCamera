@@ -1,0 +1,967 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/_modules/SpiriCamera/sources/base.html">
+        <link rel="prefetch" href="../../../_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="../../../_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>SpiriCamera.sources.base - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exif.html">2. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../world_overlays.html">3. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">4. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for SpiriCamera.sources.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Source domain primitives: URLs, capabilities, and the handler contract.</span>
+
+<span class="sd">This module owns everything about *where frames come from*.  It knows</span>
+<span class="sd">nothing about :py:class:`~SpiriCamera.camera.Camera`: handlers resolve</span>
+<span class="sd">their own source strings, open their own devices, and report what they</span>
+<span class="sd">can do.  The camera layer asks for raw frames and does the encoding and</span>
+<span class="sd">publishing on its own.</span>
+
+<span class="sd">The dependency direction is strictly one-way::</span>
+
+<span class="sd">    camera.py  -&gt;  sources/  -&gt;  sources/base.py</span>
+
+<span class="sd">so a source handler must never import the camera module.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">replace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Self</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.syncable_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubSyncableDataclass</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Errors</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="SourceError">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base class for source resolution, open, and read failures."""</span></div>
+
+
+
+<div class="viewcode-block" id="UnknownSourceError">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.UnknownSourceError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownSourceError</span><span class="p">(</span><span class="n">SourceError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raised when no registered handler recognises a source string."""</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Value objects</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="SourceURL">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceURL">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceURL</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A source string split into its scheme and target.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : str</span>
+<span class="sd">        The original (stripped) source string.</span>
+<span class="sd">    scheme : str</span>
+<span class="sd">        Lowercased scheme, or ``""`` for schemeless strings such as</span>
+<span class="sd">        ``/dev/video0`` or a bare camera index.</span>
+<span class="sd">    target : str</span>
+<span class="sd">        Everything after ``://``, or the whole string when schemeless.</span>
+<span class="sd">    """</span>
+
+    <span class="n">raw</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">scheme</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="SourceURL.parse">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceURL.parse">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceURL</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Split a source string into scheme and target.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        source_str : str</span>
+<span class="sd">            The source string to parse.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SourceURL</span>
+<span class="sd">            The split representation.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        SourceError</span>
+<span class="sd">            If the source string is empty or whitespace only.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source_str</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">source_str</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">SourceError</span><span class="p">(</span><span class="s2">"Source string cannot be empty"</span><span class="p">)</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">source_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">scheme</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"://"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">separator</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">raw</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="n">scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span></div>
+
+
+
+<div class="viewcode-block" id="CaptureSettings">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.CaptureSettings">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CaptureSettings</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""What the camera is asking the source to produce.</span>
+
+<span class="sd">    These are upper bounds, not exact dimensions: a source is free to</span>
+<span class="sd">    deliver something smaller, and reports what it settled on through</span>
+<span class="sd">    :py:class:`SourceCapabilities`.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       Do not shorten these to ``width`` / ``height`` / ``framerate``.</span>
+<span class="sd">       The ``max_`` prefix is the contract: a source may answer a</span>
+<span class="sd">       request for 1920x1080 with a 640x480 frame and still be correct.</span>
+<span class="sd">       A bare ``width`` would read as "the width you will get", which is</span>
+<span class="sd">       a promise no source makes.  The names also match the</span>
+<span class="sd">       :py:class:`~SpiriCamera.camera.CameraBase` fields they are</span>
+<span class="sd">       copied from, so the two stay greppable together.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    max_width : int</span>
+<span class="sd">        Largest acceptable frame width in pixels.</span>
+<span class="sd">    max_height : int</span>
+<span class="sd">        Largest acceptable frame height in pixels.</span>
+<span class="sd">    max_framerate : int</span>
+<span class="sd">        Highest requested frames per second.</span>
+<span class="sd">    """</span>
+
+    <span class="n">max_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1920</span>
+    <span class="n">max_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1080</span>
+    <span class="n">max_framerate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span></div>
+
+
+
+<div class="viewcode-block" id="Intrinsics">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.Intrinsics">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Intrinsics</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A pinhole camera model, at the resolution it was measured at.</span>
+
+<span class="sd">    The model is in pixels of a ``width`` x ``height`` image.  A frame of</span>
+<span class="sd">    another size with the same aspect -- a camera asked for a smaller</span>
+<span class="sd">    ``max_width``, say -- uses :py:meth:`scaled` to that size, rather than</span>
+<span class="sd">    the numbers as they are.</span>
+
+<span class="sd">    Synced as one value, not field by field, so a peer never sees one</span>
+<span class="sd">    report's focal length with another's size.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    width : int</span>
+<span class="sd">        Image width the model is in, in pixels.</span>
+<span class="sd">    height : int</span>
+<span class="sd">        Image height the model is in, in pixels.</span>
+<span class="sd">    fx : float</span>
+<span class="sd">        Horizontal focal length, in pixels.</span>
+<span class="sd">    fy : float</span>
+<span class="sd">        Vertical focal length, in pixels.</span>
+<span class="sd">    cx : float</span>
+<span class="sd">        Principal point, horizontally, in pixels from the left edge.</span>
+<span class="sd">    cy : float</span>
+<span class="sd">        Principal point, vertically, in pixels from the top edge.</span>
+<span class="sd">    origin : str</span>
+<span class="sd">        Where it came from: ``manual`` (the camera's settings), ``source``</span>
+<span class="sd">        (the source reported it, e.g. a Gazebo sensor's ``camera_info``)</span>
+<span class="sd">        or ``mavlink`` (the camera's MAVLink component or autopilot,</span>
+<span class="sd">        through SpiriMav).  See :py:data:`~SpiriCamera.camera.INTRINSICS_ORIGINS`.</span>
+<span class="sd">    """</span>
+
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">fx</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">fy</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">cx</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">cy</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"image size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="si">}</span><span class="s2"> is not positive"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"focal lengths </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fx</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fy</span><span class="si">}</span><span class="s2"> are not positive"</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Intrinsics.from_fov">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.Intrinsics.from_fov">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_fov</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">hfov</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">vfov</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Intrinsics</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The model of a centred lens with a given field of view.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        width, height : int</span>
+<span class="sd">            Image size to express the model in.</span>
+<span class="sd">        hfov : float</span>
+<span class="sd">            Horizontal field of view, in degrees.</span>
+<span class="sd">        vfov : float</span>
+<span class="sd">            Vertical field of view, in degrees.  ``0`` assumes square</span>
+<span class="sd">            pixels, so it follows from ``hfov`` and the image's aspect.</span>
+<span class="sd">        origin : str</span>
+<span class="sd">            See the class attributes.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">hfov</span> <span class="o">&lt;</span> <span class="mi">180</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">vfov</span> <span class="o">&lt;</span> <span class="mi">180</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"field of view </span><span class="si">{</span><span class="n">hfov</span><span class="si">}</span><span class="s2">°x</span><span class="si">{</span><span class="n">vfov</span><span class="si">}</span><span class="s2">° is not in (0°, 180°)"</span><span class="p">)</span>
+        <span class="n">fx</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">hfov</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">fy</span> <span class="o">=</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">vfov</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="n">vfov</span> <span class="k">else</span> <span class="n">fx</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">fx</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hfov</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Horizontal field of view through the principal point, in degrees."""</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span>
+            <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cx</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fx</span><span class="p">)</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cx</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fx</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vfov</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Vertical field of view through the principal point, in degrees."""</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span>
+            <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cy</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fy</span><span class="p">)</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cy</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fy</span><span class="p">)</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Intrinsics.scaled">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.Intrinsics.scaled">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scaled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Intrinsics</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The same lens, for an image resized to ``width`` x ``height``."""</span>
+        <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
+        <span class="k">return</span> <span class="n">replace</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+            <span class="n">fx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fx</span> <span class="o">*</span> <span class="n">sx</span><span class="p">,</span>
+            <span class="n">fy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fy</span> <span class="o">*</span> <span class="n">sy</span><span class="p">,</span>
+            <span class="n">cx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cx</span> <span class="o">*</span> <span class="n">sx</span><span class="p">,</span>
+            <span class="n">cy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cy</span> <span class="o">*</span> <span class="n">sy</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hfov</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vfov</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">° at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="si">}</span><span class="s2">"</span></div>
+
+
+
+<div class="viewcode-block" id="SourceCapabilities">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceCapabilities">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceCapabilities</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""What a source reports it can provide, once opened.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">       These keep the ``max_supported_`` prefix for the same reason</span>
+<span class="sd">       :py:class:`CaptureSettings` keeps ``max_``: they are ceilings the</span>
+<span class="sd">       device advertises, not a guarantee about any particular frame,</span>
+<span class="sd">       and they are copied verbatim onto the matching</span>
+<span class="sd">       :py:class:`~SpiriCamera.camera.CameraBase` fields.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    max_supported_width : int | None</span>
+<span class="sd">        Largest width the source can deliver, or ``None`` if it renders</span>
+<span class="sd">        at whatever size it is asked for.</span>
+<span class="sd">    max_supported_height : int | None</span>
+<span class="sd">        Largest height the source can deliver, or ``None`` if it is</span>
+<span class="sd">        resolution independent.</span>
+<span class="sd">    max_supported_framerate : int | None</span>
+<span class="sd">        Highest framerate the source can deliver, or ``None`` if</span>
+<span class="sd">        unconstrained.</span>
+<span class="sd">    vendor : str</span>
+<span class="sd">        Device vendor, when the source can determine one.</span>
+<span class="sd">    model : str</span>
+<span class="sd">        Device model, when the source can determine one.</span>
+<span class="sd">    serial_number : str</span>
+<span class="sd">        Device serial number, when the source can determine one.</span>
+<span class="sd">    intrinsics : Intrinsics | None</span>
+<span class="sd">        The lens, when the source knows it -- a simulated camera does,</span>
+<span class="sd">        exactly; most devices don't say.  Its ``origin`` is filled in</span>
+<span class="sd">        by the camera.</span>
+<span class="sd">    frame : str</span>
+<span class="sd">        The SpiriSynq topic of the</span>
+<span class="sd">        :py:class:`~SpiriSynq.example_types.position.Position` the frames</span>
+<span class="sd">        are seen from, when they are some other object's view: a relayed</span>
+<span class="sd">        camera's.  The camera follows its pose unless it has been placed</span>
+<span class="sd">        itself.  Empty for a source that is the camera.</span>
+<span class="sd">    """</span>
+
+    <span class="n">max_supported_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_supported_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_supported_framerate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">vendor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">serial_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">intrinsics</span><span class="p">:</span> <span class="n">Intrinsics</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span></div>
+
+
+
+<div class="viewcode-block" id="SourceInfo">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceInfo">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceInfo</span><span class="p">(</span><span class="n">SubSyncableDataclass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Network-transparent description of a camera's resolved source.</span>
+
+<span class="sd">    This is the source-shaped half of the camera's synced state: it</span>
+<span class="sd">    travels over SpiriSynq so a remote peer can see what a camera is</span>
+<span class="sd">    pointed at without having to parse the source string itself.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    url : str</span>
+<span class="sd">        The source string this description was resolved from.</span>
+<span class="sd">    scheme : str</span>
+<span class="sd">        Normalised scheme (``v4l``, ``rtsp``, ``testimage``, ...).</span>
+<span class="sd">    target : str</span>
+<span class="sd">        Scheme-specific target: device path, stream URL, or image name.</span>
+<span class="sd">    handler : str</span>
+<span class="sd">        Name of the handler class that claimed the source.</span>
+<span class="sd">    error : str</span>
+<span class="sd">        Empty when the source resolved cleanly, otherwise the reason it</span>
+<span class="sd">        could not be resolved.</span>
+<span class="sd">    """</span>
+
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">handler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+
+<div class="viewcode-block" id="SourceInfo.unresolved">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceInfo.unresolved">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unresolved</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceInfo</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build a description for a source string that could not be resolved.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url : str</span>
+<span class="sd">            The offending source string.</span>
+<span class="sd">        error : str</span>
+<span class="sd">            Human-readable reason the source was rejected.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SourceInfo</span>
+<span class="sd">            A description carrying only ``url`` and ``error``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SourceInfo.update">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceInfo.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">SourceInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Copy another description's fields into this one, field by field.</span>
+
+<span class="sd">        Updating in place keeps the object identity stable, so UI</span>
+<span class="sd">        bindings and sync subscriptions attached to this instance</span>
+<span class="sd">        survive a source change, and only the fields that actually</span>
+<span class="sd">        changed are published.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : SourceInfo</span>
+<span class="sd">            The description to copy from.</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
+</div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Handler contract</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="SourceBase">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceBase</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Abstract base for camera source handlers.</span>
+
+<span class="sd">    A handler is responsible for its own protocol end to end: deciding</span>
+<span class="sd">    whether it recognises a source string, parsing it, opening the</span>
+<span class="sd">    underlying device, and producing raw BGR frames.  Registration is</span>
+<span class="sd">    implicit — :py:mod:`SpiriCamera.sources` discovers every concrete</span>
+<span class="sd">    subclass that has been imported.</span>
+
+<span class="sd">    Subclasses declare the schemes they own via :py:attr:`schemes` and</span>
+<span class="sd">    implement :py:meth:`open`, :py:meth:`close`, :py:meth:`read`, and</span>
+<span class="sd">    :py:attr:`is_open`.  A handler that accepts schemeless strings (such</span>
+<span class="sd">    as a V4L2 device path) also overrides :py:meth:`handles`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    schemes : ClassVar[tuple[str, ...]]</span>
+<span class="sd">        URL schemes this handler claims, without the ``://`` separator.</span>
+<span class="sd">    """</span>
+
+    <span class="n">schemes</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">SourceURL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a handler for an already-parsed source URL.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url : SourceURL</span>
+<span class="sd">            The parsed source string, as accepted by :py:meth:`handles`.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Resolution</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SourceBase.handles">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.handles">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">SourceURL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Report whether this handler recognises a source URL.</span>
+
+<span class="sd">        The default implementation matches :py:attr:`schemes`.  Override</span>
+<span class="sd">        to accept schemeless forms.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url : SourceURL</span>
+<span class="sd">            The parsed source string.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if this handler can serve the URL.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">url</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">schemes</span></div>
+
+
+<div class="viewcode-block" id="SourceBase.from_url">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.from_url">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">SourceURL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Instantiate this handler for a source URL it has claimed.</span>
+
+<span class="sd">        Override when a handler needs to validate or normalise the</span>
+<span class="sd">        target before construction.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        url : SourceURL</span>
+<span class="sd">            The parsed source string.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Self</span>
+<span class="sd">            A handler instance, not yet opened.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        SourceError</span>
+<span class="sd">            If the target is malformed for this scheme.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Description</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Normalised scheme name, filled in for schemeless sources."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemes</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Scheme-specific target: device path, stream URL, or image name."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">target</span>
+
+<div class="viewcode-block" id="SourceBase.describe">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.describe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceInfo</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Summarise this source for the camera's synced state.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SourceInfo</span>
+<span class="sd">            A network-transparent description of this handler.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">SourceInfo</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+            <span class="n">handler</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Lifecycle</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether the underlying device is currently open."""</span>
+
+<div class="viewcode-block" id="SourceBase.open">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.open">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">CaptureSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceCapabilities</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Open the underlying device and negotiate capture settings.</span>
+
+<span class="sd">        Calling :py:meth:`open` on an already-open source is a no-op that</span>
+<span class="sd">        re-reports the current capabilities.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        settings : CaptureSettings</span>
+<span class="sd">            The resolution and framerate the camera is asking for.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SourceCapabilities</span>
+<span class="sd">            What the source will actually deliver.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        SourceError</span>
+<span class="sd">            If the device cannot be opened.</span>
+<span class="sd">        """</span></div>
+
+
+<div class="viewcode-block" id="SourceBase.close">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.close">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Release the underlying device.</span>
+
+<span class="sd">        Closing an already-closed source is a no-op.</span>
+<span class="sd">        """</span></div>
+
+
+<div class="viewcode-block" id="SourceBase.read">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.read">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">CaptureSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Produce a single frame.</span>
+
+<span class="sd">        Handlers return raw pixels; JPEG encoding and publication belong</span>
+<span class="sd">        to the camera layer.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        settings : CaptureSettings</span>
+<span class="sd">            The resolution and framerate currently requested.  Sources</span>
+<span class="sd">            that render on demand should honour this on every call so</span>
+<span class="sd">            that live resolution changes take effect.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray | None</span>
+<span class="sd">            A BGR frame, or ``None`` when no new frame is available.</span>
+<span class="sd">            Returning the *same* array object on consecutive calls tells</span>
+<span class="sd">            the camera the frame is unchanged and lets it reuse its</span>
+<span class="sd">            previous encode.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        SourceError</span>
+<span class="sd">            If the source has failed in a way a retry will not fix.</span>
+<span class="sd">        """</span></div>
+
+
+<div class="viewcode-block" id="SourceBase.frame_tags">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.frame_tags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frame_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Tags that arrived with the frame :py:meth:`read` last returned.</span>
+
+<span class="sd">        For sources whose frames were already tagged before they got</span>
+<span class="sd">        here -- another camera's output, say -- so the metadata survives</span>
+<span class="sd">        being decoded and re-encoded.  The camera merges these under its</span>
+<span class="sd">        own tags; see</span>
+<span class="sd">        :py:meth:`~SpiriCamera.camera.Camera.exif_tags_for_frame`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, str]</span>
+<span class="sd">            The inherited tags.  The default reports none.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="SourceBase.frame_intrinsics">
+<a class="viewcode-back" href="../../../api/index.html#SpiriCamera.sources.SourceBase.frame_intrinsics">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frame_intrinsics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Intrinsics</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The lens of the frame :py:meth:`read` last returned, if it changes.</span>
+
+<span class="sd">        For sources whose lens can change while open -- another camera's</span>
+<span class="sd">        output, whose lens zooms -- so the camera follows it rather than</span>
+<span class="sd">        keeping the one :py:meth:`open` reported.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Intrinsics | None</span>
+<span class="sd">            The lens now, or ``None`` to keep the last one reported.  The</span>
+<span class="sd">            default keeps what :py:meth:`open` said.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">raw</span><span class="si">!r}</span><span class="s2">)"</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=1b390748"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
