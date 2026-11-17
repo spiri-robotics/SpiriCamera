@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="2. Frame Metadata (EXIF)" href="exif.html"><link rel="prev" title="SpiriCamera" href="index.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="2. The camera’s data structure" href="data_model.html"><link rel="prev" title="SpiriCamera" href="index.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/getting_started.html">
         <link rel="prefetch" href="_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="_static/spiri-logo-dark.svg" as="image">
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -345,22 +351,55 @@
 <p>Attach to a camera another process is already running by its SpiriSynq topic:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span>
 
-<span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="o">.</span><span class="n">from_topic</span><span class="p">(</span><span class="s2">"some-host/dev-video0"</span><span class="p">)</span>
+<span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="o">.</span><span class="n">from_topic</span><span class="p">(</span><span class="s2">"some-host/cameras/1/raw"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This gives you a mirror: same synced fields (<code class="docutils literal notranslate"><span class="pre">image</span></code>, <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">running</span></code>, …), kept up to date by SpiriSynq, but it never opens a device locally — it exists to observe, not to capture. There is no <code class="docutils literal notranslate"><span class="pre">read()</span></code> to call. Get frames one of two ways:</p>
+<p>This gives you a mirror: same synced fields (<code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">running</span></code>, <code class="docutils literal notranslate"><span class="pre">max_width</span></code>, …), kept up to date by SpiriSynq, but it never opens a device locally — it exists to observe, not to capture. There is no <code class="docutils literal notranslate"><span class="pre">read()</span></code> to call.</p>
+<p>A mirror receives settings, not frames. To get frames, choose a transport by subscribing to it:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Transport</p></th>
+<th class="head"><p>Subscribe with</p></th>
+<th class="head"><p>Frames are</p></th>
+<th class="head"><p>Suits</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Raw</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cam.transport_raw_subscribe()</span></code></p></td>
+<td><p><a class="reference internal" href="api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame" title="SpiriCamera.transports.RawFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawFrame</span></code></a>, with a read-only BGR <code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
+<td><p>The same host, or a fast network</p></td>
+</tr>
+<tr class="row-odd"><td><p>JPEG</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cam.transport_jpeg_subscribe()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p></td>
+<td><p>Most things, and the simplest to use</p></td>
+</tr>
+<tr class="row-even"><td><p>Video</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cam.transport_video_subscribe()</span></code></p></td>
+<td><p><a class="reference internal" href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket" title="SpiriCamera.transports.VideoPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">VideoPacket</span></code></a>, H.264</p></td>
+<td><p>Constrained links</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Subscribing is what makes the camera run: with no subscribers on any transport, its source is closed. Unsubscribe when you’re done (<code class="docutils literal notranslate"><span class="pre">cam.transport_jpeg_unsubscribe()</span></code>), or close the mirror. <a class="reference internal" href="data_model.html"><span class="doc">The camera’s data structure</span></a> shows the whole structure, and what gets sent when.</p>
+<p>Then get frames one of two ways:</p>
 <p><strong>Poll</strong>, when you’re already on a timer or a render loop (this is what the debug UI does, ticking in step with <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frame_jpeg</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span>  <span class="c1"># the most recent frame, updated for you in the background</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
+<span class="n">frame_jpeg</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># the most recent frame; empty until the first arrives</span>
 </pre></div>
 </div>
-<p><strong>Or subscribe</strong>, when you want to react the moment a new frame (or any other field) lands, via the psygnal event every synced field gets:</p>
+<p><strong>Or connect to its signal</strong>, when you want to react the moment a new frame lands:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_frame</span><span class="p">(</span><span class="n">frame_jpeg</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
-<span class="n">cam</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">on_frame</span><span class="p">)</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">on_frame</span><span class="p">)</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Both approaches work the same way whether <code class="docutils literal notranslate"><span class="pre">cam</span></code> is a mirror or the authoritative camera itself — <code class="docutils literal notranslate"><span class="pre">image</span></code> is just a field, and it changes the same way either way.</p>
+<p>Both approaches work the same way whether <code class="docutils literal notranslate"><span class="pre">cam</span></code> is a mirror or the authoritative camera itself. Video has <code class="docutils literal notranslate"><span class="pre">cam.transport_video.packet_received</span></code> instead, as there is no single current frame to read. Other fields have the psygnal event every synced field gets, such as <code class="docutils literal notranslate"><span class="pre">cam.events.status</span></code>.</p>
 </section>
 <section id="building-on-an-existing-camera">
 <h3><span class="section-number">1.3.2. </span>Building on an existing camera<a class="headerlink" href="#building-on-an-existing-camera" title="Link to this heading">¶</a></h3>
@@ -368,7 +407,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span>
 
 <span class="n">small</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
-    <span class="s2">"spirisynq://some-host/dev-video0"</span><span class="p">,</span>
+    <span class="s2">"spirisynq://some-host/cameras/1/raw"</span><span class="p">,</span>
     <span class="n">max_width</span><span class="o">=</span><span class="mi">640</span><span class="p">,</span>
     <span class="n">max_height</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
     <span class="n">quality</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
@@ -376,28 +415,34 @@
 <span class="n">small</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> takes the same topic <code class="docutils literal notranslate"><span class="pre">Camera.from_topic</span></code> does, absolute or relative to this host’s base topic: <code class="docutils literal notranslate"><span class="pre">spirisynq://./camera1</span></code> is this host’s <code class="docutils literal notranslate"><span class="pre">camera1</span></code>. Each upstream frame is decoded and scaled down to fit inside <code class="docutils literal notranslate"><span class="pre">max_width</span></code> x <code class="docutils literal notranslate"><span class="pre">max_height</span></code> (keeping its aspect ratio; it never scales up), then goes through this camera like any source’s frame: its own <code class="docutils literal notranslate"><span class="pre">overlay_widgets</span></code> are baked in, it is re-encoded at its own <code class="docutils literal notranslate"><span class="pre">quality</span></code>, and it is published on its own topic. The upstream is untouched, so any number of these can hang off one device. Frame tags carry over too — see <a class="reference internal" href="exif.html"><span class="doc">Frame Metadata (EXIF)</span></a>.</p>
-<p>The upstream does not have to exist yet, and may come and go: the camera waits for the topic, and reconnects when an upstream that shut down, crashed, or restarted is back — see “Waiting for a Source” below. An upstream that is merely stopped is kept; its last frame stays up until it starts again.</p>
+<p><code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> takes the same topic <code class="docutils literal notranslate"><span class="pre">Camera.from_topic</span></code> does, absolute or relative to this host’s base topic: <code class="docutils literal notranslate"><span class="pre">spirisynq://./cameras/1/raw</span></code> is this host’s <code class="docutils literal notranslate"><span class="pre">cameras/1/raw</span></code>. The scheme also picks which of the upstream’s transports to pull: <code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> and <code class="docutils literal notranslate"><span class="pre">spirisynq+jpeg://</span></code> take JPEG, <code class="docutils literal notranslate"><span class="pre">spirisynq+raw://</span></code> takes raw with no decode, and <code class="docutils literal notranslate"><span class="pre">spirisynq+video://</span></code> takes H.264 for a constrained link.</p>
+<p>Each upstream frame is scaled down to fit inside <code class="docutils literal notranslate"><span class="pre">max_width</span></code> x <code class="docutils literal notranslate"><span class="pre">max_height</span></code> (keeping its aspect ratio; it never scales up), then goes through this camera like any source’s frame: its own <code class="docutils literal notranslate"><span class="pre">overlay_widgets</span></code> are drawn on, it is encoded at its own settings, and it is published on its own topic. The upstream is untouched, so any number of these can hang off one device. Frame tags carry over too — see <a class="reference internal" href="exif.html"><span class="doc">Frame Metadata (EXIF)</span></a>.</p>
+<p>This camera pulls from its upstream only while something subscribes to it, so demand travels up the chain: with nobody watching, the device at the top is closed.</p>
+<p>The upstream does not have to exist yet, and may come and go: the camera waits for the topic, and reconnects when an upstream that shut down, crashed, or restarted is back — see “Waiting for a Source” below.</p>
 </section>
 <section id="running-a-device-yourself">
 <h3><span class="section-number">1.3.3. </span>Running a device yourself<a class="headerlink" href="#running-a-device-yourself" title="Link to this heading">¶</a></h3>
-<p>If your process <em>is</em> the one meant to own the device — a standalone script, or something like the <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">run</span></code> CLI command — construct a <code class="docutils literal notranslate"><span class="pre">Camera</span></code> normally and start it. Leave <code class="docutils literal notranslate"><span class="pre">start()</span></code> on its default <code class="docutils literal notranslate"><span class="pre">background=True</span></code>: the capture thread runs its own loop, paced to <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code>, for as long as the camera is running. Don’t drive it frame-at-a-time yourself — a <code class="docutils literal notranslate"><span class="pre">Camera</span></code> is meant to be treated like a small daemon, not a handle you poll by calling <code class="docutils literal notranslate"><span class="pre">read()</span></code> in your own loop.</p>
+<p>If your process <em>is</em> the one meant to own the device — a standalone script, or something like the <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">run</span></code> CLI command — construct a <code class="docutils literal notranslate"><span class="pre">Camera</span></code> normally and start it. Leave <code class="docutils literal notranslate"><span class="pre">start()</span></code> on its default <code class="docutils literal notranslate"><span class="pre">background=True</span></code>: the capture thread runs its own loop, paced to <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code>, whenever something wants frames. Don’t drive it frame-at-a-time yourself — a <code class="docutils literal notranslate"><span class="pre">Camera</span></code> is meant to be treated like a small daemon, not a handle you poll by calling <code class="docutils literal notranslate"><span class="pre">read()</span></code> in your own loop.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span>
 
 <span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"/dev/video0"</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">85</span><span class="p">)</span>
-<span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># opens the device, begins the background capture thread</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># reads what the device is, closes it, and waits for subscribers</span>
 
-<span class="n">frame_jpeg</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span>  <span class="c1"># whatever the background thread has captured so far</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>  <span class="c1"># something wants frames, so the device opens</span>
+<span class="n">frame_jpeg</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># whatever has been captured so far</span>
 
 <span class="n">cam</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>or as a context manager, which starts on entry and stops on exit:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"/dev/video0"</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">85</span><span class="p">)</span> <span class="k">as</span> <span class="n">cam</span><span class="p">:</span>
-    <span class="n">frame_jpeg</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">on_frame</span><span class="p">)</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
+    <span class="o">...</span>
 </pre></div>
 </div>
-<p>To change the rate frames are captured at, set <code class="docutils literal notranslate"><span class="pre">cam.max_framerate</span></code> (live — takes effect on the next frame, no restart needed) rather than calling <code class="docutils literal notranslate"><span class="pre">read()</span></code> less often. <code class="docutils literal notranslate"><span class="pre">start(background=False)</span></code> exists — it opens the device without the capture thread, leaving you to call <code class="docutils literal notranslate"><span class="pre">read()</span></code> yourself — but that’s an edge case for tests and one-off scripts, not the pattern to reach for; ordinary code, including anything long-running, should stay on the default background thread and read <code class="docutils literal notranslate"><span class="pre">cam.image</span></code> or connect to <code class="docutils literal notranslate"><span class="pre">cam.events.image</span></code>.</p>
+<p>A subscriber anywhere counts, on this camera or across the network, so <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">run</span></code> sits idle until someone asks for frames.</p>
+<p>To change the rate frames are captured at, set <code class="docutils literal notranslate"><span class="pre">cam.max_framerate</span></code> (live — takes effect on the next frame, no restart needed) rather than calling <code class="docutils literal notranslate"><span class="pre">read()</span></code> less often. <code class="docutils literal notranslate"><span class="pre">start(background=False)</span></code> exists — it opens the device without the capture thread, leaving you to call <code class="docutils literal notranslate"><span class="pre">read()</span></code> yourself — but that’s an edge case for tests and one-off scripts, not the pattern to reach for; ordinary code, including anything long-running, should stay on the default background thread, subscribe to a transport, and read its <code class="docutils literal notranslate"><span class="pre">data</span></code> or connect to its <code class="docutils literal notranslate"><span class="pre">data_changed</span></code>.</p>
 </section>
 <section id="inspecting-a-source">
 <h3><span class="section-number">1.3.4. </span>Inspecting a Source<a class="headerlink" href="#inspecting-a-source" title="Link to this heading">¶</a></h3>
@@ -455,7 +500,7 @@ So <code class="docutils literal notranslate"><span class="pre">/dev/video0</spa
 <h3><span class="section-number">1.3.8. </span>Waiting for a Source<a class="headerlink" href="#waiting-for-a-source" title="Link to this heading">¶</a></h3>
 <p>A started camera does not give up on a source that is not there. A
 device that is unplugged, or a <code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> topic nobody publishes
-yet, leaves the camera <code class="docutils literal notranslate"><span class="pre">running</span></code> with a status of
+yet, leaves a wanted camera <code class="docutils literal notranslate"><span class="pre">running</span></code> with a status of
 <code class="docutils literal notranslate"><span class="pre">waiting</span> <span class="pre">for</span> <span class="pre">source:</span> <span class="pre">&lt;reason&gt;</span></code>, retrying about once a second until it
 works. The same happens if the device is unplugged or the upstream
 camera goes away mid-stream: it waits, and picks up again when it is
@@ -466,29 +511,34 @@ scripted use with no capture thread to wait on — still raises instead.</p>
 <section id="knowing-what-it-is-doing">
 <h3><span class="section-number">1.3.9. </span>Knowing What It Is Doing<a class="headerlink" href="#knowing-what-it-is-doing" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">camera.status</span></code> says what the camera is doing in words — <code class="docutils literal notranslate"><span class="pre">running</span></code>,
-<code class="docutils literal notranslate"><span class="pre">stopped</span></code>, waiting, or the reason it is none of those:</p>
+<code class="docutils literal notranslate"><span class="pre">stopped</span></code>, <code class="docutils literal notranslate"><span class="pre">idle:</span> <span class="pre">no</span> <span class="pre">subscribers</span></code>, waiting, or the reason it is none of those:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"/dev/vi"</span><span class="p">)</span>  <span class="c1"># half-typed</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">status</span>  <span class="c1"># "Unrecognised source: '/dev/vi'. Supported: ..."</span>
 
 <span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"v4l:///dev/video99"</span><span class="p">)</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># does not raise</span>
-<span class="n">cam</span><span class="o">.</span><span class="n">status</span>  <span class="c1"># "waiting for source: Failed to open capture source: '/dev/video99'"</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">status</span>  <span class="c1"># "waiting for source: Failed to open capture source: 'v4l:///dev/video99'"</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">running</span></code> says whether the camera is trying; <code class="docutils literal notranslate"><span class="pre">status</span></code> says whether
-frames are actually flowing, and why not when they are not.</p>
+<p><code class="docutils literal notranslate"><span class="pre">running</span></code> says whether anything wants frames, so whether the camera is
+trying; <code class="docutils literal notranslate"><span class="pre">status</span></code> says whether frames are actually flowing, and why not
+when they are not. <code class="docutils literal notranslate"><span class="pre">running</span></code> is set by the camera from its subscribers:
+<code class="docutils literal notranslate"><span class="pre">start()</span></code> and <code class="docutils literal notranslate"><span class="pre">stop()</span></code> are the local switch, and nothing remote can turn
+a camera off.</p>
 </section>
 <section id="frame-tags">
 <h3><span class="section-number">1.3.10. </span>Frame Tags<a class="headerlink" href="#frame-tags" title="Link to this heading">¶</a></h3>
-<p>Each captured frame is a JPEG with its own metadata baked into its EXIF:
+<p>Each captured frame carries its own metadata, in its EXIF as a JPEG and
+beside it as raw or video:
 when it was taken, what took it, and anything you care to add — see the
 <a class="reference internal" href="exif.html"><span class="doc">Frame Metadata (EXIF)</span></a> guide for how to read tags back, add your own (GPS included),
 and share the tagging job between more than one piece of software.</p>
 </section>
 <section id="overlays">
 <h3><span class="section-number">1.3.11. </span>Overlays<a class="headerlink" href="#overlays" title="Link to this heading">¶</a></h3>
-<p>A camera can bake a small SVG “HUD” onto every frame before it is
-encoded — a resolution/framerate readout, a battery level, anything
+<p>A camera can bake a small SVG “HUD” onto every frame, after resizing it
+and before any transport — a resolution/framerate readout, a battery level, anything
 templated from live data. The built-in metrics overlay is the
 quickest way to see this working:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span>
@@ -496,12 +546,13 @@ quickest way to see this working:</p>
 
 <span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"/dev/video0"</span><span class="p">)</span>
 <span class="n">widget</span> <span class="o">=</span> <span class="n">camera_metrics_widget</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>  <span class="c1"># publishes its own topic</span>
-<span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_topic</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># opt this camera into it</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># opt this camera into it</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">cam.image</span></code> now includes the overlay, composited fresh on every frame.
-Removing the entry (<code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">cam.overlay_widgets[widget.synq_topic]</span></code>) drops
+<p>Every transport now includes the overlay, composited fresh on every
+frame, on the resized image. For a feed without it, make a second camera
+with this one as its source and draw on that one instead. Removing the entry (<code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">cam.overlay_widgets[widget.synq_absolute_path]</span></code>) drops
 it again immediately — no restart needed.</p>
 <p>A widget you author yourself is a <a class="reference internal" href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.HudWidget" title="SpiriCamera.overlay.HudWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">HudWidget</span></code></a>:
 an SVG template, MiniJinja-rendered against the current frame’s <code class="docutils literal notranslate"><span class="pre">exif</span></code>
@@ -522,14 +573,16 @@ other live SpiriSynq object it declares under <code class="docutils literal notr
 <span class="s2">        &lt;/svg&gt;</span>
 <span class="s2">    """</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_topic</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 </pre></div>
 </div>
+<p>The key is the widget’s <code class="docutils literal notranslate"><span class="pre">synq_absolute_path</span></code>, which includes the host prefix. A camera
+can’t find a widget by its bare <code class="docutils literal notranslate"><span class="pre">synq_topic</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">{#</span> <span class="pre">object:</span> <span class="pre">battery</span> <span class="pre">=</span> <span class="pre">...</span> <span class="pre">#}</span></code> comment declares both the alias used
 in the template and the default topic it mirrors — every camera that
 opts into this widget gets that binding unless it overrides it for
 itself:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_topic</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">synq_absolute_path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"bindings"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"battery"</span><span class="p">:</span> <span class="s2">"some-other-host/battery_monitor"</span><span class="p">},</span>
     <span class="s2">"x"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="s2">"y"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># percent-of-frame position override, this camera only</span>
@@ -548,11 +601,18 @@ templating rules, including why <code class="docutils literal notranslate"><span
 <p>Camera parameters are configured via environment variables:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export SPIRICAMERA_SOURCE="rtsp://host/stream"</span>
 <span class="go">export SPIRICAMERA_QUALITY=90      # JPEG quality [1-100]</span>
-<span class="go">export SPIRICAMERA_FRAME_WIDTH=1280 # Capture width</span>
-<span class="go">export SPIRICAMERA_FRAME_HEIGHT=720 # Capture height</span>
+<span class="go">export SPIRICAMERA_FRAME_WIDTH=1280 # Most pixels wide a published frame is</span>
+<span class="go">export SPIRICAMERA_FRAME_HEIGHT=720 # ...and high; bigger frames are shrunk to fit</span>
 <span class="go">export SPIRICAMERA_FRAMERATE=30     # Capture framerate</span>
+<span class="go">export SPIRICAMERA_RTSP_PORT=8554   # `run` serves RTSP on this TCP port (0: off)</span>
+<span class="go">export SPIRICAMERA_RTSP_UDP_PORT=8000 # ...and the first of four UDP ports</span>
+<span class="go">export SPIRICAMERA_H264_PRESET=veryfast # x264 preset of the camera's one video encode</span>
 </pre></div>
 </div>
+<p>However many video subscribers and RTSP viewers a camera has, it is
+encoded to H.264 once, in its own process, at the rate the worst link
+allows. See <a class="reference internal" href="data_model.html"><span class="doc">The camera’s data structure</span></a> for how, <a class="reference internal" href="rtsp.html"><span class="doc">Serving a camera over RTSP</span></a> for viewing it, and
+<a class="reference internal" href="mediamtx.html"><span class="doc">Serving a camera through MediaMTX</span></a> for translating it for other readers.</p>
 <p>Or passed directly to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Camera</span></code> constructor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="s2">"/dev/video0"</span><span class="p">,</span>
@@ -578,10 +638,37 @@ templating rules, including why <code class="docutils literal notranslate"><span
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">SpiriCamera capture "rtsp://host/stream" --frames=10 -o frames.jpg</span>
 </pre></div>
 </div>
-<p>Run live capture, publishing to SpiriSynq until interrupted:</p>
+<p>Run a camera on SpiriSynq until interrupted, capturing whenever something subscribes, and
+serve it over <a class="reference internal" href="rtsp.html"><span class="doc">RTSP</span></a>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">SpiriCamera run /dev/video0</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">run</span></code> publishes three cameras under this host’s base topic:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Topic</p></th>
+<th class="head"><p>What it is</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cameras/1/raw</span></code></p></td>
+<td><p>The source itself, within <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_FRAME_WIDTH</span></code> x <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_FRAME_HEIGHT</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cameras/1/hud</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">raw</span></code>, with the widgets <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_HUD_WIDGETS</span></code> names, by topic, separated by spaces or commas.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cameras/1/preview</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">raw</span></code> at 240 pixels high and one frame a second, for picking a camera from a list.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">hud</span></code> and <code class="docutils literal notranslate"><span class="pre">preview</span></code> take <code class="docutils literal notranslate"><span class="pre">raw</span></code>’s raw frames in the same process, so each runs, and runs
+<code class="docutils literal notranslate"><span class="pre">raw</span></code>, only while something subscribes to it. <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_CAMERA_NAME</span></code> replaces the
+<code class="docutils literal notranslate"><span class="pre">1</span></code>, and can be any text, such as <code class="docutils literal notranslate"><span class="pre">belly</span></code>. Give each camera on a host its own name.
+<code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_TOPIC</span></code> replaces the whole of <code class="docutils literal notranslate"><span class="pre">cameras/1</span></code>. RTSP serves each of them, as
+<code class="docutils literal notranslate"><span class="pre">/raw</span></code>, <code class="docutils literal notranslate"><span class="pre">/hud</span></code> and <code class="docutils literal notranslate"><span class="pre">/preview</span></code>; see <a class="reference internal" href="rtsp.html"><span class="doc">Serving a camera over RTSP</span></a>.</p>
 <p>The source argument is optional everywhere; without it, <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_SOURCE</span></code> is used.</p>
 </section>
 </section>
@@ -591,12 +678,8 @@ templating rules, including why <code class="docutils literal notranslate"><span
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">SpiriCamera --help</span>
 </pre></div>
 </div>
-<p>Or run as a module:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m SpiriCamera</span>
-</pre></div>
-</div>
-<p>For verbose output:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">SpiriCamera run --verbose</span>
+<p>For verbose output, which goes before the command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">SpiriCamera --verbose run /dev/video0</span>
 </pre></div>
 </div>
 </section>
@@ -604,8 +687,9 @@ templating rules, including why <code class="docutils literal notranslate"><span
 <h2><span class="section-number">1.5. </span>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Read the <a class="reference internal" href="api/index.html#api-reference"><span class="std std-ref">API Reference</span></a> for programmatic details</p></li>
-<li><p>Check the <a class="reference external" href="https://github.com/spiri-robotics/spiri-app-template/blob/main/pyproject.toml">pyproject.toml</a> for build and dependency configuration</p></li>
-<li><p>See the <a class="reference external" href="https://github.com/spiri-robotics/spiri-app-template/blob/main/templates/">Docker compose files</a> for deployment options</p></li>
+<li><p>View a camera in QGroundControl, or from any other RTSP client, with <a class="reference internal" href="rtsp.html"><span class="doc">Serving a camera over RTSP</span></a></p></li>
+<li><p>Check the <a class="reference external" href="https://github.com/spiri-robotics/SpiriCamera/blob/main/pyproject.toml">pyproject.toml</a> for build and dependency configuration</p></li>
+<li><p>See the <a class="reference external" href="https://github.com/spiri-robotics/SpiriCamera/blob/main/docker/compose.yaml">Docker compose files</a> for deployment options</p></li>
 </ul>
 </section>
 </section>
@@ -615,12 +699,12 @@ templating rules, including why <code class="docutils literal notranslate"><span
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="exif.html">
+          <a class="next-page" href="data_model.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">2. </span>Frame Metadata (EXIF)</div>
+                <div class="title"><span class="section-number">2. </span>The camera’s data structure</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -697,7 +781,7 @@ templating rules, including why <code class="docutils literal notranslate"><span
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=1b390748"></script>
+</div><script src="_static/documentation_options.js?v=3b889da3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

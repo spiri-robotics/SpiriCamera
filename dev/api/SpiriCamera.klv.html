@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6.2.8. SpiriCamera.ui" href="SpiriCamera.ui.html"><link rel="prev" title="6.2.6. SpiriCamera.webrtc" href="SpiriCamera.webrtc.html">
-        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.whep.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10.2.6. SpiriCamera.exif" href="SpiriCamera.exif.html"><link rel="prev" title="10.2.4. SpiriCamera.rtsp" href="SpiriCamera.rtsp.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.klv.html">
         <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>6.2.7. SpiriCamera.whep - SpiriCamera</title>
+        <title>10.2.5. SpiriCamera.klv - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -290,7 +296,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/SpiriCamera.whep.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/SpiriCamera.klv.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -308,55 +314,47 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-SpiriCamera.whep">
-<span id="spiricamera-whep"></span><h1><span class="section-number">6.2.7. </span>SpiriCamera.whep<a class="headerlink" href="#module-SpiriCamera.whep" title="Link to this heading">¶</a></h1>
-<p>WHEP (WebRTC-HTTP Egress Protocol) exposure for a single camera.</p>
-<p>This is the HTTP door onto the same session machinery
-<a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.Camera.webrtc_offer" title="SpiriCamera.camera.Camera.webrtc_offer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SpiriCamera.camera.Camera.webrtc_offer()</span></code></a> uses over zenoh –
-both call straight into <a class="reference internal" href="SpiriCamera.webrtc.html#module-SpiriCamera.webrtc" title="SpiriCamera.webrtc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.webrtc</span></code></a>, so a viewer that
-came in over HTTP and one that came in over SpiriSynq get the same
-video track and tags data channel.</p>
-<p>Deliberately minimal: one camera per app (<a class="reference internal" href="#SpiriCamera.whep.create_whep_app" title="SpiriCamera.whep.create_whep_app"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_whep_app()</span></code></a>
-takes a callable returning it, matching the “expose <em>a</em> topic over
-http” ask rather than a multi-camera router), and no <code class="docutils literal notranslate"><span class="pre">PATCH</span></code> route
-for trickle ICE – <a class="reference internal" href="SpiriCamera.webrtc.html#module-SpiriCamera.webrtc" title="SpiriCamera.webrtc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.webrtc</span></code></a> waits for ICE gathering
-to finish before answering, so there is nothing left to trickle. A
-future need for faster connection setup through restrictive NATs is
-the reason to revisit that, not anything this module is missing today.</p>
-<p>Run standalone with <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">whep-serve</span> <span class="pre">&lt;source&gt;</span></code> (see
-<a class="reference internal" href="SpiriCamera.cli.html#module-SpiriCamera.cli" title="SpiriCamera.cli"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.cli</span></code></a>), or mount <code class="docutils literal notranslate"><span class="pre">create_whep_app(...)</span></code> into any
-other FastAPI app.</p>
+          <section id="module-SpiriCamera.klv">
+<span id="spiricamera-klv"></span><h1><span class="section-number">10.2.5. </span>SpiriCamera.klv<a class="headerlink" href="#module-SpiriCamera.klv" title="Link to this heading">¶</a></h1>
+<p>KLV metadata for a camera’s frames: a MISB ST 0601 UAS Datalink Local Set.</p>
+<p><a class="reference internal" href="SpiriCamera.rtsp.html#module-SpiriCamera.rtsp" title="SpiriCamera.rtsp"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.rtsp</span></code></a> sends one with each frame, at that frame’s timestamp,
+and MediaMTX carries them on into MPEG-TS for STANAG 4609 consumers.</p>
 <dl class="py data">
-<dt class="sig sig-object py" id="SpiriCamera.whep.SDP_MEDIA_TYPE">
-<span class="sig-prename descclassname"><span class="pre">SpiriCamera.whep.</span></span><span class="sig-name descname"><span class="pre">SDP_MEDIA_TYPE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'application/sdp'</span></span><a class="headerlink" href="#SpiriCamera.whep.SDP_MEDIA_TYPE" title="Link to this definition">¶</a></dt>
-<dd><p>Media type both the offer and the answer are carried in, per WHEP.</p>
+<dt class="sig sig-object py" id="SpiriCamera.klv.ST0601_VERSION">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.klv.</span></span><span class="sig-name descname"><span class="pre">ST0601_VERSION</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">19</span></span><a class="headerlink" href="#SpiriCamera.klv.ST0601_VERSION" title="Link to this definition">¶</a></dt>
+<dd><p>The version of ST 0601 these sets declare, in tag 65.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="SpiriCamera.klv.UAS_LOCAL_SET_KEY">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.klv.</span></span><span class="sig-name descname"><span class="pre">UAS_LOCAL_SET_KEY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'\x06\x0e+4\x02\x0b\x01\x01\x0e\x01\x03\x01\x01\x00\x00\x00'</span></span><a class="headerlink" href="#SpiriCamera.klv.UAS_LOCAL_SET_KEY" title="Link to this definition">¶</a></dt>
+<dd><p>The Universal Label that identifies a UAS Datalink Local Set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="SpiriCamera.whep.create_whep_app">
-<span class="sig-prename descclassname"><span class="pre">SpiriCamera.whep.</span></span><span class="sig-name descname"><span class="pre">create_whep_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_camera</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/whep.html#create_whep_app"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.whep.create_whep_app" title="Link to this definition">¶</a></dt>
-<dd><p>Build a WHEP app publishing whatever <code class="docutils literal notranslate"><span class="pre">get_camera()</span></code> returns.</p>
+<dt class="sig sig-object py" id="SpiriCamera.klv.uas_local_set">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.klv.</span></span><span class="sig-name descname"><span class="pre">uas_local_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/klv.html#uas_local_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.klv.uas_local_set" title="Link to this definition">¶</a></dt>
+<dd><p>Build the local set for one frame.</p>
 <section id="parameters">
-<h2><span class="section-number">6.2.7. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.5. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
 <dl class="simple">
-<dt>get_camera<span class="classifier">Callable[[], Camera]</span></dt><dd><p>Called on every request, so the camera it returns can be
-swapped or reconfigured out from under a long-lived app.</p>
+<dt>timestamp<span class="classifier">float</span></dt><dd><p>When the frame was captured, in seconds since the UNIX epoch.</p>
 </dd>
 </dl>
 </section>
 <section id="returns">
-<h2><span class="section-number">6.2.7. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.5. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
 <dl class="simple">
-<dt>FastAPI</dt><dd><p>An app with <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/whep</span></code> and <code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/whep/{session_id}</span></code>.</p>
+<dt>bytes</dt><dd><p>A complete KLV packet: key, BER length and items, ending in the checksum.</p>
 </dd>
 </dl>
 </section>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>get_camera</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.15)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.Camera" title="SpiriCamera.camera.Camera"><em>Camera</em></a><em>]</em>)</p>
+<dd class="field-odd"><p><strong>timestamp</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>fastapi.FastAPI</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)">bytes</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -368,23 +366,23 @@ swapped or reconfigured out from under a long-lived app.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="SpiriCamera.ui.html">
+          <a class="next-page" href="SpiriCamera.exif.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">6.2.8. </span>SpiriCamera.ui</div>
+                <div class="title"><span class="section-number">10.2.6. </span>SpiriCamera.exif</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="SpiriCamera.webrtc.html">
+          <a class="prev-page" href="SpiriCamera.rtsp.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">6.2.6. </span>SpiriCamera.webrtc</div>
+                <div class="title"><span class="section-number">10.2.4. </span>SpiriCamera.rtsp</div>
                 
               </div>
             </a>
@@ -418,9 +416,10 @@ swapped or reconfigured out from under a long-lived app.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">6.2.7. SpiriCamera.whep</a><ul>
-<li><a class="reference internal" href="#SpiriCamera.whep.SDP_MEDIA_TYPE"><code class="docutils literal notranslate"><span class="pre">SDP_MEDIA_TYPE</span></code></a></li>
-<li><a class="reference internal" href="#SpiriCamera.whep.create_whep_app"><code class="docutils literal notranslate"><span class="pre">create_whep_app()</span></code></a></li>
+<li><a class="reference internal" href="#">10.2.5. SpiriCamera.klv</a><ul>
+<li><a class="reference internal" href="#SpiriCamera.klv.ST0601_VERSION"><code class="docutils literal notranslate"><span class="pre">ST0601_VERSION</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.klv.UAS_LOCAL_SET_KEY"><code class="docutils literal notranslate"><span class="pre">UAS_LOCAL_SET_KEY</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.klv.uas_local_set"><code class="docutils literal notranslate"><span class="pre">uas_local_set()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -432,7 +431,7 @@ swapped or reconfigured out from under a long-lived app.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

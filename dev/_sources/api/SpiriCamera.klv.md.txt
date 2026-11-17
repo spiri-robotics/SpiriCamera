@@ -1,7 +1,7 @@
-# SpiriCamera.webrtc
+# SpiriCamera.klv
 
 ```{eval-rst}
-.. automodule:: SpiriCamera.webrtc
+.. automodule:: SpiriCamera.klv
    :members:
    :member-order: bysource
    :undoc-members: False

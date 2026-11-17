@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6. API Reference" href="../api/index.html"><link rel="prev" title="4. Architecture" href="../architecture.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10. API Reference" href="../api/index.html"><link rel="prev" title="8. Architecture" href="../architecture.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/tutorials/yolo_overlay.html">
         <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>5. Tutorial: YOLO detection boxes as a live overlay - SpiriCamera</title>
+        <title>9. Tutorial: YOLO detection boxes as a live overlay - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,7 +315,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="tutorial-yolo-detection-boxes-as-a-live-overlay">
-<h1><span class="section-number">5. </span>Tutorial: YOLO detection boxes as a live overlay<a class="headerlink" href="#tutorial-yolo-detection-boxes-as-a-live-overlay" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">9. </span>Tutorial: YOLO detection boxes as a live overlay<a class="headerlink" href="#tutorial-yolo-detection-boxes-as-a-live-overlay" title="Link to this heading">¶</a></h1>
 <p>This walks through <a class="reference download internal" download="" href="../_downloads/8350c5b786376ceefbfa44b9086f9e30/yolo_overlay.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">examples/yolo_overlay.py</span></code></span></a>,
 a standalone script that:</p>
 <ol class="arabic simple">
@@ -336,7 +342,7 @@ the <code class="docutils literal notranslate"><span class="pre">examples</span>
 </pre></div>
 </div>
 <section id="running-it-against-the-nicegui-debug-ui">
-<h2><span class="section-number">5.1. </span>Running it against the NiceGUI debug UI<a class="headerlink" href="#running-it-against-the-nicegui-debug-ui" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">9.1. </span>Running it against the NiceGUI debug UI<a class="headerlink" href="#running-it-against-the-nicegui-debug-ui" title="Link to this heading">¶</a></h2>
 <p>The debug UI (<code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">-m</span> <span class="pre">SpiriCamera.ui</span></code>) is just another process
 that owns or mirrors a camera — the detector script attaches to <em>that</em>
 camera’s topic exactly like it would any other. The one piece of
@@ -352,8 +358,9 @@ network” panel does:</p>
 </div>
 <p>This prints every camera currently advertising itself, including the
 UI’s own — e.g. <code class="docutils literal notranslate"><span class="pre">$(hostname)/spiricamera_testimage</span></code> for the default
-<code class="docutils literal notranslate"><span class="pre">testimage://</span></code> source (the topic’s first segment is whatever machine
-it’s running on). (The “Synq Topic” field shown in the UI’s Device card
+<code class="docutils literal notranslate"><span class="pre">testimage://</span></code> source, or <code class="docutils literal notranslate"><span class="pre">$(hostname)/cameras/1/hud</span></code> for the HUD
+camera <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">run</span></code> publishes (the topic’s first segment is
+whatever machine it’s running on). (The “Synq Topic” field shown in the UI’s Device card
 is only the <em>local</em> half of this — <code class="docutils literal notranslate"><span class="pre">spiricamera_testimage</span></code> without the
 hostname — so prefer the discovery one-liner over reading it off the
 page.) If the UI is itself mirroring another camera rather than running
@@ -376,7 +383,7 @@ detection, composited directly into the frame the UI is already
 displaying:</p>
 <p><img alt="The same UI after yolo_overlay.py is running, with green detection boxes drawn around the bus and both people" src="../_images/yolo_overlay_after.png" /></p>
 <section id="seeing-an-actual-box">
-<h3><span class="section-number">5.1.1. </span>Seeing an actual box<a class="headerlink" href="#seeing-an-actual-box" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">9.1.1. </span>Seeing an actual box<a class="headerlink" href="#seeing-an-actual-box" title="Link to this heading">¶</a></h3>
 <p>The default <code class="docutils literal notranslate"><span class="pre">testimage://</span></code> pattern is a color-bar test card — YOLO
 correctly finds nothing in it, so <code class="docutils literal notranslate"><span class="pre">detections.boxes</span></code> will just stay
 empty and no rectangles will appear. To see a real detection without
@@ -389,23 +396,27 @@ and a bus for YOLO to actually find.</p>
 </section>
 </section>
 <section id="how-it-fits-together">
-<h2><span class="section-number">5.2. </span>How it fits together<a class="headerlink" href="#how-it-fits-together" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">9.2. </span>How it fits together<a class="headerlink" href="#how-it-fits-together" title="Link to this heading">¶</a></h2>
 <section id="getting-frames-without-owning-the-device">
-<h3><span class="section-number">5.2.1. </span>Getting frames without owning the device<a class="headerlink" href="#getting-frames-without-owning-the-device" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">9.2.1. </span>Getting frames without owning the device<a class="headerlink" href="#getting-frames-without-owning-the-device" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span>
 
 <span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="o">.</span><span class="n">from_topic</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">topic</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This is the mirror pattern described in <a class="reference internal" href="../getting_started.html"><span class="doc">Getting Started</span></a> — no
-device is opened locally, <code class="docutils literal notranslate"><span class="pre">cam.image</span></code> is kept up to date in the
-background, and there is no <code class="docutils literal notranslate"><span class="pre">read()</span></code> to drive. The script runs a tight
+device is opened locally, and there is no <code class="docutils literal notranslate"><span class="pre">read()</span></code> to drive. Subscribing
+to the JPEG transport is what brings frames, and what keeps the camera
+running, and <code class="docutils literal notranslate"><span class="pre">cam.transport_jpeg.data</span></code> is then kept up to date in the
+background. The script runs a tight
 loop, not a poll: there’s no sleep pacing it, it just runs detection
 back-to-back as fast as <code class="docutils literal notranslate"><span class="pre">model.predict</span></code> allows, skipping a cycle only
-when <code class="docutils literal notranslate"><span class="pre">cam.image</span></code> is the exact same object it already processed:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">last_jpeg</span> <span class="o">=</span> <span class="kc">None</span>
+when <code class="docutils literal notranslate"><span class="pre">cam.transport_jpeg.data</span></code> is the exact same object it already processed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
+
+<span class="n">last_jpeg</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-    <span class="n">jpeg</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span>
+    <span class="n">jpeg</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">jpeg</span> <span class="ow">or</span> <span class="n">jpeg</span> <span class="ow">is</span> <span class="n">last_jpeg</span><span class="p">:</span>
         <span class="k">continue</span>
     <span class="n">last_jpeg</span> <span class="o">=</span> <span class="n">jpeg</span>
@@ -416,11 +427,11 @@ when <code class="docutils literal notranslate"><span class="pre">cam.image</spa
 so that identity check almost never fires — it only matters at startup
 (before a first frame has arrived) or against a very slow source. This
 is deliberately <em>not</em> event-driven: an earlier version connected to
-<code class="docutils literal notranslate"><span class="pre">cam.events.image</span></code> and ran detection from that callback, but
-<code class="docutils literal notranslate"><span class="pre">cam.events.image</span></code> fires on zenoh’s own callback thread, and psygnal
+a signal and ran detection from that callback, but
+<code class="docutils literal notranslate"><span class="pre">cam.transport_jpeg.data_changed</span></code> fires on zenoh’s own callback thread, and psygnal
 holds a lock for a signal’s entire emission — for as long as a connected
 slot is running. Detection taking a few hundred milliseconds meant
-<code class="docutils literal notranslate"><span class="pre">cam.events.image.disconnect()</span></code>, called from the main thread during
+<code class="docutils literal notranslate"><span class="pre">disconnect()</span></code>, called from the main thread during
 shutdown, blocked on that same lock until inference finished, and the
 non-daemon zenoh thread underneath it couldn’t be joined until the
 callback returned either — the process wouldn’t die on <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>. The
@@ -429,10 +440,9 @@ disconnect and no callback thread to wait on, so <code class="docutils literal n
 immediately.</p>
 </section>
 <section id="a-note-on-overlays-feeding-back-into-detection">
-<h3><span class="section-number">5.2.2. </span>A note on overlays feeding back into detection<a class="headerlink" href="#a-note-on-overlays-feeding-back-into-detection" title="Link to this heading">¶</a></h3>
-<p>Attaching the widget to the mirrored <code class="docutils literal notranslate"><span class="pre">cam</span></code> (<code class="docutils literal notranslate"><span class="pre">cam.overlay_widgets[...]</span> <span class="pre">=</span> <span class="pre">{}</span></code>) bakes the boxes directly into <code class="docutils literal notranslate"><span class="pre">cam.image</span></code> server-side — see
-<a class="reference internal" href="../api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.read" title="SpiriCamera.camera.Camera.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, which composites overlays
-before encoding unless <a class="reference internal" href="../api/SpiriCamera.overlay.html#SpiriCamera.overlay.OverlayMixin.overlay_client_render" title="SpiriCamera.overlay.OverlayMixin.overlay_client_render"><code class="xref py py-attr docutils literal notranslate"><span class="pre">overlay_client_render</span></code></a>
+<h3><span class="section-number">9.2.2. </span>A note on overlays feeding back into detection<a class="headerlink" href="#a-note-on-overlays-feeding-back-into-detection" title="Link to this heading">¶</a></h3>
+<p>Attaching the widget to the mirrored <code class="docutils literal notranslate"><span class="pre">cam</span></code> (<code class="docutils literal notranslate"><span class="pre">cam.overlay_widgets[...]</span> <span class="pre">=</span> <span class="pre">{}</span></code>) bakes the boxes directly into the frames server-side, on every
+transport, unless <a class="reference internal" href="../api/SpiriCamera.overlay.html#SpiriCamera.overlay.OverlayMixin.overlay_client_render" title="SpiriCamera.overlay.OverlayMixin.overlay_client_render"><code class="xref py py-attr docutils literal notranslate"><span class="pre">overlay_client_render</span></code></a>
 is set. That means this same script’s <em>next</em> detection pass runs on a
 frame that already has its own boxes drawn on it: the overlay it just
 added is fed straight back into the thing deciding what to add.
@@ -446,7 +456,7 @@ so overlays are only ever composited for display (in a browser, via
 and never baked into the frames anything downstream analyzes.</p>
 </section>
 <section id="publishing-detections-as-a-generic-spirisynq-object">
-<h3><span class="section-number">5.2.3. </span>Publishing detections as a generic SpiriSynq object<a class="headerlink" href="#publishing-detections-as-a-generic-spirisynq-object" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">9.2.3. </span>Publishing detections as a generic SpiriSynq object<a class="headerlink" href="#publishing-detections-as-a-generic-spirisynq-object" title="Link to this heading">¶</a></h3>
 <p>The overlay system’s data sources aren’t camera-specific — <em>any</em>
 <code class="docutils literal notranslate"><span class="pre">SyncableObject</span></code> with synced fields can be one (see
 <a class="reference internal" href="../api/SpiriCamera.overlay.html#module-SpiriCamera.overlay" title="SpiriCamera.overlay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.overlay</span></code></a>’s module docstring for the mechanism, and
@@ -468,7 +478,7 @@ type in SpiriSynq; a plain <code class="docutils literal notranslate"><span clas
 is just a normal synced-field change like any other.</p>
 </section>
 <section id="authoring-the-overlay-widget">
-<h3><span class="section-number">5.2.4. </span>Authoring the overlay widget<a class="headerlink" href="#authoring-the-overlay-widget" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">9.2.4. </span>Authoring the overlay widget<a class="headerlink" href="#authoring-the-overlay-widget" title="Link to this heading">¶</a></h3>
 <p>A <code class="docutils literal notranslate"><span class="pre">HudWidget</span></code>’s SVG is a MiniJinja template. It declares the object it
 needs with a comment (stripped before rendering) and reads its fields
 through the alias that comment names:</p>
@@ -486,7 +496,7 @@ hand-authored SVG, so looping over <code class="docutils literal notranslate"><s
 <code class="docutils literal notranslate"><span class="pre">&lt;rect&gt;</span></code> elements <em>is</em> the box-drawing widget, not a shortcut around one.</p>
 </section>
 <section id="colouring-boxes-by-class">
-<h3><span class="section-number">5.2.5. </span>Colouring boxes by class<a class="headerlink" href="#colouring-boxes-by-class" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">9.2.5. </span>Colouring boxes by class<a class="headerlink" href="#colouring-boxes-by-class" title="Link to this heading">¶</a></h3>
 <p>The template above draws every box the same colour. Telling classes
 apart at a glance – people in one colour, vehicles in another – needs
 nothing from Python or SpiriSynq, only more of the MiniJinja already in
@@ -524,7 +534,7 @@ colour for any class the map doesn’t name.</p></li>
 </ul>
 </section>
 <section id="making-the-label-readable-on-any-background">
-<h3><span class="section-number">5.2.6. </span>Making the label readable on any background<a class="headerlink" href="#making-the-label-readable-on-any-background" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">9.2.6. </span>Making the label readable on any background<a class="headerlink" href="#making-the-label-readable-on-any-background" title="Link to this heading">¶</a></h3>
 <p>A coloured label drawn straight onto the picture disappears the moment
 it lands on a similarly-coloured or bright patch of frame – a lime
 label over grass, say. The usual SVG fix is an outline: give the
@@ -578,17 +588,15 @@ value the camera looks up by.</p>
 </section>
 </section>
 <section id="how-many-lines-is-this-really">
-<h2><span class="section-number">5.3. </span>How many lines is this, really<a class="headerlink" href="#how-many-lines-is-this-really" title="Link to this heading">¶</a></h2>
-<p>The whole script is about 60 lines of actual control flow (imports,
-argument parsing, the detection loop, cleanup) plus a roughly 15-line SVG
-template as a string constant — call it <strong>~75 lines</strong> for a from-scratch,
-independently-runnable detector. None of it is boilerplate specific to
+<h2><span class="section-number">9.3. </span>How many lines is this, really<a class="headerlink" href="#how-many-lines-is-this-really" title="Link to this heading">¶</a></h2>
+<p>The whole script is about 180 lines, comments and the SVG template included,
+for a from-scratch, independently-runnable detector. None of it is boilerplate specific to
 this tutorial: the same shape — mirror a camera, define a small
 <code class="docutils literal notranslate"><span class="pre">SyncableObject</span></code>, author a template that reads it — is how any external
 process publishes any kind of overlay data, not just bounding boxes.</p>
 </section>
 <section id="cleaning-up">
-<h2><span class="section-number">5.4. </span>Cleaning up<a class="headerlink" href="#cleaning-up" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">9.4. </span>Cleaning up<a class="headerlink" href="#cleaning-up" title="Link to this heading">¶</a></h2>
 <p>The script publishes two objects (<code class="docutils literal notranslate"><span class="pre">detections</span></code> and <code class="docutils literal notranslate"><span class="pre">widget</span></code>) and closes
 both, plus the mirrored <code class="docutils literal notranslate"><span class="pre">cam</span></code>, on <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>. Nothing it created outlives
 the process — the camera stops rendering the overlay the moment the
@@ -606,7 +614,7 @@ the process — the camera stops rendering the overlay the moment the
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">6. </span>API Reference</div>
+                <div class="title"><span class="section-number">10. </span>API Reference</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -617,7 +625,7 @@ the process — the camera stops rendering the overlay the moment the
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">4. </span>Architecture</div>
+                <div class="title"><span class="section-number">8. </span>Architecture</div>
                 
               </div>
             </a>
@@ -651,22 +659,22 @@ the process — the camera stops rendering the overlay the moment the
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">5. Tutorial: YOLO detection boxes as a live overlay</a><ul>
-<li><a class="reference internal" href="#running-it-against-the-nicegui-debug-ui">5.1. Running it against the NiceGUI debug UI</a><ul>
-<li><a class="reference internal" href="#seeing-an-actual-box">5.1.1. Seeing an actual box</a></li>
+<li><a class="reference internal" href="#">9. Tutorial: YOLO detection boxes as a live overlay</a><ul>
+<li><a class="reference internal" href="#running-it-against-the-nicegui-debug-ui">9.1. Running it against the NiceGUI debug UI</a><ul>
+<li><a class="reference internal" href="#seeing-an-actual-box">9.1.1. Seeing an actual box</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#how-it-fits-together">5.2. How it fits together</a><ul>
-<li><a class="reference internal" href="#getting-frames-without-owning-the-device">5.2.1. Getting frames without owning the device</a></li>
-<li><a class="reference internal" href="#a-note-on-overlays-feeding-back-into-detection">5.2.2. A note on overlays feeding back into detection</a></li>
-<li><a class="reference internal" href="#publishing-detections-as-a-generic-spirisynq-object">5.2.3. Publishing detections as a generic SpiriSynq object</a></li>
-<li><a class="reference internal" href="#authoring-the-overlay-widget">5.2.4. Authoring the overlay widget</a></li>
-<li><a class="reference internal" href="#colouring-boxes-by-class">5.2.5. Colouring boxes by class</a></li>
-<li><a class="reference internal" href="#making-the-label-readable-on-any-background">5.2.6. Making the label readable on any background</a></li>
+<li><a class="reference internal" href="#how-it-fits-together">9.2. How it fits together</a><ul>
+<li><a class="reference internal" href="#getting-frames-without-owning-the-device">9.2.1. Getting frames without owning the device</a></li>
+<li><a class="reference internal" href="#a-note-on-overlays-feeding-back-into-detection">9.2.2. A note on overlays feeding back into detection</a></li>
+<li><a class="reference internal" href="#publishing-detections-as-a-generic-spirisynq-object">9.2.3. Publishing detections as a generic SpiriSynq object</a></li>
+<li><a class="reference internal" href="#authoring-the-overlay-widget">9.2.4. Authoring the overlay widget</a></li>
+<li><a class="reference internal" href="#colouring-boxes-by-class">9.2.5. Colouring boxes by class</a></li>
+<li><a class="reference internal" href="#making-the-label-readable-on-any-background">9.2.6. Making the label readable on any background</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#how-many-lines-is-this-really">5.3. How many lines is this, really</a></li>
-<li><a class="reference internal" href="#cleaning-up">5.4. Cleaning up</a></li>
+<li><a class="reference internal" href="#how-many-lines-is-this-really">9.3. How many lines is this, really</a></li>
+<li><a class="reference internal" href="#cleaning-up">9.4. Cleaning up</a></li>
 </ul>
 </li>
 </ul>
@@ -678,7 +686,7 @@ the process — the camera stops rendering the overlay the moment the
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

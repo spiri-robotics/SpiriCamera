@@ -247,22 +247,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -329,6 +335,11 @@
 <span class="p">)</span>
 
 <span class="n">SourceArgument</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">"Camera source"</span><span class="p">)]</span>
+
+<span class="c1">#: The preview camera's height in pixels, and its frames per second: a</span>
+<span class="c1">#: thumbnail for picking a camera, cheap enough to leave subscribed.</span>
+<span class="n">PREVIEW_HEIGHT</span> <span class="o">=</span> <span class="mi">240</span>
+<span class="n">PREVIEW_FRAMERATE</span> <span class="o">=</span> <span class="mi">1</span>
 
 
 <div class="viewcode-block" id="main_callback">
@@ -467,33 +478,88 @@
         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="si">}</span><span class="s2">fps"</span>
     <span class="p">)</span>
 
+    <span class="n">base</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">topic</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"cameras/</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">camera_name</span><span class="si">}</span><span class="s2">"</span>
     <span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
         <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
         <span class="n">quality</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
         <span class="n">max_width</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="p">,</span>
         <span class="n">max_height</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="p">,</span>
         <span class="n">max_framerate</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="p">,</span>
-        <span class="c1"># Empty: derived from the source, e.g. spiricamera_dev_video0.</span>
-        <span class="n">synq_topic</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">topic</span><span class="p">,</span>
+        <span class="n">synq_topic</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">/raw"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">_set_lens</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
     <span class="n">_set_mount</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
+    <span class="c1"># Both relay the raw camera in this process, so each runs, and runs it,</span>
+    <span class="c1"># only while something wants its own frames.</span>
+    <span class="n">upstream</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"spirisynq+raw://./</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">/raw"</span>
+    <span class="n">hud</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">upstream</span><span class="p">,</span>
+        <span class="n">quality</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
+        <span class="n">max_width</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="p">,</span>
+        <span class="n">max_height</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="p">,</span>
+        <span class="n">max_framerate</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="p">,</span>
+        <span class="n">synq_topic</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">/hud"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># A new camera has no widgets, so the HUD's are named on it at each start.</span>
+    <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">hud_widgets</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+        <span class="n">hud</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">preview</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">upstream</span><span class="p">,</span>
+        <span class="n">quality</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
+        <span class="c1"># The height is what binds: raw is never wider than this.</span>
+        <span class="n">max_width</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="p">,</span>
+        <span class="n">max_height</span><span class="o">=</span><span class="n">PREVIEW_HEIGHT</span><span class="p">,</span>
+        <span class="n">max_framerate</span><span class="o">=</span><span class="n">PREVIEW_FRAMERATE</span><span class="p">,</span>
+        <span class="n">synq_topic</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">/preview"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">cameras</span> <span class="o">=</span> <span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">hud</span><span class="p">,</span> <span class="n">preview</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">cameras</span><span class="p">:</span>
+            <span class="n">each</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
     <span class="k">except</span> <span class="n">CameraError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">cameras</span><span class="p">:</span>
+            <span class="n">each</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Publishing on </span><span class="si">{</span><span class="n">cam</span><span class="o">.</span><span class="n">synq_topic</span><span class="si">}</span><span class="s2">, press Ctrl-C to stop"</span><span class="p">)</span>
+    <span class="n">rtsp</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">rtsp_port</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.rtsp</span><span class="w"> </span><span class="kn">import</span> <span class="n">RtspServer</span>
+
+        <span class="c1"># In this process, so its readers share the camera's one encode.</span>
+        <span class="n">rtsp</span> <span class="o">=</span> <span class="n">RtspServer</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"raw"</span><span class="p">:</span> <span class="n">cam</span><span class="p">,</span> <span class="s2">"hud"</span><span class="p">:</span> <span class="n">hud</span><span class="p">,</span> <span class="s2">"preview"</span><span class="p">:</span> <span class="n">preview</span><span class="p">},</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">rtsp_port</span><span class="p">,</span>
+            <span class="n">udp_port</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">rtsp_udp_port</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rtsp</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: can't serve RTSP: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">cameras</span><span class="p">:</span>
+                <span class="n">each</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Serving /raw, /hud and /preview over RTSP on :</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">rtsp_port</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"UDP from :</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">rtsp_udp_port</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"Publishing on </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">each</span><span class="o">.</span><span class="n">synq_topic</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cameras</span><span class="p">)</span><span class="si">}</span><span class="s2">, press Ctrl-C to stop"</span>
+    <span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># The camera captures on its own thread; just stay alive.</span>
-        <span class="k">while</span> <span class="n">cam</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="c1"># The camera runs on its own thread, when something wants frames.</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="n">cam</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rtsp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rtsp</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="c1"># Relays first, so they don't wait on a raw camera that's gone.</span>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">cameras</span><span class="p">):</span>
+            <span class="n">each</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Camera stopped"</span><span class="p">)</span></div>
 
 
@@ -556,45 +622,6 @@
 
 
 
-<div class="viewcode-block" id="whep_serve">
-<a class="viewcode-back" href="../../api/SpiriCamera.cli.html#SpiriCamera.cli.whep_serve">[docs]</a>
-<span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">whep_serve</span><span class="p">(</span>
-    <span class="n">source</span><span class="p">:</span> <span class="n">SourceArgument</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
-    <span class="n">host</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">"Address to bind"</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">"0.0.0.0"</span><span class="p">,</span>
-    <span class="n">port</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">"Port to bind"</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">8889</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Run a camera and expose it for WHEP playback over HTTP."""</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
-
-    <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.whep</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_whep_app</span>
-
-    <span class="n">source</span> <span class="o">=</span> <span class="n">_resolve_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
-
-    <span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
-        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-        <span class="n">quality</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
-        <span class="n">max_width</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="p">,</span>
-        <span class="n">max_height</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="p">,</span>
-        <span class="n">max_framerate</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">_set_lens</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-    <span class="k">except</span> <span class="n">CameraError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Serving </span><span class="si">{</span><span class="n">cam</span><span class="o">.</span><span class="n">synq_topic</span><span class="si">}</span><span class="s2"> for WHEP on http://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">/whep"</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">create_whep_app</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cam</span><span class="p">),</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">cam</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
-
-
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">app</span><span class="p">()</span>
 </pre></div>
@@ -629,7 +656,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

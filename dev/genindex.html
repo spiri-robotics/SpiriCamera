@@ -246,22 +246,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,6 +315,8 @@
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync.accept">accept() (SpiriCamera.transports.VideoSync method)</a>
+</li>
         <li><a href="api/SpiriCamera.ui.html#SpiriCamera.ui.add_metrics_widget">add_metrics_widget() (in module SpiriCamera.ui)</a>
 </li>
         <li><a href="api/SpiriCamera.ui.html#SpiriCamera.ui.add_tiger_widget">add_tiger_widget() (in module SpiriCamera.ui)</a>
@@ -329,6 +337,10 @@
 </li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.app_name">app_name (SpiriCamera.main.Settings attribute)</a>
 </li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame.array">array (SpiriCamera.transports.RawFrame attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.attachment">attachment() (SpiriCamera.transports.VideoPacket method)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -337,6 +349,12 @@
   <h2>B</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.bitrate_restart_fraction">bitrate_restart_fraction (SpiriCamera.transports.RateControl attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.bitrate_restart_interval">bitrate_restart_interval (SpiriCamera.transports.RateControl attribute)</a>
+</li>
         <li><a href="api/SpiriCamera.ui.html#SpiriCamera.ui.build_page">build_page() (in module SpiriCamera.ui)</a>
 </li>
     </ul></td>
@@ -354,6 +372,8 @@
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera">Camera (class in SpiriCamera.camera)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.camera_metrics_widget">camera_metrics_widget() (in module SpiriCamera.overlay)</a>
+</li>
+        <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.camera_name">camera_name (SpiriCamera.main.Settings attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase">CameraBase (class in SpiriCamera.camera)</a>
 </li>
@@ -373,6 +393,8 @@
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.clear_intrinsics">clear_intrinsics() (SpiriCamera.camera.Camera method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.close">close() (SpiriCamera.camera.Camera method)</a>
 
         <ul>
@@ -380,20 +402,20 @@
 </li>
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase.close">(SpiriCamera.sources.SourceBase method)</a>
 </li>
+          <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.close">(SpiriCamera.transports.DataChannel method)</a>
+</li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.close_peer_sync">close_peer_sync() (in module SpiriCamera.webrtc)</a>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.codec">codec (SpiriCamera.transports.TransportVideo attribute)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.codec">(SpiriCamera.transports.VideoPacket attribute)</a>
 </li>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.close_session_async">close_session_async() (in module SpiriCamera.webrtc)</a>
-</li>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.close_session_sync">close_session_sync() (in module SpiriCamera.webrtc)</a>
+        </ul></li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.committed">committed (SpiriCamera.rtsp.LossMeter property)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.composite">composite() (in module SpiriCamera.overlay)</a>
 </li>
         <li><a href="api/SpiriCamera.ui.html#SpiriCamera.ui.create_overlay_widget">create_overlay_widget() (in module SpiriCamera.ui)</a>
-</li>
-        <li><a href="api/SpiriCamera.whep.html#SpiriCamera.whep.create_whep_app">create_whep_app() (in module SpiriCamera.whep)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.HudWidget.custom_anchor_x">custom_anchor_x (SpiriCamera.overlay.HudWidget attribute)</a>
 </li>
@@ -419,18 +441,28 @@
   <h2>D</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.data_interframe_qos">data_interframe_qos (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.data_keyframe_qos">data_keyframe_qos (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel">DataChannel (class in SpiriCamera.transports)</a>
+</li>
         <li><a href="api/SpiriCamera.exif.html#SpiriCamera.exif.DATETIME_TAG">DATETIME_TAG (in module SpiriCamera.exif)</a>
 </li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.debug">debug (SpiriCamera.main.Settings attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.declare">declare() (SpiriCamera.transports.DataChannel method)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.declared_objects">declared_objects() (in module SpiriCamera.overlay)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.DEFAULT_FONT">DEFAULT_FONT (in module SpiriCamera.overlay)</a>
 </li>
-        <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.DEFAULT_FONT_PATH">DEFAULT_FONT_PATH (in module SpiriCamera.overlay)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.DEFAULT_FONT_PATH">DEFAULT_FONT_PATH (in module SpiriCamera.overlay)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.demanded">demanded (SpiriCamera.transports.DataChannel property)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase.describe">describe() (SpiriCamera.sources.SourceBase method)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.describe_capabilities">describe_capabilities() (SpiriCamera.camera.Camera method)</a>
@@ -457,18 +489,26 @@
 </li>
         <li><a href="api/SpiriCamera.exif.html#SpiriCamera.exif.embed">embed() (in module SpiriCamera.exif)</a>
 </li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.encoded_fps">encoded_fps (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.encoded_height">encoded_height (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.encoded_width">encoded_width (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.ENCODINGS">ENCODINGS (in module SpiriCamera.camera)</a>
 </li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.environment">environment (SpiriCamera.main.Settings attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceInfo.error">error (SpiriCamera.sources.SourceInfo attribute)</a>
 </li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportRaw.events">events (SpiriCamera.transports.TransportRaw attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.exif_clear_tags">exif_clear_tags() (SpiriCamera.camera.Camera method)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.exif_enabled">exif_enabled (SpiriCamera.camera.CameraBase attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.EXIF_NAME">EXIF_NAME (in module SpiriCamera.overlay)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.exif_set_tags">exif_set_tags() (SpiriCamera.camera.Camera method)</a>
@@ -495,6 +535,10 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.VideoEncoder.forget">forget() (SpiriCamera.video.VideoEncoder method)</a>
+</li>
+        <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.RateController.fps">fps (SpiriCamera.video.RateController property)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceCapabilities.frame">frame (SpiriCamera.sources.SourceCapabilities attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.frame_height">frame_height (SpiriCamera.main.Settings attribute)</a>
@@ -519,6 +563,12 @@
 </li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase.from_url">from_url() (SpiriCamera.sources.SourceBase class method)</a>
 </li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame.from_wire">from_wire() (SpiriCamera.transports.RawFrame class method)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.from_wire">(SpiriCamera.transports.VideoPacket class method)</a>
+</li>
+        </ul></li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.fx">fx (SpiriCamera.main.Settings attribute)</a>
 
         <ul>
@@ -543,9 +593,9 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.get_loop">get_loop() (in module SpiriCamera.webrtc)</a>
-</li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.get_settings">get_settings() (in module SpiriCamera.main)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.growth">growth (SpiriCamera.transports.RateControl attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -555,6 +605,12 @@
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.h264_preset">h264_preset (SpiriCamera.main.Settings attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.H264Preset">H264Preset (in module SpiriCamera.main)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.handle_rtcp">handle_rtcp() (SpiriCamera.rtsp.RtspServer method)</a>
+</li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.handler">handler (SpiriCamera.camera.Camera property)</a>
 
         <ul>
@@ -563,9 +619,17 @@
         </ul></li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase.handles">handles() (SpiriCamera.sources.SourceBase class method)</a>
 </li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.heard">heard() (SpiriCamera.rtsp.LossMeter method)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.Intrinsics.height">height (SpiriCamera.sources.Intrinsics attribute)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.height">(SpiriCamera.transports.VideoPacket attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.height_caps">height_caps (SpiriCamera.transports.RateControl attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.hfov">hfov (SpiriCamera.main.Settings attribute)</a>
 
@@ -573,6 +637,10 @@
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.Intrinsics.hfov">(SpiriCamera.sources.Intrinsics property)</a>
 </li>
         </ul></li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.hold">hold() (SpiriCamera.transports.DataChannel method)</a>
+</li>
+        <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.hud_widgets">hud_widgets (SpiriCamera.main.Settings attribute)</a>
+</li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.HudWidget">HudWidget (class in SpiriCamera.overlay)</a>
 </li>
     </ul></td>
@@ -583,8 +651,6 @@
   <h2>I</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.image">image (SpiriCamera.camera.CameraBase attribute)</a>
-</li>
         <li><a href="api/SpiriCamera.exif.html#SpiriCamera.exif.image_size">image_size() (in module SpiriCamera.exif)</a>
 </li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.Intrinsics">Intrinsics (class in SpiriCamera.sources)</a>
@@ -595,10 +661,10 @@
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceCapabilities.intrinsics">(SpiriCamera.sources.SourceCapabilities attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.intrinsics">intrinsics() (SpiriCamera.main.Settings method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.INTRINSICS_ORIGINS">INTRINSICS_ORIGINS (in module SpiriCamera.camera)</a>
 </li>
         <li><a href="api/SpiriCamera.exif.html#SpiriCamera.exif.is_jpeg">is_jpeg() (in module SpiriCamera.exif)</a>
@@ -619,6 +685,22 @@
   <h2>K</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.keyframe">keyframe (SpiriCamera.transports.VideoPacket attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync.keyframe_due">keyframe_due() (SpiriCamera.transports.VideoSync method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.keyframe_interval">keyframe_interval (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.keyframe_min_interval">keyframe_min_interval (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtcpFeedback.keyframe_requests">keyframe_requests (SpiriCamera.rtsp.RtcpFeedback attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.KEYFRAME_RETRY">KEYFRAME_RETRY (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.keyframe_sequence">keyframe_sequence (SpiriCamera.transports.VideoPacket attribute)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.known_schemes">known_schemes() (in module SpiriCamera.sources)</a>
 </li>
     </ul></td>
@@ -630,6 +712,14 @@
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.log_level">log_level (SpiriCamera.main.Settings attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.loss_high">loss_high (SpiriCamera.transports.RateControl attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.loss_low">loss_low (SpiriCamera.transports.RateControl attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter">LossMeter (class in SpiriCamera.rtsp)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -643,6 +733,12 @@
 </li>
         <li><a href="api/SpiriCamera.cli.html#SpiriCamera.cli.main_callback">main_callback() (in module SpiriCamera.cli)</a>
 </li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.max_bitrate">max_bitrate (SpiriCamera.transports.RateControl attribute)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.RateController.max_bitrate">(SpiriCamera.video.RateController attribute)</a>
+</li>
+        </ul></li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.max_framerate">max_framerate (SpiriCamera.camera.CameraBase attribute)</a>
 
         <ul>
@@ -653,6 +749,8 @@
 
         <ul>
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.CaptureSettings.max_height">(SpiriCamera.sources.CaptureSettings attribute)</a>
+</li>
+          <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.RateController.max_height">(SpiriCamera.video.RateController property)</a>
 </li>
         </ul></li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.max_supported_framerate">max_supported_framerate (SpiriCamera.camera.CameraBase attribute)</a>
@@ -679,10 +777,14 @@
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.CaptureSettings.max_width">(SpiriCamera.sources.CaptureSettings attribute)</a>
 </li>
         </ul></li>
-        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.mimetype">mimetype (SpiriCamera.camera.CameraBase attribute)</a>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportJpeg.mimetype">mimetype (SpiriCamera.transports.TransportJpeg attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.min_bitrate">min_bitrate (SpiriCamera.transports.RateControl attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.min_fps">min_fps (SpiriCamera.transports.RateControl attribute)</a>
+</li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.model">model (SpiriCamera.camera.CameraBase attribute)</a>
 
         <ul>
@@ -701,21 +803,25 @@
 </li>
           <li><a href="api/SpiriCamera.exif.html#module-SpiriCamera.exif">SpiriCamera.exif</a>
 </li>
+          <li><a href="api/SpiriCamera.klv.html#module-SpiriCamera.klv">SpiriCamera.klv</a>
+</li>
           <li><a href="api/SpiriCamera.main.html#module-SpiriCamera.main">SpiriCamera.main</a>
 </li>
           <li><a href="api/SpiriCamera.overlay.html#module-SpiriCamera.overlay">SpiriCamera.overlay</a>
 </li>
           <li><a href="api/SpiriCamera.projection.html#module-SpiriCamera.projection">SpiriCamera.projection</a>
 </li>
+          <li><a href="api/SpiriCamera.rtsp.html#module-SpiriCamera.rtsp">SpiriCamera.rtsp</a>
+</li>
           <li><a href="api/SpiriCamera.sources.html#module-SpiriCamera.sources">SpiriCamera.sources</a>
+</li>
+          <li><a href="api/SpiriCamera.transports.html#module-SpiriCamera.transports">SpiriCamera.transports</a>
 </li>
           <li><a href="api/SpiriCamera.ui.html#module-SpiriCamera.ui">SpiriCamera.ui</a>
 </li>
+          <li><a href="api/SpiriCamera.video.html#module-SpiriCamera.video">SpiriCamera.video</a>
+</li>
           <li><a href="api/SpiriCamera.web.html#module-SpiriCamera.web">SpiriCamera.web</a>
-</li>
-          <li><a href="api/SpiriCamera.webrtc.html#module-SpiriCamera.webrtc">SpiriCamera.webrtc</a>
-</li>
-          <li><a href="api/SpiriCamera.whep.html#module-SpiriCamera.whep">SpiriCamera.whep</a>
 </li>
         </ul></li>
     </ul></td>
@@ -726,13 +832,11 @@
   <h2>N</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.projection.html#SpiriCamera.projection.NEAR">NEAR (in module SpiriCamera.projection)</a>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtcpFeedback.nacks">nacks (SpiriCamera.rtsp.RtcpFeedback attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.negotiate_async">negotiate_async() (in module SpiriCamera.webrtc)</a>
-</li>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.negotiate_sync">negotiate_sync() (in module SpiriCamera.webrtc)</a>
+        <li><a href="api/SpiriCamera.projection.html#SpiriCamera.projection.NEAR">NEAR (in module SpiriCamera.projection)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -744,16 +848,20 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.OBJECTS_NAME">OBJECTS_NAME (in module SpiriCamera.overlay)</a>
 </li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.on_nack">on_nack() (SpiriCamera.rtsp.LossMeter method)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.on_report">on_report() (SpiriCamera.rtsp.LossMeter method)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.OpenCVSource.open">open() (SpiriCamera.sources.OpenCVSource method)</a>
 
         <ul>
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase.open">(SpiriCamera.sources.SourceBase method)</a>
 </li>
         </ul></li>
-        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.OpenCVSource">OpenCVSource (class in SpiriCamera.sources)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.OpenCVSource">OpenCVSource (class in SpiriCamera.sources)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.Intrinsics.origin">origin (SpiriCamera.sources.Intrinsics attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.OverlayMixin.overlay_client_render">overlay_client_render (SpiriCamera.overlay.OverlayMixin attribute)</a>
@@ -772,17 +880,31 @@
   <h2>P</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.packet_received">packet_received (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.packetize_h264">packetize_h264() (in module SpiriCamera.rtsp)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceURL.parse">parse() (SpiriCamera.sources.SourceURL class method)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.parse_rtcp">parse_rtcp() (in module SpiriCamera.rtsp)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.payload">payload (SpiriCamera.transports.VideoPacket attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.projection.html#SpiriCamera.projection.pixel">pixel() (in module SpiriCamera.projection)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.preset">preset (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.cli.html#SpiriCamera.cli.PREVIEW_HEIGHT">PREVIEW_HEIGHT (in module SpiriCamera.cli)</a>
+</li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.WorldPlacement.project">project (SpiriCamera.overlay.WorldPlacement attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.projection.html#SpiriCamera.projection.project">project() (in module SpiriCamera.projection)</a>
 </li>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.pull_sync">pull_sync() (in module SpiriCamera.webrtc)</a>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.pts">pts (SpiriCamera.transports.VideoPacket attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.put">put() (SpiriCamera.transports.DataChannel method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -792,12 +914,22 @@
   <h2>Q</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.quality">quality (SpiriCamera.camera.CameraBase attribute)</a>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.QOS_BACKGROUND">QOS_BACKGROUND (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.QOS_INTERFRAME">QOS_INTERFRAME (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.QOS_KEYFRAME">QOS_KEYFRAME (in module SpiriCamera.transports)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.quality">quality (SpiriCamera.main.Settings attribute)</a>
 
         <ul>
-          <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.quality">(SpiriCamera.main.Settings attribute)</a>
+          <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportJpeg.quality">(SpiriCamera.transports.TransportJpeg attribute)</a>
 </li>
         </ul></li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.query">query() (SpiriCamera.transports.DataChannel method)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -812,7 +944,17 @@
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.rasterize">rasterize() (in module SpiriCamera.overlay)</a>
 </li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.rate_control">rate_control (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl">RateControl (class in SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.RateController">RateController (class in SpiriCamera.video)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceURL.raw">raw (SpiriCamera.sources.SourceURL attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RAW_FORMAT">RAW_FORMAT (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame">RawFrame (class in SpiriCamera.transports)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.read">read() (SpiriCamera.camera.Camera method)</a>
 
@@ -828,8 +970,6 @@
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.received_height">received_height (SpiriCamera.camera.CameraBase attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.received_ratio">received_ratio (SpiriCamera.camera.CameraBase attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.received_width">received_width (SpiriCamera.camera.CameraBase attribute)</a>
@@ -838,18 +978,58 @@
 </li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.relative_to">relative_to (SpiriCamera.main.Settings attribute)</a>
 </li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RELAY_SUFFIX">RELAY_SUFFIX (in module SpiriCamera.rtsp)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.release">release() (SpiriCamera.transports.DataChannel method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.remote_wanted">remote_wanted (SpiriCamera.transports.DataChannel property)</a>
+</li>
         <li><a href="api/SpiriCamera.ui.html#SpiriCamera.ui.remove_overlay_widget">remove_overlay_widget() (in module SpiriCamera.ui)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.OverlayMixin.render_overlays_for_client">render_overlays_for_client() (SpiriCamera.overlay.OverlayMixin method)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.render_svg">render_svg() (in module SpiriCamera.overlay)</a>
 </li>
+        <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.RateController.report">report() (SpiriCamera.video.RateController method)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.VideoEncoder.report">(SpiriCamera.video.VideoEncoder method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.REPORT_INTERVAL">REPORT_INTERVAL (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtcpFeedback.reports">reports (SpiriCamera.rtsp.RtcpFeedback attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.REQUEST_KEYFRAME">REQUEST_KEYFRAME (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.request_keyframe">request_keyframe() (SpiriCamera.transports.DataChannel method)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.VideoEncoder.request_keyframe">(SpiriCamera.video.VideoEncoder method)</a>
+</li>
+        </ul></li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.resolve_objects">resolve_objects() (in module SpiriCamera.overlay)</a>
 </li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.resolve_source">resolve_source() (in module SpiriCamera.sources)</a>
 </li>
-        <li><a href="api/SpiriCamera.cli.html#SpiriCamera.cli.run">run() (in module SpiriCamera.cli)</a>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RTCP_SILENCE">RTCP_SILENCE (in module SpiriCamera.rtsp)</a>
 </li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtcpFeedback">RtcpFeedback (class in SpiriCamera.rtsp)</a>
+</li>
+        <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.rtsp_port">rtsp_port (SpiriCamera.main.Settings attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.rtsp_udp_port">rtsp_udp_port (SpiriCamera.main.Settings attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer">RtspServer (class in SpiriCamera.rtsp)</a>
+</li>
+        <li><a href="api/SpiriCamera.cli.html#SpiriCamera.cli.run">run() (in module SpiriCamera.cli)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.VideoEncoder.run">(SpiriCamera.video.VideoEncoder method)</a>
+</li>
+        </ul></li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.running">running (SpiriCamera.camera.CameraBase attribute)</a>
 </li>
     </ul></td>
@@ -872,7 +1052,9 @@
         </ul></li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase.schemes">schemes (SpiriCamera.sources.SourceBase attribute)</a>
 </li>
-        <li><a href="api/SpiriCamera.whep.html#SpiriCamera.whep.SDP_MEDIA_TYPE">SDP_MEDIA_TYPE (in module SpiriCamera.whep)</a>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.send_datagram">send_datagram() (SpiriCamera.rtsp.RtspServer method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.sequence">sequence (SpiriCamera.transports.VideoPacket attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.serial_number">serial_number (SpiriCamera.camera.CameraBase attribute)</a>
 
@@ -926,13 +1108,18 @@
           <li><a href="api/SpiriCamera.cli.html#module-SpiriCamera.cli">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     SpiriCamera.exif
 
         <ul>
           <li><a href="api/SpiriCamera.exif.html#module-SpiriCamera.exif">module</a>
+</li>
+        </ul></li>
+        <li>
+    SpiriCamera.klv
+
+        <ul>
+          <li><a href="api/SpiriCamera.klv.html#module-SpiriCamera.klv">module</a>
 </li>
         </ul></li>
         <li>
@@ -949,11 +1136,20 @@
           <li><a href="api/SpiriCamera.overlay.html#module-SpiriCamera.overlay">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     SpiriCamera.projection
 
         <ul>
           <li><a href="api/SpiriCamera.projection.html#module-SpiriCamera.projection">module</a>
+</li>
+        </ul></li>
+        <li>
+    SpiriCamera.rtsp
+
+        <ul>
+          <li><a href="api/SpiriCamera.rtsp.html#module-SpiriCamera.rtsp">module</a>
 </li>
         </ul></li>
         <li>
@@ -964,10 +1160,24 @@
 </li>
         </ul></li>
         <li>
+    SpiriCamera.transports
+
+        <ul>
+          <li><a href="api/SpiriCamera.transports.html#module-SpiriCamera.transports">module</a>
+</li>
+        </ul></li>
+        <li>
     SpiriCamera.ui
 
         <ul>
           <li><a href="api/SpiriCamera.ui.html#module-SpiriCamera.ui">module</a>
+</li>
+        </ul></li>
+        <li>
+    SpiriCamera.video
+
+        <ul>
+          <li><a href="api/SpiriCamera.video.html#module-SpiriCamera.video">module</a>
 </li>
         </ul></li>
         <li>
@@ -977,25 +1187,27 @@
           <li><a href="api/SpiriCamera.web.html#module-SpiriCamera.web">module</a>
 </li>
         </ul></li>
-        <li>
-    SpiriCamera.webrtc
-
-        <ul>
-          <li><a href="api/SpiriCamera.webrtc.html#module-SpiriCamera.webrtc">module</a>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.split_annexb">split_annexb() (in module SpiriCamera.rtsp)</a>
 </li>
-        </ul></li>
-        <li>
-    SpiriCamera.whep
-
-        <ul>
-          <li><a href="api/SpiriCamera.whep.html#module-SpiriCamera.whep">module</a>
+        <li><a href="api/SpiriCamera.klv.html#SpiriCamera.klv.ST0601_VERSION">ST0601_VERSION (in module SpiriCamera.klv)</a>
 </li>
-        </ul></li>
+        <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.RateController.stall">stall() (SpiriCamera.video.RateController method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.stall_timeout">stall_timeout (SpiriCamera.transports.RateControl attribute)</a>
+</li>
         <li><a href="api/SpiriCamera.exif.html#SpiriCamera.exif.STANDARD_TAGS">STANDARD_TAGS (in module SpiriCamera.exif)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.start">start() (SpiriCamera.camera.Camera method)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.start">(SpiriCamera.rtsp.RtspServer method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.start_bitrate">start_bitrate (SpiriCamera.transports.RateControl attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.status">status (SpiriCamera.camera.CameraBase attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.STATUS_IDLE">STATUS_IDLE (in module SpiriCamera.camera)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.STATUS_RUNNING">STATUS_RUNNING (in module SpiriCamera.camera)</a>
 </li>
@@ -1004,8 +1216,20 @@
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.STATUS_WAITING">STATUS_WAITING (in module SpiriCamera.camera)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.stop">stop() (SpiriCamera.camera.Camera method)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.stop">(SpiriCamera.rtsp.RtspServer method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.subscribe">subscribe() (SpiriCamera.transports.DataChannel method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.subscribed">subscribed (SpiriCamera.transports.DataChannel property)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl.subscriber_timeout">subscriber_timeout (SpiriCamera.transports.RateControl attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.HudWidget.svg_template">svg_template (SpiriCamera.overlay.HudWidget attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.sync">sync() (SpiriCamera.camera.Camera method)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.synq_skip_sync">synq_skip_sync (SpiriCamera.camera.CameraBase attribute)</a>
 </li>
@@ -1017,7 +1241,15 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.webrtc.html#SpiriCamera.webrtc.TAGS_CHANNEL_LABEL">TAGS_CHANNEL_LABEL (in module SpiriCamera.webrtc)</a>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame.tags">tags (SpiriCamera.transports.RawFrame attribute)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.tags">(SpiriCamera.transports.VideoPacket attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.take_keyframe_request">take_keyframe_request() (SpiriCamera.transports.DataChannel method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync.take_report">take_report() (SpiriCamera.transports.VideoSync method)</a>
 </li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceBase.target">target (SpiriCamera.sources.SourceBase property)</a>
 
@@ -1026,18 +1258,74 @@
 </li>
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceURL.target">(SpiriCamera.sources.SourceURL attribute)</a>
 </li>
+          <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.RateController.target">(SpiriCamera.video.RateController property)</a>
+</li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo.target_bitrate">target_bitrate (SpiriCamera.transports.TransportVideo attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.tick">tick() (SpiriCamera.rtsp.LossMeter method)</a>
+</li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.tiger_widget">tiger_widget() (in module SpiriCamera.overlay)</a>
 </li>
         <li><a href="api/SpiriCamera.exif.html#SpiriCamera.exif.TIMESTAMP_TAG">TIMESTAMP_TAG (in module SpiriCamera.exif)</a>
 </li>
         <li><a href="api/SpiriCamera.projection.html#SpiriCamera.projection.to_camera">to_camera() (in module SpiriCamera.projection)</a>
 </li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame.to_wire">to_wire() (SpiriCamera.transports.RawFrame method)</a>
+</li>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.topic">topic (SpiriCamera.main.Settings attribute)</a>
 </li>
         <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.topic_for_source">topic_for_source() (in module SpiriCamera.camera)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.transport_jpeg">transport_jpeg (SpiriCamera.camera.CameraBase attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TRANSPORT_JPEG_DATA">TRANSPORT_JPEG_DATA (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_jpeg_subscribe">transport_jpeg_subscribe() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_jpeg_unsubscribe">transport_jpeg_unsubscribe() (SpiriCamera.camera.Camera method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.transport_raw">transport_raw (SpiriCamera.camera.CameraBase attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TRANSPORT_RAW_DATA">TRANSPORT_RAW_DATA (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_raw_hold">transport_raw_hold() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_raw_release">transport_raw_release() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_raw_subscribe">transport_raw_subscribe() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_raw_unsubscribe">transport_raw_unsubscribe() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.CameraBase.transport_video">transport_video (SpiriCamera.camera.CameraBase attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_video_forget">transport_video_forget() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_video_hold">transport_video_hold() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TRANSPORT_VIDEO_INTERFRAME">TRANSPORT_VIDEO_INTERFRAME (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TRANSPORT_VIDEO_KEYFRAME">TRANSPORT_VIDEO_KEYFRAME (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_video_release">transport_video_release() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TRANSPORT_VIDEO_REPORT">TRANSPORT_VIDEO_REPORT (in module SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_video_report">transport_video_report() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_video_request_keyframe">transport_video_request_keyframe() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_video_subscribe">transport_video_subscribe() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.transport_video_unsubscribe">transport_video_unsubscribe() (SpiriCamera.camera.Camera method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportJpeg">TransportJpeg (class in SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportRaw">TransportRaw (class in SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo">TransportVideo (class in SpiriCamera.transports)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1047,12 +1335,20 @@
   <h2>U</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.UnknownSourceError">UnknownSourceError</a>
+        <li><a href="api/SpiriCamera.klv.html#SpiriCamera.klv.uas_local_set">uas_local_set() (in module SpiriCamera.klv)</a>
 </li>
-        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceInfo.unresolved">unresolved() (SpiriCamera.sources.SourceInfo class method)</a>
+        <li><a href="api/SpiriCamera.klv.html#SpiriCamera.klv.UAS_LOCAL_SET_KEY">UAS_LOCAL_SET_KEY (in module SpiriCamera.klv)</a>
+</li>
+        <li><a href="api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.udp_ports">udp_ports (SpiriCamera.rtsp.RtspServer attribute)</a>
+</li>
+        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.UnknownSourceError">UnknownSourceError</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceInfo.unresolved">unresolved() (SpiriCamera.sources.SourceInfo class method)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.unsubscribe">unsubscribe() (SpiriCamera.transports.DataChannel method)</a>
+</li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceInfo.update">update() (SpiriCamera.sources.SourceInfo method)</a>
 </li>
         <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.SourceInfo.url">url (SpiriCamera.sources.SourceInfo attribute)</a>
@@ -1077,14 +1373,22 @@
 </li>
         <li><a href="api/SpiriCamera.cli.html#SpiriCamera.cli.version">version() (in module SpiriCamera.cli)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/SpiriCamera.main.html#SpiriCamera.main.Settings.vfov">vfov (SpiriCamera.main.Settings attribute)</a>
 
         <ul>
           <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.Intrinsics.vfov">(SpiriCamera.sources.Intrinsics property)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.VIDEO_CLOCK_RATE">VIDEO_CLOCK_RATE (in module SpiriCamera.video)</a>
+</li>
+        <li><a href="api/SpiriCamera.video.html#SpiriCamera.video.VideoEncoder">VideoEncoder (class in SpiriCamera.video)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket">VideoPacket (class in SpiriCamera.transports)</a>
+</li>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync">VideoSync (class in SpiriCamera.transports)</a>
+</li>
         <li><a href="api/SpiriCamera.projection.html#SpiriCamera.projection.View">View (class in SpiriCamera.projection)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.VIEW_NAME">VIEW_NAME (in module SpiriCamera.overlay)</a>
@@ -1099,14 +1403,16 @@
   <h2>W</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.camera.html#SpiriCamera.camera.Camera.webrtc_offer">webrtc_offer() (SpiriCamera.camera.Camera method)</a>
+        <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.wanted">wanted (SpiriCamera.transports.DataChannel property)</a>
 </li>
-        <li><a href="api/SpiriCamera.cli.html#SpiriCamera.cli.whep_serve">whep_serve() (in module SpiriCamera.cli)</a>
+        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.Intrinsics.width">width (SpiriCamera.sources.Intrinsics attribute)</a>
+
+        <ul>
+          <li><a href="api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.width">(SpiriCamera.transports.VideoPacket attribute)</a>
 </li>
+        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/SpiriCamera.sources.html#SpiriCamera.sources.Intrinsics.width">width (SpiriCamera.sources.Intrinsics attribute)</a>
-</li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.world_placement">world_placement() (in module SpiriCamera.overlay)</a>
 </li>
         <li><a href="api/SpiriCamera.overlay.html#SpiriCamera.overlay.WorldPlacement">WorldPlacement (class in SpiriCamera.overlay)</a>
@@ -1177,7 +1483,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=1b390748"></script>
+</div><script src="_static/documentation_options.js?v=3b889da3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

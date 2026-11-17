@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6.2.9. SpiriCamera.web" href="SpiriCamera.web.html"><link rel="prev" title="6.2.7. SpiriCamera.whep" href="SpiriCamera.whep.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10.2.11. SpiriCamera.web" href="SpiriCamera.web.html"><link rel="prev" title="10.2.9. SpiriCamera.sources" href="SpiriCamera.sources.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.ui.html">
         <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>6.2.8. SpiriCamera.ui - SpiriCamera</title>
+        <title>10.2.10. SpiriCamera.ui - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,7 +315,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="module-SpiriCamera.ui">
-<span id="spiricamera-ui"></span><h1><span class="section-number">6.2.8. </span>SpiriCamera.ui<a class="headerlink" href="#module-SpiriCamera.ui" title="Link to this heading">¶</a></h1>
+<span id="spiricamera-ui"></span><h1><span class="section-number">10.2.10. </span>SpiriCamera.ui<a class="headerlink" href="#module-SpiriCamera.ui" title="Link to this heading">¶</a></h1>
 <p>NiceGUI test UI for SpiriCamera.</p>
 <p>Frames are served over a plain HTTP route and pulled by an
 <code class="docutils literal notranslate"><span class="pre">ui.interactive_image</span></code>, rather than pushed as base64 data URLs over
@@ -348,14 +354,14 @@ writable counterpart nearby — the camera’s own settings, and Extra Tags.</p>
 <dd><p>Publish a <a class="reference internal" href="SpiriCamera.overlay.html#SpiriCamera.overlay.camera_metrics_widget" title="SpiriCamera.overlay.camera_metrics_widget"><code class="xref py py-func docutils literal notranslate"><span class="pre">camera_metrics_widget()</span></code></a> for
 <code class="docutils literal notranslate"><span class="pre">cam</span></code> and add it to its own <code class="docutils literal notranslate"><span class="pre">overlay_widgets</span></code>.</p>
 <section id="parameters">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>cam<span class="classifier">Camera</span></dt><dd><p>The camera to describe and attach the widget to.</p>
 </dd>
 </dl>
 </section>
 <section id="returns">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>HudWidget</dt><dd><p>The published widget, already added to <code class="docutils literal notranslate"><span class="pre">cam.overlay_widgets</span></code>.</p>
 </dd>
@@ -380,14 +386,14 @@ and add it to its own <code class="docutils literal notranslate"><span class="pr
 <a class="reference internal" href="SpiriCamera.overlay.html#SpiriCamera.overlay.rasterize" title="SpiriCamera.overlay.rasterize"><code class="xref py py-func docutils literal notranslate"><span class="pre">rasterize()</span></code></a>) alongside the pixel-sized
 <code class="docutils literal notranslate"><span class="pre">camera_metrics_widget</span></code> example next to it.</p>
 <section id="id1">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>cam<span class="classifier">Camera</span></dt><dd><p>The camera to attach the widget to.</p>
 </dd>
 </dl>
 </section>
 <section id="id2">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>HudWidget</dt><dd><p>The published widget, already added to <code class="docutils literal notranslate"><span class="pre">cam.overlay_widgets</span></code>.</p>
 </dd>
@@ -414,7 +420,7 @@ and add it to its own <code class="docutils literal notranslate"><span class="pr
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.ui.</span></span><span class="sig-name descname"><span class="pre">create_overlay_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/ui.html#create_overlay_widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.ui.create_overlay_widget" title="Link to this definition">¶</a></dt>
 <dd><p>Publish a new, editable HudWidget and add it to <code class="docutils literal notranslate"><span class="pre">cam.overlay_widgets</span></code>.</p>
 <section id="id3">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>cam<span class="classifier">Camera</span></dt><dd><p>The camera to attach the new widget to.</p>
 </dd>
@@ -425,7 +431,7 @@ slugifies a source string, so anything typeable works.</p>
 </dl>
 </section>
 <section id="id4">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>HudWidget</dt><dd><p>The published widget, already added to <code class="docutils literal notranslate"><span class="pre">cam.overlay_widgets</span></code>.</p>
 </dd>
@@ -449,7 +455,7 @@ slugifies a source string, so anything typeable works.</p>
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.ui.</span></span><span class="sig-name descname"><span class="pre">discover_cameras</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/ui.html#discover_cameras"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.ui.discover_cameras" title="Link to this definition">¶</a></dt>
 <dd><p>List Camera objects other nodes are currently advertising.</p>
 <section id="id5">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>cam<span class="classifier">Camera</span></dt><dd><p>Any camera on the session to query from – discovery is a
 property of the SpiriSynq session, not of a particular camera.</p>
@@ -457,7 +463,7 @@ property of the SpiriSynq session, not of a particular camera.</p>
 </dl>
 </section>
 <section id="id6">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>list[dict]</dt><dd><p>One metadata dict per discovered camera, each with at least
 <code class="docutils literal notranslate"><span class="pre">topic</span></code> and <code class="docutils literal notranslate"><span class="pre">authoritive_node</span></code>.  Only authoritative cameras
@@ -480,7 +486,7 @@ ever answer this query, so a mirror never lists itself.</p>
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.ui.</span></span><span class="sig-name descname"><span class="pre">discover_widgets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/ui.html#discover_widgets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.ui.discover_widgets" title="Link to this definition">¶</a></dt>
 <dd><p>List HudWidget objects other nodes are currently advertising.</p>
 <section id="id7">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>cam<span class="classifier">Camera</span></dt><dd><p>Any camera on the session to query from; see
 <a class="reference internal" href="#SpiriCamera.ui.discover_cameras" title="SpiriCamera.ui.discover_cameras"><code class="xref py py-func docutils literal notranslate"><span class="pre">discover_cameras()</span></code></a>.</p>
@@ -488,7 +494,7 @@ ever answer this query, so a mirror never lists itself.</p>
 </dl>
 </section>
 <section id="id8">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>list[dict]</dt><dd><p>One metadata dict per discovered widget, each with at least
 <code class="docutils literal notranslate"><span class="pre">topic</span></code>.</p>
@@ -512,7 +518,7 @@ ever answer this query, so a mirror never lists itself.</p>
 <p>One camera per process, not one per page: a camera is a device, and
 every instance declares its own SpiriSynq topic.</p>
 <section id="id9">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>Camera</dt><dd><p>The shared camera instance.</p>
 </dd>
@@ -531,7 +537,7 @@ every instance declares its own SpiriSynq topic.</p>
 <dd><p>Detach <code class="docutils literal notranslate"><span class="pre">topic</span></code> from <code class="docutils literal notranslate"><span class="pre">cam.overlay_widgets</span></code>, closing it if this
 page is the one that created it.</p>
 <section id="id10">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>cam<span class="classifier">Camera</span></dt><dd><p>The camera to detach the widget from.</p>
 </dd>
@@ -558,7 +564,7 @@ page is the one that created it.</p>
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.ui.</span></span><span class="sig-name descname"><span class="pre">serve_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SpiriCamera.ui.serve_frame" title="Link to this definition">¶</a></dt>
 <dd><p>Serve the most recent frame as an image response.</p>
 <section id="id11">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>Response</dt><dd><p>The latest encoded frame, or a placeholder if none exists yet.</p>
 </dd>
@@ -576,7 +582,7 @@ page is the one that created it.</p>
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.ui.</span></span><span class="sig-name descname"><span class="pre">set_authoritive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/ui.html#set_authoritive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.ui.set_authoritive" title="Link to this definition">¶</a></dt>
 <dd><p>Switch to running a device ourselves, replacing any mirror.</p>
 <section id="id12">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>Source to open.  Defaults to the test image when switching out
 of mirror mode, which never has a local source string of its
@@ -585,7 +591,7 @@ own to fall back to.</p>
 </dl>
 </section>
 <section id="id13">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>Camera</dt><dd><p>The new authoritative camera.</p>
 </dd>
@@ -606,7 +612,7 @@ own to fall back to.</p>
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.ui.</span></span><span class="sig-name descname"><span class="pre">set_mirror</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/ui.html#set_mirror"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.ui.set_mirror" title="Link to this definition">¶</a></dt>
 <dd><p>Switch to mirroring another node’s camera, replacing any device.</p>
 <section id="id14">
-<h2><span class="section-number">6.2.8. </span>Parameters<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Parameters<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>topic<span class="classifier">str</span></dt><dd><p>Absolute SpiriSynq topic of the camera to mirror, as reported by
 <a class="reference internal" href="#SpiriCamera.ui.discover_cameras" title="SpiriCamera.ui.discover_cameras"><code class="xref py py-func docutils literal notranslate"><span class="pre">discover_cameras()</span></code></a>.  Empty to drop into mirror mode
@@ -615,7 +621,7 @@ without yet picking one, e.g. to browse what is available.</p>
 </dl>
 </section>
 <section id="id15">
-<h2><span class="section-number">6.2.8. </span>Returns<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.10. </span>Returns<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>Camera</dt><dd><p>The new, non-authoritative camera.  A stopped device with
 nothing to show until a topic is given: its fields sit at their
@@ -645,18 +651,18 @@ defaults rather than mirroring anything.</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">6.2.9. </span>SpiriCamera.web</div>
+                <div class="title"><span class="section-number">10.2.11. </span>SpiriCamera.web</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="SpiriCamera.whep.html">
+          <a class="prev-page" href="SpiriCamera.sources.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">6.2.7. </span>SpiriCamera.whep</div>
+                <div class="title"><span class="section-number">10.2.9. </span>SpiriCamera.sources</div>
                 
               </div>
             </a>
@@ -690,7 +696,7 @@ defaults rather than mirroring anything.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">6.2.8. SpiriCamera.ui</a><ul>
+<li><a class="reference internal" href="#">10.2.10. SpiriCamera.ui</a><ul>
 <li><a class="reference internal" href="#SpiriCamera.ui.FRAME_ROUTE"><code class="docutils literal notranslate"><span class="pre">FRAME_ROUTE</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.ui.add_metrics_widget"><code class="docutils literal notranslate"><span class="pre">add_metrics_widget()</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.ui.add_tiger_widget"><code class="docutils literal notranslate"><span class="pre">add_tiger_widget()</span></code></a></li>
@@ -714,7 +720,7 @@ defaults rather than mirroring anything.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -1,7 +1,7 @@
-# SpiriCamera.whep
+# SpiriCamera.transports
 
 ```{eval-rst}
-.. automodule:: SpiriCamera.whep
+.. automodule:: SpiriCamera.transports
    :members:
    :member-order: bysource
    :undoc-members: False

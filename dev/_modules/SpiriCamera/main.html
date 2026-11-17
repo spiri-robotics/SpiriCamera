@@ -247,22 +247,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -307,11 +313,25 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+
+<span class="c1">#: x264's speed presets, fastest first.</span>
+<span class="n">H264Preset</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">"ultrafast"</span><span class="p">,</span>
+    <span class="s2">"superfast"</span><span class="p">,</span>
+    <span class="s2">"veryfast"</span><span class="p">,</span>
+    <span class="s2">"faster"</span><span class="p">,</span>
+    <span class="s2">"fast"</span><span class="p">,</span>
+    <span class="s2">"medium"</span><span class="p">,</span>
+    <span class="s2">"slow"</span><span class="p">,</span>
+    <span class="s2">"slower"</span><span class="p">,</span>
+    <span class="s2">"veryslow"</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="Settings">
@@ -341,6 +361,19 @@
 <span class="sd">        Logging level (``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``).</span>
 <span class="sd">    source : str</span>
 <span class="sd">        Camera source string (e.g. ``/dev/video0``, ``rtsp://...``).</span>
+<span class="sd">    camera_name : str</span>
+<span class="sd">        The camera's name among this host's cameras, any text (default</span>
+<span class="sd">        ``1``).  ``SpiriCamera run`` publishes it as ``cameras/&lt;name&gt;/raw``,</span>
+<span class="sd">        ``cameras/&lt;name&gt;/hud`` and ``cameras/&lt;name&gt;/preview``, under the</span>
+<span class="sd">        host's base topic.  A second camera on the host needs another name.</span>
+<span class="sd">    hud_widgets : str</span>
+<span class="sd">        The overlay widgets ``SpiriCamera run`` draws on ``cameras/&lt;name&gt;/hud``,</span>
+<span class="sd">        by SpiriSynq topic, separated by spaces or commas</span>
+<span class="sd">        (``mu-1/hud/widgets/horizon mu-1/robot_home_hud``).  A widget shows</span>
+<span class="sd">        once its publisher has published it.  Empty draws none.</span>
+<span class="sd">    topic : str</span>
+<span class="sd">        Overrides ``cameras/&lt;camera_name&gt;``, the topic the three cameras sit</span>
+<span class="sd">        under; empty uses it.</span>
 <span class="sd">    quality : int</span>
 <span class="sd">        JPEG encoding quality for captured frames [1-100].</span>
 <span class="sd">    frame_width : int</span>
@@ -365,6 +398,20 @@
 <span class="sd">        ``mount`` over SpiriSynq for any other mounting.  Empty leaves</span>
 <span class="sd">        the camera unplaced, unless its source places it (a</span>
 <span class="sd">        ``spirisynq://`` relay follows the camera it relays).</span>
+<span class="sd">    h264_preset : str</span>
+<span class="sd">        x264's speed preset for the camera's one H.264 encode, the one</span>
+<span class="sd">        every RTSP and SpiriSynq reader of it shares (default ``veryfast``).</span>
+<span class="sd">        Faster presets cost less CPU for a slightly worse picture at the</span>
+<span class="sd">        same bitrate: at 720p30 on a Raspberry Pi 4, ``veryfast`` takes</span>
+<span class="sd">        about 90% of a core, ``ultrafast`` 50%, and x264's own default</span>
+<span class="sd">        ``medium`` over 200%.</span>
+<span class="sd">    rtsp_port : int</span>
+<span class="sd">        ``SpiriCamera run`` serves its cameras over RTSP on this TCP port</span>
+<span class="sd">        (default 8554), as ``/raw``, ``/hud`` and ``/preview``, and each</span>
+<span class="sd">        as ``/&lt;camera&gt;/relay`` for a relay on the same host; ``0`` serves none.</span>
+<span class="sd">    rtsp_udp_port : int</span>
+<span class="sd">        The first of four consecutive UDP ports for RTSP's RTP and RTCP</span>
+<span class="sd">        (default 8000).</span>
 <span class="sd">    """</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span>
@@ -381,6 +428,8 @@
 
     <span class="c1"># Camera configuration</span>
     <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">camera_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"1"</span>
+    <span class="n">hud_widgets</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">quality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span>
     <span class="n">frame_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1920</span>
@@ -399,6 +448,11 @@
 
     <span class="c1"># What the camera is mounted on; see Camera's relative_to.</span>
     <span class="n">relative_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+
+    <span class="c1"># The default preset of the camera's one encode; see SpiriCamera.video.</span>
+    <span class="n">h264_preset</span><span class="p">:</span> <span class="n">H264Preset</span> <span class="o">=</span> <span class="s2">"veryfast"</span>
+    <span class="n">rtsp_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8554</span>
+    <span class="n">rtsp_udp_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8000</span>
 
 <div class="viewcode-block" id="Settings.intrinsics">
 <a class="viewcode-back" href="../../api/SpiriCamera.main.html#SpiriCamera.main.Settings.intrinsics">[docs]</a>
@@ -505,7 +559,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

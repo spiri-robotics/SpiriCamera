@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6.2.4. SpiriCamera.projection" href="SpiriCamera.projection.html"><link rel="prev" title="6.2.2. SpiriCamera.exif" href="SpiriCamera.exif.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10.2.8. SpiriCamera.projection" href="SpiriCamera.projection.html"><link rel="prev" title="10.2.6. SpiriCamera.exif" href="SpiriCamera.exif.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.overlay.html">
         <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>6.2.3. SpiriCamera.overlay - SpiriCamera</title>
+        <title>10.2.7. SpiriCamera.overlay - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,7 +315,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="module-SpiriCamera.overlay">
-<span id="spiricamera-overlay"></span><h1><span class="section-number">6.2.3. </span>SpiriCamera.overlay<a class="headerlink" href="#module-SpiriCamera.overlay" title="Link to this heading">¶</a></h1>
+<span id="spiricamera-overlay"></span><h1><span class="section-number">10.2.7. </span>SpiriCamera.overlay<a class="headerlink" href="#module-SpiriCamera.overlay" title="Link to this heading">¶</a></h1>
 <p>SVG HUD overlays, baked into frames before they are encoded.</p>
 <p>An overlay is a <a class="reference internal" href="#SpiriCamera.overlay.HudWidget" title="SpiriCamera.overlay.HudWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">HudWidget</span></code></a>: a small SVG template, anchored to a
 corner or a percentage coordinate of the frame. Widgets are not owned by
@@ -342,10 +348,10 @@ the rendered SVG:</p>
 </div>
 <p>A declared object is a whole <code class="xref py py-class docutils literal notranslate"><span class="pre">SyncableObject</span></code>
 – every one of its synced fields is available as <code class="docutils literal notranslate"><span class="pre">objects.&lt;alias&gt;.&lt;field&gt;</span></code>,
-mirrored generically via
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">from_topic_untyped()</span></code> (so the widget
-author needs no locally-importable class for it, and never sees its RPC
-methods – <code class="docutils literal notranslate"><span class="pre">from_topic_untyped</span></code> only ever exposes synced attributes).
+a nested one too (<code class="docutils literal notranslate"><span class="pre">objects.cam.transport_jpeg.quality</span></code>).  It is mirrored
+generically via <code class="xref py py-meth docutils literal notranslate"><span class="pre">from_topic_untyped()</span></code>, so the
+widget author needs no locally-importable class for it, and never sees its RPC
+methods, only its synced fields.
 This is templated in <a class="reference internal" href="#SpiriCamera.overlay.resolve_objects" title="SpiriCamera.overlay.resolve_objects"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_objects()</span></code></a>, which reads both halves
 of that same text – MiniJinja’s own static analysis
 (<code class="docutils literal notranslate"><span class="pre">undeclared_variables_in_str</span></code>) for what the render body actually
@@ -353,6 +359,12 @@ reads, against <a class="reference internal" href="#SpiriCamera.overlay.declared
 and raises if a template reads an alias with no matching declaration,
 which is meant to be caught by whoever is authoring the widget, not
 silently ignored.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A generic mirror only follows changes to top-level fields.  A nested
+field keeps the value it had when the mirror was made, so the
+camera metrics widget’s <code class="docutils literal notranslate"><span class="pre">q=</span></code> doesn’t follow a change of quality.</p>
+</div>
 <p>The declared topic is only a <em>default</em>. Whichever camera is actually
 rendering the widget can override it – to point <code class="docutils literal notranslate"><span class="pre">battery</span></code> at a
 different concrete object than the widget author had in mind – via
@@ -491,7 +503,7 @@ picture, for a widget that declares an <code class="docutils literal notranslate
 it – a camera only mirrors widgets named in its <code class="docutils literal notranslate"><span class="pre">overlay_widgets</span></code>
 (see <a class="reference internal" href="#SpiriCamera.overlay.OverlayMixin" title="SpiriCamera.overlay.OverlayMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OverlayMixin</span></code></a>), it never creates or publishes one.</p>
 <section id="attributes">
-<h2><span class="section-number">6.2.3. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>svg_template<span class="classifier">str</span></dt><dd><p>MiniJinja source for the widget’s SVG. May reference
 <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">exif.*</span> <span class="pre">}}</span></code> for the current frame’s tags, and
@@ -671,7 +683,7 @@ but each widget is measured (<code class="xref py py-func docutils literal notra
 than rasterized, then positioned with an SVG <code class="docutils literal notranslate"><span class="pre">&lt;g</span> <span class="pre">transform&gt;</span></code>
 instead of being alpha-blended into a raster.</p>
 <section id="parameters">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>frame_width, frame_height<span class="classifier">int</span></dt><dd><p>The frame size overlays are anchored against – typically
 <code class="docutils literal notranslate"><span class="pre">self.received_width</span></code>/<code class="docutils literal notranslate"><span class="pre">self.received_height</span></code>, i.e. the
@@ -689,7 +701,7 @@ server-side.</p>
 </dl>
 </section>
 <section id="returns">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>str</dt><dd><p>Zero or more <code class="docutils literal notranslate"><span class="pre">&lt;g</span> <span class="pre">transform=&quot;translate(...)&quot;&gt;...&lt;/g&gt;</span></code>
 elements, one per resolvable widget, meant to be wrapped by
@@ -731,7 +743,7 @@ currently resolves – same no-op contract as
 <p>What <a class="reference internal" href="#SpiriCamera.overlay.world_placement" title="SpiriCamera.overlay.world_placement"><code class="xref py py-func docutils literal notranslate"><span class="pre">world_placement()</span></code></a> read from a template’s <code class="docutils literal notranslate"><span class="pre">anchor</span></code> and
 <code class="docutils literal notranslate"><span class="pre">project</span></code> declarations; see <a class="reference internal" href="../world_overlays.html#world-overlays"><span class="std std-ref">Drawing on things in the world</span></a>.</p>
 <section id="id1">
-<h2><span class="section-number">6.2.3. </span>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>anchor<span class="classifier">str | None</span></dt><dd><p>The alias the widget is centred on, <code class="docutils literal notranslate"><span class="pre">{#</span> <span class="pre">anchor:</span> <span class="pre">&lt;alias&gt;</span> <span class="pre">#}</span></code>,
 or whose linked objects it is drawn on, one copy each, with
@@ -782,7 +794,7 @@ or whose linked objects it is drawn on, one copy each, with
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.overlay.</span></span><span class="sig-name descname"><span class="pre">anchor_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">anchor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widget_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widget_height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/overlay.html#anchor_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.overlay.anchor_position" title="Link to this definition">¶</a></dt>
 <dd><p>Pixel position for a widget’s top-left corner.</p>
 <section id="id2">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>anchor<span class="classifier">str</span></dt><dd><p>A <a class="reference internal" href="#SpiriCamera.overlay.HudWidget.anchor" title="SpiriCamera.overlay.HudWidget.anchor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">HudWidget.anchor</span></code></a> value.</p>
 </dd>
@@ -797,7 +809,7 @@ output shape.</p>
 </dl>
 </section>
 <section id="id3">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>tuple[int, int]</dt><dd><p><code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code> of the widget’s top-left corner, in frame pixels. Not
 clamped to the frame – <a class="reference internal" href="#SpiriCamera.overlay.composite" title="SpiriCamera.overlay.composite"><code class="xref py py-func docutils literal notranslate"><span class="pre">composite()</span></code></a> clips it.</p>
@@ -852,7 +864,7 @@ capture time, unlike the render-time values above – with a MiniJinja
 <code class="docutils literal notranslate"><span class="pre">exif_tags</span></code> empty) renders <code class="docutils literal notranslate"><span class="pre">&quot;untagged&quot;</span></code> instead of failing the
 whole widget’s render under this module’s strict-undefined setting.</p>
 <section id="id4">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>camera<span class="classifier">SpiriCamera.camera.Camera</span></dt><dd><p>The camera to describe.</p>
 </dd>
@@ -861,7 +873,7 @@ whole widget’s render under this module’s strict-undefined setting.</p>
 </dl>
 </section>
 <section id="id5">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>HudWidget</dt><dd><p>A published, authoritative widget under its own topic
 (<code class="docutils literal notranslate"><span class="pre">f&quot;{camera.synq_topic}_metrics&quot;</span></code>). The caller owns it, and
@@ -888,7 +900,7 @@ should <code class="docutils literal notranslate"><span class="pre">close()</spa
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.overlay.</span></span><span class="sig-name descname"><span class="pre">composite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgba</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/overlay.html#composite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.overlay.composite" title="Link to this definition">¶</a></dt>
 <dd><p>Alpha-blend a rasterized widget onto a copy of a BGR frame.</p>
 <section id="id6">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>frame<span class="classifier">np.ndarray</span></dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">(height,</span> <span class="pre">width,</span> <span class="pre">3)</span></code> BGR frame, as read from a source.</p>
 </dd>
@@ -901,7 +913,7 @@ partly or fully outside <code class="docutils literal notranslate"><span class="
 </dl>
 </section>
 <section id="id7">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>A new array – <code class="docutils literal notranslate"><span class="pre">frame</span></code> is never mutated in place, so a camera
 with no overlays configured is unaffected by this module, and
@@ -937,14 +949,14 @@ comment MiniJinja already strips at render time:</p>
 </pre></div>
 </div>
 <section id="id8">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>svg_template<span class="classifier">str</span></dt><dd><p>A <a class="reference internal" href="#SpiriCamera.overlay.HudWidget.svg_template" title="SpiriCamera.overlay.HudWidget.svg_template"><code class="xref py py-attr docutils literal notranslate"><span class="pre">HudWidget.svg_template</span></code></a>.</p>
 </dd>
 </dl>
 </section>
 <section id="id9">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>dict[str, str]</dt><dd><p><code class="docutils literal notranslate"><span class="pre">{alias:</span> <span class="pre">default_topic}</span></code>, one entry per declaration found. A
 template with none declares nothing.</p>
@@ -975,7 +987,7 @@ percentages is scaled – preserving its own aspect ratio – to fit
 within that percentage of <code class="docutils literal notranslate"><span class="pre">frame_width</span></code>/<code class="docutils literal notranslate"><span class="pre">frame_height</span></code>, the same
 way CSS <code class="docutils literal notranslate"><span class="pre">object-fit:</span> <span class="pre">contain</span></code> would.</p>
 <section id="id10">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>svg<span class="classifier">str</span></dt><dd><p>Rendered SVG source, as returned by <a class="reference internal" href="#SpiriCamera.overlay.render_svg" title="SpiriCamera.overlay.render_svg"><code class="xref py py-func docutils literal notranslate"><span class="pre">render_svg()</span></code></a>.</p>
 </dd>
@@ -986,7 +998,7 @@ consulted – and required – when <code class="docutils literal notranslate"><
 </dl>
 </section>
 <section id="id11">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>An <code class="docutils literal notranslate"><span class="pre">(height,</span> <span class="pre">width,</span> <span class="pre">4)</span></code> <code class="docutils literal notranslate"><span class="pre">uint8</span></code> array, straight (not
 premultiplied) RGBA, transparent where nothing was drawn.</p>
@@ -994,7 +1006,7 @@ premultiplied) RGBA, transparent where nothing was drawn.</p>
 </dl>
 </section>
 <section id="raises">
-<h2><span class="section-number">6.2.3. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>OverlayError</dt><dd><p>If the SVG could not be parsed, declares no size to render at,
 or uses percentage sizing with no frame size given to scale it
@@ -1022,7 +1034,7 @@ against.</p>
 <dd><p>Render a widget’s template against live object field values, EXIF
 tags, and the actual frame being rendered onto.</p>
 <section id="id12">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>svg_template<span class="classifier">str</span></dt><dd><p>A <a class="reference internal" href="#SpiriCamera.overlay.HudWidget.svg_template" title="SpiriCamera.overlay.HudWidget.svg_template"><code class="xref py py-attr docutils literal notranslate"><span class="pre">HudWidget.svg_template</span></code></a>.</p>
 </dd>
@@ -1049,14 +1061,14 @@ fields exposed as <code class="docutils literal notranslate"><span class="pre">{
 </dl>
 </section>
 <section id="id13">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>str</dt><dd><p>The rendered SVG source.</p>
 </dd>
 </dl>
 </section>
 <section id="id14">
-<h2><span class="section-number">6.2.3. </span>Raises<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Raises<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>OverlayError</dt><dd><p>If the template is malformed, or reads an alias with no value
 yet (e.g. an object that has not resolved, or a field it does
@@ -1097,14 +1109,14 @@ describes – a widget author gets a clear, immediate error for a
 typo’d or missing declaration, rather than a silently-undefined
 value only visible in the rendered picture.</p>
 <section id="id15">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>svg_template<span class="classifier">str</span></dt><dd><p>A <a class="reference internal" href="#SpiriCamera.overlay.HudWidget.svg_template" title="SpiriCamera.overlay.HudWidget.svg_template"><code class="xref py py-attr docutils literal notranslate"><span class="pre">HudWidget.svg_template</span></code></a>.</p>
 </dd>
 </dl>
 </section>
 <section id="id16">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>dict[str, str]</dt><dd><p><code class="docutils literal notranslate"><span class="pre">{alias:</span> <span class="pre">default_topic}</span></code>, restricted to aliases the template
 body actually reads – a declared-but-unused alias is not
@@ -1113,7 +1125,7 @@ mirrored.</p>
 </dl>
 </section>
 <section id="id17">
-<h2><span class="section-number">6.2.3. </span>Raises<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Raises<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>OverlayError</dt><dd><p>If the template is malformed – as it is part way through an
 edit – or reads <code class="docutils literal notranslate"><span class="pre">objects.&lt;alias&gt;</span></code> for an alias with no
@@ -1143,7 +1155,7 @@ always renders at that fraction of the frame – shrinking or growing
 with the camera’s resolution – rather than at some fixed pixel size
 that would look tiny on a 4K frame and oversized on a small one.</p>
 <section id="id18">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>camera<span class="classifier">SpiriCamera.camera.Camera</span></dt><dd><p>The camera this widget’s topic is namespaced under. The artwork
 itself does not depend on <code class="docutils literal notranslate"><span class="pre">camera</span></code> otherwise.</p>
@@ -1156,7 +1168,7 @@ fit within, preserving its own aspect ratio.</p>
 </dl>
 </section>
 <section id="id19">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>HudWidget</dt><dd><p>A published, authoritative widget under its own topic
 (<code class="docutils literal notranslate"><span class="pre">f&quot;{camera.synq_topic}_tiger&quot;</span></code>). The caller owns it, and
@@ -1184,21 +1196,21 @@ should <code class="docutils literal notranslate"><span class="pre">close()</spa
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.overlay.</span></span><span class="sig-name descname"><span class="pre">world_placement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svg_template</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/overlay.html#world_placement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.overlay.world_placement" title="Link to this definition">¶</a></dt>
 <dd><p>A widget’s <code class="docutils literal notranslate"><span class="pre">anchor</span></code> and <code class="docutils literal notranslate"><span class="pre">project</span></code> declarations.</p>
 <section id="id20">
-<h2><span class="section-number">6.2.3. </span>Parameters<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Parameters<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>svg_template<span class="classifier">str</span></dt><dd><p>A <a class="reference internal" href="#SpiriCamera.overlay.HudWidget.svg_template" title="SpiriCamera.overlay.HudWidget.svg_template"><code class="xref py py-attr docutils literal notranslate"><span class="pre">HudWidget.svg_template</span></code></a>.</p>
 </dd>
 </dl>
 </section>
 <section id="id21">
-<h2><span class="section-number">6.2.3. </span>Returns<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Returns<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>WorldPlacement</dt><dd><p>Empty for a widget that declares neither, the usual case.</p>
 </dd>
 </dl>
 </section>
 <section id="id22">
-<h2><span class="section-number">6.2.3. </span>Raises<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.7. </span>Raises<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>OverlayError</dt><dd><p>For more than one anchor, an anchor and a projection in one
 widget, <code class="docutils literal notranslate"><span class="pre">each</span></code> without a field (or a field without <code class="docutils literal notranslate"><span class="pre">each</span></code>),
@@ -1228,7 +1240,7 @@ or an alias with no <code class="docutils literal notranslate"><span class="pre"
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">6.2.4. </span>SpiriCamera.projection</div>
+                <div class="title"><span class="section-number">10.2.8. </span>SpiriCamera.projection</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -1239,7 +1251,7 @@ or an alias with no <code class="docutils literal notranslate"><span class="pre"
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">6.2.2. </span>SpiriCamera.exif</div>
+                <div class="title"><span class="section-number">10.2.6. </span>SpiriCamera.exif</div>
                 
               </div>
             </a>
@@ -1273,7 +1285,7 @@ or an alias with no <code class="docutils literal notranslate"><span class="pre"
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">6.2.3. SpiriCamera.overlay</a><ul>
+<li><a class="reference internal" href="#">10.2.7. SpiriCamera.overlay</a><ul>
 <li><a class="reference internal" href="#SpiriCamera.overlay.ANCHORS"><code class="docutils literal notranslate"><span class="pre">ANCHORS</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.overlay.DEFAULT_FONT"><code class="docutils literal notranslate"><span class="pre">DEFAULT_FONT</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.overlay.DEFAULT_FONT_PATH"><code class="docutils literal notranslate"><span class="pre">DEFAULT_FONT_PATH</span></code></a></li>
@@ -1324,7 +1336,7 @@ or an alias with no <code class="docutils literal notranslate"><span class="pre"
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

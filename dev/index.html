@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -324,13 +330,13 @@
 <td><p><strong>SPIRI-SPIRICAMERA-001</strong></p></td>
 </tr>
 <tr class="row-odd"><td><p>Revision</p></td>
-<td><p><strong>0.1</strong></p></td>
+<td><p><strong>0.2</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>Status</p></td>
 <td><p>DRAFT – not for operational use</p></td>
 </tr>
 <tr class="row-odd"><td><p>Effective date</p></td>
-<td><p>2026-01-01</p></td>
+<td><p>2026-11-06</p></td>
 </tr>
 <tr class="row-even"><td><p>Issued by</p></td>
 <td><p>Alex Davies</p></td>
@@ -351,41 +357,72 @@
 <li class="toctree-l2"><a class="reference internal" href="getting_started.html#next-steps">1.5. Next Steps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="exif.html">2. Frame Metadata (EXIF)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="exif.html#reading-tags">2.1. Reading Tags</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exif.html#multiple-tag-providers">2.2. Multiple Tag Providers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exif.html#example-tagging-frames-with-gps">2.3. Example: Tagging Frames With GPS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exif.html#reading-tags-from-raw-jpeg-bytes">2.4. Reading Tags From Raw JPEG Bytes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_model.html">2. The camera’s data structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_model.html#how-frames-get-to-you">2.1. How frames get to you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_model.html#the-camera">2.2. The camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_model.html#what-gets-sent-and-when">2.3. What gets sent, and when</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_model.html#related-pages">2.4. Related pages</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">3. Drawing on things in the world</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#the-camera-needs-a-place">3.1. The camera needs a place</a></li>
-<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#view">3.2. <code class="docutils literal notranslate"><span class="pre">view</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#what-gets-drawn">3.3. What gets drawn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#examples">3.4. Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#what-it-doesn-t-tell-you">3.5. What it doesn’t tell you</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exif.html">3. Frame Metadata (EXIF)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exif.html#reading-tags">3.1. Reading Tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exif.html#multiple-tag-providers">3.2. Multiple Tag Providers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exif.html#example-tagging-frames-with-gps">3.3. Example: Tagging Frames With GPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exif.html#reading-tags-from-raw-jpeg-bytes">3.4. Reading Tags From Raw JPEG Bytes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">4. Architecture</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#domain-split-camera-vs-sources">4.1. Domain split: camera vs. sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#camera-as-a-spirisynq-object">4.2. Camera as a SpiriSynq object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#adding-a-new-source-handler">4.3. Adding a new source handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#the-overlay-layer">4.4. The overlay layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#the-debug-ui-s-bandwidth-and-latency-readout">4.5. The debug UI’s bandwidth and latency readout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#webrtc-egress-ingest-and-whep">4.6. WebRTC egress, ingest, and WHEP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#where-things-are-tested">4.7. Where things are tested</a></li>
+<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">4. Drawing on things in the world</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#the-camera-needs-a-place">4.1. The camera needs a place</a></li>
+<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#view">4.2. <code class="docutils literal notranslate"><span class="pre">view</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#what-gets-drawn">4.3. What gets drawn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#examples">4.4. Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="world_overlays.html#what-it-doesn-t-tell-you">4.5. What it doesn’t tell you</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#running-it-against-the-nicegui-debug-ui">5.1. Running it against the NiceGUI debug UI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#how-it-fits-together">5.2. How it fits together</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#how-many-lines-is-this-really">5.3. How many lines is this, really</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#cleaning-up">5.4. Cleaning up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_integration.html">5. Using a camera from a C++ app</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cpp_integration.html#find-the-camera">5.1. Find the camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_integration.html#choose-a-transport">5.2. Choose a transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_integration.html#read-raw-frames">5.3. Read raw frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_integration.html#read-video">5.4. Read video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_integration.html#build">5.5. Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_integration.html#draw-widgets-on-the-camera">5.6. Draw widgets on the camera</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html">6. API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/index.html#classes">6.1. Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/index.html#modules">6.2. Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rtsp.html">6. Serving a camera over RTSP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rtsp.html#configure-the-server">6.1. Configure the server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rtsp.html#view-the-camera-in-qgroundcontrol">6.2. View the camera in QGroundControl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rtsp.html#how-viewers-drive-rate-control">6.3. How viewers drive rate control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rtsp.html#klv-metadata">6.4. KLV metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rtsp.html#limitations">6.5. Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mediamtx.html">7. Serving a camera through MediaMTX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mediamtx.html#read-stanag-4609-output-over-srt">7.1. Read STANAG 4609 output over SRT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mediamtx.html#rate-control">7.2. Rate control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mediamtx.html#check-that-it-s-working">7.3. Check that it’s working</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">8. Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#domain-split-camera-vs-sources">8.1. Domain split: camera vs. sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#camera-as-a-spirisynq-object">8.2. Camera as a SpiriSynq object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#adding-a-new-source-handler">8.3. Adding a new source handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#the-overlay-layer">8.4. The overlay layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#the-debug-ui-s-bandwidth-and-latency-readout">8.5. The debug UI’s bandwidth and latency readout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#rtsp-egress">8.6. RTSP egress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#sources-that-relay-and-sources-that-come-and-go">8.7. Sources that relay, and sources that come and go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#where-things-are-tested">8.8. Where things are tested</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#running-it-against-the-nicegui-debug-ui">9.1. Running it against the NiceGUI debug UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#how-it-fits-together">9.2. How it fits together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#how-many-lines-is-this-really">9.3. How many lines is this, really</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/yolo_overlay.html#cleaning-up">9.4. Cleaning up</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">10. API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#classes">10.1. Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#modules">10.2. Modules</a></li>
 </ul>
 </li>
 </ul>
@@ -437,7 +474,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=1b390748"></script>
+</div><script src="_static/documentation_options.js?v=3b889da3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
-        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/_modules/SpiriCamera/whep.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/_modules/SpiriCamera/klv.html">
         <link rel="prefetch" href="../../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>SpiriCamera.whep - SpiriCamera</title>
+        <title>SpiriCamera.klv - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -247,22 +247,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -301,93 +307,73 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for SpiriCamera.whep</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""WHEP (WebRTC-HTTP Egress Protocol) exposure for a single camera.</span>
+          <h1>Source code for SpiriCamera.klv</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""KLV metadata for a camera's frames: a MISB ST 0601 UAS Datalink Local Set.</span>
 
-<span class="sd">This is the HTTP door onto the same session machinery</span>
-<span class="sd">:py:meth:`SpiriCamera.camera.Camera.webrtc_offer` uses over zenoh --</span>
-<span class="sd">both call straight into :py:mod:`SpiriCamera.webrtc`, so a viewer that</span>
-<span class="sd">came in over HTTP and one that came in over SpiriSynq get the same</span>
-<span class="sd">video track and tags data channel.</span>
-
-<span class="sd">Deliberately minimal: one camera per app (:py:func:`create_whep_app`</span>
-<span class="sd">takes a callable returning it, matching the "expose *a* topic over</span>
-<span class="sd">http" ask rather than a multi-camera router), and no ``PATCH`` route</span>
-<span class="sd">for trickle ICE -- :py:mod:`SpiriCamera.webrtc` waits for ICE gathering</span>
-<span class="sd">to finish before answering, so there is nothing left to trickle. A</span>
-<span class="sd">future need for faster connection setup through restrictive NATs is</span>
-<span class="sd">the reason to revisit that, not anything this module is missing today.</span>
-
-<span class="sd">Run standalone with ``SpiriCamera whep-serve &lt;source&gt;`` (see</span>
-<span class="sd">:py:mod:`SpiriCamera.cli`), or mount ``create_whep_app(...)`` into any</span>
-<span class="sd">other FastAPI app.</span>
+<span class="sd">:py:mod:`SpiriCamera.rtsp` sends one with each frame, at that frame's timestamp,</span>
+<span class="sd">and MediaMTX carries them on into MPEG-TS for STANAG 4609 consumers.</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+<span class="c1">#: The Universal Label that identifies a UAS Datalink Local Set.</span>
+<span class="n">UAS_LOCAL_SET_KEY</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s2">"060E2B34020B01010E01030101000000"</span><span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">webrtc</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.camera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span>
+<span class="c1">#: The version of ST 0601 these sets declare, in tag 65.</span>
+<span class="n">ST0601_VERSION</span> <span class="o">=</span> <span class="mi">19</span>
 
-<span class="c1">#: Media type both the offer and the answer are carried in, per WHEP.</span>
-<span class="n">SDP_MEDIA_TYPE</span> <span class="o">=</span> <span class="s2">"application/sdp"</span>
+<span class="n">_TAG_CHECKSUM</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">_TAG_PRECISION_TIMESTAMP</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">_TAG_VERSION</span> <span class="o">=</span> <span class="mi">65</span>
 
 
-<div class="viewcode-block" id="create_whep_app">
-<a class="viewcode-back" href="../../api/SpiriCamera.whep.html#SpiriCamera.whep.create_whep_app">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_whep_app</span><span class="p">(</span><span class="n">get_camera</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Camera</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FastAPI</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Build a WHEP app publishing whatever ``get_camera()`` returns.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ber_length</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A BER length: one byte below 128, otherwise a byte count and the bytes."""</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">length</span><span class="p">])</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">length</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">((</span><span class="n">length</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">"big"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bytes</span><span class="p">([</span><span class="mh">0x80</span> <span class="o">|</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded</span><span class="p">)])</span> <span class="o">+</span> <span class="n">encoded</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_checksum</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""ST 0601's checksum: a 16-bit sum, with bytes alternately the high and low half."""</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">byte</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">byte</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="p">((</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">total</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+
+
+<div class="viewcode-block" id="uas_local_set">
+<a class="viewcode-back" href="../../api/SpiriCamera.klv.html#SpiriCamera.klv.uas_local_set">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">uas_local_set</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Build the local set for one frame.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    get_camera : Callable[[], Camera]</span>
-<span class="sd">        Called on every request, so the camera it returns can be</span>
-<span class="sd">        swapped or reconfigured out from under a long-lived app.</span>
+<span class="sd">    timestamp : float</span>
+<span class="sd">        When the frame was captured, in seconds since the UNIX epoch.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    FastAPI</span>
-<span class="sd">        An app with ``POST /whep`` and ``DELETE /whep/{session_id}``.</span>
+<span class="sd">    bytes</span>
+<span class="sd">        A complete KLV packet: key, BER length and items, ending in the checksum.</span>
 <span class="sd">    """</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"SpiriCamera WHEP"</span><span class="p">)</span>
-
-    <span class="c1"># WHEP clients may ask first, for CORS or the server's ICE servers (we</span>
-    <span class="c1"># have none to offer). Some, like MediaMTX's, give up if this fails.</span>
-    <span class="nd">@app</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s2">"/whep"</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">whep_options</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Allow"</span><span class="p">:</span> <span class="s2">"OPTIONS, POST"</span><span class="p">})</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/whep"</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">whep_offer</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-        <span class="n">offer_sdp</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">offer_sdp</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s2">"Request body must be an SDP offer"</span><span class="p">)</span>
-
-        <span class="n">session_id</span><span class="p">,</span> <span class="n">answer_sdp</span><span class="p">,</span> <span class="n">answer_type</span> <span class="o">=</span> <span class="k">await</span> <span class="n">webrtc</span><span class="o">.</span><span class="n">negotiate_async</span><span class="p">(</span>
-            <span class="n">get_camera</span><span class="p">(),</span> <span class="n">offer_sdp</span><span class="p">,</span> <span class="s2">"offer"</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-            <span class="n">content</span><span class="o">=</span><span class="n">answer_sdp</span><span class="p">,</span>
-            <span class="n">media_type</span><span class="o">=</span><span class="n">SDP_MEDIA_TYPE</span><span class="p">,</span>
-            <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
-            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Location"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"/whep/</span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s2">"</span><span class="p">},</span>
-        <span class="p">)</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">"/whep/</span><span class="si">{session_id}</span><span class="s2">"</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">whep_terminate</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-        <span class="n">closed</span> <span class="o">=</span> <span class="k">await</span> <span class="n">webrtc</span><span class="o">.</span><span class="n">close_session_async</span><span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">closed</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="s2">"No such WHEP session"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">app</span></div>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">bytes</span><span class="p">([</span><span class="n">_TAG_PRECISION_TIMESTAMP</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+        <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;Q"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">timestamp</span> <span class="o">*</span> <span class="mi">1_000_000</span><span class="p">))</span>
+        <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">_TAG_VERSION</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ST0601_VERSION</span><span class="p">])</span>
+    <span class="p">)</span>
+    <span class="c1"># The checksum covers everything up to its own value, so its tag and length too.</span>
+    <span class="n">checksum_header</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">_TAG_CHECKSUM</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">checksum_header</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="n">covered</span> <span class="o">=</span> <span class="n">UAS_LOCAL_SET_KEY</span> <span class="o">+</span> <span class="n">_ber_length</span><span class="p">(</span><span class="n">length</span><span class="p">)</span> <span class="o">+</span> <span class="n">items</span> <span class="o">+</span> <span class="n">checksum_header</span>
+    <span class="k">return</span> <span class="n">covered</span> <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;H"</span><span class="p">,</span> <span class="n">_checksum</span><span class="p">(</span><span class="n">covered</span><span class="p">))</span></div>
 
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SDP_MEDIA_TYPE"</span><span class="p">,</span> <span class="s2">"create_whep_app"</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ST0601_VERSION"</span><span class="p">,</span> <span class="s2">"UAS_LOCAL_SET_KEY"</span><span class="p">,</span> <span class="s2">"uas_local_set"</span><span class="p">]</span>
 </pre></div>
         </article>
       </div>
@@ -420,7 +406,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
