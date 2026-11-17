@@ -9,20 +9,24 @@ reach back into the camera.
 
 from __future__ import annotations
 
+import json
 import re
 import threading
 import time
-from collections.abc import Generator, Mapping
-from contextlib import contextmanager, nullcontext
+import uuid
+from collections.abc import Mapping
+from contextlib import nullcontext
 from dataclasses import dataclass, field, replace
 from importlib.metadata import PackageNotFoundError, version
 
 import cv2
 import numpy as np
+import zenoh
 from loguru import logger
 from SpiriSynq.example_types.position import Pose, Position, RootFrame
 from SpiriSynq.link import Link
 from SpiriSynq.remote_callables import remote_method
+from SpiriSynq.syncable_objects import WeakMethodProxy
 
 from SpiriCamera import exif, overlay
 from SpiriCamera.overlay import OverlayMixin
@@ -36,6 +40,21 @@ from SpiriCamera.sources import (
     resolve_source,
 )
 from SpiriCamera.sources.base import fit_within, shrink
+from SpiriCamera.transports import (
+    TRANSPORT_JPEG_DATA,
+    TRANSPORT_RAW_DATA,
+    TRANSPORT_VIDEO_INTERFRAME,
+    TRANSPORT_VIDEO_KEYFRAME,
+    TRANSPORT_VIDEO_REPORT,
+    DataChannel,
+    RawFrame,
+    TransportJpeg,
+    TransportRaw,
+    TransportVideo,
+    VideoPacket,
+    VideoSync,
+)
+from SpiriCamera.video import VideoEncoder
 
 #: Mimetypes the camera can encode to, mapped to an OpenCV extension.
 #:
@@ -48,8 +67,11 @@ ENCODINGS: dict[str, str] = {"image/jpeg": ".jpg"}
 #: :py:attr:`CameraBase.status` while frames are being captured.
 STATUS_RUNNING = "running"
 
-#: :py:attr:`CameraBase.status` while idle with nothing wrong.
+#: :py:attr:`CameraBase.status` once stopped, with nothing wrong.
 STATUS_STOPPED = "stopped"
+
+#: :py:attr:`CameraBase.status` while started, with nothing wanting frames.
+STATUS_IDLE = "idle: no subscribers"
 
 #: Prefix of :py:attr:`CameraBase.status` while running but waiting for a
 #: source that will not open yet; the reason follows after a colon.
@@ -63,6 +85,9 @@ INTRINSICS_ORIGINS = ("manual", "source", "mavlink")
 
 #: Seconds between attempts to open a source that is not there yet.
 _SOURCE_RETRY_INTERVAL = 1.0
+
+#: Seconds between checks for a subscriber, while nothing wants frames.
+_IDLE_POLL_INTERVAL = 0.1
 
 #: How long :py:meth:`Camera.stop` waits for the capture thread to exit.
 _STOP_TIMEOUT = 5.0
@@ -146,18 +171,22 @@ class CameraBase(OverlayMixin, Position):
         everything else here — nothing in SpiriSynq is truly read-only —
         though a value set by hand does not reconfigure the device and
         is overwritten the next time the source opens.
-    ``max_width`` / ``max_height`` / ``max_framerate`` / ``quality`` / ``mimetype`` / ``exif_enabled``
-        The requested capture and encoding settings.  These are live:
-        changing them takes effect on the next frame.
+    ``max_width`` / ``max_height`` / ``max_framerate`` / ``exif_enabled``
+        The requested capture settings.  These are live: changing them
+        takes effect on the next frame.
+    ``transport_raw`` / ``transport_jpeg`` / ``transport_video``
+        The transports: their settings, and the frames themselves, which
+        only reach a node that subscribes to them.  See
+        :py:mod:`SpiriCamera.transports`.
     ``received_*`` / ``_exif_tags`` / ``_exif_timestamp``
-        What the current :py:attr:`image` turned out to be.  See
+        What the current frame turned out to be.  See
         :py:data:`synq_skip_sync` and the note below — none of this
         group goes over the wire as a field of its own.
 
     Tags themselves are not a synced field at all.  A caller adds them
     through :py:meth:`Camera.exif_set_tags` / :py:meth:`Camera.exif_update`
     and reads them back from :py:attr:`Camera.exif_tags`, which is
-    recomputed from :py:attr:`image` rather than stored and sent.
+    computed per frame rather than stored and sent.
 
     .. note::
 
@@ -168,9 +197,10 @@ class CameraBase(OverlayMixin, Position):
        width published beside an image is a width a peer can read
        against the wrong image.  They are instead written *into* the
        encoded frame by :py:mod:`SpiriCamera.exif` and read back out of
-       it, on the authoritative node and on every mirror alike, by
-       :py:meth:`Camera._on_image_changed`.  A mirror therefore fills
-       these in for itself and stays exact by construction.
+       it by :py:meth:`Camera._on_image_changed`.  A mirror therefore
+       fills these in for itself and stays exact by construction, and
+       has none of them until it subscribes to a transport.  The camera
+       itself takes them from the frame it captured.
 
        The two ``_exif_*`` fields carry a leading underscore *and* sit in
        ``synq_skip_sync``: the underscore is what actually keeps them off
@@ -202,22 +232,27 @@ class CameraBase(OverlayMixin, Position):
     source : SourceInfo
         Resolved description of :py:attr:`source_str`.
     running : bool
-        Whether the camera is started: capturing, or waiting for a
-        source that will not open yet.  Assigning to it starts or stops
-        the camera, including from a remote peer.
+        Whether the camera is capturing, or waiting for a source that will
+        not open yet, because something wants its frames.  Set by the
+        camera, from whether its transports have subscribers: a value
+        written by anything else is overwritten almost at once.
     status : str
         What the camera is doing, in words: :py:data:`STATUS_RUNNING`,
-        :py:data:`STATUS_STOPPED`, ``"<STATUS_WAITING>: <reason>"`` for
+        :py:data:`STATUS_IDLE`, :py:data:`STATUS_STOPPED`,
+        ``"<STATUS_WAITING>: <reason>"`` for
         a started camera whose device or upstream topic is not there
         (yet, or any more), or the reason it is not running — a source
         string that would not resolve, or a capture that keeps failing.
         ``running`` says whether the camera is trying; ``status`` says
         whether frames are actually flowing, and why not when they are
         not.
-    image : bytes
-        The most recent encoded frame, in :py:attr:`mimetype` format,
-        carrying that frame's tags in its EXIF; see
-        :py:meth:`Camera.exif_tags_for_frame`.
+    transport_raw : TransportRaw
+        The raw transport; see :py:mod:`SpiriCamera.transports`.
+    transport_jpeg : TransportJpeg
+        The JPEG transport; see :py:mod:`SpiriCamera.transports`.
+    transport_video : TransportVideo
+        The video transport, the camera's one encode; see
+        :py:mod:`SpiriCamera.transports`.
     exif_enabled : bool
         Whether to tag encoded frames at all.  Turning it off gives byte
         identical frames for an unchanging scene, which psygnal then
@@ -231,9 +266,9 @@ class CameraBase(OverlayMixin, Position):
 
     #: Fields excluded from SpiriSynq, on top of the base class's own.
     #:
-    #: Every one of these describes the current :py:attr:`image` -- either
-    #: derived from its bytes directly, or (``received_framerate``) from
-    #: the local wall-clock gap since the previous one -- and is computed
+    #: Every one of these describes the current frame -- either derived
+    #: from it directly, or (``received_framerate``) from the local
+    #: wall-clock gap since the previous one -- and is computed
     #: fresh wherever it is needed.  Publishing it separately would let a
     #: peer pair an observation with the wrong frame, or with a framerate
     #: measured against a different network path than its own; see the
@@ -267,8 +302,10 @@ class CameraBase(OverlayMixin, Position):
     max_width: int = 1920
     max_height: int = 1080
     max_framerate: int = 30
-    quality: int = 80
-    mimetype: str = "image/jpeg"
+
+    transport_raw: TransportRaw = field(default_factory=TransportRaw)
+    transport_jpeg: TransportJpeg = field(default_factory=TransportJpeg)
+    transport_video: TransportVideo = field(default_factory=TransportVideo)
 
     exif_enabled: bool = True
     _exif_tags: dict[str, str] = field(default_factory=dict)
@@ -277,7 +314,6 @@ class CameraBase(OverlayMixin, Position):
 
     running: bool = False
     status: str = STATUS_STOPPED
-    image: bytes = b""
 
 
 # ---------------------------------------------------------------------------
@@ -291,14 +327,16 @@ class Camera(CameraBase):
     Usage::
 
         cam = Camera("/dev/video0", quality=85)
-        cam.start()                 # begins the background capture thread
-        frame_bytes = cam.image     # whatever it has captured so far
+        cam.start()                 # describes itself, then waits for demand
+        cam.transport_jpeg_subscribe()   # opens the source and starts capturing
+        frame_bytes = cam.transport_jpeg.data
         cam.stop()
 
     or as a context manager, which starts on entry and stops on exit::
 
         with Camera("testimage://", max_width=1280, max_height=720) as cam:
-            frame_bytes = cam.image
+            cam.transport_jpeg_subscribe()
+            frame_bytes = cam.transport_jpeg.data
 
     Treat a running ``Camera`` like a small daemon, not a handle to poll
     by calling :py:meth:`read` yourself: leave ``start()`` on its default
@@ -313,17 +351,24 @@ class Camera(CameraBase):
     This is the *authoritative* role: actually owning and driving a
     device. Code that merely wants another process's frames should not
     construct a second ``Camera`` this way — it should mirror the
-    existing one with :py:meth:`from_topic` and either poll
-    :py:attr:`~CameraBase.image` or connect to its psygnal event
-    (``cam.events.image.connect(...)``); see the "Consuming an existing
-    camera" section of the getting-started guide.
+    existing one with :py:meth:`from_topic`, call
+    :py:meth:`transport_jpeg_subscribe`, and either poll
+    ``transport_jpeg.data`` or connect to its psygnal event
+    (``cam.transport_jpeg.data_changed.connect(...)``); see the "Consuming
+    an existing camera" section of the getting-started guide.
 
-    While running, a background thread captures at
-    :py:attr:`~CameraBase.max_framerate` and assigns each encoded frame
-    to :py:attr:`~CameraBase.image`, which publishes it to SpiriSynq.
-    Settings are live: changing ``max_width``, ``quality``, or
-    ``max_framerate`` — locally or from a remote peer — takes effect on
-    the next frame without a restart.
+    A started camera isn't necessarily running.  It opens its source once
+    to publish what it is (capabilities, identity, lens), then closes it
+    until something subscribes to one of its transports.  While something
+    does, a background thread captures at
+    :py:attr:`~CameraBase.max_framerate`, resizes each frame, draws
+    widgets on it, assigns it to ``transport_raw.data``, and encodes it
+    to ``transport_jpeg.data`` if anything wants that.  When the last
+    subscriber leaves, the source closes again.  :py:meth:`stop` is the
+    local way to switch it off whatever anyone wants, and nothing remote
+    can do that.  Settings are live: changing ``max_width``,
+    ``transport_jpeg.quality``, or ``max_framerate`` — locally or from a
+    remote peer — takes effect on the next frame without a restart.
 
     An unusable source is not fatal.  Construction never raises for a
     bad source string; the reason lands in ``camera.source.error`` and
@@ -353,7 +398,7 @@ class Camera(CameraBase):
             Source URL or device path.  May be empty or invalid; see the
             class docstring.
         quality : int
-            Encode quality for JPEG frames, 1-100.
+            Initial ``transport_jpeg.quality``, 1-100.
         max_width : int
             The most pixels wide a published frame is.  The source is
             asked for no more; whatever it delivers, a bigger frame is
@@ -364,8 +409,7 @@ class Camera(CameraBase):
             Requested capture framerate, and the rate of the capture
             thread.
         mimetype : str
-            Encoding for :py:attr:`~CameraBase.image`; see
-            :py:data:`ENCODINGS`.
+            Initial ``transport_jpeg.mimetype``; see :py:data:`ENCODINGS`.
         synq_topic : str
             SpiriSynq topic.  Defaults to one derived from ``source``,
             and is fixed for the lifetime of the object even if the
@@ -387,7 +431,7 @@ class Camera(CameraBase):
             override that for an unusual case.
         **rehydrated : object
             Every other synced field (``vendor``, ``running``, ``status``,
-            ``image``, ``exif_enabled``, the resolved ``source``, ...).
+            ``transport_jpeg``, ``exif_enabled``, the resolved ``source``, ...).
             Not meant to be passed by hand: SpiriSynq's full-object
             rehydrate hands back *every* synced field as a keyword
             argument, by its real name (``source_str``, not ``source``),
@@ -413,11 +457,16 @@ class Camera(CameraBase):
         is_rehydrate = isinstance(source, SourceInfo)
         resolved_source = source if is_rehydrate else None
         source_str = str(rehydrated.pop("source_str", "" if is_rehydrate else source))
-        quality = rehydrated.pop("quality", quality)  # type: ignore[assignment]
         max_width = rehydrated.pop("max_width", max_width)  # type: ignore[assignment]
         max_height = rehydrated.pop("max_height", max_height)  # type: ignore[assignment]
         max_framerate = rehydrated.pop("max_framerate", max_framerate)  # type: ignore[assignment]
-        mimetype = str(rehydrated.pop("mimetype", mimetype))
+        transport_jpeg = rehydrated.pop("transport_jpeg", None) or TransportJpeg(
+            quality=quality, mimetype=mimetype
+        )
+        if not is_rehydrate and "transport_video" not in rehydrated:
+            from SpiriCamera.main import get_settings  # local: main imports this module
+
+            rehydrated["transport_video"] = TransportVideo(preset=get_settings().h264_preset)
         synq_topic = str(rehydrated.pop("synq_topic", synq_topic))
 
         if synq_authoritive is None:
@@ -428,11 +477,10 @@ class Camera(CameraBase):
             synq_topic=synq_topic or topic_for_source(source_str),
             source_str=source_str,
             source=resolved_source if resolved_source is not None else SourceInfo(),
-            quality=quality,
+            transport_jpeg=transport_jpeg,
             max_width=max_width,
             max_height=max_height,
             max_framerate=max_framerate,
-            mimetype=mimetype,
             synq_authoritive=synq_authoritive,
             # Deferred: the object is not wired up enough to sync yet.
             synq_auto_start=False,
@@ -440,8 +488,11 @@ class Camera(CameraBase):
         )
 
         self._lock = threading.RLock()
-        self._in_lifecycle = False
+        # Started, whether or not anything wants frames right now.
         self._active = False
+        # Whether the source has been opened since starting, so a camera
+        # nothing wants has still described itself.
+        self._probed = False
         # Intent, as opposed to _active's fact. A camera retargeted from a
         # half-typed source string stops running but still wants to, so it
         # can resume by itself once the string resolves and opens.
@@ -453,8 +504,25 @@ class Camera(CameraBase):
         self._cached_frame: np.ndarray | None = None
         self._cached_encoding: tuple[str, int] | None = None
         self._cached_image: bytes = b""
-        # See latest_frame.
-        self._latest_frame: tuple[bytes, np.ndarray] | None = None
+        # The zenoh side of each transport's @data; see sync().
+        self._raw = DataChannel(TRANSPORT_RAW_DATA, self._receive_raw)
+        self._jpeg = DataChannel(TRANSPORT_JPEG_DATA, self._receive_jpeg)
+        self._video_keyframe = DataChannel(TRANSPORT_VIDEO_KEYFRAME, self._receive_video_keyframe)
+        self._video_interframe = DataChannel(
+            TRANSPORT_VIDEO_INTERFRAME,
+            self._receive_video_interframe,
+            answers_keyframe_requests=False,
+        )
+        self._video_encoder = VideoEncoder(self)
+        self._video_thread: threading.Thread | None = None
+        self._video_report_queryable: zenoh.Queryable | None = None
+        # What a mirror knows of the video it's receiving, and who it is to
+        # the camera's rate control.
+        self._video_sync = VideoSync()
+        self._video_sync_lock = threading.Lock()
+        self._video_subscriber_id = uuid.uuid4().hex
+        # Set while applying a frame from the network, so it isn't sent back.
+        self._receiving_frame = threading.local()
         # The last frame _fit shrank, its size, and the result.
         self._shrunk: tuple[np.ndarray, tuple[int, int], np.ndarray] | None = None
         # Last EXIF failure reported, so a source that cannot be tagged
@@ -505,25 +573,327 @@ class Camera(CameraBase):
         # React to our own state changing, whoever changed it — a local
         # caller, a UI binding, or a remote peer over SpiriSynq.
         self.events.source_str.connect(self._on_source_str_changed)
-        self.events.running.connect(self._on_running_changed)
-        # Frames arrive the same way on both sides: we set image, or the
-        # network does. Either way the observations come out of its bytes.
-        self.events.image.connect(self._on_image_changed)
-        # psygnal only fires this on a *later* reassignment, so a frame
-        # that arrived through the constructor -- a rehydrated mirror's
-        # image, already carrying a real frame -- would otherwise leave
-        # received_width and the rest at their empty defaults until the
-        # next one arrives. Priming is harmless for a normal construction,
-        # where image is still empty.
-        self._on_image_changed(self.image)
-        # Same reasoning: overlay_widgets set through the constructor
-        # (a rehydrated mirror, or a caller passing it directly) needs
-        # its widgets mirrored now, not only on the next render pass.
+        self.transport_raw.data_changed.connect(self._on_raw_data_changed)
+        self.transport_jpeg.data_changed.connect(self._on_jpeg_data_changed)
+        # A peer can replace a whole transport, like any synced field.
+        self.events.transport_raw.connect(self._on_transport_raw_replaced)
+        self.events.transport_jpeg.connect(self._on_transport_jpeg_replaced)
+        # overlay_widgets set through the constructor (a rehydrated mirror,
+        # or a caller passing it directly) needs its widgets mirrored now,
+        # not only on the next render pass.
         self._overlay_sync_widgets()
 
         self.synq_auto_start = synq_auto_start
         if synq_auto_start:
             self.sync()
+
+    # ------------------------------------------------------------------
+    # Transports
+    # ------------------------------------------------------------------
+
+    def sync(self) -> None:
+        """Join SpiriSynq, plus the ``@data`` keys its wildcards don't reach."""
+        super().sync()
+        assert self.synq_session
+        for channel in (self._raw, self._jpeg, self._video_keyframe, self._video_interframe):
+            channel.declare(
+                self.synq_session, self.synq_absolute_path, authoritive=self.synq_authoritive
+            )
+        if self.synq_authoritive:
+            self._video_report_queryable = self.synq_session.zenoh_session.declare_queryable(
+                f"{self.synq_absolute_path}/{TRANSPORT_VIDEO_REPORT}",
+                WeakMethodProxy(self._on_video_report),
+            )
+
+    def transport_jpeg_subscribe(self) -> None:
+        """Select the JPEG transport: receive its frames here.
+
+        A mirror gets frames in ``transport_jpeg.data``, the first one at
+        the camera's next tick.  A subscriber anywhere,
+        including here on the camera itself, is what makes a started camera
+        run; connecting to ``transport_jpeg.data_changed`` alone doesn't.
+
+        Subscribing again is a no-op.
+        """
+        self._jpeg.subscribe()
+
+    def transport_jpeg_unsubscribe(self) -> None:
+        """Stop receiving JPEG frames here; a mirror forgets the last one.
+
+        Unsubscribing when not subscribed is a no-op.
+        """
+        if self._jpeg.unsubscribe() and not self.synq_authoritive:
+            self._apply_received(self.transport_jpeg, b"")
+
+    def transport_raw_subscribe(self) -> None:
+        """Select the raw transport: receive its frames here.
+
+        As :py:meth:`transport_jpeg_subscribe`, with ``transport_raw.data``.
+        Raw frames are large, about 186 MB/s at 1080p30, so a mirror on the
+        far side of a slow link wants a different transport.
+        """
+        self._raw.subscribe()
+
+    def transport_raw_unsubscribe(self) -> None:
+        """Stop receiving raw frames here; a mirror forgets the last one.
+
+        Unsubscribing when not subscribed is a no-op.
+        """
+        if self._raw.unsubscribe() and not self.synq_authoritive:
+            self._apply_received(self.transport_raw, None)
+            if not self._jpeg.subscribed:
+                self._on_image_changed(b"")
+
+    def transport_raw_hold(self) -> None:
+        """Want raw frames for a consumer in this process, such as an encoder.
+
+        Any number can hold at once, and each one keeps the camera running
+        until it calls :py:meth:`transport_raw_release`.
+        """
+        self._raw.hold()
+
+    def transport_raw_release(self) -> None:
+        """Undo one :py:meth:`transport_raw_hold`."""
+        self._raw.release()
+
+    def transport_video_subscribe(self, *, keyframes_only: bool = False) -> None:
+        """Select the video transport: receive it through ``packet_received``.
+
+        Packets arrive in decodable order; see
+        :py:class:`~SpiriCamera.transports.VideoSync`.  This node reports its
+        loss to the camera, whose one encode suits the worst subscriber.
+
+        Parameters
+        ----------
+        keyframes_only : bool
+            Take only ``@data_keyframe``: one frame per
+            ``keyframe_interval``, for very little bandwidth.
+
+        Subscribing again is a no-op.
+        """
+        with self._video_sync_lock:
+            self._video_sync = VideoSync(keyframes_only=keyframes_only)
+        if not keyframes_only:
+            self._video_interframe.subscribe()
+        self._video_keyframe.subscribe()
+
+    def transport_video_unsubscribe(self) -> None:
+        """Stop receiving video here, and leave the camera's rate control.
+
+        Unsubscribing when not subscribed is a no-op.
+        """
+        subscribed = self._video_keyframe.unsubscribe()
+        self._video_interframe.unsubscribe()
+        if subscribed and not self.synq_authoritive:
+            self._send_video_report({"left": True})
+
+    def transport_video_hold(self) -> None:
+        """Want video for a consumer in this process, such as an RTSP session.
+
+        Each hold keeps the camera running and encoding until it calls
+        :py:meth:`transport_video_release`.
+        """
+        self._video_keyframe.hold()
+        self._video_interframe.hold()
+
+    def transport_video_release(self) -> None:
+        """Undo one :py:meth:`transport_video_hold`."""
+        self._video_keyframe.release()
+        self._video_interframe.release()
+
+    def transport_video_request_keyframe(self) -> None:
+        """Make the camera's next frame a keyframe, from this process or a mirror."""
+        if self.synq_authoritive:
+            self._video_encoder.request_keyframe()
+        else:
+            self._video_keyframe.request_keyframe()
+
+    def transport_video_report(
+        self,
+        subscriber: str,
+        *,
+        fraction_lost: float | None = None,
+        max_bitrate: int | None = None,
+    ) -> None:
+        """Report one consumer's link to the camera's rate control, in this process.
+
+        What a consumer that isn't subscribing over SpiriSynq calls instead:
+        an endpoint with a link of its own to report on.
+        """
+        self._video_encoder.report(subscriber, fraction_lost, max_bitrate)
+
+    def transport_video_forget(self, subscriber: str) -> None:
+        """Take a consumer that has left out of the camera's rate control."""
+        self._video_encoder.forget(subscriber)
+
+    def _raw_wanted(self) -> bool:
+        """Whether anything wants frames: raw, or what's made from it."""
+        return self._raw.wanted or self._jpeg.wanted or self._video_demanded()
+
+    def _video_demanded(self) -> bool:
+        """Whether anything wants video, on either key."""
+        return self._video_keyframe.demanded or self._video_interframe.demanded
+
+    def _video_interframes_demanded(self) -> bool:
+        """Whether anything wants more than keyframes."""
+        return self._video_interframe.demanded
+
+    def _publish_video(self, packet: VideoPacket) -> None:
+        """Send one packet to everyone reading it, here and on the network."""
+        channel = self._video_keyframe if packet.keyframe else self._video_interframe
+        transport = self.transport_video
+        qos = transport.data_keyframe_qos if packet.keyframe else transport.data_interframe_qos
+        if channel.remote_wanted:
+            channel.put(
+                packet.payload,
+                attachment=packet.attachment(),
+                encoding=zenoh.Encoding.VIDEO_H264,
+                **qos.put_kwargs(),
+            )
+        transport.packet_received.emit(packet)
+
+    def _on_video_report(self, query: zenoh.Query) -> None:
+        """A subscriber's report: its loss, or that it has left."""
+        try:
+            report = json.loads(query.payload.to_string()) if query.payload else {}
+            subscriber = str(report["subscriber"])
+            if report.get("left"):
+                self._video_encoder.forget(subscriber)
+            else:
+                self._video_encoder.report(
+                    subscriber, report.get("fraction_lost"), report.get("max_bitrate")
+                )
+        except (ValueError, KeyError, TypeError) as exc:
+            logger.debug(f"{self.synq_topic}: dropped a damaged video report: {exc}")
+        query.reply(query.key_expr, b"")
+
+    def _send_video_report(self, report: dict[str, object]) -> None:
+        """Send the camera a report from this subscriber."""
+        self._video_keyframe.query(
+            TRANSPORT_VIDEO_REPORT.rsplit("/", 1)[1],
+            json.dumps({"subscriber": self._video_subscriber_id, **report}),
+        )
+
+    @logger.catch()
+    def _receive_video_keyframe(self, sample: zenoh.Sample) -> None:
+        self._receive_video(sample, keyframe=True)
+
+    @logger.catch()
+    def _receive_video_interframe(self, sample: zenoh.Sample) -> None:
+        self._receive_video(sample, keyframe=False)
+
+    def _receive_video(self, sample: zenoh.Sample, *, keyframe: bool) -> None:
+        """Apply one packet from the network, if it can be decoded next."""
+        if not self.synq_receive or sample.attachment is None:
+            return
+        try:
+            packet = VideoPacket.from_wire(
+                sample.payload.to_bytes(), sample.attachment.to_string(), keyframe=keyframe
+            )
+        except (ValueError, KeyError) as exc:
+            logger.debug(f"{self.synq_topic}: dropped a damaged video packet: {exc}")
+            return
+        with self._video_sync_lock:
+            accepted = self._video_sync.accept(packet)
+            request = self._video_sync.keyframe_due()
+            fraction_lost = self._video_sync.take_report()
+        if request:
+            self._video_keyframe.request_keyframe()
+        if fraction_lost is not None:
+            self._send_video_report({"fraction_lost": fraction_lost})
+        if accepted:
+            # Another transport here has already said what the frames are.
+            if not self._raw.subscribed and not self._jpeg.subscribed:
+                self._observe_frame(packet.width, packet.height, dict(packet.tags), arrived=True)
+            self.transport_video.packet_received.emit(packet)
+
+    @logger.catch()
+    def _receive_raw(self, sample: zenoh.Sample) -> None:
+        """Apply a raw frame from the network."""
+        if not self.synq_receive or sample.attachment is None:
+            return
+        try:
+            frame = RawFrame.from_wire(sample.payload.to_bytes(), sample.attachment.to_string())
+        except (ValueError, KeyError) as exc:
+            logger.debug(f"{self.synq_topic}: dropped a damaged raw frame: {exc}")
+            return
+        self._apply_received(self.transport_raw, frame)
+
+    @logger.catch()
+    def _receive_jpeg(self, sample: zenoh.Sample) -> None:
+        """Apply a JPEG from the network."""
+        if self.synq_receive:
+            self._apply_received(self.transport_jpeg, sample.payload.to_bytes())
+
+    def _apply_received(self, transport: TransportRaw | TransportJpeg, data: object) -> None:
+        """Set a transport's ``data`` without publishing it back."""
+        self._receiving_frame.active = True
+        try:
+            transport.data = data  # type: ignore[assignment]
+        finally:
+            self._receiving_frame.active = False
+
+    def _is_publishing(self) -> bool:
+        """Whether a frame just assigned here should go out on the network."""
+        return self.synq_publish and not getattr(self._receiving_frame, "active", False)
+
+    def _on_raw_data_changed(self, frame: RawFrame | None) -> None:
+        """Read a mirror's observations off a raw frame, and publish one started here."""
+        if frame is None:
+            return
+        if not self.synq_authoritive:
+            height, width = frame.array.shape[:2]
+            self._observe_frame(width, height, dict(frame.tags), arrived=True)
+        if self._is_publishing():
+            self._publish_raw(frame)
+
+    def _on_jpeg_data_changed(self, data: bytes) -> None:
+        """Read a mirror's observations off a JPEG, and publish one started here.
+
+        A mirror also receiving raw has already learned them from that.
+        """
+        if not self.synq_authoritive and not self._raw.subscribed:
+            self._on_image_changed(data)
+        if data and self._is_publishing():
+            self._publish_jpeg(data)
+
+    def _publish_raw(self, frame: RawFrame) -> None:
+        """Send a raw frame, if anyone on the network would receive it."""
+        if self._raw.remote_wanted:
+            payload, attachment = frame.to_wire()
+            qos = self.transport_raw.data_qos
+            self._raw.put(payload, attachment=attachment, **qos.put_kwargs())
+
+    def _publish_jpeg(self, data: bytes) -> None:
+        """Send a JPEG, if anyone on the network would receive it."""
+        self._jpeg.put(
+            data,
+            encoding=zenoh.Encoding(self.transport_jpeg.mimetype),
+            **self.transport_jpeg.data_qos.put_kwargs(),
+        )
+
+    def _on_transport_raw_replaced(self, transport: TransportRaw, previous: TransportRaw) -> None:
+        """Follow a ``transport_raw`` assigned as a whole."""
+        previous.data_changed.disconnect(self._on_raw_data_changed)
+        transport.data_changed.connect(self._on_raw_data_changed)
+
+    def _on_transport_jpeg_replaced(
+        self, transport: TransportJpeg, previous: TransportJpeg
+    ) -> None:
+        """Follow a ``transport_jpeg`` assigned as a whole."""
+        previous.data_changed.disconnect(self._on_jpeg_data_changed)
+        transport.data_changed.connect(self._on_jpeg_data_changed)
+
+    def _close_transports(self) -> None:
+        """Undeclare what :py:meth:`sync` and subscribing declared."""
+        report_queryable, self._video_report_queryable = self._video_report_queryable, None
+        if report_queryable is not None:
+            report_queryable.undeclare()
+        for channel in (self._raw, self._jpeg, self._video_keyframe, self._video_interframe):
+            try:
+                channel.close()
+            except Exception as exc:  # pragma: no cover - shutdown best effort
+                logger.debug(f"{self.synq_topic}: error closing {channel.path}: {exc}")
 
     # ------------------------------------------------------------------
     # Source resolution
@@ -589,36 +959,28 @@ class Camera(CameraBase):
     # Lifecycle
     # ------------------------------------------------------------------
 
-    @contextmanager
-    def _lifecycle(self) -> Generator[None]:
-        """Hold the lifecycle lock and suppress our own ``running`` event."""
-        with self._lock:
-            previous = self._in_lifecycle
-            self._in_lifecycle = True
-            try:
-                yield
-            finally:
-                self._in_lifecycle = previous
-
     def start(self, *, background: bool = True) -> None:
-        """Open the source and begin capturing.
+        """Start the camera: it runs whenever something wants its frames.
 
-        Starting an already-running camera is a no-op.
+        Opens the source once to publish what it is, and leaves the rest to
+        the capture thread, which closes it again unless something is
+        subscribed.  Starting an already-started camera is a no-op.
 
         Parameters
         ----------
         background : bool
             Whether to run a capture thread.  With ``False`` the camera
-            opens but captures nothing until the caller drives
-            :py:meth:`read` — useful for scripted, frame-at-a-time use.
+            opens, stays open, and captures nothing until the caller drives
+            :py:meth:`read`, whoever is subscribed — useful for scripted,
+            frame-at-a-time use.
 
         A source that resolves but will not open yet -- a device that is
         not plugged in, a ``spirisynq://`` topic nobody publishes yet --
         does not stop a background camera from starting.  It starts
-        *waiting*: ``running`` is true, :py:attr:`~CameraBase.status`
-        reads ``"waiting for source: <reason>"``, and the capture thread
-        keeps trying to open the source until it works.  The same
-        happens if the source is lost while running.
+        *waiting*: :py:attr:`~CameraBase.status` reads
+        ``"waiting for source: <reason>"``, and the capture thread keeps
+        trying to open the source until it works.  The same happens if the
+        source is lost while running.
 
         Raises
         ------
@@ -627,14 +989,14 @@ class Camera(CameraBase):
             ``background=False``, where no thread is left to wait -- the
             source refused to open.
         """
-        with self._lifecycle():
+        with self._lock:
             # Recorded before the attempt, so a camera that was asked to run
             # but could not open yet resumes on the next workable source.
             self._wants_running = True
             self._background = background
 
             if self._active:
-                logger.debug(f"{self.synq_topic}: already running")
+                logger.debug(f"{self.synq_topic}: already started")
                 return
 
             if self._handler is None:
@@ -644,8 +1006,10 @@ class Camera(CameraBase):
 
             self._stop_event.clear()
             self._active = True
+            self._probed = False
             try:
                 self._open_source()
+                self._probed = True
             except SourceError as exc:
                 if not background:
                     self._active = False
@@ -653,15 +1017,24 @@ class Camera(CameraBase):
                     raise CameraError(f"{self.synq_topic}: {exc}") from exc
                 self._wait_for_source(exc)
 
-            self.running = True
+            if not background:
+                self.running = True
+                self.status = STATUS_RUNNING
+                return
 
-            if background:
-                self._thread = threading.Thread(
-                    target=self._capture_loop,
-                    name=f"spiricamera-{self.synq_topic}",
-                    daemon=True,
-                )
-                self._thread.start()
+            self._thread = threading.Thread(
+                target=self._capture_loop,
+                name=f"spiricamera-{self.synq_topic}",
+                daemon=True,
+            )
+            self._thread.start()
+            self._video_thread = threading.Thread(
+                target=self._video_encoder.run,
+                args=(self._stop_event,),
+                name=f"spiricamera-video-{self.synq_topic}",
+                daemon=True,
+            )
+            self._video_thread.start()
 
     def _open_source(self) -> None:
         """Open the handler and record what it reported.
@@ -687,12 +1060,11 @@ class Camera(CameraBase):
 
         self._apply(capabilities)
         self._waiting_for = ""
-        self._set_status_if_active(STATUS_RUNNING)
         logger.info(
-            f"{self.synq_topic} capturing | {self.source.url} | {self.describe_capabilities()}"
+            f"{self.synq_topic} opened | {self.source.url} | {self.describe_capabilities()}"
         )
 
-    def _wait_for_source(self, error: SourceError) -> None:
+    def _wait_for_source(self, error: Exception) -> None:
         """Report that the source is unavailable, logging each new reason once."""
         reason = str(error)
         self._set_status_if_active(f"{STATUS_WAITING}: {reason}")
@@ -717,15 +1089,19 @@ class Camera(CameraBase):
         from the capture thread itself, in which case the thread is not
         joined.
         """
-        with self._lifecycle():
+        with self._lock:
             self._wants_running = False
             if not self._active and self._thread is None and not self._is_source_open():
                 return
             self._stop_event.set()
             thread, self._thread = self._thread, None
+            video_thread, self._video_thread = self._video_thread, None
             self._active = False
             self.running = False
             self.status = STATUS_STOPPED
+
+        if video_thread is not None and video_thread is not threading.current_thread():
+            video_thread.join(timeout=_STOP_TIMEOUT)
 
         # Joining outside the lock: the capture thread never takes it,
         # but the source must not be closed while a read is in flight.
@@ -742,25 +1118,15 @@ class Camera(CameraBase):
             self._cached_frame = None
             self._cached_encoding = None
             self._cached_image = b""
-            self._latest_frame = None
             self._shrunk = None
+            self.transport_raw.forget()
+            self.transport_jpeg.forget()
 
         logger.debug(f"{self.synq_topic} stopped")
 
     def _is_source_open(self) -> bool:
         """Whether the handler still holds an open device."""
         return self._handler is not None and self._handler.is_open
-
-    def _on_running_changed(self, running: bool) -> None:
-        """Start or stop when ``running`` is set by someone else."""
-        if self._in_lifecycle:
-            return
-        try:
-            self.start() if running else self.stop()
-        except CameraError as exc:
-            logger.warning(f"{self.synq_topic}: {exc}")
-            with self._lifecycle():
-                self.running = False
 
     def close(self) -> None:
         """Stop the camera and release its SpiriSynq resources."""
@@ -769,6 +1135,7 @@ class Camera(CameraBase):
         except Exception as exc:  # pragma: no cover - shutdown best effort
             logger.debug(f"{self.synq_topic}: error while stopping: {exc}")
         self._overlay_close()
+        self._close_transports()
         super().close()
 
     def __enter__(self) -> Camera:
@@ -777,47 +1144,6 @@ class Camera(CameraBase):
 
     def __exit__(self, *exc_info: object) -> None:
         self.stop()
-
-    @remote_method()
-    def webrtc_offer(self, sdp: str, type: str = "offer") -> dict[str, str]:
-        """Negotiate a WebRTC session publishing this camera's frames.
-
-        The zenoh-native counterpart to :py:mod:`SpiriCamera.whep`'s
-        HTTP route: both end up in
-        :py:func:`SpiriCamera.webrtc.negotiate_sync`, so a viewer
-        reached either way gets the same video track and tags channel,
-        from the camera's one H.264 encode.  Called on a mirror, it runs
-        in the camera's own process, which does that encode.
-
-        Parameters
-        ----------
-        sdp : str
-            The remote peer's SDP offer.
-        type : str
-            The offer's SDP type, almost always ``"offer"``.
-
-        Returns
-        -------
-        dict[str, str]
-            ``{"session_id": ..., "sdp": ..., "type": "answer"}``.
-        """
-        from SpiriCamera import webrtc  # local: keeps this module aiortc-free
-
-        session_id, answer_sdp, answer_type = webrtc.negotiate_sync(self, sdp, type)
-        return {"session_id": session_id, "sdp": answer_sdp, "type": answer_type}
-
-    @remote_method()
-    def webrtc_close(self, session_id: str) -> bool:
-        """End a session :py:meth:`webrtc_offer` opened.
-
-        Returns
-        -------
-        bool
-            ``False`` if there was no such session (any more).
-        """
-        from SpiriCamera import webrtc  # local: keeps this module aiortc-free
-
-        return webrtc.close_session_sync(session_id)
 
     # ------------------------------------------------------------------
     # Intrinsics
@@ -982,17 +1308,17 @@ class Camera(CameraBase):
     def read(self) -> bytes:
         """Capture, encode, and publish a single frame.
 
-        The encoded frame is tagged, then assigned to
-        :py:attr:`~CameraBase.image`, which is what publishes it to
-        SpiriSynq.  Assigning is also what fills in
+        Always encodes: the caller asked for the bytes.  The encoded frame
+        is tagged, then assigned to ``transport_jpeg.data``, which is what
+        publishes it.  Assigning is also what fills in
         :py:attr:`~CameraBase.received_width` and the rest, since those
         are read back out of the frame rather than measured here.
 
         Returns
         -------
         bytes
-            The encoded frame, in :py:attr:`~CameraBase.mimetype` format.
-            If the source had no new frame, the previous one is returned
+            The encoded frame, in ``transport_jpeg.mimetype`` format.  If
+            the source had no new frame, the previous one is returned
             unchanged.
 
         Raises
@@ -1002,34 +1328,68 @@ class Camera(CameraBase):
         FrameUnavailableError
             If the source produced nothing and no earlier frame exists.
         """
+        return self._capture(encode=True)
+
+    def _capture(self, *, encode: bool) -> bytes:
+        """Take one frame through the pipeline, as far as ``encode`` says.
+
+        Resized first, so widgets are drawn on the smaller image and every
+        transport carries the same one.  A JPEG left over from when
+        something wanted one is dropped: nobody needs telling, since it
+        isn't news, but a late joiner must not be sent it.
+
+        Returns
+        -------
+        bytes
+            The encoded frame, or nothing if it wasn't encoded.
+
+        Raises
+        ------
+        FrameUnavailableError
+            If the source produced nothing and no earlier frame exists.
+        """
+        jpeg = self.transport_jpeg
+        previous = self.transport_raw.data
         frame = self.read_frame()
         if frame is None:
-            if not self.image:
+            if previous is None:
                 raise FrameUnavailableError(f"{self.synq_topic}: source produced no frame")
-            return self.image
+            if jpeg.data or not encode:
+                return jpeg.data
+            raw = previous
+        else:
+            # Asking the source for the size is only a request (FFmpeg ignores
+            # it for a network stream); the published frame is held to it here.
+            frame = self._fit(frame)
+            tags = self.exif_tags_for_frame(frame) if self.exif_enabled else {}
+            # Before widgets, so they see this frame's size, rate and tags.
+            height, width = frame.shape[:2]
+            self._observe_frame(width, height, tags, arrived=True)
+            if not self.overlay_client_render:
+                frame = self._render_overlays(frame)
+            keyframe = self._raw.take_keyframe_request()
+            if previous is not None and previous.array is frame and previous.tags == tags:
+                # An unchanged frame is news only to whoever asked for it.
+                raw = previous
+                if keyframe:
+                    self._publish_raw(raw)
+            else:
+                raw = RawFrame(frame, tags)
+                self.transport_raw.data = raw
 
-        # Asking the source for the size is only a request (FFmpeg ignores it
-        # for a network stream); the published frame is held to it here.
-        frame = self._fit(frame)
-        if not self.overlay_client_render:
-            frame = self._render_overlays(frame)
-        encoded = self._tag(self._encode(frame), frame)
-        self.image = encoded
-        self._latest_frame = (encoded, frame)
-        return encoded
+        if encode:
+            encoded = self._tag(self._encode(raw.array), raw.tags)
+            keyframe = self._jpeg.take_keyframe_request()
+            if encoded == jpeg.data:
+                # An unchanged frame is news only to whoever asked for it.
+                if keyframe:
+                    self._publish_jpeg(encoded)
+            else:
+                jpeg.data = encoded
+            return encoded
 
-    @property
-    def latest_frame(self) -> tuple[bytes, np.ndarray] | None:
-        """The last frame published, as ``(image, frame)``.
-
-        The tagged bytes :py:attr:`~CameraBase.image` was set to and the
-        BGR array they were encoded from, overlays drawn, in one tuple
-        so they are always read as a pair.  This process's own WebRTC
-        encode starts from the array rather than decoding ``image``
-        again.  Never synced: a mirror has none, and ``None`` until the
-        camera has published a frame.
-        """
-        return self._latest_frame
+        jpeg.forget()
+        return b""
 
     def _fit(self, frame: np.ndarray) -> np.ndarray:
         """Shrink ``frame`` to fit ``max_width`` x ``max_height``, if it doesn't.
@@ -1050,34 +1410,47 @@ class Camera(CameraBase):
         return shrunk
 
     def _capture_loop(self) -> None:
-        """Capture at ``max_framerate`` until stopped.
+        """Run the source whenever something wants its frames, until stopped.
 
         Settings are re-read every iteration, so a live change to the
         framerate applies without restarting the camera.
 
-        A source that is not open -- never opened, or closed itself after
-        losing its device or upstream -- is reopened here, every
-        :py:data:`_SOURCE_RETRY_INTERVAL` until it works.
+        A source that is not open and is needed -- because something wants
+        frames, or because this camera has yet to describe itself -- is
+        opened here, every :py:data:`_SOURCE_RETRY_INTERVAL` until it works.
         """
         failures = 0
         while not self._stop_event.is_set():
             started = time.monotonic()
-            if not self._is_source_open():
+            wanted = self._raw_wanted()
+            self._set_running(wanted)
+            if not self._is_source_open() and (wanted or not self._probed):
+                if wanted:
+                    self._set_status_if_active(f"{STATUS_WAITING}: opening")
                 try:
                     self._open_source()
+                    self._probed = True
                     failures = 0
                 except SourceError as exc:
                     self._wait_for_source(exc)
                     self._stop_event.wait(_SOURCE_RETRY_INTERVAL)
                     continue
+
+            if not wanted:
+                self._go_idle()
+                self._stop_event.wait(_IDLE_POLL_INTERVAL)
+                continue
+
             try:
-                self.read()
-                if failures:
-                    self.status = STATUS_RUNNING
+                self._capture(encode=self._jpeg.wanted)
+                self._set_status_if_active(STATUS_RUNNING)
                 failures = 0
+            except FrameUnavailableError as exc:
+                # Not a failure: a relay's upstream takes a moment to answer.
+                self._set_status_if_active(f"{STATUS_WAITING}: {exc}")
             except Exception as exc:
                 failures += 1
-                self.status = f"capture failing: {exc}"
+                self._set_status_if_active(f"capture failing: {exc}")
                 if failures == 1 or failures % _ERROR_LOG_INTERVAL == 0:
                     logger.warning(
                         f"{self.synq_topic}: capture failed ({failures} in a row): {exc}"
@@ -1088,27 +1461,53 @@ class Camera(CameraBase):
 
         logger.debug(f"{self.synq_topic}: capture loop exited")
 
+    def _set_running(self, running: bool) -> None:
+        """Say whether this camera is running, unless a concurrent stop got there first.
+
+        Every pass of the capture loop, so a value a peer wrote is put right.
+        """
+        with self._lock:
+            if self._active:
+                self.running = running
+
+    def _go_idle(self) -> None:
+        """Nothing wants frames: close the source and forget the last frame."""
+        if self._is_source_open():
+            assert self._handler is not None
+            self._handler.close()
+            logger.debug(f"{self.synq_topic}: closed the source, no subscribers")
+        self._cached_frame = None
+        self._cached_encoding = None
+        self._cached_image = b""
+        self._shrunk = None
+        self.transport_raw.forget()
+        self.transport_jpeg.forget()
+        self.received_framerate = 0.0
+        self._received_frame_at = 0.0
+        self._set_status_if_active(STATUS_IDLE)
+
     # ------------------------------------------------------------------
     # Encoding
     # ------------------------------------------------------------------
 
     def _encode(self, frame: np.ndarray) -> bytes:
-        """Encode a BGR frame to :py:attr:`~CameraBase.mimetype` bytes.
+        """Encode a BGR frame to ``transport_jpeg.mimetype`` bytes.
 
         A source that keeps handing back the same array — a static test
         pattern, say — is encoded once and served from cache until the
         frame or the encoding settings change.
         """
-        quality = max(1, min(100, _positive(self.quality)))
-        encoding = (self.mimetype, quality)
+        mimetype = self.transport_jpeg.mimetype
+        quality = max(1, min(100, _positive(self.transport_jpeg.quality)))
+        encoding = (mimetype, quality)
 
         if self._cached_frame is frame and self._cached_encoding == encoding:
             return self._cached_image
 
-        extension = ENCODINGS.get(self.mimetype)
+        extension = ENCODINGS.get(mimetype)
         if extension is None:
             raise CameraError(
-                f"{self.synq_topic}: cannot encode {self.mimetype!r}, "
+                f"{self.synq_topic}: cannot encode {mimetype!r}, "
                 f"supported: {', '.join(sorted(ENCODINGS))}"
             )
 
@@ -1134,19 +1533,18 @@ class Camera(CameraBase):
 
     @property
     def exif_tags(self) -> dict[str, str]:
-        """The tags on the current :py:attr:`~CameraBase.image`.
+        """The tags on the current frame.
 
-        Read back out of the frame itself rather than stored, so this is
-        never out of step with what is actually on screen — on the
-        authoritative node or on any mirror, since both learn it the
-        same way, from :py:meth:`_on_image_changed`.
+        The camera has the tags it built.  A mirror reads them back out of
+        each frame it receives, so they are never out of step with what is
+        on screen, and has none until it subscribes to a transport.
         """
         return self._exif_tags
 
     @property
     def exif_timestamp(self) -> float:
-        """Unix timestamp the current :py:attr:`~CameraBase.image` was
-        captured at, or ``0.0`` if it carried none.
+        """Unix timestamp the current frame was captured at, or ``0.0``
+        if it carried none.
 
         Set by whichever node took the frame, so comparing it against a
         local clock is only as good as the agreement between the two.
@@ -1305,7 +1703,7 @@ class Camera(CameraBase):
 
         return {name: value for name, value in tags.items() if value}
 
-    def _tag(self, encoded: bytes, frame: np.ndarray) -> bytes:
+    def _tag(self, encoded: bytes, tags: Mapping[str, str]) -> bytes:
         """Write this frame's tags into encoded image data.
 
         Kept apart from :py:meth:`_encode` so that the encode cache still
@@ -1320,7 +1718,7 @@ class Camera(CameraBase):
             return encoded
 
         try:
-            tagged = exif.embed(encoded, self.exif_tags_for_frame(frame))
+            tagged = exif.embed(encoded, tags)
         except exif.ExifError as error:
             complaint = str(error)
             if complaint != self._exif_complaint:
@@ -1348,6 +1746,13 @@ class Camera(CameraBase):
         """
         size = exif.image_size(image) if image else None
         width, height = size or (0, 0)
+        tags = exif.extract(image) if image else {}
+        self._observe_frame(width, height, tags, arrived=bool(image))
+
+    def _observe_frame(
+        self, width: int, height: int, tags: dict[str, str], *, arrived: bool
+    ) -> None:
+        """Record what the current frame is, however that was learned."""
         self.received_width = width
         self.received_height = height
         self.received_ratio = round(width / height, 4) if height else 0.0
@@ -1361,7 +1766,7 @@ class Camera(CameraBase):
             # when the source doesn't say what its native one is.
             self._update_intrinsics()
 
-        if image:
+        if arrived:
             now = time.monotonic()
             if self._received_frame_at:
                 elapsed = now - self._received_frame_at
@@ -1382,7 +1787,6 @@ class Camera(CameraBase):
             self.received_framerate = 0.0
             self._received_frame_at = 0.0
 
-        tags = exif.extract(image) if image else {}
         self._exif_tags = tags
         try:
             self._exif_timestamp = float(tags.get(exif.TIMESTAMP_TAG, 0.0))

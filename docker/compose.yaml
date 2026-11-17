@@ -15,6 +15,11 @@ services:
     command: ["SpiriCamera", "run"]
     networks:
       - spirisynq
+    # RTSP: /raw, /hud and /preview for QGroundControl, and /<camera>/relay
+    # for MediaMTX.
+    ports:
+      - "8554:8554/tcp"
+      - "8000-8003:8000-8003/udp"
     volumes:
       # The host's hostname, so SpiriSynq names this robot after the machine
       # and not the container. Not over /etc/hostname: that would clobber the
@@ -23,6 +28,7 @@ services:
     environment:
       - SPIRICAMERA_ENVIRONMENT=${ENVIRONMENT:-production}
       - SPIRICAMERA_SOURCE=${SOURCE:-testimage://pm5544}
+      - SPIRICAMERA_CAMERA_NAME=${CAMERA_NAME:-1}
 
 networks:
   spirisynq:

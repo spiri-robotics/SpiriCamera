@@ -30,12 +30,14 @@ in template changes.
 ```
 src/SpiriCamera/
     camera.py          # CameraBase (synced state) + Camera (capture thread, SpiriSynq sync)
-    cli.py             # typer CLI app  →  version, sources, validate, run, capture, whep-serve
+    transports.py      # transport_raw/jpeg/video objects, wire formats, DataChannel, RateControl
+    video.py           # The camera's one H.264 encode and worst-subscriber rate control
+    rtsp.py            # RTSP server: H.264 and KLV over RTP, viewers' RTCP to rate control
+    klv.py             # MISB ST 0601 local sets
+    cli.py             # typer CLI app  →  version, sources, validate, run, capture
     main.py            # Settings (SPIRICAMERA_ env prefix), setup_logging, main()
     ui.py              # NiceGUI debug UI (the camera-debug-ui app)
     web.py             # unused stub from the old template; the UI is ui.py
-    webrtc.py          # aiortc integration, shared daemon event loop
-    whep.py            # FastAPI WHEP HTTP API (POST/DELETE /whep)
     overlay.py         # SVG HUD widgets, MiniJinja templating, thorvg rasterization
     exif.py            # EXIF tag embed/extract in JPEG UserComment
     sources/
@@ -46,10 +48,9 @@ src/SpiriCamera/
         file.py        # file://  — video files or still images, looping
         testimage.py   # testimage://  — bundled SVG test patterns
         spirisynq.py   # spirisynq://  — frames from another camera over SpiriSynq
-        webrtc.py      # whep+http(s)://  — pull remote WHEP publisher
 ```
 
-Package root: `src/SpiriCamera/`. CLI entry: `SpiriCamera` (from `[project.scripts]`) or `uv run python -m SpiriCamera`.
+Package root: `src/SpiriCamera/`. CLI entry: `SpiriCamera` (from `[project.scripts]`).
 
 ## Import / Source Registration
 
@@ -61,8 +62,11 @@ Modules in `sources/` register themselves simply by being imported via `__init__
 
 - `CameraBase` is a `SyncableObject`. All fields (including "read-only" ones like `received_width`) are technically writable from a remote peer.
 - `Camera` is authoritative by default (`synq_authoritive=True`); `Camera.from_topic()` creates mirrors (`synq_authoritive=False`). Authoritative flag controls topic hostname prefix and whether `@remote_method` RPCs are exposed.
-- Frame-derived fields (`received_width`, `received_height`, `received_ratio`, `received_framerate`, `exif_tags`, `exif_timestamp`) are excluded from sync via `CameraBase.synq_skip_sync`. They are read back from the JPEG byte image, never sent as separate sync fields.
-- All EXIF tags travel inside the JPEG's `UserComment` field as JSON. Every node extracts tags from the image bytes.
+- Frame-derived fields (`received_width`, `received_height`, `received_ratio`, `received_framerate`, `exif_tags`, `exif_timestamp`) are excluded from sync via `CameraBase.synq_skip_sync`. They are read back from each frame, never sent as separate sync fields.
+- Frames are not fields. They travel on `transport_*/@data*` verbatim keys that `**` never matches, so a mirror selects a transport by subscribing to it. `data` is a property with a `data_changed` signal; don't make it a dataclass field.
+- A camera runs only while something subscribes to a transport (`running` is set by the camera, not by peers). Demand travels up `spirisynq://` relay chains. `docs/data_model.md` has the whole structure as annotated YAML; keep it current when fields or keys change.
+- Frame tags travel in a JPEG's `UserComment` as JSON, or in the JSON attachment of a raw frame or video packet.
+- QoS on `@` keys is SpiriSynq's `<field>_qos` convention: sender-local class attributes, never synced.
 
 ## Overlay Rendering (thorvg)
 
@@ -73,11 +77,11 @@ thorvg's SVG parser has documented gaps:
 
 A bundled `Miracode.ttf` is loaded once at import time via `thorvg.Engine.font_load()`.
 
-## WebRTC
+## RTSP
 
-All `RTCPeerConnection` objects share a single daemon thread with a background asyncio event loop — started on first use, never stopped (so the synchronous zenoh-callback path `Camera.webrtc_offer` works).
+The cameras' way out to anything that isn't SpiriSynq. Each camera `run` publishes has two mounts: `/<camera>` (`/raw`, `/hud`, `/preview`) is UDP only and its viewers' RTCP drives that camera's rate control; `/<camera>/relay` is TCP only, for MediaMTX on the same host, and has no say. MediaMTX is the edge translator for STANAG 4609 output and browsers, unpatched.
 
-**WHEP data channel constraint:** The viewer must create the `spiricamera-tags` data channel *before* sending its WHEP offer, otherwise it gets video-only only. MediaMTX has no data channel support.
+`LossMeter` turns RTCP into reports without changing `RateController`: loss comes from NACKs, so retransmission-repaired loss still lowers the bitrate, on purpose. Keep each track's CNAME distinct: a shared one stops QGroundControl decoding. Test changes here against real QGroundControl, because GStreamer's behaviour is what shaped it.
 
 ## UV Dependency Trick
 
@@ -98,7 +102,9 @@ This voids the `opencv-python` (GUI variant) pulled in by `ultralytics` (example
 The one image runs as two SpiriConfig apps, each with its own compose file, mirrored in
 spiri-robotics/Appstore-Spiri_development:
 
-- `camera-ingress/compose.yaml`: `SpiriCamera run`, capturing and publishing onto SpiriSynq.
+- `camera-ingress/compose.yaml`: `SpiriCamera run`, capturing, publishing onto SpiriSynq as
+  `cameras/<SPIRICAMERA_CAMERA_NAME>/{raw,hud,preview}` (hud and preview relay raw in-process),
+  and serving `raw` over RTSP on published ports.
 - `camera-debug-ui/compose.yaml`: `python -m SpiriCamera.ui`, a SpiriConfig plugin page.
 
 `docker/compose.yaml` runs the ingress from the published image; with `compose.dev.yaml`, from

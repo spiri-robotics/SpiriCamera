@@ -18,7 +18,6 @@ from SpiriCamera.sources import (  # noqa: F401
     spirisynq,
     testimage,
     v4l,
-    webrtc,
 )
 from SpiriCamera.sources.base import (
     CaptureSettings,

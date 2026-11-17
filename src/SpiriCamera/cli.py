@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import contextlib
 import sys
-import threading
 import time
 from typing import Annotated
 
@@ -26,6 +25,11 @@ app = typer.Typer(
 )
 
 SourceArgument = Annotated[str, typer.Argument(help="Camera source")]
+
+#: The preview camera's height in pixels, and its frames per second: a
+#: thumbnail for picking a camera, cheap enough to leave subscribed.
+PREVIEW_HEIGHT = 240
+PREVIEW_FRAMERATE = 1
 
 
 @app.callback(invoke_without_command=True)
@@ -150,55 +154,88 @@ def run(source: SourceArgument = "") -> None:
         f"{settings.frame_width}x{settings.frame_height} @ {settings.framerate}fps"
     )
 
+    base = settings.topic or f"cameras/{settings.camera_name}"
     cam = Camera(
         source=source,
         quality=settings.quality,
         max_width=settings.frame_width,
         max_height=settings.frame_height,
         max_framerate=settings.framerate,
-        # Empty: derived from the source, e.g. spiricamera_dev_video0.
-        synq_topic=settings.topic,
+        synq_topic=f"{base}/raw",
     )
     _set_lens(cam)
     _set_mount(cam)
+    # Both relay the raw camera in this process, so each runs, and runs it,
+    # only while something wants its own frames.
+    upstream = f"spirisynq+raw://./{base}/raw"
+    hud = Camera(
+        source=upstream,
+        quality=settings.quality,
+        max_width=settings.frame_width,
+        max_height=settings.frame_height,
+        max_framerate=settings.framerate,
+        synq_topic=f"{base}/hud",
+    )
+    # A new camera has no widgets, so the HUD's are named on it at each start.
+    for widget in settings.hud_widgets.replace(",", " ").split():
+        hud.overlay_widgets[widget] = {}
+    preview = Camera(
+        source=upstream,
+        quality=settings.quality,
+        # The height is what binds: raw is never wider than this.
+        max_width=settings.frame_width,
+        max_height=PREVIEW_HEIGHT,
+        max_framerate=PREVIEW_FRAMERATE,
+        synq_topic=f"{base}/preview",
+    )
+    cameras = (cam, hud, preview)
 
     try:
-        cam.start()
+        for each in cameras:
+            each.start()
     except CameraError as exc:
         typer.echo(f"Error: {exc}", err=True)
+        for each in cameras:
+            each.stop()
         raise typer.Exit(1) from exc
 
-    whep = None
-    if settings.whep_port:
-        import uvicorn
+    rtsp = None
+    if settings.rtsp_port:
+        from SpiriCamera.rtsp import RtspServer
 
-        from SpiriCamera.whep import create_whep_app
-
-        # In this process, so a WHEP viewer shares the camera's one encode.
-        whep = uvicorn.Server(
-            uvicorn.Config(
-                create_whep_app(lambda: cam, settings.whep_path),
-                host="0.0.0.0",
-                port=settings.whep_port,
-                log_level="warning",
-            )
+        # In this process, so its readers share the camera's one encode.
+        rtsp = RtspServer(
+            {"raw": cam, "hud": hud, "preview": preview},
+            port=settings.rtsp_port,
+            udp_port=settings.rtsp_udp_port,
         )
-        threading.Thread(target=whep.run, name="whep", daemon=True).start()
+        try:
+            rtsp.start()
+        except OSError as exc:
+            typer.echo(f"Error: can't serve RTSP: {exc}", err=True)
+            for each in cameras:
+                each.stop()
+            raise typer.Exit(1) from exc
         logger.info(
-            f"Serving {cam.synq_topic} for WHEP on :{settings.whep_port}{settings.whep_path}"
+            f"Serving /raw, /hud and /preview over RTSP on :{settings.rtsp_port}, "
+            f"UDP from :{settings.rtsp_udp_port}"
         )
 
-    logger.info(f"Publishing on {cam.synq_topic}, press Ctrl-C to stop")
+    logger.info(
+        f"Publishing on {', '.join(each.synq_topic for each in cameras)}, press Ctrl-C to stop"
+    )
     try:
-        # The camera captures on its own thread; just stay alive.
-        while cam.running:
+        # The camera runs on its own thread, when something wants frames.
+        while True:
             time.sleep(0.5)
     except KeyboardInterrupt:
         pass
     finally:
-        if whep is not None:
-            whep.should_exit = True
-        cam.stop()
+        if rtsp is not None:
+            rtsp.stop()
+        # Relays first, so they don't wait on a raw camera that's gone.
+        for each in reversed(cameras):
+            each.stop()
         logger.info("Camera stopped")
 
 
@@ -255,42 +292,6 @@ def capture(
     logger.info(f"Captured {captured} frame(s)")
     if captured < frames:
         raise typer.Exit(1)
-
-
-@app.command()
-def whep_serve(
-    source: SourceArgument = "",
-    host: Annotated[str, typer.Option(help="Address to bind")] = "0.0.0.0",
-    port: Annotated[int, typer.Option(help="Port to bind")] = 8889,
-) -> None:
-    """Run a camera and expose it for WHEP playback over HTTP."""
-    import uvicorn
-
-    from SpiriCamera.whep import create_whep_app
-
-    source = _resolve_source(source)
-    settings = get_settings()
-
-    cam = Camera(
-        source=source,
-        quality=settings.quality,
-        max_width=settings.frame_width,
-        max_height=settings.frame_height,
-        max_framerate=settings.framerate,
-    )
-    _set_lens(cam)
-
-    try:
-        cam.start()
-    except CameraError as exc:
-        typer.echo(f"Error: {exc}", err=True)
-        raise typer.Exit(1) from exc
-
-    logger.info(f"Serving {cam.synq_topic} for WHEP on http://{host}:{port}/whep")
-    try:
-        uvicorn.run(create_whep_app(lambda: cam), host=host, port=port)
-    finally:
-        cam.stop()
 
 
 if __name__ == "__main__":

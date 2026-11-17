@@ -101,7 +101,7 @@ class TestFrameRoute:
 
         response = camera_ui.serve_frame()
 
-        assert response.body == served_camera.image
+        assert response.body == served_camera.transport_jpeg.data
         assert response.media_type == "image/jpeg"
 
     def test_frames_are_not_cached(self, served_camera: Camera) -> None:
@@ -209,7 +209,7 @@ class TestModeSwitching:
         cam = camera_ui.set_mirror()
 
         assert cam.synq_authoritive is False
-        assert cam.image == b""
+        assert cam.transport_jpeg.data == b""
 
     def test_set_mirror_fetches_the_given_topic(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """A topic (typed by hand or picked from discovery) is mirrored.
@@ -661,7 +661,7 @@ class TestStaleFrames:
         cam.stop()
 
     async def test_the_readout_reports_zero_not_idle(self, user: User) -> None:
-        """Rates fall to zero; the last frame's own figures stay put."""
+        """Rates fall to zero, and a stopped camera has forgotten its last frame."""
         cam = camera_ui.get_camera()
         cam.start(background=False)
         cam.read()
@@ -673,6 +673,4 @@ class TestStaleFrames:
         await user.should_see("0 KiB/s")
         await user.should_see("0 kb/s")
         await user.should_see("0.0 fps")
-        # An account of the last frame, which is still exactly this big.
-        await user.should_see("KiB/frame")
-        await user.should_see("160x120")
+        await user.should_not_see("KiB/frame")

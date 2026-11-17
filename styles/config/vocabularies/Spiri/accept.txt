@@ -14,3 +14,9 @@ aiortc
 [Pp]acketize[sd]?
 [Bb]itrates?
 [Kk]eyframes?
+MediaMTX
+[Zz]enoh
+NACKs?
+GStreamer
+[Cc]odecs?
+[Kk]eepalive

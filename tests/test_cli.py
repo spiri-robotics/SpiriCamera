@@ -63,24 +63,69 @@ class TestMissingSource:
 class TestRun:
     """The run command."""
 
-    def test_topic_comes_from_the_environment(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """SPIRICAMERA_TOPIC names the camera's topic instead of the source."""
+    @staticmethod
+    def _topics(monkeypatch: pytest.MonkeyPatch) -> dict[str, dict]:
+        """Run ``run`` with cameras that never start, keyed by their topics."""
         from SpiriCamera import cli
         from SpiriCamera.camera import CameraError
 
-        made: dict = {}
+        made: dict[str, dict] = {}
 
         class StopsAtStart:
             def __init__(self, **kwargs) -> None:
-                made.update(kwargs)
+                made[kwargs["synq_topic"]] = kwargs
+                self.overlay_widgets = kwargs["overlay_widgets"] = {}
 
             def start(self) -> None:
                 raise CameraError("not started in tests")
 
+            def stop(self) -> None:
+                pass
+
         monkeypatch.setattr(cli, "Camera", StopsAtStart)
-        monkeypatch.setenv("SPIRICAMERA_TOPIC", "camera1")
+        monkeypatch.setattr(cli, "_set_lens", lambda cam: None)
+        monkeypatch.setattr(cli, "_set_mount", lambda cam: None)
         runner.invoke(app, ["run", "testimage://"])
-        assert made["synq_topic"] == "camera1"
+        return made
+
+    def test_publishes_raw_hud_and_preview(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """By default the cameras are cameras/1/raw, hud and preview."""
+        monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)
+        monkeypatch.delenv("SPIRICAMERA_CAMERA_NAME", raising=False)
+        made = self._topics(monkeypatch)
+        assert set(made) == {"cameras/1/raw", "cameras/1/hud", "cameras/1/preview"}
+        assert made["cameras/1/raw"]["source"] == "testimage://"
+        for relay in ("cameras/1/hud", "cameras/1/preview"):
+            assert made[relay]["source"] == "spirisynq+raw://./cameras/1/raw"
+        assert made["cameras/1/preview"]["max_height"] == 240
+        assert made["cameras/1/preview"]["max_framerate"] == 1
+
+    def test_hud_widgets_go_on_the_hud_only(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """SPIRICAMERA_HUD_WIDGETS names widgets by topic, by spaces or commas."""
+        monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)
+        monkeypatch.delenv("SPIRICAMERA_CAMERA_NAME", raising=False)
+        widgets = "mu-1/hud/widgets/horizon, mu-1/robot_home_hud"
+        monkeypatch.setenv("SPIRICAMERA_HUD_WIDGETS", widgets)
+        made = self._topics(monkeypatch)
+        assert set(made["cameras/1/hud"]["overlay_widgets"]) == {
+            "mu-1/hud/widgets/horizon",
+            "mu-1/robot_home_hud",
+        }
+        assert made["cameras/1/raw"]["overlay_widgets"] == {}
+        assert made["cameras/1/preview"]["overlay_widgets"] == {}
+
+    def test_camera_name_is_text(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """SPIRICAMERA_CAMERA_NAME names the camera among the host's."""
+        monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)
+        monkeypatch.setenv("SPIRICAMERA_CAMERA_NAME", "belly")
+        made = self._topics(monkeypatch)
+        assert set(made) == {"cameras/belly/raw", "cameras/belly/hud", "cameras/belly/preview"}
+
+    def test_topic_overrides_the_whole_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """SPIRICAMERA_TOPIC replaces cameras/<name>."""
+        monkeypatch.setenv("SPIRICAMERA_TOPIC", "camera1")
+        made = self._topics(monkeypatch)
+        assert set(made) == {"camera1/raw", "camera1/hud", "camera1/preview"}
 
 
 class TestValidate:

@@ -28,3 +28,8 @@ revisions:
     #
     # Remove this line to issue the revision.
     draft: true
+  - revision: "0.2"
+    date: 2026-11-06
+    summary: Replaced WHEP with RTSP and rewrote the MediaMTX guide. Corrected the overlay examples and CLI commands.
+    author: Alex Davies
+    draft: true

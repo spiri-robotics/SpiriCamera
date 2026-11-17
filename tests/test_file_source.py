@@ -163,6 +163,6 @@ class TestThroughCamera:
             cam.start(background=False)
             for _ in range(CLIP_FRAMES * 2):
                 cam.read()
-            assert cam.image
+            assert cam.transport_jpeg.data
         finally:
             cam.stop()

@@ -4,26 +4,40 @@
 
 ### Features
 
-- `SpiriCamera run` serves the camera for WHEP playback too, on `SPIRICAMERA_WHEP_PORT` at
-  `SPIRICAMERA_WHEP_PATH` (`/whep` by default; Spiri Cloud's Frigate pulls `/camera/whep`),
-  so MediaMTX or a cloud can pull it with no separate `whep-serve` or mirror process.
-- `SPIRICAMERA_H264_PRESET` picks x264's speed preset for WebRTC/WHEP, `veryfast` by
-  default. aiortc left it at x264's `medium`, over two cores of a Raspberry Pi 4 at 720p30;
+- `SpiriCamera run` publishes three cameras, at `cameras/1/raw`, `cameras/1/hud` and
+  `cameras/1/preview` under the host's base topic. `hud` is `raw` with whatever overlay widgets
+  are added to it, and `preview` is `raw` at 240 pixels high and one frame a second. Both relay
+  `raw` in the same process, and run only while something subscribes. `SPIRICAMERA_CAMERA_NAME`
+  replaces the `1` with any text, and `SPIRICAMERA_HUD_WIDGETS` names the widgets on `hud`.
+- `SpiriCamera run` serves its cameras over RTSP, on `SPIRICAMERA_RTSP_PORT` (8554) and four
+  UDP ports from `SPIRICAMERA_RTSP_UDP_PORT` (8000), each sharing its camera's one H.264 encode. Each frame
+  carries a MISB ST 0601 KLV local set on a second track. Each camera `run` publishes has two
+  mounts: `/raw`, `/hud` and `/preview` are for viewers such as QGroundControl, whose RTCP drives
+  that camera's rate control, and `/raw/relay` and the rest are for MediaMTX on the same host,
+  which translates it for STANAG 4609 consumers and browsers. Loss that retransmission repairs
+  still lowers the bitrate. The local set holds only the capture time and version so far.
+- Docs: the camera's data structure as annotated YAML, using a camera from a C++ app over raw
+  zenoh, with examples in `examples/cpp/`, and serving a camera through MediaMTX so that rate
+  control and on-demand running keep working. The guides now describe the transports.
+- `SPIRICAMERA_H264_PRESET` picks x264's speed preset for the camera's H.264 encode, `veryfast`
+  by default. x264's own default, `medium`, takes over two cores of a Raspberry Pi 4 at 720p30;
   `veryfast` takes about one, `ultrafast` half.
 
 ### Improvements
 
-- A camera is encoded to H.264 once, however many WebRTC/WHEP viewers it has: every session
-  shares one encoder, which suits the worst viewer's link (lowest bitrate, frame rate and
-  height). Each session had its own encoder before. A viewer that joins, falls behind or
-  asks for one gets a keyframe.
-- A mirror no longer publishes WebRTC itself, which was a second encode of the camera. A
-  WHEP app over a mirror (cloud-link's camera-whep) now only signals: the offer goes to the
-  camera's own process over SpiriSynq (`webrtc_offer`, and a new `webrtc_close`), which
-  answers and sends the video.
-- WebRTC is H.264 only: an offer without H.264 is refused, rather than given VP8.
-- The H.264 encode starts from the frame the camera just encoded its JPEG from
-  (`Camera.latest_frame`), rather than decoding that JPEG again: a quarter of a Raspberry Pi
+- Breaking: `SpiriCamera run`'s camera is no longer named after its source
+  (`spiricamera_dev_video0`), but `cameras/1/raw`, and `SPIRICAMERA_TOPIC` now replaces
+  `cameras/1`, the topic the three cameras sit under, rather than naming the camera.
+  Anything reading `<robot>/camera1` or `<robot>/hud/camera1`, such as cloud-link's
+  `CLOUD_LINK_CAMERA`, needs the new topics.
+- Breaking: WHEP and WebRTC are gone, in favour of RTSP: `whep-serve`, the `webrtc_offer` RPC, and
+  the `whep+http://` and `whep+https://` sources. cloud-link's camera-whep relies on `webrtc_offer`,
+  so it won't work with this release.
+- A camera is encoded to H.264 once, however many readers it has: they share one encoder, which
+  suits the worst link (lowest bitrate, frame rate and height). A reader that joins, falls behind
+  or asks for one gets a keyframe.
+- The H.264 encode starts from the frame the camera just encoded its JPEG from,
+  rather than decoding that JPEG again: a quarter of a Raspberry Pi
   4 core at 720p30.
 - A `spirisynq://` camera that shrinks its upstream's frames, as a HUD variant does, resizes
   bilinearly down to half size, area-averaging only below that: 2.3 ms a 720p frame on a
@@ -31,10 +45,24 @@
 
 ### Fixes
 
+- A widget whose SVG isn't well-formed XML is skipped and logged, like any widget that fails to
+  render, instead of crashing the camera: thorvg segfaults on it. SpiriMav's rangefinder widget
+  did this below its minimum range (an unescaped `<`), which had the HUD camera restarting.
+- A widget template can read a declared object's nested fields, such as
+  `objects.cam.transport_jpeg.quality`, so `camera_metrics_widget` renders again. A nested field
+  keeps the value it had when the object was first mirrored, a limit of SpiriSynq's generic mirrors.
+- A camera stopped mid-capture says `stopped`, rather than the capture failure its last read hit.
 - A camera's frames are held to `max_width` x `max_height` (`SPIRICAMERA_FRAME_WIDTH`/
   `_HEIGHT`) whatever its source sends: a bigger frame is shrunk, keeping its aspect ratio,
   before it is drawn on and encoded. The size was only ever asked of the source, which
   FFmpeg ignores for a network stream, so an RTSP camera published its stream's own size.
+
+### Tests
+
+- The suite matches the demand-driven camera again: a camera on SpiriSynq runs only while
+  subscribed, `running` is the camera's to set, frames aren't fields, and a relay waits for its
+  upstream's first frame. A camera that stops mid-capture, and the metrics widget, were real bugs
+  this turned up.
 
 ## 0.2.2 (2026-11-05)
 

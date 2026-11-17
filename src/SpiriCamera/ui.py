@@ -587,7 +587,7 @@ def _format_age(seconds: float) -> str:
 #: The frame object last counted by the meter, to recognise a re-serve.
 #:
 #: Compared by identity, not equality: the camera binds a fresh ``bytes``
-#: to ``image`` for every frame it captures, so two captures that happen
+#: to ``transport_jpeg.data`` for every frame it encodes, so two captures that happen
 #: to encode identically are still two frames, while the same object
 #: handed out twice is one.
 _last_counted: bytes | None = None
@@ -602,6 +602,43 @@ _last_counted: bytes | None = None
 _last_counted_lock = threading.Lock()
 
 
+#: Seconds without a browser asking for a frame before the UI stops wanting
+#: them, so a closed tab lets the camera go idle.
+FRAME_INTEREST_TIMEOUT = 5.0
+
+#: When a browser last asked, and the thread watching for that to stop.
+_last_frame_request = 0.0
+_interest_watch: threading.Thread | None = None
+_interest_lock = threading.Lock()
+
+
+def _want_frames(camera: Camera) -> None:
+    """A browser is polling: want this camera's JPEG frames for a while yet."""
+    global _last_frame_request, _interest_watch
+    camera.transport_jpeg_subscribe()
+    with _interest_lock:
+        _last_frame_request = time.monotonic()
+        if _interest_watch is None:
+            _interest_watch = threading.Thread(
+                target=_watch_frame_interest, name="ui-frame-interest", daemon=True
+            )
+            _interest_watch.start()
+
+
+def _watch_frame_interest() -> None:
+    """Unsubscribe once browsers stop polling, and let the next poll start over."""
+    global _interest_watch
+    while True:
+        time.sleep(FRAME_INTEREST_TIMEOUT / 5)
+        with _interest_lock:
+            if time.monotonic() - _last_frame_request >= FRAME_INTEREST_TIMEOUT:
+                _interest_watch = None
+                break
+    # Whichever camera is current: it may have been replaced since.
+    if _camera is not None:
+        _camera.transport_jpeg_unsubscribe()
+
+
 @app.get(FRAME_ROUTE)
 def serve_frame() -> Response:
     """Serve the most recent frame as an image response.
@@ -614,7 +651,8 @@ def serve_frame() -> Response:
     global _last_counted
 
     camera = get_camera()
-    frame = camera.image
+    _want_frames(camera)
+    frame = camera.transport_jpeg.data
     if not frame:
         return PLACEHOLDER
 
@@ -630,7 +668,7 @@ def serve_frame() -> Response:
 
     return Response(
         content=frame,
-        media_type=camera.mimetype,
+        media_type=camera.transport_jpeg.mimetype,
         # force_reload() already cache-busts with a timestamp; this stops
         # any proxy in between from holding on to a frame.
         headers={"Cache-Control": "no-store"},
@@ -800,9 +838,9 @@ def build_page():
                 # the one path that always works, so it is offered
                 # alongside the list rather than hidden behind it.
                 with ui.row().classes("w-full items-center gap-2"):
-                    topic_input = ui.input(
-                        "Topic", placeholder="hostname/spiricamera_testimage"
-                    ).classes("flex-1")
+                    topic_input = ui.input("Topic", placeholder="hostname/cameras/1/hud").classes(
+                        "flex-1"
+                    )
                     ui.button("Mirror", on_click=lambda: mirror(topic_input.value))
 
                 discovered = discover_cameras(cam)
@@ -833,18 +871,18 @@ def build_page():
                 ui.label("Image Settings").classes("text-lg font-bold")
                 ui.label("Quality")
                 with ui.row().classes("w-full items-center gap-2 flex-nowrap"):
-                    ui.slider(min=1, max=100).bind_value(cam, "quality", forward=int).classes(
-                        "flex-1"
-                    )
-                    ui.number(min=1, max=100).bind_value(cam, "quality", forward=int).classes(
-                        "w-20"
-                    )
+                    ui.slider(min=1, max=100).bind_value(
+                        cam.transport_jpeg, "quality", forward=int
+                    ).classes("flex-1")
+                    ui.number(min=1, max=100).bind_value(
+                        cam.transport_jpeg, "quality", forward=int
+                    ).classes("w-20")
                 ui.number("Max Width").bind_value(cam, "max_width", forward=int).classes("w-full")
                 ui.number("Max Height").bind_value(cam, "max_height", forward=int).classes("w-full")
                 ui.number("Max Framerate").bind_value(cam, "max_framerate", forward=int).classes(
                     "w-full"
                 )
-                ui.input("Mimetype").bind_value(cam, "mimetype").classes("w-full")
+                ui.input("Mimetype").bind_value(cam.transport_jpeg, "mimetype").classes("w-full")
                 ui.switch("Tag frames").bind_value(cam, "exif_enabled")
 
             with ui.card().classes("flex-1"):
@@ -945,7 +983,7 @@ def build_page():
             with ui.row().classes("w-full items-center gap-2"):
                 add_topic = ui.input(
                     "Add widget by topic",
-                    placeholder="hostname/spiricamera_testimage_metrics",
+                    placeholder="hostname/cameras/1/hud_metrics",
                 ).classes("flex-1")
                 ui.button(
                     "Add",
@@ -1251,8 +1289,8 @@ def build_page():
             # Off the frame in hand, not off the rates: bytes-per-second
             # divided by frames-per-second is nothing at all once both are
             # zero, but the last frame is still exactly this big.
-            if cam.image:
-                parts.append(f"{len(cam.image) / 1024:.0f} KiB/frame")
+            if cam.transport_jpeg.data:
+                parts.append(f"{len(cam.transport_jpeg.data) / 1024:.0f} KiB/frame")
 
             parts.append(f"requested {int(cam.max_framerate or 0)} fps")
 

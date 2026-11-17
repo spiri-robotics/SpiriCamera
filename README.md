@@ -11,23 +11,25 @@ From Python, attach to a camera another process is running, by its SpiriSynq top
 ```python
 from SpiriCamera import Camera
 
-cam = Camera.from_topic("some-host/dev-video0")
-frame_jpeg = cam.image  # the latest frame, kept up to date in the background
+cam = Camera.from_topic("some-host/cameras/1/raw")
+cam.transport_jpeg_subscribe()  # choose a transport; this is what makes it run
+frame_jpeg = cam.transport_jpeg.data  # the latest frame, kept up to date in the background
 ```
 
 Or own a device yourself:
 
 ```python
 with Camera("/dev/video0", quality=85) as cam:
-    frame_jpeg = cam.image
+    cam.transport_jpeg_subscribe()
+    frame_jpeg = cam.transport_jpeg.data
 ```
 
 From the command line:
 
 ```console
-SpiriCamera validate --source "/dev/video0"
-SpiriCamera capture --source "rtsp://host/stream" --frames=10 -o out.jpg
-SpiriCamera run --source "/dev/video0"
+SpiriCamera validate "/dev/video0"
+SpiriCamera capture "rtsp://host/stream" --frames=10 -o out.jpg
+SpiriCamera run "/dev/video0"     # publishes cameras/1/{raw,hud,preview}, serves RTSP on 8554
 uv run python -m SpiriCamera.ui   # NiceGUI debug UI
 ```
 
@@ -35,8 +37,8 @@ uv run python -m SpiriCamera.ui   # NiceGUI debug UI
 
 The image runs as two SpiriConfig apps, each with its own compose file:
 
-- [camera-ingress/](camera-ingress/compose.yaml) captures from a source and publishes frames
-  onto SpiriSynq.
+- [camera-ingress/](camera-ingress/compose.yaml) captures from a source, publishes frames
+  onto SpiriSynq, and serves them over RTSP.
 - [camera-debug-ui/](camera-debug-ui/compose.yaml) is a SpiriConfig plugin page for inspecting
   a camera's frames and editing its overlays.
 

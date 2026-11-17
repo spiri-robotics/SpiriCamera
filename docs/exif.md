@@ -1,10 +1,12 @@
 # Frame Metadata (EXIF)
 
-Each captured frame is a JPEG with its own metadata baked into its EXIF:
-when it was taken, what took it, and anything you care to add — a GPS
+Each captured frame carries its own metadata: in the EXIF of a JPEG, and in
+the zenoh attachment of a raw frame or video packet (see {doc}`data_model`).
+That metadata says when it was taken, what took it, and anything you care to add — a GPS
 fix, a mission name, a battery level. This page covers reading that
 metadata back, adding your own, and sharing the job between more than
-one piece of software. For the underlying module (`embed`, `extract`,
+one piece of software. RTSP doesn't carry these tags: its KLV track only has the
+capture time ({doc}`rtsp`). For the underlying module (`embed`, `extract`,
 `is_jpeg`, `image_size`) used directly on raw JPEG bytes, see
 {doc}`api/SpiriCamera.exif`.
 
@@ -14,23 +16,24 @@ one piece of software. For the underlying module (`embed`, `extract`,
 cam = Camera("/dev/video0")
 cam.exif_update(mission="probe-1")
 cam.start()
+cam.transport_jpeg_subscribe()
 
 cam.exif_tags  # {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}
-cam.exif_timestamp  # Unix timestamp of the frame currently in cam.image
+cam.exif_timestamp  # Unix timestamp of the current frame
 ```
 
-`exif_tags` and `exif_timestamp` are read back *out of* `cam.image`, and
-so are `received_width`, `received_height` and `received_ratio`. None of
-them is sent over SpiriSynq — they are properties, not synced fields, so
-there is nothing there *to* send. That is on purpose: SpiriSynq publishes
-each field independently and promises nothing about two of them arriving
-together, so a timestamp sent beside an image is a timestamp a peer can
-read against the wrong image. Travelling inside the JPEG, they cannot
-come apart from it — a peer that receives a frame fills them in for
-itself, exactly:
+`exif_tags` and `exif_timestamp` are read back *out of* the current frame,
+and so are `received_width`, `received_height` and `received_ratio`. None
+of them is sent as a synced field — they are properties, so there is
+nothing there *to* send. That is on purpose: SpiriSynq publishes each
+field independently and promises nothing about two of them arriving
+together, so a timestamp sent separately from an image is a timestamp a
+peer can read against the wrong image. Travelling with the frame, they
+cannot come apart from it — a peer that receives a frame fills them in
+for itself, exactly:
 
 ```python
-mirror.image = frame  # the only thing that crossed the network
+mirror.transport_jpeg_subscribe()  # frames are all that cross the network
 mirror.exif_timestamp  # when the far end took it
 mirror.received_width  # what it actually sent
 ```
@@ -164,8 +167,8 @@ bytes via {py:mod}`SpiriCamera.exif`.
 
 `cam.exif_tags` is a convenience for when you already have a `Camera`.
 If all you have is JPEG bytes — a frame saved to disk, one pulled off an
-HTTP response, `mirror.image` read before you bothered to build a
-mirror at all — {py:mod}`SpiriCamera.exif` reads and writes the same
+HTTP response, or a sample taken straight off `transport_jpeg/@data` with
+no mirror at all — {py:mod}`SpiriCamera.exif` reads and writes the same
 tags directly, with no `Camera` involved:
 
 ```python
@@ -197,5 +200,4 @@ Tagging is a best effort layered on top of whatever encoding already
 happened: `embed` returns non-JPEG data unchanged rather than raising,
 and only raises `exif.ExifError` for a JPEG it could not tag. Calling
 it again replaces the EXIF wholesale rather than accumulating segments,
-so re-tagging a frame — or a mirror re-deriving its own tags from
-`image` — never leaves stale data behind.
+so re-tagging a frame never leaves stale data behind.

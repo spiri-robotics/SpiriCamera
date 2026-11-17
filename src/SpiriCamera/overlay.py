@@ -33,10 +33,10 @@ the rendered SVG::
 
 A declared object is a whole :py:class:`~SpiriSynq.syncable_objects.SyncableObject`
 -- every one of its synced fields is available as ``objects.<alias>.<field>``,
-mirrored generically via
-:py:meth:`~SpiriSynq.session.Session.from_topic_untyped` (so the widget
-author needs no locally-importable class for it, and never sees its RPC
-methods -- ``from_topic_untyped`` only ever exposes synced attributes).
+a nested one too (``objects.cam.transport_jpeg.quality``).  It is mirrored
+generically via :py:meth:`~SpiriSynq.session.Session.from_topic_untyped`, so the
+widget author needs no locally-importable class for it, and never sees its RPC
+methods, only its synced fields.
 This is templated in :py:func:`resolve_objects`, which reads both halves
 of that same text -- MiniJinja's own static analysis
 (``undeclared_variables_in_str``) for what the render body actually
@@ -44,6 +44,12 @@ reads, against :py:func:`declared_objects` for what has been declared --
 and raises if a template reads an alias with no matching declaration,
 which is meant to be caught by whoever is authoring the widget, not
 silently ignored.
+
+.. note::
+
+   A generic mirror only follows changes to top-level fields.  A nested
+   field keeps the value it had when the mirror was made, so the
+   camera metrics widget's ``q=`` doesn't follow a change of quality.
 
 The declared topic is only a *default*. Whichever camera is actually
 rendering the widget can override it -- to point ``battery`` at a
@@ -94,6 +100,7 @@ import importlib.resources
 import math
 import re
 import time
+import xml.parsers.expat
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING
@@ -703,6 +710,14 @@ def _load_and_measure(
             )
         svg = _strip_percent_size(svg)
 
+    # thorvg's parser can crash the process on malformed XML rather than
+    # fail, as it did on a value with an unescaped "<" in it, so it only
+    # ever sees well-formed XML.
+    try:
+        xml.parsers.expat.ParserCreate().Parse(svg, True)
+    except xml.parsers.expat.ExpatError as exc:
+        raise OverlayError(f"overlay SVG is not well-formed XML: {exc}") from exc
+
     # thorvg objects are native and never freed by Python's garbage
     # collector: whoever holds the returned picture must hand it to a
     # canvas (which then owns it) or release it with unref(True).
@@ -1032,7 +1047,7 @@ def camera_metrics_widget(camera: Camera, *, anchor: str = "bottom_left") -> Hud
 <svg xmlns="http://www.w3.org/2000/svg" width="260" height="52">
   <rect width="260" height="52" fill="black" fill-opacity="0.55"/>
   <text x="8" y="20" font-family="{DEFAULT_FONT}" font-size="16" fill="white"
-      >{{{{ frame.width }}}}x{{{{ frame.height }}}} {{{{ frame.framerate }}}}fps q={{{{ objects.cam.quality }}}}</text>
+      >{{{{ frame.width }}}}x{{{{ frame.height }}}} {{{{ frame.framerate }}}}fps q={{{{ objects.cam.transport_jpeg.quality }}}}</text>
   <text x="8" y="40" font-family="{DEFAULT_FONT}" font-size="16" fill="white"
       >{{{{ exif.timestamp | default("untagged") }}}}</text>
 </svg>"""  # noqa: E501 - SVG, and its text lines are clearer whole
@@ -1703,12 +1718,13 @@ class OverlayMixin:
 
 
 def _fields(obj: object) -> dict[str, object]:
-    """A mirrored object's top-level synced fields, as a template reads them."""
-    return {
-        field_name: getattr(obj, field_name)
-        for field_name in type(obj).valid_sync_paths()  # type: ignore[attr-defined]
-        if "/" not in field_name
-    }
+    """A mirrored object's top-level synced fields, as a template reads them.
+
+    A nested object, such as a camera's ``transport_jpeg``, is one of them, so a
+    template reads ``objects.cam.transport_jpeg.quality``.
+    """
+    names = {path.split("/", 1)[0] for path in type(obj).valid_sync_paths()}  # type: ignore[attr-defined]
+    return {name: getattr(obj, name) for name in sorted(names) if hasattr(obj, name)}
 
 
 __all__ = [

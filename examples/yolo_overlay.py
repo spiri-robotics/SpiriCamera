@@ -110,9 +110,8 @@ def main() -> None:
     )
     # Attach the widget to the mirrored camera so it actually renders there.
     #
-    # This bakes the boxes directly into `cam.image` server-side (see
-    # CameraBase.read(), which composites overlays before encoding unless
-    # `overlay_client_render` is set), which means this same script's next
+    # This bakes the boxes directly into the camera's frames server-side, on
+    # every transport (unless `overlay_client_render` is set), which means this same script's next
     # detection pass runs on a frame that already has its own boxes drawn
     # on it -- the overlay it's adding is fed right back into the thing
     # deciding what to add. Harmless for a single-process demo pointed at
@@ -131,18 +130,20 @@ def main() -> None:
     print(f"publishing detections on: {detections.synq_absolute_path}")
     print(f"publishing overlay widget on: {widget.synq_absolute_path}")
 
-    # `cam.image` is kept up to date in the background (no `read()` to
-    # drive), so this is a plain, tight loop rather than a poll: there's
+    # Subscribing is what brings frames, and what keeps the camera running.
+    # `cam.transport_jpeg.data` is then kept up to date in the background (no
+    # `read()` to drive), so this is a plain, tight loop rather than a poll: there's
     # no sleep pacing it, and no separate signal/callback plumbing either
     # -- it just runs detection back-to-back, as fast as `model.predict`
     # allows, skipping a cycle only when the frame it would run on is the
     # exact one it already processed. In practice a real source produces
     # frames faster than YOLO can keep up, so that check almost never
     # fires; it only matters at startup or against a very slow source.
+    cam.transport_jpeg_subscribe()
     last_jpeg = None
     try:
         while True:
-            jpeg = cam.image
+            jpeg = cam.transport_jpeg.data
             if not jpeg or jpeg is last_jpeg:
                 continue
             last_jpeg = jpeg

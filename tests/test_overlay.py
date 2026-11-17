@@ -130,7 +130,7 @@ class TestCameraMetricsWidget:
         try:
             svg = overlay.render_svg(
                 widget.svg_template,
-                objects={"cam": {"quality": 80}},
+                objects={"cam": {"transport_jpeg": {"quality": 80}}},
                 exif_tags={"timestamp": "1234567890.5"},
                 frame_info={
                     "width": 1900,
@@ -153,7 +153,7 @@ class TestCameraMetricsWidget:
         try:
             svg = overlay.render_svg(
                 widget.svg_template,
-                objects={"cam": {"quality": 80}},
+                objects={"cam": {"transport_jpeg": {"quality": 80}}},
                 exif_tags={},
                 frame_info={"width": 1900, "height": 1070, "framerate": 29.5},
             )
@@ -289,6 +289,21 @@ class TestRasterize:
     def test_unparsable_svg_raises(self) -> None:
         with pytest.raises(overlay.OverlayError):
             overlay.rasterize("not an svg at all")
+
+    def test_malformed_xml_raises_rather_than_crashing(self) -> None:
+        """An unescaped "<" in a value is refused before thorvg, which segfaults on it.
+
+        This is SpiriMav's rangefinder widget below its minimum range.
+        """
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="216.4" height="40">'
+            '<text x="178" y="24" font-family="Miracode" font-size="16" fill="white">'
+            "< 0.2 m</text></svg>"
+        )
+        with pytest.raises(overlay.OverlayError, match="well-formed"):
+            overlay.rasterize(svg)
+        with pytest.raises(overlay.OverlayError, match="well-formed"):
+            overlay.measure_size(svg)
 
     def test_text_using_the_bundled_font_actually_draws_pixels(self) -> None:
         """Regression test: thorvg does not fall back to any OS font, so

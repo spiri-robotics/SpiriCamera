@@ -53,7 +53,7 @@ napoleon_numpy_docstring = False
 # build triggers a pydantic bug on Python 3.14 where an unrelated model's
 # schema generation corrupts the schema-ref cache for fastapi's own model
 # (id() reuse in a pydantic internal cache — pydantic/pydantic#8647), causing
-# ImportError while autodocing SpiriCamera.ui / SpiriCamera.whep.
+# ImportError while autodocing SpiriCamera.ui.
 autodoc_mock_imports = ["fastapi", "nicegui"]
 
 intersphinx_mapping = {

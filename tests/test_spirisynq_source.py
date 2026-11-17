@@ -2,7 +2,7 @@
 
 The upstream is an ordinary ``testimage://`` camera publishing on the
 suite's isolated session, so this exercises the real SpiriSynq path --
-rehydrate, live ``image`` updates -- rather than a fake of it.
+rehydrate, live frames on a transport -- rather than a fake of it.
 """
 
 from __future__ import annotations
@@ -23,12 +23,25 @@ from SpiriCamera.camera import (
     STATUS_WAITING,
     Camera,
     CameraError,
+    FrameUnavailableError,
 )
 from SpiriCamera.sources import resolve_source, spirisynq
 from SpiriCamera.sources.base import SourceError
 from SpiriCamera.sources.spirisynq import SpiriSynqSource, fit_within
 
 CameraFactory = Callable[..., Camera]
+
+
+def first_read(cam: Camera, timeout: float = 5.0) -> bytes:
+    """``cam.read()``, once a relay's upstream has sent its first frame."""
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            return cam.read()
+        except FrameUnavailableError:
+            if time.monotonic() > deadline:
+                raise
+            time.sleep(0.02)
 
 
 def wait_for(predicate: Callable[[], object], timeout: float = 5.0) -> None:
@@ -56,7 +69,9 @@ def upstream(camera: CameraFactory) -> Camera:
         synq_auto_start=True,
     )
     cam.start()
-    wait_for(lambda: cam.image)
+    # Something has to want its frames for it to run.
+    cam.transport_jpeg_subscribe()
+    wait_for(lambda: cam.transport_jpeg.data)
     return cam
 
 
@@ -118,23 +133,23 @@ class TestFrames:
 
     def test_downscales_to_the_proxy_bounds(self, proxy: Callable[..., Camera]) -> None:
         cam = proxy(max_width=320, max_height=320)
-        cam.read()
+        first_read(cam)
         assert (cam.received_width, cam.received_height) == (320, 240)
 
     def test_a_relative_topic_is_this_host_s(self, camera: CameraFactory, upstream: Camera) -> None:
         cam = camera(f"spirisynq://./{upstream.synq_topic}", max_width=320, max_height=320)
         cam.start(background=False)
-        cam.read()
+        first_read(cam)
         assert (cam.received_width, cam.received_height) == (320, 240)
 
     def test_does_not_upscale(self, proxy: Callable[..., Camera]) -> None:
         cam = proxy(max_width=1920, max_height=1080)
-        cam.read()
+        first_read(cam)
         assert (cam.received_width, cam.received_height) == (640, 480)
 
     def test_resize_is_live(self, proxy: Callable[..., Camera]) -> None:
         cam = proxy(max_width=640, max_height=480)
-        cam.read()
+        first_read(cam)
         cam.max_width = 160
         cam.read()
         assert (cam.received_width, cam.received_height) == (160, 120)
@@ -143,6 +158,7 @@ class TestFrames:
         self, proxy: Callable[..., Camera], upstream: Camera
     ) -> None:
         cam = proxy()
+        first_read(cam)
         first = cam.read_frame()
         upstream.max_width = 320
         wait_for(lambda: cam.read_frame().shape[1] == 320)
@@ -185,7 +201,7 @@ class TestFrames:
         wait_for(lambda: upstream.intrinsics is not None)
 
         def lens_followed() -> bool:
-            cam.read()
+            first_read(cam)
             lens = cam.intrinsics
             return lens is not None and abs(lens.hfov - 60.0) < 0.01
 
@@ -209,12 +225,12 @@ class TestTags:
         upstream.exif_set_tags("gps", {"gps_latitude": "45.5017"})
         wait_for(lambda: "gps_latitude" in upstream.exif_tags)
         cam = proxy()
-        wait_for(lambda: "gps_latitude" in exif.extract(cam.read()))
+        wait_for(lambda: "gps_latitude" in exif.extract(first_read(cam)))
         assert cam.exif_tags["gps_latitude"] == "45.5017"
 
     def test_keeps_the_upstream_capture_time(self, proxy: Callable[..., Camera]) -> None:
         cam = proxy()
-        cam.read()
+        first_read(cam)
         handler = cam.handler
         assert handler is not None
         inherited = handler.frame_tags()[exif.TIMESTAMP_TAG]
@@ -224,7 +240,7 @@ class TestTags:
         self, proxy: Callable[..., Camera], upstream: Camera
     ) -> None:
         cam = proxy()
-        cam.read()
+        first_read(cam)
         assert cam.exif_tags["source"] == cam.source_str
         assert cam.exif_tags["topic"] == cam.synq_absolute_path
         assert cam.exif_tags["topic"] != upstream.synq_absolute_path
@@ -277,7 +293,8 @@ class TestRetryingTopics:
             synq_auto_start=True,
         )
         cam.start()
-        wait_for(lambda: cam.image)
+        cam.transport_jpeg_subscribe()
+        wait_for(lambda: cam.transport_jpeg.data)
         return cam
 
     @staticmethod
@@ -290,7 +307,7 @@ class TestRetryingTopics:
     def test_waits_for_a_topic_that_appears_later(self, camera: CameraFactory) -> None:
         topic = f"later_{uuid.uuid4().hex[:8]}"
         proxy = self.proxy_of(camera, topic)
-        assert proxy.running is True
+        wait_for(lambda: proxy.running)
         assert proxy.status.startswith(STATUS_WAITING)
         assert "nothing is published" in proxy.status
 
@@ -303,7 +320,7 @@ class TestRetryingTopics:
         topic = f"restarted_{uuid.uuid4().hex[:8]}"
         first = self.publish(camera, topic)
         proxy = self.proxy_of(camera, topic)
-        wait_for(lambda: proxy.status == STATUS_RUNNING and proxy.image)
+        wait_for(lambda: proxy.status == STATUS_RUNNING and proxy.transport_jpeg.data)
 
         first.close()
         wait_for(lambda: proxy.status.startswith(STATUS_WAITING))
@@ -320,7 +337,7 @@ class TestRetryingTopics:
         topic = f"crashed_{uuid.uuid4().hex[:8]}"
         upstream = self.publish(camera, topic)
         proxy = self.proxy_of(camera, topic)
-        wait_for(lambda: proxy.status == STATUS_RUNNING and proxy.image)
+        wait_for(lambda: proxy.status == STATUS_RUNNING and proxy.transport_jpeg.data)
 
         vanished = {"yes": True}
         real_find = spirisynq.find_published
@@ -341,7 +358,7 @@ class TestRetryingTopics:
         topic = f"paused_{uuid.uuid4().hex[:8]}"
         upstream = self.publish(camera, topic)
         proxy = self.proxy_of(camera, topic)
-        wait_for(lambda: proxy.status == STATUS_RUNNING and proxy.image)
+        wait_for(lambda: proxy.status == STATUS_RUNNING and proxy.transport_jpeg.data)
         handler = proxy.handler
         assert isinstance(handler, SpiriSynqSource)
 

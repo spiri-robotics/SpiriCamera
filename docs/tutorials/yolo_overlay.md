@@ -50,8 +50,9 @@ for meta in current_session.get().list_topics(type_filter='Camera'):
 
 This prints every camera currently advertising itself, including the
 UI's own — e.g. `$(hostname)/spiricamera_testimage` for the default
-`testimage://` source (the topic's first segment is whatever machine
-it's running on). (The "Synq Topic" field shown in the UI's Device card
+`testimage://` source, or `$(hostname)/cameras/1/hud` for the HUD
+camera `SpiriCamera run` publishes (the topic's first segment is
+whatever machine it's running on). (The "Synq Topic" field shown in the UI's Device card
 is only the *local* half of this — `spiricamera_testimage` without the
 hostname — so prefer the discovery one-liner over reading it off the
 page.) If the UI is itself mirroring another camera rather than running
@@ -104,16 +105,20 @@ cam = Camera.from_topic(args.topic)
 ```
 
 This is the mirror pattern described in {doc}`../getting_started` — no
-device is opened locally, `cam.image` is kept up to date in the
-background, and there is no `read()` to drive. The script runs a tight
+device is opened locally, and there is no `read()` to drive. Subscribing
+to the JPEG transport is what brings frames, and what keeps the camera
+running, and `cam.transport_jpeg.data` is then kept up to date in the
+background. The script runs a tight
 loop, not a poll: there's no sleep pacing it, it just runs detection
 back-to-back as fast as `model.predict` allows, skipping a cycle only
-when `cam.image` is the exact same object it already processed:
+when `cam.transport_jpeg.data` is the exact same object it already processed:
 
 ```python
+cam.transport_jpeg_subscribe()
+
 last_jpeg = None
 while True:
-    jpeg = cam.image
+    jpeg = cam.transport_jpeg.data
     if not jpeg or jpeg is last_jpeg:
         continue
     last_jpeg = jpeg
@@ -124,11 +129,11 @@ In practice a real source produces frames faster than YOLO can keep up,
 so that identity check almost never fires — it only matters at startup
 (before a first frame has arrived) or against a very slow source. This
 is deliberately *not* event-driven: an earlier version connected to
-`cam.events.image` and ran detection from that callback, but
-`cam.events.image` fires on zenoh's own callback thread, and psygnal
+a signal and ran detection from that callback, but
+`cam.transport_jpeg.data_changed` fires on zenoh's own callback thread, and psygnal
 holds a lock for a signal's entire emission — for as long as a connected
 slot is running. Detection taking a few hundred milliseconds meant
-`cam.events.image.disconnect()`, called from the main thread during
+`disconnect()`, called from the main thread during
 shutdown, blocked on that same lock until inference finished, and the
 non-daemon zenoh thread underneath it couldn't be joined until the
 callback returned either — the process wouldn't die on `Ctrl-C`. The
@@ -139,9 +144,8 @@ immediately.
 ### A note on overlays feeding back into detection
 
 Attaching the widget to the mirrored `cam` (`cam.overlay_widgets[...] =
-{}`) bakes the boxes directly into `cam.image` server-side — see
-{py:meth}`~SpiriCamera.camera.Camera.read`, which composites overlays
-before encoding unless {py:attr}`~SpiriCamera.overlay.OverlayMixin.overlay_client_render`
+{}`) bakes the boxes directly into the frames server-side, on every
+transport, unless {py:attr}`~SpiriCamera.overlay.OverlayMixin.overlay_client_render`
 is set. That means this same script's *next* detection pass runs on a
 frame that already has its own boxes drawn on it: the overlay it just
 added is fed straight back into the thing deciding what to add.
@@ -297,10 +301,8 @@ value the camera looks up by.
 
 ## How many lines is this, really
 
-The whole script is about 60 lines of actual control flow (imports,
-argument parsing, the detection loop, cleanup) plus a roughly 15-line SVG
-template as a string constant — call it **~75 lines** for a from-scratch,
-independently-runnable detector. None of it is boilerplate specific to
+The whole script is about 180 lines, comments and the SVG template included,
+for a from-scratch, independently-runnable detector. None of it is boilerplate specific to
 this tutorial: the same shape — mirror a camera, define a small
 `SyncableObject`, author a template that reads it — is how any external
 process publishes any kind of overlay data, not just bounding boxes.

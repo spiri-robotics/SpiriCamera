@@ -102,13 +102,13 @@ class TestConstruction:
         """No device is touched and no frame exists until start()."""
         cam = camera("testimage://")
         assert cam.running is False
-        assert cam.image == b""
+        assert cam.transport_jpeg.data == b""
         assert cam.received_width == 0
 
     def test_settings_are_stored(self, camera: CameraFactory) -> None:
         """Constructor arguments land on the synced fields."""
         cam = camera("testimage://", quality=55, max_width=320, max_height=240, max_framerate=12)
-        assert (cam.quality, cam.max_width, cam.max_height, cam.max_framerate) == (
+        assert (cam.transport_jpeg.quality, cam.max_width, cam.max_height, cam.max_framerate) == (
             55,
             320,
             240,
@@ -141,7 +141,8 @@ class TestLifecycle:
         """Starting marks the camera running and opens the source."""
         cam = camera("testimage://", max_framerate=10)
         cam.start()
-        assert cam.running is True
+        # The capture thread says so on its first pass.
+        assert wait_for(lambda: cam.running)
         assert cam.handler is not None
         assert cam.handler.is_open
 
@@ -172,20 +173,20 @@ class TestLifecycle:
         cam.start()
         cam.stop()
         cam.start()
-        assert cam.running is True
+        assert wait_for(lambda: cam.running)
 
     def test_background_thread_captures(self, camera: CameraFactory) -> None:
         """The capture thread fills in image without being driven."""
         cam = camera("testimage://", max_width=160, max_height=120, max_framerate=20)
         cam.start()
-        assert wait_for(lambda: bool(cam.image))
+        assert wait_for(lambda: bool(cam.transport_jpeg.data))
 
     def test_no_thread_when_background_is_false(self, camera: CameraFactory) -> None:
         """Scripted use opens the device but captures nothing on its own."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start(background=False)
         assert cam._thread is None
-        assert cam.image == b""
+        assert cam.transport_jpeg.data == b""
         assert cam.read()
 
     def test_context_manager(self, camera: CameraFactory) -> None:
@@ -193,33 +194,29 @@ class TestLifecycle:
         cam = camera("testimage://", max_width=160, max_height=120)
         with cam as entered:
             assert entered is cam
-            assert cam.running is True
+            assert wait_for(lambda: cam.running)
         assert cam.running is False
 
 
 class TestRunningField:
-    """Controlling the camera through its synced ``running`` field."""
+    """``running`` is the camera's to set, from whether anything wants its frames."""
 
-    def test_setting_running_starts(self, camera: CameraFactory) -> None:
-        """A peer writing running=True starts the capture."""
-        cam = camera("testimage://", max_width=160, max_height=120)
-        cam.running = True
-        assert cam._active is True
-        assert wait_for(lambda: bool(cam.image))
-
-    def test_clearing_running_stops(self, camera: CameraFactory) -> None:
-        """A peer writing running=False stops the capture."""
+    def test_a_value_written_by_a_peer_is_put_right(self, camera: CameraFactory) -> None:
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start()
-        cam.running = False
-        assert cam._active is False
-        assert cam._thread is None
+        assert wait_for(lambda: cam.running)
 
-    def test_failed_remote_start_resets_the_flag(self, camera: CameraFactory) -> None:
-        """running does not stay true when the source cannot open."""
-        cam = camera("bogus://x")
+        cam.running = False
+
+        assert wait_for(lambda: cam.running)
+
+    def test_writing_it_starts_nothing(self, camera: CameraFactory) -> None:
+        """Only start() starts a camera; nothing remote can."""
+        cam = camera("testimage://", max_width=160, max_height=120)
         cam.running = True
-        assert cam.running is False
+        time.sleep(0.1)
+        assert cam._thread is None
+        assert not cam.transport_jpeg.data
 
 
 class TestStatus:
@@ -233,13 +230,15 @@ class TestStatus:
         """Capturing says so."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start()
-        assert cam.status == STATUS_RUNNING
+        assert wait_for(lambda: cam.status == STATUS_RUNNING)
 
     def test_stopped_again(self, camera: CameraFactory) -> None:
-        """Stopping clears any earlier complaint."""
+        """Stopping clears any earlier complaint, and nothing in flight writes over it."""
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start()
+        assert wait_for(lambda: cam.status == STATUS_RUNNING)
         cam.stop()
+        time.sleep(0.1)
         assert cam.status == STATUS_STOPPED
 
     def test_reports_an_empty_source(self, camera: CameraFactory) -> None:
@@ -280,12 +279,13 @@ class TestStatus:
     def test_reports_a_failing_capture(
         self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
     ) -> None:
-        """A camera that opened but cannot produce frames says why."""
+        """A camera that opened but has produced no frame says so."""
         fake_capture(frames=[None])
         cam = camera("v4l:///dev/video0", max_framerate=30)
         cam.start()
 
-        assert wait_for(lambda: "capture failing" in cam.status)
+        expected = f"{STATUS_WAITING}: {cam.synq_topic}: source produced no frame"
+        assert wait_for(lambda: cam.status == expected)
 
     def test_recovers_after_a_failing_capture(
         self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
@@ -327,7 +327,7 @@ class TestReading:
         data = cam.read()
 
         assert data.startswith(b"\xff\xd8")
-        assert cam.image == data
+        assert cam.transport_jpeg.data == data
 
     def test_read_frame_returns_array(self, camera: CameraFactory) -> None:
         """read_frame() hands back raw pixels for every source type."""
@@ -413,8 +413,8 @@ class TestReceivedDimensions:
         cam.read()
 
         assert (cam.received_width, cam.received_height) == (853, 480)
-        assert cam.latest_frame is not None
-        assert cam.latest_frame[1].shape[:2] == (480, 853)
+        assert cam.transport_raw.data is not None
+        assert cam.transport_raw.data.array.shape[:2] == (480, 853)
 
     def test_shrinks_a_static_frame_once(
         self,
@@ -465,7 +465,7 @@ class TestEncoding:
         cam.start(background=False)
         large = cam.read()
 
-        cam.quality = 10
+        cam.transport_jpeg.quality = 10
         small = cam.read()
 
         assert len(small) < len(large)
@@ -538,7 +538,7 @@ class TestLiveSettings:
         cam.start()
         cam.max_framerate = 30
         # At the original 1fps this would take a second per frame.
-        assert wait_for(lambda: bool(cam.image), timeout=2.0)
+        assert wait_for(lambda: bool(cam.transport_jpeg.data), timeout=2.0)
 
 
 class TestWaitingForSource:
@@ -556,7 +556,7 @@ class TestWaitingForSource:
 
         cam.start()
 
-        assert cam.running is True
+        assert wait_for(lambda: cam.running)
         assert cam.status.startswith(STATUS_WAITING)
         assert "Failed to open" in cam.status
 
@@ -569,7 +569,7 @@ class TestWaitingForSource:
 
         fake_capture(opened=True)
 
-        assert wait_for(lambda: cam.status == STATUS_RUNNING and cam.image)
+        assert wait_for(lambda: cam.status == STATUS_RUNNING and cam.transport_jpeg.data)
         assert cam.max_supported_width == 640
 
     def test_waits_again_when_the_device_disappears(
@@ -579,7 +579,7 @@ class TestWaitingForSource:
         holder = fake_capture(frames=[frame, None])
         cam = camera("v4l:///dev/video0")
         cam.start()
-        assert wait_for(lambda: cam.image)
+        assert wait_for(lambda: cam.transport_jpeg.data)
 
         unplugged = fake_capture(opened=False)
         unplugged.present = False
@@ -598,7 +598,7 @@ class TestWaitingForSource:
         cam = camera("v4l:///dev/video0")
         cam.start()
 
-        assert wait_for(lambda: "capture failing" in cam.status)
+        assert wait_for(lambda: "source produced no frame" in cam.status)
         assert holder.capture is not None and not holder.capture.released
 
     def test_stop_ends_the_wait(
@@ -608,14 +608,14 @@ class TestWaitingForSource:
         cam = camera("v4l:///dev/video0")
         cam.start()
 
-        cam.running = False
+        cam.stop()
 
         assert cam.status == STATUS_STOPPED
         assert cam._thread is None
         fake_capture(opened=True)
         time.sleep(0.1)
         assert cam.status == STATUS_STOPPED
-        assert not cam.image
+        assert not cam.transport_jpeg.data
 
     def test_waits_for_an_unplugged_schemeless_device(
         self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
@@ -663,7 +663,7 @@ class TestRetargeting:
 
         cam.source_str = "v4l:///dev/video0"
 
-        assert cam.running is True
+        assert wait_for(lambda: cam.running)
         assert cam.source.handler == "V4LSource"
 
     def test_retarget_to_bad_source_stops(self, camera: CameraFactory) -> None:
@@ -686,7 +686,7 @@ class TestRetargeting:
         assert cam.source.error == ""
         assert cam.handler is not None
         cam.start()
-        assert cam.running is True
+        assert wait_for(lambda: cam.running)
 
     def test_resumes_once_a_typed_source_works(
         self, camera: CameraFactory, fake_capture: Callable[..., CaptureHolder]
@@ -700,7 +700,7 @@ class TestRetargeting:
         """
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.start()
-        assert cam.running is True
+        assert wait_for(lambda: cam.running)
 
         fake_capture(opened=False)
         cam.source_str = "/dev/vi"
@@ -709,7 +709,7 @@ class TestRetargeting:
         fake_capture(opened=True)
         cam.source_str = "/dev/video10"
 
-        assert cam.running is True
+        assert wait_for(lambda: cam.running)
         assert cam.source.target == "/dev/video10"
 
     def test_resumes_after_an_unresolvable_source(self, camera: CameraFactory) -> None:
@@ -723,7 +723,7 @@ class TestRetargeting:
 
         cam.source_str = "testimage://pm5544"
 
-        assert cam.running is True
+        assert wait_for(lambda: cam.running)
 
     def test_does_not_resume_when_stopped_by_hand(self, camera: CameraFactory) -> None:
         """Editing the source of a stopped camera leaves it stopped."""
@@ -863,19 +863,20 @@ class TestReceivedIsDerivedFromTheFrame:
         source.start(background=False)
         frame = source.read()
 
-        mirror = camera("")
-        mirror.image = frame
+        mirror = camera("", synq_authoritive=False)
+        mirror.transport_jpeg.data = frame
 
         assert (mirror.received_width, mirror.received_height) == (320, 240)
         assert mirror.received_ratio == source.received_ratio
 
     def test_cleared_when_the_image_is(self, camera: CameraFactory) -> None:
-        """No frame means no measurements of one."""
-        cam = camera("testimage://", max_width=320, max_height=240)
-        cam.start(background=False)
-        cam.read()
+        """No frame means no measurements of one, on a mirror that forgets its frame."""
+        source = camera("testimage://", max_width=320, max_height=240)
+        source.start(background=False)
+        cam = camera("", synq_authoritive=False)
+        cam.transport_jpeg.data = source.read()
 
-        cam.image = b""
+        cam.transport_jpeg.data = b""
 
         assert (cam.received_width, cam.received_height, cam.received_ratio) == (
             0,
@@ -921,13 +922,15 @@ class TestReceivedFramerate:
         assert cam.received_framerate == pytest.approx(2.0, abs=0.1)
 
     def test_cleared_when_the_image_is(self, camera: CameraFactory) -> None:
-        cam = camera("testimage://", max_width=160, max_height=120)
-        cam.start(background=False)
-        cam.read()
+        source = camera("testimage://", max_width=160, max_height=120)
+        source.start(background=False)
+        cam = camera("", synq_authoritive=False)
+        cam.transport_jpeg.data = source.read()
         cam._received_frame_at -= 0.5
-        cam.read()
+        cam.transport_jpeg.data = source.read()
+        assert cam.received_framerate > 0
 
-        cam.image = b""
+        cam.transport_jpeg.data = b""
 
         assert cam.received_framerate == 0.0
 
@@ -935,7 +938,7 @@ class TestReceivedFramerate:
         """Only the observations were skipped, not the requests."""
         paths = Camera.valid_sync_paths()
 
-        assert {"image", "max_width", "exif_enabled"} <= paths
+        assert {"max_width", "exif_enabled", "transport_jpeg/quality"} <= paths
 
 
 class TestFrameTags:
@@ -1143,8 +1146,8 @@ class TestExifProviders:
         source.start(background=False)
         frame = source.read()
 
-        mirror = camera("")
-        mirror.image = frame
+        mirror = camera("", synq_authoritive=False)
+        mirror.transport_jpeg.data = frame
 
         assert mirror.exif_tags == source.exif_tags
         assert mirror.exif_timestamp == source.exif_timestamp
@@ -1181,14 +1184,15 @@ class TestExifProviders:
         frame = cam.read()
 
         assert frame.startswith(b"\xff\xd8")
-        assert cam.exif_tags == {}
+        assert exif.extract(frame) == {}
 
     def test_an_unreadable_timestamp_is_not_fatal(self, camera: CameraFactory) -> None:
-        """A peer can put anything in a tag; it must not break the frame."""
-        cam = camera("testimage://", max_width=160, max_height=120)
-        cam.start(background=False)
+        """A peer can put anything in a tag; it must not break a mirror's frame."""
+        source = camera("testimage://", max_width=160, max_height=120)
+        source.start(background=False)
+        cam = camera("", synq_authoritive=False)
 
-        cam.image = exif.embed(cam.read(), {"timestamp": "not a number"})
+        cam.transport_jpeg.data = exif.embed(source.read(), {"timestamp": "not a number"})
 
         assert cam.exif_timestamp == 0.0
         assert cam.exif_tags["timestamp"] == "not a number"
@@ -1239,7 +1243,7 @@ class TestRehydrate:
 
         assert restored.running is True
         assert restored.status == STATUS_RUNNING
-        assert restored.quality == cam.quality
+        assert restored.transport_jpeg.quality == cam.transport_jpeg.quality
         assert restored.max_width == cam.max_width
 
     def test_does_not_open_a_source_locally(
@@ -1262,14 +1266,10 @@ class TestRehydrate:
         assert restored.handler is None
         assert restored.source.scheme == "testimage"
 
-    def test_the_frame_and_its_tags_survive(
-        self, camera: CameraFactory, synq_session: object
-    ) -> None:
-        """The tags and dimensions come back correctly primed, not empty.
+    def test_brings_back_no_frame(self, camera: CameraFactory, synq_session: object) -> None:
+        """Frames aren't fields, so a rehydrate carries none, nor what's measured of one.
 
-        Regression test: these are derived by an event handler connected
-        after CameraBase.__init__ already set `image` from the reply, so
-        without an explicit priming call they stayed at their defaults.
+        A mirror's frame and its tags come from subscribing to a transport.
         """
         cam = camera("testimage://", max_width=160, max_height=120)
         cam.synq_authoritive = True
@@ -1280,15 +1280,16 @@ class TestRehydrate:
 
         restored = synq_session.type_registry.load(cam.sync_dumps())  # type: ignore[attr-defined]
 
-        assert restored.exif_tags == cam.exif_tags
-        assert restored.exif_timestamp == cam.exif_timestamp
-        assert (restored.received_width, restored.received_height) == (160, 120)
+        assert cam.exif_tags
+        assert restored.transport_jpeg.data == b""
+        assert restored.exif_tags == {}
+        assert (restored.received_width, restored.received_height) == (0, 0)
 
     def test_a_normal_construction_is_unaffected(self, camera: CameraFactory) -> None:
         """The source=/quality=/etc convenience API still just works."""
         cam = camera("testimage://", quality=42, max_width=160, max_height=120)
 
-        assert cam.quality == 42
+        assert cam.transport_jpeg.quality == 42
         assert cam.handler is not None
 
     def test_a_mirror_defaults_to_non_authoritative(
@@ -1524,13 +1525,15 @@ class TestOverlays:
         try:
             cam.overlay_widgets[widget.synq_absolute_path] = {}
             cam.start(background=True)
+            # On SpiriSynq, a camera only runs while something subscribes.
+            cam.transport_jpeg_subscribe()
 
             # The widget needs at least one prior frame's received_width
             # etc. published before it has anything to render -- give it
             # a few frames to catch up rather than asserting on the first.
             # A cleared complaint is the signal a frame actually rendered
             # the widget successfully, not just that read() didn't raise.
-            assert wait_for(lambda: bool(cam.image), timeout=3.0)
+            assert wait_for(lambda: bool(cam.transport_jpeg.data), timeout=3.0)
             assert wait_for(
                 lambda: widget.synq_absolute_path not in cam._overlay_complaints,
                 timeout=3.0,
@@ -1550,10 +1553,12 @@ class TestOverlays:
         self-echo filter to key on publisher identity, not session zid
         -- otherwise a genuine update from a different object on the
         same session gets mistaken for hearing its own echo and
-        silently dropped, leaving this stuck on ``quality``'s default of
-        80 forever. This relies entirely on that filter (a SpiriSynq
-        concern) being correct; nothing in SpiriCamera works around it
-        by re-fetching on a timer any more.
+        silently dropped, leaving this stuck on ``max_framerate``'s first
+        value forever. It's a top-level field because a generic mirror
+        doesn't follow nested ones (see SpiriCamera.overlay). This relies
+        entirely on that filter (a SpiriSynq concern) being correct;
+        nothing in SpiriCamera works around it by re-fetching on a timer
+        any more.
         """
         from SpiriCamera.overlay import camera_metrics_widget
 
@@ -1568,20 +1573,24 @@ class TestOverlays:
         try:
             cam.overlay_widgets[widget.synq_absolute_path] = {}
             cam.start(background=True)
+            # On SpiriSynq, a camera only runs while something subscribes.
+            cam.transport_jpeg_subscribe()
 
             # A frame has to actually be rendered first -- otherwise
             # "no complaint yet" is ambiguous between "resolved cleanly"
             # and "no frame has run yet to raise one".
-            assert wait_for(lambda: bool(cam.image), timeout=3.0)
+            assert wait_for(lambda: bool(cam.transport_jpeg.data), timeout=3.0)
             assert wait_for(
                 lambda: widget.synq_absolute_path not in cam._overlay_complaints,
                 timeout=3.0,
             )
 
-            cam.quality = 42
+            cam.max_framerate = 7
 
             assert wait_for(
-                lambda: cam._overlay_object_values_for(widget).get("cam", {}).get("quality") == 42,
+                lambda: (
+                    cam._overlay_object_values_for(widget).get("cam", {}).get("max_framerate") == 7
+                ),
                 timeout=3.0,
             )
         finally:

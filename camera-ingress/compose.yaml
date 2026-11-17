@@ -16,8 +16,18 @@ services:
     # first.
     networks:
       - spirisynq
+    # RTSP: /raw, /hud and /preview for QGroundControl, and /<camera>/relay
+    # for MediaMTX.
+    ports:
+      - "8554:8554/tcp"
+      - "8000-8003:8000-8003/udp"
     environment:
       - SPIRICAMERA_SOURCE=${SOURCE:-testimage://pm5544}
+      # Published as cameras/<name>/raw, hud and preview. Give a second
+      # camera on this robot another name.
+      - SPIRICAMERA_CAMERA_NAME=${CAMERA_NAME:-1}
+      # The widgets drawn on cameras/<name>/hud, by topic, separated by spaces.
+      - SPIRICAMERA_HUD_WIDGETS=${HUD_WIDGETS:-}
       - SPIRICAMERA_QUALITY=${QUALITY:-80}
       - SPIRICAMERA_FRAME_WIDTH=${FRAME_WIDTH:-1920}
       - SPIRICAMERA_FRAME_HEIGHT=${FRAME_HEIGHT:-1080}

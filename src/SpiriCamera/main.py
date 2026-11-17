@@ -49,6 +49,19 @@ class Settings(BaseSettings):
         Logging level (``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``).
     source : str
         Camera source string (e.g. ``/dev/video0``, ``rtsp://...``).
+    camera_name : str
+        The camera's name among this host's cameras, any text (default
+        ``1``).  ``SpiriCamera run`` publishes it as ``cameras/<name>/raw``,
+        ``cameras/<name>/hud`` and ``cameras/<name>/preview``, under the
+        host's base topic.  A second camera on the host needs another name.
+    hud_widgets : str
+        The overlay widgets ``SpiriCamera run`` draws on ``cameras/<name>/hud``,
+        by SpiriSynq topic, separated by spaces or commas
+        (``mu-1/hud/widgets/horizon mu-1/robot_home_hud``).  A widget shows
+        once its publisher has published it.  Empty draws none.
+    topic : str
+        Overrides ``cameras/<camera_name>``, the topic the three cameras sit
+        under; empty uses it.
     quality : int
         JPEG encoding quality for captured frames [1-100].
     frame_width : int
@@ -75,16 +88,18 @@ class Settings(BaseSettings):
         ``spirisynq://`` relay follows the camera it relays).
     h264_preset : str
         x264's speed preset for the camera's one H.264 encode, the one
-        every WebRTC/WHEP viewer of it shares (default ``veryfast``).
+        every RTSP and SpiriSynq reader of it shares (default ``veryfast``).
         Faster presets cost less CPU for a slightly worse picture at the
         same bitrate: at 720p30 on a Raspberry Pi 4, ``veryfast`` takes
         about 90% of a core, ``ultrafast`` 50%, and x264's own default
         ``medium`` over 200%.
-    whep_port : int
-        ``SpiriCamera run`` also serves the camera for WHEP playback on
-        this port, as ``whep-serve`` does; ``0`` (the default) serves none.
-    whep_path : str
-        Where on ``whep_port`` the endpoint is (default ``/whep``).
+    rtsp_port : int
+        ``SpiriCamera run`` serves its cameras over RTSP on this TCP port
+        (default 8554), as ``/raw``, ``/hud`` and ``/preview``, and each
+        as ``/<camera>/relay`` for a relay on the same host; ``0`` serves none.
+    rtsp_udp_port : int
+        The first of four consecutive UDP ports for RTSP's RTP and RTCP
+        (default 8000).
     """
 
     model_config = SettingsConfigDict(
@@ -101,6 +116,8 @@ class Settings(BaseSettings):
 
     # Camera configuration
     source: str = ""
+    camera_name: str = "1"
+    hud_widgets: str = ""
     topic: str = ""
     quality: int = 80
     frame_width: int = 1920
@@ -120,10 +137,10 @@ class Settings(BaseSettings):
     # What the camera is mounted on; see Camera's relative_to.
     relative_to: str = ""
 
-    # The WebRTC encode; see SpiriCamera.webrtc._SharedEncoder.
+    # The default preset of the camera's one encode; see SpiriCamera.video.
     h264_preset: H264Preset = "veryfast"
-    whep_port: int = 0
-    whep_path: str = "/whep"
+    rtsp_port: int = 8554
+    rtsp_udp_port: int = 8000
 
     def intrinsics(self) -> dict[str, float] | None:
         """The configured lens as ``Camera.set_intrinsics`` arguments, if any."""
