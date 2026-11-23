@@ -71,8 +71,8 @@ Modules in `sources/` register themselves simply by being imported via `__init__
 ## Overlay Rendering (thorvg)
 
 thorvg's SVG parser has documented gaps:
-1. `dy` on `<text>` is silently ignored — bake offsets into `y` itself.
-2. `stroke`, `stroke-width`, `paint-order` on `<text>` are ignored — fake outlines with layered fills.
+1. `dy` on `<text>` is ignored without a warning: bake offsets into `y` itself.
+2. `stroke`, `stroke-width`, `paint-order` on `<text>` are ignored: fake outlines with layered fills.
 3. Text baseline differs from browsers. Apply the correction constants in `overlay.py`: `_TEXT_BASELINE_SLOPE = 0.1915`, `_TEXT_BASELINE_INTERCEPT = -1.074`.
 
 A bundled `Miracode.ttf` is loaded once at import time via `thorvg.Engine.font_load()`.

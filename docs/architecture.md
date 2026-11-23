@@ -7,7 +7,7 @@ docstrings today: how the package is split into domains, how a
 handler, and what the debug UI's bandwidth/latency readout actually
 measures.
 
-## Domain split: camera vs. sources
+## Domain split: Camera vs. sources
 
 The package has one dependency direction, enforced by convention, not
 by tooling:
@@ -16,7 +16,7 @@ by tooling:
 SpiriCamera.camera  ->  SpiriCamera.sources  ->  SpiriCamera.sources.base
 ```
 
-- **`SpiriCamera.sources`** (and its handler modules — `v4l`, `network`,
+- **`SpiriCamera.sources`** (and its handler modules—`v4l`, `network`,
   `file`, `testimage`, `spirisynq`) owns *how to reach a device*: parsing a source
   string, opening it, and handing back raw BGR `numpy` arrays. A
   handler never imports {py:class}`~SpiriCamera.camera.Camera` and
@@ -36,7 +36,7 @@ SpiriCamera.camera  ->  SpiriCamera.sources  ->  SpiriCamera.sources.base
   not know about `Camera` or sources either.
 
 If you find yourself importing `SpiriCamera.camera` from inside
-`SpiriCamera/sources/`, that's the layering breaking — a source should
+`SpiriCamera/sources/`, that's the layering breaking—a source should
 never need to know it's being driven by a `Camera`.
 
 ## Camera as a SpiriSynq object
@@ -50,14 +50,14 @@ looks, which is what lets an overlay draw on things in the world
 
 **Nothing is read-only.** Fields like `max_supported_width` or
 `received_width` are described as "what the device reported" or "what
-was actually received", but they are ordinary writable fields — a
+was actually received," but they are ordinary writable fields—a
 remote peer can already set any of them over SpiriSynq, so a property
 setter or a one-way binding would only hide that, not enforce it. This
 is why `ui.py` binds every field two-way with `bind_value` rather than
 `bind_value_from`: being able to type a wrong value in and watch what
 downstream does with it is a deliberate debugging feature, not an
 oversight. The only fields with a one-way binding in the debug UI are
-ones with no meaningful counterpart to write back to — the bandwidth
+ones with no meaningful counterpart to write back to—the bandwidth
 meter and the read-out frame tags (see below).
 
 **Authoritative vs. mirror.** A `Camera` you construct normally
@@ -69,7 +69,7 @@ is a *mirror*: same synced fields, but it never resolves `source_str`
 into a local handler, because a device path on the mirror's machine
 may mean something completely different (or nothing at all) locally.
 A mirror therefore always starts with `handler is None` and cannot
-`start()` — it exists to observe, not to capture. This is controlled
+`start()`—it exists to observe, not to capture. This is controlled
 by the `synq_authoritive` constructor argument, which defaults to the
 right answer for both cases; pass it explicitly only if you're doing
 something unusual (see `ui.py`'s `get_camera()` for an example of
@@ -97,27 +97,27 @@ can switch a camera off.
 `exif_tags`/`exif_timestamp` all describe one specific frame. SpiriSynq
 syncs each field independently with no ordering guarantee between two
 fields, so publishing "this frame is 1920x1080" next to "here is the
-image" is a race — a peer can read the width against a *different*
+image" is a race—a peer can read the width against a *different*
 image than the one it names. Instead these values travel with the
 frame, in a JPEG's EXIF ({py:mod}`SpiriCamera.exif`) or the attachment of
 a raw frame or video packet, and are read back out by
 `Camera._observe_frame`, identically on the authoritative node and on
 every mirror. If you add a new field that
-describes "the current frame" rather than "the camera's settings", it
-almost certainly belongs in the frame's tags, not as a new synced attribute — copy
+describes the current frame rather than the camera's own settings, it
+almost certainly belongs in the frame's tags, not as a new synced attribute—copy
 the pattern of `received_width` rather than adding a sibling to
 `max_width`.
 
 ## Adding a new source handler
 
 A handler is a `SourceBase` subclass that gets discovered automatically
-by being imported — there's no registry to edit. Concretely, to add
+by being imported—there's no registry to edit. Concretely, to add
 one:
 
 1. Create `src/SpiriCamera/sources/my_protocol.py`.
 2. Subclass {py:class}`~SpiriCamera.sources.base.SourceBase` (or
    {py:class}`~SpiriCamera.sources.capture.OpenCVSource` if
-   `cv2.VideoCapture` can already speak your protocol — this is what
+   `cv2.VideoCapture` can already speak your protocol—this is what
    `v4l.py` and `network.py` do; only write against the raw
    `SourceBase` contract if you need something OpenCV can't do, the
    way `testimage.py` renders SVGs itself).
@@ -183,22 +183,22 @@ class MyProtocolSource(SourceBase):
 A few contract details that are easy to miss because they only show up
 as bugs in a UI far from the handler:
 
-- **`read()` may return `None`** when there's no new frame yet (e.g. a
+- **`read()` may return `None`** when there's no new frame yet (for example a
   network stream that hasn't delivered one). The camera then
   keeps the previous frame rather than raising, so returning
-  `None` is the normal way to say "nothing changed", not an error.
+  `None` is the normal way to say nothing changed, and is not an error.
 - **Return the *same* array object** for an unchanged frame (a static
   test pattern, a paused file) rather than an equal-but-distinct copy.
   `Camera._encode` caches by identity (`is`, not `==`) specifically so
   a source that isn't producing new pixels doesn't pay for re-encoding
   every capture tick.
 - **`open()` on an already-open source must be a no-op** that just
-  re-reports capabilities — `Camera.start()` on an already-running
+  re-reports capabilities—`Camera.start()` on an already-running
   camera doesn't call `open()` at all, but a source can still see a
   redundant `open()` from other paths and must not double-acquire the
   device.
 - **Never raise from resolution** (`handles`/`from_url` aside from a
-  genuinely malformed target) — an unresolvable or not-yet-openable
+  genuinely malformed target)—an unresolvable or not-yet-openable
   source should surface through `SourceError` at `open()`/`read()`
   time, because `Camera` is designed to be constructed from a
   half-typed, live-edited source string without raising. If your
@@ -212,11 +212,11 @@ is resized and before it becomes `transport_raw.data`, so every transport
 carries them. Frames are read-only, so the first widget copies the frame
 to draw on it, and a frame with no widgets is never copied. A widget ({py:class}`~SpiriCamera.overlay.HudWidget`) is
 its own `SyncableObject`, published wherever its author runs (a UI
-panel, an ML detector) — a camera never creates one, it only mirrors
+panel, an ML detector)—a camera never creates one, it only mirrors
 the widgets named in its `overlay_widgets` field
 ({py:class}`~SpiriCamera.overlay.OverlayMixin`, mixed into
-{py:class}`~SpiriCamera.camera.CameraBase`). This split — author owns
-the widget, camera only opts in — is what lets several cameras share
+{py:class}`~SpiriCamera.camera.CameraBase`). This split—author owns
+the widget, camera only opts in—is what lets several cameras share
 one widget definition while each binds it to its own data and
 placement.
 
@@ -225,14 +225,14 @@ namespaces (plus `view` and `item` for a widget placed on the world;
 see below), and *why there are three* is the one thing worth
 understanding before touching this code:
 
-- `exif` — the current frame's tags.
-- `frame` — the current frame's actual, as-received width/height/
+- `exif`: the current frame's tags.
+- `frame`: the current frame's actual, as-received width/height/
   framerate and a render-time timestamp. These are injected directly
   rather than read through `objects` because they are exactly the
   fields the "Frame-derived fields never travel as their own field"
-  rule above forbids publishing as synced attributes — there is no
+  rule above forbids publishing as synced attributes—there is no
   topic a widget could declare to reach them.
-- `objects` — the latest field values of any other SpiriSynq object a
+- `objects`: the latest field values of any other SpiriSynq object a
   widget declares for itself, by alias, via a
   `{# object: <alias> = <default topic> #}` comment next to where the
   alias is used. The alias exists because a real topic can contain
@@ -244,26 +244,26 @@ understanding before touching this code:
 `SpiriCamera.overlay.resolve_objects` cross-checks MiniJinja's own
 static analysis of what a template *reads* against what it
 *declares*, and raises immediately if an alias is used with no
-matching declaration — a widget author gets that error at authoring
-time rather than a silently blank value baked into every frame.
+matching declaration—a widget author gets that error at authoring
+time rather than a blank value baked into every frame.
 
 **Rendering never scales.** `rasterize()` renders each widget at its
 own natural pixel size (`Picture.get_size()`); `composite()` alpha
 blends it onto the frame at whatever position `anchor_position()`
 computes and clips the rest. A widget author who writes
 `font-size="24"` gets a real 24px regardless of the camera's
-resolution — scaling the raster to fit a declared box was rejected
+resolution—scaling the raster to fit a declared box was rejected
 because it either blurs small text or makes it illegible on a 4K
 frame. Text is drawn by `thorvg`, using the bundled `Miracode` font
 registered once at import time; `thorvg` never falls back to an
 OS-installed font, so a widget that references an unloaded font family
-renders nothing for that text, silently.
+renders nothing for that text.
 
 **Failure is per-widget, per-frame, and never fatal.** A widget that
-fails to render — a template error, a declared object with no value
-yet — is skipped for that frame and logged once
+fails to render—a template error, a declared object with no value
+yet—is skipped for that frame and logged once
 (`OverlayMixin._overlay_complain` de-duplicates by message so a
-persistently-broken widget does not spam the log every frame). One
+widget that keeps failing does not spam the log every frame). One
 broken overlay is not allowed to stop the camera from publishing.
 
 **Mirroring is lazy and cheap to re-check.** `_overlay_sync_widgets`
@@ -271,8 +271,8 @@ and `_overlay_sync_objects` run once per frame but only do network work
 (mirroring a widget or a data-source object) the first time a topic is
 seen; anything already mirrored is trusted to update itself live via
 its own SpiriSynq subscription. That is what makes it safe to call
-every frame, which is how newly-added or newly-rebound
-`overlay_widgets` entries get picked up promptly without wiring
+every frame, which is how new or rebound
+`overlay_widgets` entries get picked up without wiring
 fine-grained `EventedDict` change signals.
 
 **Placing a widget on the world is opt-in, and the template never does
@@ -301,34 +301,34 @@ global) and serves its JPEG frames over a plain HTTP route
 (`GET /camera/frame`). Polling that route is what subscribes it to
 `transport_jpeg`, and five seconds without a poll unsubscribes it, so
 closing the tab lets the camera idle. It serves them over HTTP rather than pushing them over the websocket as
-base64 — `ui.image`/`QImg` cross-fades on every source change, which at
+base64—`ui.image`/`QImg` cross-fades on every source change, which at
 video framerate looks like a permanent dim pulse, and pushing to every
 client regardless of whether it can keep up defeats the point of a
 pull-based readout. Read the module docstring in
 {py:mod}`SpiriCamera.ui` for the full reasoning; the parts worth
 knowing if you're debugging the numbers it shows:
 
-- **fps / KiB/s / kb/s** come from `RateMeter`, which is fed only when
+- **fps / KiB/s / kilobits per second** come from `RateMeter`, which is fed only when
   `serve_frame()` sees a *new* frame object (compared by identity, via
-  `_last_counted`) — a stopped camera being polled repeatedly reports
+  `_last_counted`)—a stopped camera under repeated polling reports
   0 fps rather than the rate of the polling. `_last_counted_lock`
   exists because two browser tabs can both read the stale value before
   either writes the new one, which without the lock double-counts a
   single frame across two concurrent requests.
 - **Frame age** is *not* "now minus this frame's timestamp" sampled
-  once — that number saws between zero and a full frame interval
+  once—that number saws between zero and a full frame interval
   depending on when exactly you read it, and says more about polling
   phase than actual latency. `RateMeter.age()` instead reports
   `max(mean_age_over_window, true_age_of_newest_frame_seen)`: the mean
   is the stable number while frames are flowing, and the true age is
-  what it decays into once they stop — a camera that died five minutes
-  ago should read "5 min old", not fall back to a rolling average of
+  what it decays into once they stop—a camera that died five minutes
+  ago should read "5 min old" and not fall back to a rolling average of
   zero.
 - **Clock skew**: age is computed from the frame's own EXIF capture
   timestamp against `time.time()` on the machine serving the debug UI,
   clamped at zero. Against a remote/mirrored camera this is only as
-  good as the agreement between the two machines' clocks — an age of
-  "0 ms" on a badly-skewed pair doesn't mean zero latency, it means the
+  good as the agreement between the two machines' clocks—an age of
+  "0 ms" on two clocks set far apart does not mean zero latency, it means the
   remote clock is ahead.
 
 ## RTSP egress
@@ -368,7 +368,7 @@ demand travels up a chain of relays. It never imports `camera.py`: it looks the 
 `Session.list_topics` and mirrors it with whatever class the session has
 registered under it (the real `Camera`, in any process running one),
 falling back to `from_topic_untyped` only when there is none. The order
-matters — `from_topic_untyped` re-registers the tag with a synthesized
+matters—`from_topic_untyped` re-registers the tag with a synthesized
 class, which breaks every later `Camera.from_topic` on that session.
 `Camera.start()` opens its handler under `synq_session.as_default()`,
 so the mirror lands on the camera's own session. Upstream frame
@@ -384,18 +384,18 @@ its device mid-stream is simply to close itself and raise from
 `read()`. `V4LSource` does that when a failed read finds its device
 node gone (a failed read with the node present is only a dropped
 frame). `SpiriSynqSource` does it on the upstream's tombstone (a clean
-shutdown), or — since a crash sends none — when no frame has arrived
+shutdown), or—since a crash sends none—when no frame has arrived
 for `STALE_AFTER` seconds and the topic no longer answers
 `list_topics`, or answers from a different process. It uses
 `list_topics` rather than an `sr_metadata` RPC for this because an
-absent topic is silently no reply there, where the RPC logs an error
+absent topic is just no reply there, where the RPC logs an error
 on every retry.
 
 ## Where things are tested
 
 `tests/` exercises the source handlers and `Camera` against real
 `SpiriSynq` peers over a namespaced zenoh session (see recent history
-around "namespace the test suite's zenoh peer" for why — tests must not
+around "namespace the test suite's zenoh peer" for why—tests must not
 collide with a zenoh session already running on the same machine). Run
 the full suite with:
 
@@ -406,6 +406,6 @@ python -m pytest --cov=SpiriCamera
 
 When adding a new source handler, add a corresponding test module
 alongside the existing ones rather than folding it into
-`test_camera.py` — handler tests exercise `open`/`close`/`read` in
+`test_camera.py`—handler tests exercise `open`/`close`/`read` in
 isolation from the capture thread, which is what makes it possible to
 test protocol edge cases without racing a background thread.

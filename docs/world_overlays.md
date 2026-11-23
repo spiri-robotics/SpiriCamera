@@ -138,8 +138,8 @@ A line from where the rangefinder hit to the region of interest:
 ## What it doesn't tell you
 
 - **`r` is the object's own uncertainty, not the camera's.** It answers
-  "where in the world could this be, as seen from here", not "where in
-  this picture will it appear". These two differ when the object and the
+"where in the world could this be, as seen from here," not "where in
+this picture will it appear." These two differ when the object and the
   camera share an error. A rangefinder spot on the camera's own gimbal
   carries the robot's GPS error in its accuracy, but that error moves the
   camera too, so in the camera's own picture the spot sits on the axis
@@ -151,5 +151,5 @@ A line from where the rangefinder hit to the region of interest:
 - **The lens is a pinhole,** with no distortion. Near the edge of a wide
   lens, a marker is some pixels off.
 - **The camera's own mount is taken as exact:** a camera that is a few
-  centimetres off its gimbal's axis, or not quite aligned with it, puts
+  centimetres off its gimbal's axis, or not exactly aligned with it, puts
   everything that far off.

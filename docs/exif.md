@@ -2,7 +2,7 @@
 
 Each captured frame carries its own metadata: in the EXIF of a JPEG, and in
 the zenoh attachment of a raw frame or video packet (see {doc}`data_model`).
-That metadata says when it was taken, what took it, and anything you care to add — a GPS
+That metadata says when it was taken, what took it, and anything you care to add—a GPS
 fix, a mission name, a battery level. This page covers reading that
 metadata back, adding your own, and sharing the job between more than
 one piece of software. RTSP doesn't carry these tags: its KLV track only has the
@@ -24,12 +24,12 @@ cam.exif_timestamp  # Unix timestamp of the current frame
 
 `exif_tags` and `exif_timestamp` are read back *out of* the current frame,
 and so are `received_width`, `received_height` and `received_ratio`. None
-of them is sent as a synced field — they are properties, so there is
+of them is sent as a synced field—they are properties, so there is
 nothing there *to* send. That is on purpose: SpiriSynq publishes each
 field independently and promises nothing about two of them arriving
-together, so a timestamp sent separately from an image is a timestamp a
+together, so a timestamp sent apart from an image is a timestamp a
 peer can read against the wrong image. Travelling with the frame, they
-cannot come apart from it — a peer that receives a frame fills them in
+cannot come apart from it—a peer that receives a frame fills them in
 for itself, exactly:
 
 ```python
@@ -41,7 +41,7 @@ mirror.received_width  # what it actually sent
 ## Multiple Tag Providers
 
 More than one piece of software may want to tag the same camera's
-frames — a logger, a telemetry service, a human poking at the debug UI.
+frames—a logger, a telemetry service, a human poking at the debug UI.
 `exif_set_tags` gives each one its own namespace, so setting one never
 touches another's:
 
@@ -53,7 +53,7 @@ cam.exif_clear_tags("telemetry")  # only "battery" goes away
 ```
 
 Calling `exif_set_tags` again for the same provider *replaces* that
-provider's tags rather than merging into them — drop a key by leaving it
+provider's tags rather than merging into them—drop a key by leaving it
 out next time. A value of `""` is kept rather than dropped, which is how
 a provider suppresses one of the built-in tags (say, omitting `source`
 from a frame headed somewhere public). Providers merge over the built-ins
@@ -63,7 +63,7 @@ that order, which is worth avoiding with a distinguishing prefix rather
 than relying on.
 
 `exif_update(**tags)` is a shorthand for the common case of one caller
-adding a tag or two with no provider name of its own — it merges into a
+adding a tag or two with no provider name of its own—it merges into a
 shared default bucket, and a value of `""` there removes just that tag:
 
 ```python
@@ -76,7 +76,7 @@ bucket and can still overwrite each other; once that matters, give each
 one a provider name and use `exif_set_tags` instead.
 
 To attach something the camera itself can compute, override the method
-that builds the built-in tags — this still gets whatever providers have
+that builds the built-in tags—this still gets whatever providers have
 set merged on top:
 
 ```python
@@ -88,8 +88,8 @@ class SurveyCamera(Camera):
 ```
 
 Tag names are free-form; the whole set round-trips through the EXIF
-`UserComment` field. Names that have a real EXIF equivalent — `make`,
-`model`, `serial_number`, `software`, `description`, `datetime` — are
+`UserComment` field. Names that have a real EXIF equivalent—`make`,
+`model`, `serial_number`, `software`, `description`, `datetime`—are
 also written to that tag, so ordinary image tools show something
 sensible.
 
@@ -97,7 +97,7 @@ A camera fed by another camera (a `spirisynq://` source, see
 {doc}`getting_started`) starts from the tags the upstream frame already
 carried, so a GPS fix added upstream is still there after the re-encode.
 Its own built-ins then replace the upstream's `source`, `topic` and
-`software` — those describe whoever produced *these* bytes — but the
+`software`—those describe whoever produced *these* bytes—but the
 upstream's `timestamp` is kept, since that is when the picture was
 actually taken. Providers merge on top of both, as usual.
 
@@ -110,8 +110,8 @@ republishing.
 
 A GPS fix is exactly the kind of thing that changes on its own schedule,
 independent of the frame rate, so the natural way to attach it is
-`exif_update` from whatever callback your GPS source already gives you
-— not something computed inside `Camera` itself, and not something worth
+`exif_update` from whatever callback your GPS source already gives you,
+not something computed inside `Camera` itself, and not something worth
 a subclass for:
 
 ```python
@@ -126,7 +126,7 @@ def on_gps_fix(lat: float, lon: float) -> None:
 gps.events.fix.connect(on_gps_fix)  # or however your GPS source notifies you
 ```
 
-Every frame captured after that carries the most recent fix — there is
+Every frame captured after that carries the most recent fix—there is
 no need to re-call `exif_update` per frame, since `exif_tags_for_frame`
 re-merges whatever the default bucket currently holds into *every*
 frame it builds. A fix that goes stale (GPS lost) should be cleared the
@@ -137,8 +137,8 @@ position as if it were current:
 cam.exif_update(gps_lat="", gps_lon="")  # drop both; other tags untouched
 ```
 
-If your GPS source lives inside the `Camera` subclass itself — an
-onboard receiver polled on the same cadence as capture, say — override
+If your GPS source lives inside the `Camera` subclass itself—an
+onboard receiver polled on the same cadence as capture, say—override
 `exif_tags_for_frame` instead, so the fix is read fresh for the frame
 actually being encoded rather than from whatever `exif_update` last
 pushed:
@@ -155,7 +155,7 @@ class SurveyCamera(Camera):
 ```
 
 Either way, `gps_lat`/`gps_lon` are free-form tag names, not a real EXIF
-GPS IFD entry — they round-trip through the `UserComment` JSON exactly
+GPS IFD entry—they round-trip through the `UserComment` JSON exactly
 like any other tag, but a tool that reads a JPEG's *native* GPS fields
 (only `make`, `model`, `serial_number`, `software`, `description` and
 `datetime` get written there; see `STANDARD_TAGS` in
@@ -166,9 +166,9 @@ bytes via {py:mod}`SpiriCamera.exif`.
 ## Reading Tags From Raw JPEG Bytes
 
 `cam.exif_tags` is a convenience for when you already have a `Camera`.
-If all you have is JPEG bytes — a frame saved to disk, one pulled off an
+If all you have is JPEG bytes—a frame saved to disk, one pulled off an
 HTTP response, or a sample taken straight off `transport_jpeg/@data` with
-no mirror at all — {py:mod}`SpiriCamera.exif` reads and writes the same
+no mirror at all—{py:mod}`SpiriCamera.exif` reads and writes the same
 tags directly, with no `Camera` involved:
 
 ```python
@@ -176,9 +176,9 @@ from SpiriCamera import exif
 
 data = open("frame.jpg", "rb").read()
 
-exif.is_jpeg(data)  # True — cheap check, just the magic bytes
+exif.is_jpeg(data)  # True—cheap check, just the magic bytes
 exif.extract(data)  # {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}
-exif.image_size(data)  # (1920, 1080) — read from the JPEG header, not decoded
+exif.image_size(data)  # (1920, 1080); read from the JPEG header, not decoded
 ```
 
 `extract` never raises: bytes with no tags, damaged EXIF, or a format
@@ -186,7 +186,7 @@ that carries none all read back as `{}`, so it is safe to call on
 whatever you happen to have. It reads the same `UserComment` JSON blob
 `Camera` writes, so an arbitrary tag name round-trips exactly; given a
 JPEG this package did not tag at all, it falls back to whatever
-standard EXIF fields (`Make`, `Model`, `DateTime`, ...) the file
+standard EXIF fields (`Make`, `Model`, `DateTime`) the file
 happens to carry.
 
 `embed` is the write side, and is what `Camera` calls internally on

@@ -30,7 +30,7 @@ so subscribe only while you need frames, and to one transport only.
 
 | Key under `<camera>/` | Payload | Attachment (JSON) |
 | --- | --- | --- |
-| `transport_raw/@data` | BGR pixels, tightly packed, top row first | `width`, `height`, `format`, `tags` |
+| `transport_raw/@data` | BGR pixels in one contiguous block, top row first | `width`, `height`, `format`, `tags` |
 | `transport_jpeg/@data` | One JPEG, with tags in its EXIF | None |
 | `transport_video/@data_keyframe` | Annex B H.264, with SPS and PPS | See [the video section](#read-video) |
 | `transport_video/@data_interframe` | Annex B H.264 | See [the video section](#read-video) |

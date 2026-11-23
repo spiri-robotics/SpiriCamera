@@ -30,12 +30,12 @@ Or create a `.env` file in your project root. See the {ref}`api-reference` for a
 
 ## Camera Usage
 
-SpiriCamera provides a {py:class}`~SpiriCamera.Camera` class for live frame capture. A camera is a `SyncableObject`: it behaves like a small daemon that owns a device, captures in the background, and publishes each frame over SpiriSynq — not a handle you construct, read from synchronously, and throw away. The protocol detail of reaching a device lives in the source handlers under {py:mod}`SpiriCamera.sources`.
+SpiriCamera provides a {py:class}`~SpiriCamera.Camera` class for live frame capture. A camera is a `SyncableObject`: it behaves like a small daemon that owns a device, captures in the background, and publishes each frame over SpiriSynq—not a handle you construct, read from synchronously, and throw away. The protocol detail of reaching a device lives in the source handlers under {py:mod}`SpiriCamera.sources`.
 
 There are two roles, and most code only ever needs one of them:
 
-- **Authoritative** — the process that actually owns the device (typically `SpiriCamera run`, or something like it). It constructs a `Camera` normally, `start()`s it, and lets the background thread do the work.
-- **Mirror** — everyone else. Rather than constructing a second `Camera` pointed at the same device, get a handle onto the *existing* one over SpiriSynq and read its synced fields as they arrive.
+- **Authoritative**: the process that actually owns the device (typically `SpiriCamera run`, or something like it). It constructs a `Camera` normally, `start()`s it, and lets the background thread do the work.
+- **Mirror**: everyone else. Rather than constructing a second `Camera` pointed at the same device, get a handle onto the *existing* one over SpiriSynq and read its synced fields as they arrive.
 
 ### Consuming an existing camera (the common case)
 
@@ -47,7 +47,7 @@ from SpiriCamera import Camera
 cam = Camera.from_topic("some-host/cameras/1/raw")
 ```
 
-This gives you a mirror: same synced fields (`status`, `running`, `max_width`, ...), kept up to date by SpiriSynq, but it never opens a device locally — it exists to observe, not to capture. There is no `read()` to call.
+This gives you a mirror: same synced fields (`status`, `running`, `max_width`), kept up to date by SpiriSynq, but it never opens a device locally—it exists to observe, not to capture. There is no `read()` to call.
 
 A mirror receives settings, not frames. To get frames, choose a transport by subscribing to it:
 
@@ -82,7 +82,7 @@ Both approaches work the same way whether `cam` is a mirror or the authoritative
 
 ### Building on an existing camera
 
-A mirror is a view of someone else's camera: its settings and overlays are that camera's, and changing them changes it for everyone. To get a *different* stream out of it — smaller, with your own overlays, at your own quality or framerate — use it as the source of a camera of your own instead:
+A mirror is a view of someone else's camera: its settings and overlays are that camera's, and changing them changes it for everyone. To get a *different* stream out of it—smaller, with your own overlays, at your own quality or framerate—use it as the source of a camera of your own instead:
 
 ```python
 from SpiriCamera import Camera
@@ -98,15 +98,15 @@ small.start()
 
 `spirisynq://` takes the same topic `Camera.from_topic` does, absolute or relative to this host's base topic: `spirisynq://./cameras/1/raw` is this host's `cameras/1/raw`. The scheme also picks which of the upstream's transports to pull: `spirisynq://` and `spirisynq+jpeg://` take JPEG, `spirisynq+raw://` takes raw with no decode, and `spirisynq+video://` takes H.264 for a constrained link.
 
-Each upstream frame is scaled down to fit inside `max_width` x `max_height` (keeping its aspect ratio; it never scales up), then goes through this camera like any source's frame: its own `overlay_widgets` are drawn on, it is encoded at its own settings, and it is published on its own topic. The upstream is untouched, so any number of these can hang off one device. Frame tags carry over too — see {doc}`exif`.
+Each upstream frame is scaled down to fit inside `max_width` x `max_height` (keeping its aspect ratio; it never scales up), then goes through this camera like any source's frame: its own `overlay_widgets` are drawn on, it is encoded at its own settings, and it is published on its own topic. The upstream is untouched, so any number of these can hang off one device. Frame tags carry over too—see {doc}`exif`.
 
 This camera pulls from its upstream only while something subscribes to it, so demand travels up the chain: with nobody watching, the device at the top is closed.
 
-The upstream does not have to exist yet, and may come and go: the camera waits for the topic, and reconnects when an upstream that shut down, crashed, or restarted is back — see "Waiting for a Source" below.
+The upstream does not have to exist yet, and may come and go: the camera waits for the topic, and reconnects when an upstream that shut down, crashed, or restarted is back—see "Waiting for a Source" below.
 
 ### Running a device yourself
 
-If your process *is* the one meant to own the device — a standalone script, or something like the `SpiriCamera run` CLI command — construct a `Camera` normally and start it. Leave `start()` on its default `background=True`: the capture thread runs its own loop, paced to `max_framerate`, whenever something wants frames. Don't drive it frame-at-a-time yourself — a `Camera` is meant to be treated like a small daemon, not a handle you poll by calling `read()` in your own loop.
+If your process *is* the one meant to own the device—a standalone script, or something like the `SpiriCamera run` CLI command—construct a `Camera` normally and start it. Leave `start()` on its default `background=True`: the capture thread runs its own loop, paced to `max_framerate`, whenever something wants frames. Don't drive it frame-at-a-time yourself—a `Camera` is meant to be treated like a small daemon, not a handle you poll by calling `read()` in your own loop.
 
 ```python
 from SpiriCamera import Camera
@@ -131,7 +131,7 @@ with Camera("/dev/video0", quality=85) as cam:
 
 A subscriber anywhere counts, on this camera or across the network, so `SpiriCamera run` sits idle until someone asks for frames.
 
-To change the rate frames are captured at, set `cam.max_framerate` (live — takes effect on the next frame, no restart needed) rather than calling `read()` less often. `start(background=False)` exists — it opens the device without the capture thread, leaving you to call `read()` yourself — but that's an edge case for tests and one-off scripts, not the pattern to reach for; ordinary code, including anything long-running, should stay on the default background thread, subscribe to a transport, and read its `data` or connect to its `data_changed`.
+To change the rate frames are captured at, set `cam.max_framerate` (live—takes effect on the next frame, no restart needed) rather than calling `read()` less often. `start(background=False)` exists—it opens the device without the capture thread, leaving you to call `read()` yourself—but that's an edge case for tests and one-off scripts, not the pattern to reach for; ordinary code, including anything long-running, should stay on the default background thread, subscribe to a transport, and read its `data` or connect to its `data_changed`.
 
 ### Inspecting a Source
 
@@ -163,7 +163,7 @@ cam.start()
 ### Files
 
 A video file or a still image can stand in for a camera. Files are just
-paths — absolute or relative, no scheme needed:
+paths—absolute or relative, no scheme needed:
 
 ```python
 cam = Camera("/srv/clips/approach.mp4")  # loops at the end
@@ -172,7 +172,7 @@ cam = Camera("./pattern.png")  # a steady picture
 
 Use `file://` when a path would otherwise read as a URL. POSIX collapses
 repeated slashes, so `rtsp://clip.mp4` is a real path to `clip.mp4`
-inside a directory named `rtsp:` — and a stream URL. The stream wins;
+inside a directory named `rtsp:`—and a stream URL. The stream wins;
 `file://rtsp://clip.mp4` says you meant the file.
 
 ### Local Devices
@@ -186,7 +186,7 @@ cam = Camera("v4l:///dev/video5")  # not plugged in yet
 ```
 
 A schemeless path is recognised as a camera if the filesystem says it is
-one, or if it is named like one — `/dev/video<N>`, or anything under
+one, or if it is named like one—`/dev/video<N>`, or anything under
 `/dev/v4l/` (the `by-id` links are the robust way to name a USB camera).
 So `/dev/video0` works even before the device is plugged in, while
 `/dev/null` and a half-typed `/dev/vi` do not. `v4l://` accepts any path.
@@ -200,12 +200,12 @@ yet, leaves a wanted camera `running` with a status of
 works. The same happens if the device is unplugged or the upstream
 camera goes away mid-stream: it waits, and picks up again when it is
 back. `SpiriCamera run` therefore keeps running through a camera
-being replugged or a host rebooting. Only `start(background=False)` —
-scripted use with no capture thread to wait on — still raises instead.
+being replugged or a host rebooting. Only `start(background=False)`—
+scripted use with no capture thread to wait on—still raises instead.
 
 ### Knowing What It Is Doing
 
-`camera.status` says what the camera is doing in words — `running`,
+`camera.status` says what the camera is doing in words—`running`,
 `stopped`, `idle: no subscribers`, waiting, or the reason it is none of those:
 
 ```python
@@ -228,14 +228,14 @@ a camera off.
 
 Each captured frame carries its own metadata, in its EXIF as a JPEG and
 beside it as raw or video:
-when it was taken, what took it, and anything you care to add — see the
+when it was taken, what took it, and anything you care to add—see the
 {doc}`exif` guide for how to read tags back, add your own (GPS included),
 and share the tagging job between more than one piece of software.
 
 ### Overlays
 
 A camera can bake a small SVG "HUD" onto every frame, after resizing it
-and before any transport — a resolution/framerate readout, a battery level, anything
+and before any transport—a resolution/framerate readout, a battery level, anything
 templated from live data. The built-in metrics overlay is the
 quickest way to see this working:
 
@@ -252,7 +252,7 @@ cam.start()
 Every transport now includes the overlay, composited fresh on every
 frame, on the resized image. For a feed without it, make a second camera
 with this one as its source and draw on that one instead. Removing the entry (`del cam.overlay_widgets[widget.synq_absolute_path]`) drops
-it again immediately — no restart needed.
+it again immediately—no restart needed.
 
 A widget you author yourself is a {py:class}`~SpiriCamera.overlay.HudWidget`:
 an SVG template, MiniJinja-rendered against the current frame's `exif`
@@ -282,7 +282,7 @@ The key is the widget's `synq_absolute_path`, which includes the host prefix. A 
 can't find a widget by its bare `synq_topic`.
 
 The `{# object: battery = ... #}` comment declares both the alias used
-in the template and the default topic it mirrors — every camera that
+in the template and the default topic it mirrors—every camera that
 opts into this widget gets that binding unless it overrides it for
 itself:
 
@@ -294,7 +294,7 @@ cam.overlay_widgets[widget.synq_absolute_path] = {
 }
 ```
 
-A widget you author is not owned by any one camera — publish it once
+A widget you author is not owned by any one camera—publish it once
 and any number of cameras can mirror it, each with its own binding and
 placement overrides. See {py:mod}`SpiriCamera.overlay` (or the
 {ref}`overlay architecture notes <the-overlay-layer>`) for the full
