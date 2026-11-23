@@ -1,6 +1,11 @@
 # SpiriCamera tasks. Each mirrors a CI job, so `make check` passing locally
 # means CI should too.
 
+# Vale is not a Python package, so `uv` cannot install it: get it from nixpkgs
+# (`nix-shell -p vale`) or your system package manager. When it is not on PATH,
+# point at it: make VALE=/path/to/vale lint-docs
+VALE ?= vale
+
 .PHONY: help check lint format test docs docs-serve pdf lint-docs docker clean
 
 help:
@@ -40,8 +45,9 @@ pdf:
 	@echo "docs/_build/latex/$$(uv run --group docs python -m spiri_docs name).pdf"
 
 lint-docs:
-	vale sync
-	vale docs/
+	@command -v "$(VALE)" >/dev/null 2>&1 || { echo "Vale not found: install it (nix-shell -p vale) or run make VALE=/path/to/vale lint-docs"; exit 1; }
+	@test -d styles/Microsoft || "$(VALE)" sync   # Packages = Microsoft in .vale.ini
+	"$(VALE)" docs/
 
 docker:
 	docker build -f docker/Dockerfile -t spiricamera:latest .
