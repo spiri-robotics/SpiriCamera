@@ -1,12 +1,13 @@
 # Changes
 
-## Unreleased
+## 0.3.0 (2026-11-25)
 
 ### Features
 
 - `SpiriCamera run` publishes three cameras, at `cameras/1/raw`, `cameras/1/hud` and
   `cameras/1/preview` under the host's base topic. `hud` is `raw` with whatever overlay widgets
-  are added to it, and `preview` is `raw` at 240 pixels high and one frame a second. Both relay
+  are added to it, and `preview` is `raw` at 96 pixels high, JPEG quality 70 and one frame a
+  second, about 2.4 KB a frame, small enough to leave every camera's on a map. Both relay
   `raw` in the same process, and run only while something subscribes. `SPIRICAMERA_CAMERA_NAME`
   replaces the `1` with any text, and `SPIRICAMERA_HUD_WIDGETS` names the widgets on `hud`.
 - `SpiriCamera run` serves its cameras over RTSP, on `SPIRICAMERA_RTSP_PORT` (8554) and four
