@@ -11,6 +11,7 @@ import typer
 from loguru import logger
 from SpiriSynq.example_types.position import Pose
 from SpiriSynq.link import Link
+from SpiriSynq.session import current_session
 
 from SpiriCamera import __version__
 from SpiriCamera.camera import Camera, CameraError
@@ -79,13 +80,28 @@ def _set_lens(cam: Camera) -> None:
         raise typer.Exit(1) from exc
 
 
+def _on_this_host(topic: str) -> str:
+    """``topic``, with a leading ``./`` made this host's base topic.
+
+    So one setting (``./robot_gimbal1``) serves every robot. Expanded here,
+    once: a link must be absolute, and a widget's topic is synced as it is
+    written, so a peer would read ``./`` as its own host.
+
+    Raises
+    ------
+    ValueError
+        If ``topic`` has ``.`` or ``..`` anywhere else.
+    """
+    return current_session.get().resolve_topic(topic)
+
+
 def _set_mount(cam: Camera) -> None:
     """Mount the camera on what its settings name, or exit if that isn't a topic."""
     relative_to = get_settings().relative_to
     if not relative_to:
         return
     try:
-        cam.relative_to, cam.mount = Link(relative_to), Pose()
+        cam.relative_to, cam.mount = Link(_on_this_host(relative_to)), Pose()
     except ValueError as exc:
         typer.echo(f"Error: SPIRICAMERA_RELATIVE_TO: {exc}", err=True)
         raise typer.Exit(1) from exc
@@ -183,7 +199,11 @@ def run(source: SourceArgument = "") -> None:
     )
     # A new camera has no widgets, so the HUD's are named on it at each start.
     for widget in settings.hud_widgets.replace(",", " ").split():
-        hud.overlay_widgets[widget] = {}
+        try:
+            hud.overlay_widgets[_on_this_host(widget)] = {}
+        except ValueError as exc:
+            typer.echo(f"Error: SPIRICAMERA_HUD_WIDGETS: {exc}", err=True)
+            raise typer.Exit(1) from exc
     preview = Camera(
         source=upstream,
         quality=PREVIEW_QUALITY,

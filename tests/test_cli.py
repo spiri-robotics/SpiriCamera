@@ -115,6 +115,34 @@ class TestRun:
         assert made["cameras/1/raw"]["overlay_widgets"] == {}
         assert made["cameras/1/preview"]["overlay_widgets"] == {}
 
+    def test_hud_widgets_on_this_host(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """./ is this host's base topic, written out so a peer reads the same topic."""
+        from SpiriSynq.session import current_session
+
+        monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)
+        monkeypatch.setenv("SPIRICAMERA_HUD_WIDGETS", "./hud/widgets/horizon")
+        made = self._topics(monkeypatch)
+        base = current_session.get().base_topic
+        assert set(made["cameras/1/hud"]["overlay_widgets"]) == {f"{base}/hud/widgets/horizon"}
+
+    def test_mounts_on_a_gimbal_on_this_host(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """RELATIVE_TO=./robot_gimbal1 links to this host's gimbal, written out in full."""
+        from SpiriSynq.session import current_session
+
+        from SpiriCamera import cli
+
+        monkeypatch.setenv("SPIRICAMERA_RELATIVE_TO", "./robot_gimbal1")
+
+        class Mountable:
+            relative_to = None
+            mount = None
+
+        cam = Mountable()
+        cli._set_mount(cam)  # type: ignore[arg-type]
+
+        assert cam.relative_to is not None
+        assert cam.relative_to.topic == f"{current_session.get().base_topic}/robot_gimbal1"
+
     def test_camera_name_is_text(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """SPIRICAMERA_CAMERA_NAME names the camera among the host's."""
         monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)

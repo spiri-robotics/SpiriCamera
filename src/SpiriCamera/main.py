@@ -57,8 +57,10 @@ class Settings(BaseSettings):
     hud_widgets : str
         The overlay widgets ``SpiriCamera run`` draws on ``cameras/<name>/hud``,
         by SpiriSynq topic, separated by spaces or commas
-        (``mu-1/hud/widgets/horizon mu-1/robot_home_hud``).  A widget shows
-        once its publisher has published it.  Empty draws none.
+        (``mu-1/hud/widgets/horizon mu-1/robot_home_hud``).  A leading
+        ``./`` is this host's base topic, so ``./hud/widgets/horizon``
+        names this robot's own.  A widget shows once its publisher has
+        published it.  Empty draws none.
     topic : str
         Overrides ``cameras/<camera_name>``, the topic the three cameras sit
         under; empty uses it.
@@ -81,7 +83,8 @@ class Settings(BaseSettings):
         The image size ``fx``... were measured at.
     relative_to : str
         The SpiriSynq topic of what the camera is mounted on, a gimbal's
-        (``mu-1/robot_gimbal1``), so the camera has a pose and looks
+        (``mu-1/robot_gimbal1``, or ``./robot_gimbal1`` for this host's),
+        so the camera has a pose and looks
         where it does.  Mounted with no offset and the same axes; set
         ``mount`` over SpiriSynq for any other mounting.  Empty leaves
         the camera unplaced, unless its source places it (a

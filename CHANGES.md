@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Features
+
+- `SPIRICAMERA_RELATIVE_TO` and `SPIRICAMERA_HUD_WIDGETS` take `./` for this host's base topic,
+  so one setting, `./robot_gimbal1` or `./hud/widgets/horizon`, serves every robot. `run`
+  writes the topic out in full, since a link must be absolute and a peer would read `./` as its
+  own host. The `camera-ingress` app passes `RELATIVE_TO` through.
+
 ### Fixes
 
 - A camera reading an RTSP stream no longer falls seconds behind it. The capture loop paced

@@ -27,7 +27,11 @@ services:
       # camera on this robot another name.
       - SPIRICAMERA_CAMERA_NAME=${CAMERA_NAME:-1}
       # The widgets drawn on cameras/<name>/hud, by topic, separated by spaces.
+      # ./ is this host's: ./hud/widgets/horizon is spirimav's horizon.
       - SPIRICAMERA_HUD_WIDGETS=${HUD_WIDGETS:-}
+      # What the camera is mounted on, by topic, so it has a pose: spirimav's
+      # gimbal is ./robot_gimbal1. Empty leaves it unplaced.
+      - SPIRICAMERA_RELATIVE_TO=${RELATIVE_TO:-}
       - SPIRICAMERA_QUALITY=${QUALITY:-80}
       - SPIRICAMERA_FRAME_WIDTH=${FRAME_WIDTH:-1920}
       - SPIRICAMERA_FRAME_HEIGHT=${FRAME_HEIGHT:-1080}
