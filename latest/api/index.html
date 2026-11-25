@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6.2.1. SpiriCamera.camera" href="SpiriCamera.camera.html"><link rel="prev" title="5. Tutorial: YOLO detection boxes as a live overlay" href="../tutorials/yolo_overlay.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10.2.1. SpiriCamera.camera" href="SpiriCamera.camera.html"><link rel="prev" title="9. Tutorial: YOLO detection boxes as a live overlay" href="../tutorials/yolo_overlay.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/index.html">
         <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>6. API Reference - SpiriCamera</title>
+        <title>10. API Reference - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,10 +315,10 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="api-reference">
-<span id="id1"></span><h1><span class="section-number">6. </span>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">10. </span>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
 <p>The SpiriCamera package provides camera functionality for video capture and frame processing, built into the SpiriSynq ecosystem.</p>
 <section id="classes">
-<h2><span class="section-number">6.1. </span>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.1. </span>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <p>SpiriCamera — Work with Cameras in SpiriSynq.</p>
 <dl class="py class">
 <dt class="sig sig-object py">
@@ -321,14 +327,16 @@
 <p>A live camera: resolves a source, captures frames, publishes them.</p>
 <p>Usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"/dev/video0"</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">85</span><span class="p">)</span>
-<span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>                 <span class="c1"># begins the background capture thread</span>
-<span class="n">frame_bytes</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span>     <span class="c1"># whatever it has captured so far</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>                 <span class="c1"># describes itself, then waits for demand</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>   <span class="c1"># opens the source and starts capturing</span>
+<span class="n">frame_bytes</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>or as a context manager, which starts on entry and stops on exit:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"testimage://"</span><span class="p">,</span> <span class="n">max_width</span><span class="o">=</span><span class="mi">1280</span><span class="p">,</span> <span class="n">max_height</span><span class="o">=</span><span class="mi">720</span><span class="p">)</span> <span class="k">as</span> <span class="n">cam</span><span class="p">:</span>
-    <span class="n">frame_bytes</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
+    <span class="n">frame_bytes</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span>
 </pre></div>
 </div>
 <p>Treat a running <code class="docutils literal notranslate"><span class="pre">Camera</span></code> like a small daemon, not a handle to poll
@@ -343,16 +351,23 @@ long-running.</p>
 <p>This is the <em>authoritative</em> role: actually owning and driving a
 device. Code that merely wants another process’s frames should not
 construct a second <code class="docutils literal notranslate"><span class="pre">Camera</span></code> this way — it should mirror the
-existing one with <code class="xref py py-meth docutils literal notranslate"><span class="pre">from_topic()</span></code> and either poll
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code> or connect to its psygnal event
-(<code class="docutils literal notranslate"><span class="pre">cam.events.image.connect(...)</span></code>); see the “Consuming an existing
-camera” section of the getting-started guide.</p>
-<p>While running, a background thread captures at
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">max_framerate</span></code> and assigns each encoded frame
-to <code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code>, which publishes it to SpiriSynq.
-Settings are live: changing <code class="docutils literal notranslate"><span class="pre">max_width</span></code>, <code class="docutils literal notranslate"><span class="pre">quality</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">max_framerate</span></code> — locally or from a remote peer — takes effect on
-the next frame without a restart.</p>
+existing one with <code class="xref py py-meth docutils literal notranslate"><span class="pre">from_topic()</span></code>, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">transport_jpeg_subscribe()</span></code>, and either poll
+<code class="docutils literal notranslate"><span class="pre">transport_jpeg.data</span></code> or connect to its psygnal event
+(<code class="docutils literal notranslate"><span class="pre">cam.transport_jpeg.data_changed.connect(...)</span></code>); see the “Consuming
+an existing camera” section of the getting-started guide.</p>
+<p>A started camera isn’t necessarily running.  It opens its source once
+to publish what it is (capabilities, identity, lens), then closes it
+until something subscribes to one of its transports.  While something
+does, a background thread captures at
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">max_framerate</span></code>, resizes each frame, draws
+widgets on it, assigns it to <code class="docutils literal notranslate"><span class="pre">transport_raw.data</span></code>, and encodes it
+to <code class="docutils literal notranslate"><span class="pre">transport_jpeg.data</span></code> if anything wants that.  When the last
+subscriber leaves, the source closes again.  <code class="xref py py-meth docutils literal notranslate"><span class="pre">stop()</span></code> is the
+local way to switch it off whatever anyone wants, and nothing remote
+can do that.  Settings are live: changing <code class="docutils literal notranslate"><span class="pre">max_width</span></code>,
+<code class="docutils literal notranslate"><span class="pre">transport_jpeg.quality</span></code>, or <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code> — locally or from a
+remote peer — takes effect on the next frame without a restart.</p>
 <p>An unusable source is not fatal.  Construction never raises for a
 bad source string; the reason lands in <code class="docutils literal notranslate"><span class="pre">camera.source.error</span></code> and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code> is what refuses.  This keeps the camera bindable to
@@ -373,6 +388,202 @@ a live-edited input field.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">sync</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Join SpiriSynq, plus the <code class="docutils literal notranslate"><span class="pre">&#64;data</span></code> keys its wildcards don’t reach.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_jpeg_subscribe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_jpeg_subscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Select the JPEG transport: receive its frames here.</p>
+<p>A mirror gets frames in <code class="docutils literal notranslate"><span class="pre">transport_jpeg.data</span></code>, the first one at
+the camera’s next tick.  A subscriber anywhere,
+including here on the camera itself, is what makes a started camera
+run; connecting to <code class="docutils literal notranslate"><span class="pre">transport_jpeg.data_changed</span></code> alone doesn’t.</p>
+<p>Subscribing again is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_jpeg_unsubscribe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_jpeg_unsubscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Stop receiving JPEG frames here; a mirror forgets the last one.</p>
+<p>Unsubscribing when not subscribed is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_raw_subscribe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_raw_subscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Select the raw transport: receive its frames here.</p>
+<p>As <code class="xref py py-meth docutils literal notranslate"><span class="pre">transport_jpeg_subscribe()</span></code>, with <code class="docutils literal notranslate"><span class="pre">transport_raw.data</span></code>.
+Raw frames are large, about 186 MB/s at 1080p30, so a mirror on the
+far side of a slow link wants a different transport.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_raw_unsubscribe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_raw_unsubscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Stop receiving raw frames here; a mirror forgets the last one.</p>
+<p>Unsubscribing when not subscribed is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_raw_hold</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_raw_hold"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Want raw frames for a consumer in this process, such as an encoder.</p>
+<p>Any number can hold at once, and each one keeps the camera running
+until it calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">transport_raw_release()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_raw_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_raw_release"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Undo one <code class="xref py py-meth docutils literal notranslate"><span class="pre">transport_raw_hold()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video_subscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyframes_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_video_subscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Select the video transport: receive it through <code class="docutils literal notranslate"><span class="pre">packet_received</span></code>.</p>
+<p>Packets arrive in decodable order; see
+<a class="reference internal" href="SpiriCamera.transports.html#SpiriCamera.transports.VideoSync" title="SpiriCamera.transports.VideoSync"><code class="xref py py-class docutils literal notranslate"><span class="pre">VideoSync</span></code></a>.  This node reports its
+loss to the camera, whose one encode suits the worst subscriber.</p>
+<section id="parameters">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>keyframes_only<span class="classifier">bool</span></dt><dd><p>Take only <code class="docutils literal notranslate"><span class="pre">&#64;data_keyframe</span></code>: one frame per
+<code class="docutils literal notranslate"><span class="pre">keyframe_interval</span></code>, for very little bandwidth.</p>
+</dd>
+</dl>
+<p>Subscribing again is a no-op.</p>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keyframes_only</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video_unsubscribe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_video_unsubscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Stop receiving video here, and leave the camera’s rate control.</p>
+<p>Unsubscribing when not subscribed is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video_hold</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_video_hold"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Want video for a consumer in this process, such as an RTSP session.</p>
+<p>Each hold keeps the camera running and encoding until it calls
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">transport_video_release()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_video_release"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Undo one <code class="xref py py-meth docutils literal notranslate"><span class="pre">transport_video_hold()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video_request_keyframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_video_request_keyframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Make the camera’s next frame a keyframe, from this process or a mirror.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscriber</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction_lost</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bitrate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_video_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Report one consumer’s link to the camera’s rate control, in this process.</p>
+<p>What a consumer that isn’t subscribing over SpiriSynq calls instead:
+an endpoint with a link of its own to report on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subscriber</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>fraction_lost</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>max_bitrate</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video_forget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscriber</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.transport_video_forget"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Take a consumer that has left out of the camera’s rate control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subscriber</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handler</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="SpiriCamera.sources.html#SpiriCamera.sources.SourceBase" title="SpiriCamera.sources.base.SourceBase"><span class="pre">SourceBase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></dt>
@@ -382,26 +593,29 @@ a live-edited input field.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Open the source and begin capturing.</p>
-<p>Starting an already-running camera is a no-op.</p>
-<section id="parameters">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
+<dd><p>Start the camera: it runs whenever something wants its frames.</p>
+<p>Opens the source once to publish what it is, and leaves the rest to
+the capture thread, which closes it again unless something is
+subscribed.  Starting an already-started camera is a no-op.</p>
+<section id="id1">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>background<span class="classifier">bool</span></dt><dd><p>Whether to run a capture thread.  With <code class="docutils literal notranslate"><span class="pre">False</span></code> the camera
-opens but captures nothing until the caller drives
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code> — useful for scripted, frame-at-a-time use.</p>
+opens, stays open, and captures nothing until the caller drives
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code>, whoever is subscribed — useful for scripted,
+frame-at-a-time use.</p>
 </dd>
 </dl>
 <p>A source that resolves but will not open yet – a device that is
 not plugged in, a <code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> topic nobody publishes yet –
 does not stop a background camera from starting.  It starts
-<em>waiting</em>: <code class="docutils literal notranslate"><span class="pre">running</span></code> is true, <code class="xref py py-attr docutils literal notranslate"><span class="pre">status</span></code>
-reads <code class="docutils literal notranslate"><span class="pre">&quot;waiting</span> <span class="pre">for</span> <span class="pre">source:</span> <span class="pre">&lt;reason&gt;&quot;</span></code>, and the capture thread
-keeps trying to open the source until it works.  The same
-happens if the source is lost while running.</p>
+<em>waiting</em>: <code class="xref py py-attr docutils literal notranslate"><span class="pre">status</span></code> reads
+<code class="docutils literal notranslate"><span class="pre">&quot;waiting</span> <span class="pre">for</span> <span class="pre">source:</span> <span class="pre">&lt;reason&gt;&quot;</span></code>, and the capture thread keeps
+trying to open the source until it works.  The same happens if the
+source is lost while running.</p>
 </section>
 <section id="raises">
-<h3><span class="section-number">6. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">10. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>CameraError</dt><dd><p>If the source string could not be resolved, or – only with
 <code class="docutils literal notranslate"><span class="pre">background=False</span></code>, where no thread is left to wait – the
@@ -446,43 +660,6 @@ joined.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">webrtc_offer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'offer'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.webrtc_offer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Negotiate a WebRTC session publishing this camera’s frames.</p>
-<p>The zenoh-native counterpart to <a class="reference internal" href="SpiriCamera.whep.html#module-SpiriCamera.whep" title="SpiriCamera.whep"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.whep</span></code></a>’s
-HTTP route: both end up in
-<a class="reference internal" href="SpiriCamera.webrtc.html#SpiriCamera.webrtc.negotiate_sync" title="SpiriCamera.webrtc.negotiate_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">SpiriCamera.webrtc.negotiate_sync()</span></code></a>, so a viewer
-reached either way gets the same video track and tags channel.</p>
-<section id="id1">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
-<dl class="simple">
-<dt>sdp<span class="classifier">str</span></dt><dd><p>The remote peer’s SDP offer.</p>
-</dd>
-<dt>type<span class="classifier">str</span></dt><dd><p>The offer’s SDP type, almost always <code class="docutils literal notranslate"><span class="pre">&quot;offer&quot;</span></code>.</p>
-</dd>
-</dl>
-</section>
-<section id="returns">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h3>
-<dl class="simple">
-<dt>dict[str, str]</dt><dd><p><code class="docutils literal notranslate"><span class="pre">{&quot;session_id&quot;:</span> <span class="pre">...,</span> <span class="pre">&quot;sdp&quot;:</span> <span class="pre">...,</span> <span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;answer&quot;}</span></code>.</p>
-</dd>
-</dl>
-</section>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sdp</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
-<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)">dict</a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">set_intrinsics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hfov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vfov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.set_intrinsics"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Report this camera’s lens, as <em>origin</em> knows it.</p>
 <p>Either a full pinhole model – <code class="docutils literal notranslate"><span class="pre">width</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">fx</span></code> and
@@ -495,7 +672,7 @@ highest in <code class="xref py py-data docutils literal notranslate"><span clas
 <p>Plain numbers rather than an <code class="xref py py-class docutils literal notranslate"><span class="pre">Intrinsics</span></code>, so a peer
 that doesn’t have this package (SpiriMav) can call it.</p>
 <section id="id2">
-<h3><span class="section-number">6. </span>Raises<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">10. </span>Raises<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>ValueError</dt><dd><p>For an unknown origin, or numbers that aren’t a lens.</p>
 </dd>
@@ -542,8 +719,8 @@ that doesn’t have this package (SpiriMav) can call it.</p>
 <p>Values arriving from UI bindings or remote peers may be floats or
 <code class="docutils literal notranslate"><span class="pre">None</span></code>; they are coerced to positive integers here so sources
 can trust what they are given.</p>
-<section id="id3">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<section id="returns">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>CaptureSettings</dt><dd><p>The settings to hand to the source.</p>
 </dd>
@@ -560,8 +737,8 @@ can trust what they are given.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">describe_capabilities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.describe_capabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Summarise what the source reported, for logs and the CLI.</p>
-<section id="id4">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<section id="id3">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>str</dt><dd><p>Something like <code class="docutils literal notranslate"><span class="pre">1920x1080</span> <span class="pre">&#64;</span> <span class="pre">30fps</span></code>.  Sources that render
 at whatever size they are asked for report no fixed limits,
@@ -580,15 +757,15 @@ and are described as <code class="docutils literal notranslate"><span class="pre
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">read_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.read_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Grab one raw frame from the source.</p>
-<section id="id5">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<section id="id4">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>np.ndarray | None</dt><dd><p>A BGR frame, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the source had nothing new.</p>
 </dd>
 </dl>
 </section>
-<section id="id6">
-<h3><span class="section-number">6. </span>Raises<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<section id="id5">
+<h3><span class="section-number">10. </span>Raises<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>CameraNotStartedError</dt><dd><p>If the camera is not running.</p>
 </dd>
@@ -607,22 +784,22 @@ and are described as <code class="docutils literal notranslate"><span class="pre
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Capture, encode, and publish a single frame.</p>
-<p>The encoded frame is tagged, then assigned to
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code>, which is what publishes it to
-SpiriSynq.  Assigning is also what fills in
+<p>Always encodes: the caller asked for the bytes.  The encoded frame
+is tagged, then assigned to <code class="docutils literal notranslate"><span class="pre">transport_jpeg.data</span></code>, which is what
+publishes it.  Assigning is also what fills in
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">received_width</span></code> and the rest, since those
 are read back out of the frame rather than measured here.</p>
-<section id="id7">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<section id="id6">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
 <dl class="simple">
-<dt>bytes</dt><dd><p>The encoded frame, in <code class="xref py py-attr docutils literal notranslate"><span class="pre">mimetype</span></code> format.
-If the source had no new frame, the previous one is returned
+<dt>bytes</dt><dd><p>The encoded frame, in <code class="docutils literal notranslate"><span class="pre">transport_jpeg.mimetype</span></code> format.  If
+the source had no new frame, the previous one is returned
 unchanged.</p>
 </dd>
 </dl>
 </section>
-<section id="id8">
-<h3><span class="section-number">6. </span>Raises<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<section id="id7">
+<h3><span class="section-number">10. </span>Raises<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>CameraNotStartedError</dt><dd><p>If the camera is not running.</p>
 </dd>
@@ -640,18 +817,17 @@ unchanged.</p>
 <dl class="py property">
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">exif_tags</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></dt>
-<dd><p>The tags on the current <code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code>.</p>
-<p>Read back out of the frame itself rather than stored, so this is
-never out of step with what is actually on screen — on the
-authoritative node or on any mirror, since both learn it the
-same way, from <code class="xref py py-meth docutils literal notranslate"><span class="pre">_on_image_changed()</span></code>.</p>
+<dd><p>The tags on the current frame.</p>
+<p>The camera has the tags it built.  A mirror reads them back out of
+each frame it receives, so they are never out of step with what is
+on screen, and has none until it subscribes to a transport.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">exif_timestamp</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span></dt>
-<dd><p>Unix timestamp the current <code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code> was
-captured at, or <code class="docutils literal notranslate"><span class="pre">0.0</span></code> if it carried none.</p>
+<dd><p>Unix timestamp the current frame was captured at, or <code class="docutils literal notranslate"><span class="pre">0.0</span></code>
+if it carried none.</p>
 <p>Set by whichever node took the frame, so comparing it against a
 local clock is only as good as the agreement between the two.</p>
 </dd></dl>
@@ -665,8 +841,8 @@ the same camera’s frames without stepping on each other: each
 provider owns its own bucket, keyed by <code class="docutils literal notranslate"><span class="pre">provider</span></code>, and setting
 one never touches another’s.  Call it again with the same
 <code class="docutils literal notranslate"><span class="pre">provider</span></code> to replace what it set before.</p>
-<section id="id9">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<section id="id8">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>provider<span class="classifier">str</span></dt><dd><p>A name identifying who is setting these tags — your module
 or component name is a reasonable choice.  Two providers
@@ -700,8 +876,8 @@ omitting <code class="docutils literal notranslate"><span class="pre">source</sp
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">exif_clear_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.exif_clear_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Remove everything <code class="docutils literal notranslate"><span class="pre">provider</span></code> has set, and nothing else.</p>
-<section id="id10">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<section id="id9">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>provider<span class="classifier">str</span></dt><dd><p>The same name passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">exif_set_tags()</span></code>.  Clearing a
 provider that never set anything is not an error.</p>
@@ -722,8 +898,8 @@ provider that never set anything is not an error.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">exif_tag_providers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#Camera.exif_tag_providers"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Names of the providers currently contributing custom tags.</p>
-<section id="id11">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<section id="id10">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>frozenset[str]</dt><dd><p>Provider names with at least one tag set right now.  Does
 not include the built-in tags <code class="xref py py-meth docutils literal notranslate"><span class="pre">exif_tags_for_frame()</span></code>
@@ -748,8 +924,8 @@ callers doing this concurrently still share this one bucket by
 construction and can still overwrite each other; once that
 matters, give each caller its own name and use
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">exif_set_tags()</span></code> instead.</p>
-<section id="id12">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<section id="id11">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>**tags<span class="classifier">str</span></dt><dd><p>Tags to add or replace in the default bucket.  A value of
 <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> drops that one tag from the default bucket, leaving
@@ -794,15 +970,15 @@ rather than relying on.</p>
 states them, and <code class="xref py py-meth docutils literal notranslate"><span class="pre">_on_image_changed()</span></code> reads them from
 there.  A tag saying something the container also says is a tag
 that can disagree with it.</p>
-<section id="id13">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<section id="id12">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>frame<span class="classifier">np.ndarray</span></dt><dd><p>The raw BGR frame about to be encoded.</p>
 </dd>
 </dl>
 </section>
-<section id="id14">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<section id="id13">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>dict[str, str]</dt><dd><p>Tags to embed.  Empty means embed nothing.</p>
 </dd>
@@ -822,7 +998,7 @@ that can disagree with it.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.</span></span><span class="sig-name descname"><span class="pre">CameraBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">synq_topic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_base_topic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_authoritive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_lazy_publish</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_publish</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_receive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_auto_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_check_receive_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_auto_rehydrate_on_missing_parent_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_mtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_is_deleted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_synq_callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_synq_last_rehydrate_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_subscriber</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_pose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_live</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_widgets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_client_render</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vendor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serial_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrinsics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1920</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mimetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'image/jpeg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exif_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_exif_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_exif_timestamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_received_frame_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">running</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'stopped'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#CameraBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.</span></span><span class="sig-name descname"><span class="pre">CameraBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">synq_topic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_base_topic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_authoritive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_lazy_publish</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_publish</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_receive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_auto_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_check_receive_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_auto_rehydrate_on_missing_parent_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_mtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synq_is_deleted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_synq_callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_synq_last_rehydrate_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_subscriber</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_pose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_live</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_parent_generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_widgets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_client_render</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vendor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serial_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_supported_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrinsics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">received_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1920</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_framerate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transport_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transport_jpeg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transport_video</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exif_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_exif_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_exif_timestamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_received_frame_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">running</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'stopped'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/camera.html#CameraBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="SpiriCamera.overlay.html#SpiriCamera.overlay.OverlayMixin" title="SpiriCamera.overlay.OverlayMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OverlayMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Position</span></code></p>
 <p>The network-transparent half of a camera.</p>
 <p>Every field here is published over SpiriSynq and can be set by a
@@ -849,10 +1025,14 @@ everything else here — nothing in SpiriSynq is truly read-only —
 though a value set by hand does not reconfigure the device and
 is overwritten the next time the source opens.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">max_width</span></code> / <code class="docutils literal notranslate"><span class="pre">max_height</span></code> / <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code> / <code class="docutils literal notranslate"><span class="pre">quality</span></code> / <code class="docutils literal notranslate"><span class="pre">mimetype</span></code> / <code class="docutils literal notranslate"><span class="pre">exif_enabled</span></code></dt><dd><p>The requested capture and encoding settings.  These are live:
-changing them takes effect on the next frame.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">max_width</span></code> / <code class="docutils literal notranslate"><span class="pre">max_height</span></code> / <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code> / <code class="docutils literal notranslate"><span class="pre">exif_enabled</span></code></dt><dd><p>The requested capture settings.  These are live: changing them
+takes effect on the next frame.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">received_*</span></code> / <code class="docutils literal notranslate"><span class="pre">_exif_tags</span></code> / <code class="docutils literal notranslate"><span class="pre">_exif_timestamp</span></code></dt><dd><p>What the current <code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code> turned out to be.  See
+<dt><code class="docutils literal notranslate"><span class="pre">transport_raw</span></code> / <code class="docutils literal notranslate"><span class="pre">transport_jpeg</span></code> / <code class="docutils literal notranslate"><span class="pre">transport_video</span></code></dt><dd><p>The transports: their settings, and the frames themselves, which
+only reach a node that subscribes to them.  See
+<a class="reference internal" href="SpiriCamera.transports.html#module-SpiriCamera.transports" title="SpiriCamera.transports"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.transports</span></code></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">received_*</span></code> / <code class="docutils literal notranslate"><span class="pre">_exif_tags</span></code> / <code class="docutils literal notranslate"><span class="pre">_exif_timestamp</span></code></dt><dd><p>What the current frame turned out to be.  See
 <code class="xref py py-data docutils literal notranslate"><span class="pre">synq_skip_sync</span></code> and the note below — none of this
 group goes over the wire as a field of its own.</p>
 </dd>
@@ -860,7 +1040,7 @@ group goes over the wire as a field of its own.</p>
 <p>Tags themselves are not a synced field at all.  A caller adds them
 through <code class="xref py py-meth docutils literal notranslate"><span class="pre">Camera.exif_set_tags()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">Camera.exif_update()</span></code>
 and reads them back from <code class="xref py py-attr docutils literal notranslate"><span class="pre">Camera.exif_tags</span></code>, which is
-recomputed from <code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code> rather than stored and sent.</p>
+computed per frame rather than stored and sent.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">received_*</span></code> and the two <code class="docutils literal notranslate"><span class="pre">_exif_*</span></code> fields describe one
@@ -870,9 +1050,10 @@ nothing about two of them arriving together or in order, so a
 width published beside an image is a width a peer can read
 against the wrong image.  They are instead written <em>into</em> the
 encoded frame by <a class="reference internal" href="SpiriCamera.exif.html#module-SpiriCamera.exif" title="SpiriCamera.exif"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.exif</span></code></a> and read back out of
-it, on the authoritative node and on every mirror alike, by
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">Camera._on_image_changed()</span></code>.  A mirror therefore fills
-these in for itself and stays exact by construction.</p>
+it by <code class="xref py py-meth docutils literal notranslate"><span class="pre">Camera._on_image_changed()</span></code>.  A mirror therefore
+fills these in for itself and stays exact by construction, and
+has none of them until it subscribes to a transport.  The camera
+itself takes them from the frame it captured.</p>
 <p>The two <code class="docutils literal notranslate"><span class="pre">_exif_*</span></code> fields carry a leading underscore <em>and</em> sit in
 <code class="docutils literal notranslate"><span class="pre">synq_skip_sync</span></code>: the underscore is what actually keeps them off
 the wire and out of a full rehydrate (SpiriSynq excludes any field
@@ -897,18 +1078,20 @@ value and watch what downstream does with it is a debugging
 feature worth keeping.</p>
 </div>
 <section id="attributes">
-<h3><span class="section-number">6. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h3>
+<h3><span class="section-number">10. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>Requested source URL.  Assigning to it retargets the camera.</p>
 </dd>
 <dt>source<span class="classifier">SourceInfo</span></dt><dd><p>Resolved description of <code class="xref py py-attr docutils literal notranslate"><span class="pre">source_str</span></code>.</p>
 </dd>
-<dt>running<span class="classifier">bool</span></dt><dd><p>Whether the camera is started: capturing, or waiting for a
-source that will not open yet.  Assigning to it starts or stops
-the camera, including from a remote peer.</p>
+<dt>running<span class="classifier">bool</span></dt><dd><p>Whether the camera is capturing, or waiting for a source that will
+not open yet, because something wants its frames.  Set by the
+camera, from whether its transports have subscribers: a value
+written by anything else is overwritten almost at once.</p>
 </dd>
 <dt>status<span class="classifier">str</span></dt><dd><p>What the camera is doing, in words: <code class="xref py py-data docutils literal notranslate"><span class="pre">STATUS_RUNNING</span></code>,
-<code class="xref py py-data docutils literal notranslate"><span class="pre">STATUS_STOPPED</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;&lt;STATUS_WAITING&gt;:</span> <span class="pre">&lt;reason&gt;&quot;</span></code> for
+<code class="xref py py-data docutils literal notranslate"><span class="pre">STATUS_IDLE</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">STATUS_STOPPED</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;&lt;STATUS_WAITING&gt;:</span> <span class="pre">&lt;reason&gt;&quot;</span></code> for
 a started camera whose device or upstream topic is not there
 (yet, or any more), or the reason it is not running — a source
 string that would not resolve, or a capture that keeps failing.
@@ -916,9 +1099,12 @@ string that would not resolve, or a capture that keeps failing.
 whether frames are actually flowing, and why not when they are
 not.</p>
 </dd>
-<dt>image<span class="classifier">bytes</span></dt><dd><p>The most recent encoded frame, in <code class="xref py py-attr docutils literal notranslate"><span class="pre">mimetype</span></code> format,
-carrying that frame’s tags in its EXIF; see
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">Camera.exif_tags_for_frame()</span></code>.</p>
+<dt>transport_raw<span class="classifier">TransportRaw</span></dt><dd><p>The raw transport; see <a class="reference internal" href="SpiriCamera.transports.html#module-SpiriCamera.transports" title="SpiriCamera.transports"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.transports</span></code></a>.</p>
+</dd>
+<dt>transport_jpeg<span class="classifier">TransportJpeg</span></dt><dd><p>The JPEG transport; see <a class="reference internal" href="SpiriCamera.transports.html#module-SpiriCamera.transports" title="SpiriCamera.transports"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.transports</span></code></a>.</p>
+</dd>
+<dt>transport_video<span class="classifier">TransportVideo</span></dt><dd><p>The video transport, the camera’s one encode; see
+<a class="reference internal" href="SpiriCamera.transports.html#module-SpiriCamera.transports" title="SpiriCamera.transports"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.transports</span></code></a>.</p>
 </dd>
 <dt>exif_enabled<span class="classifier">bool</span></dt><dd><p>Whether to tag encoded frames at all.  Turning it off gives byte
 identical frames for an unchanging scene, which psygnal then
@@ -934,9 +1120,9 @@ the source’s native one where known; scale it to
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">synq_skip_sync</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'received_framerate',</span> <span class="pre">'received_height',</span> <span class="pre">'received_ratio',</span> <span class="pre">'received_width'}</span></span></dt>
 <dd><p>Fields excluded from SpiriSynq, on top of the base class’s own.</p>
-<p>Every one of these describes the current <code class="xref py py-attr docutils literal notranslate"><span class="pre">image</span></code> – either
-derived from its bytes directly, or (<code class="docutils literal notranslate"><span class="pre">received_framerate</span></code>) from
-the local wall-clock gap since the previous one – and is computed
+<p>Every one of these describes the current frame – either derived
+from it directly, or (<code class="docutils literal notranslate"><span class="pre">received_framerate</span></code>) from the local
+wall-clock gap since the previous one – and is computed
 fresh wherever it is needed.  Publishing it separately would let a
 peer pair an observation with the wrong frame, or with a framerate
 measured against a different network path than its own; see the
@@ -1026,12 +1212,17 @@ an entry here — their leading underscore already excludes them.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">quality</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80</span></span></dt>
+<span class="sig-name descname"><span class="pre">transport_raw</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="SpiriCamera.transports.html#SpiriCamera.transports.TransportRaw" title="SpiriCamera.transports.TransportRaw"><span class="pre">TransportRaw</span></a></span></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">mimetype</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'image/jpeg'</span></span></dt>
+<span class="sig-name descname"><span class="pre">transport_jpeg</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="SpiriCamera.transports.html#SpiriCamera.transports.TransportJpeg" title="SpiriCamera.transports.TransportJpeg"><span class="pre">TransportJpeg</span></a></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transport_video</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo" title="SpiriCamera.transports.TransportVideo"><span class="pre">TransportVideo</span></a></span></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1047,11 +1238,6 @@ an entry here — their leading underscore already excludes them.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">status</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'stopped'</span></span></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b''</span></span></dt>
 <dd></dd></dl>
 
 </section>
@@ -1097,15 +1283,15 @@ an entry here — their leading underscore already excludes them.</p>
 <li><p><strong>max_width</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
 <li><p><strong>max_height</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
 <li><p><strong>max_framerate</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
-<li><p><strong>quality</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
-<li><p><strong>mimetype</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>transport_raw</strong> (<a class="reference internal" href="SpiriCamera.transports.html#SpiriCamera.transports.TransportRaw" title="SpiriCamera.transports.TransportRaw"><em>TransportRaw</em></a>)</p></li>
+<li><p><strong>transport_jpeg</strong> (<a class="reference internal" href="SpiriCamera.transports.html#SpiriCamera.transports.TransportJpeg" title="SpiriCamera.transports.TransportJpeg"><em>TransportJpeg</em></a>)</p></li>
+<li><p><strong>transport_video</strong> (<a class="reference internal" href="SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo" title="SpiriCamera.transports.TransportVideo"><em>TransportVideo</em></a>)</p></li>
 <li><p><strong>exif_enabled</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>)</p></li>
 <li><p><strong>_exif_tags</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>]</em>)</p></li>
 <li><p><strong>_exif_timestamp</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
 <li><p><strong>_received_frame_at</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
 <li><p><strong>running</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>)</p></li>
 <li><p><strong>status</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
-<li><p><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><em>bytes</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1143,8 +1329,8 @@ a promise no source makes.  The names also match the
 <a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.CameraBase" title="SpiriCamera.camera.CameraBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CameraBase</span></code></a> fields they are
 copied from, so the two stay greppable together.</p>
 </div>
-<section id="id15">
-<h3><span class="section-number">6. </span>Attributes<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<section id="id14">
+<h3><span class="section-number">10. </span>Attributes<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>max_width<span class="classifier">int</span></dt><dd><p>Largest acceptable frame width in pixels.</p>
 </dd>
@@ -1198,8 +1384,8 @@ another size with the same aspect – a camera asked for a smaller
 the numbers as they are.</p>
 <p>Synced as one value, not field by field, so a peer never sees one
 report’s focal length with another’s size.</p>
-<section id="id16">
-<h3><span class="section-number">6. </span>Attributes<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
+<section id="id15">
+<h3><span class="section-number">10. </span>Attributes<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>width<span class="classifier">int</span></dt><dd><p>Image width the model is in, in pixels.</p>
 </dd>
@@ -1258,8 +1444,8 @@ through SpiriMav).  See <a class="reference internal" href="SpiriCamera.camera.h
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_fov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hfov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vfov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#Intrinsics.from_fov"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>The model of a centred lens with a given field of view.</p>
-<section id="id17">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h4>
+<section id="id16">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>width, height<span class="classifier">int</span></dt><dd><p>Image size to express the model in.</p>
 </dd>
@@ -1347,8 +1533,8 @@ subclass that has been imported.</p>
 implement <code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code>, and
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">is_open</span></code>.  A handler that accepts schemeless strings (such
 as a V4L2 device path) also overrides <code class="xref py py-meth docutils literal notranslate"><span class="pre">handles()</span></code>.</p>
-<section id="id18">
-<h3><span class="section-number">6. </span>Attributes<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
+<section id="id17">
+<h3><span class="section-number">10. </span>Attributes<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>schemes<span class="classifier">ClassVar[tuple[str, …]]</span></dt><dd><p>URL schemes this handler claims, without the <code class="docutils literal notranslate"><span class="pre">://</span></code> separator.</p>
 </dd>
@@ -1364,15 +1550,15 @@ as a V4L2 device path) also overrides <code class="xref py py-meth docutils lite
 <dd><p>Report whether this handler recognises a source URL.</p>
 <p>The default implementation matches <code class="xref py py-attr docutils literal notranslate"><span class="pre">schemes</span></code>.  Override
 to accept schemeless forms.</p>
-<section id="id19">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h4>
+<section id="id18">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>url<span class="classifier">SourceURL</span></dt><dd><p>The parsed source string.</p>
 </dd>
 </dl>
 </section>
-<section id="id20">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h4>
+<section id="id19">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>bool</dt><dd><p>True if this handler can serve the URL.</p>
 </dd>
@@ -1394,22 +1580,22 @@ to accept schemeless forms.</p>
 <dd><p>Instantiate this handler for a source URL it has claimed.</p>
 <p>Override when a handler needs to validate or normalise the
 target before construction.</p>
-<section id="id21">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h4>
+<section id="id20">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>url<span class="classifier">SourceURL</span></dt><dd><p>The parsed source string.</p>
 </dd>
 </dl>
 </section>
-<section id="id22">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h4>
+<section id="id21">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>Self</dt><dd><p>A handler instance, not yet opened.</p>
 </dd>
 </dl>
 </section>
-<section id="id23">
-<h4><span class="section-number">6. </span>Raises<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h4>
+<section id="id22">
+<h4><span class="section-number">10. </span>Raises<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the target is malformed for this scheme.</p>
 </dd>
@@ -1446,8 +1632,8 @@ target before construction.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceBase.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Summarise this source for the camera’s synced state.</p>
-<section id="id24">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h4>
+<section id="id23">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceInfo</dt><dd><p>A network-transparent description of this handler.</p>
 </dd>
@@ -1472,22 +1658,22 @@ target before construction.</p>
 <dd><p>Open the underlying device and negotiate capture settings.</p>
 <p>Calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code> on an already-open source is a no-op that
 re-reports the current capabilities.</p>
-<section id="id25">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h4>
+<section id="id24">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>The resolution and framerate the camera is asking for.</p>
 </dd>
 </dl>
 </section>
-<section id="id26">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h4>
+<section id="id25">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceCapabilities</dt><dd><p>What the source will actually deliver.</p>
 </dd>
 </dl>
 </section>
-<section id="id27">
-<h4><span class="section-number">6. </span>Raises<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h4>
+<section id="id26">
+<h4><span class="section-number">10. </span>Raises<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the device cannot be opened.</p>
 </dd>
@@ -1521,8 +1707,8 @@ re-reports the current capabilities.</p>
 <dd><p>Produce a single frame.</p>
 <p>Handlers return raw pixels; JPEG encoding and publication belong
 to the camera layer.</p>
-<section id="id28">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h4>
+<section id="id27">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>settings<span class="classifier">CaptureSettings</span></dt><dd><p>The resolution and framerate currently requested.  Sources
 that render on demand should honour this on every call so
@@ -1530,8 +1716,8 @@ that live resolution changes take effect.</p>
 </dd>
 </dl>
 </section>
-<section id="id29">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h4>
+<section id="id28">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>np.ndarray | None</dt><dd><p>A BGR frame, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when no new frame is available.
 Returning the <em>same</em> array object on consecutive calls tells
@@ -1540,8 +1726,8 @@ previous encode.</p>
 </dd>
 </dl>
 </section>
-<section id="id30">
-<h4><span class="section-number">6. </span>Raises<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h4>
+<section id="id29">
+<h4><span class="section-number">10. </span>Raises<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source has failed in a way a retry will not fix.</p>
 </dd>
@@ -1566,8 +1752,8 @@ here – another camera’s output, say – so the metadata survives
 being decoded and re-encoded.  The camera merges these under its
 own tags; see
 <a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.Camera.exif_tags_for_frame" title="SpiriCamera.camera.Camera.exif_tags_for_frame"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exif_tags_for_frame()</span></code></a>.</p>
-<section id="id31">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h4>
+<section id="id30">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>dict[str, str]</dt><dd><p>The inherited tags.  The default reports none.</p>
 </dd>
@@ -1587,8 +1773,8 @@ own tags; see
 <p>For sources whose lens can change while open – another camera’s
 output, whose lens zooms – so the camera follows it rather than
 keeping the one <code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code> reported.</p>
-<section id="id32">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h4>
+<section id="id31">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>Intrinsics | None</dt><dd><p>The lens now, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to keep the last one reported.  The
 default keeps what <code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code> said.</p>
@@ -1623,8 +1809,8 @@ device advertises, not a guarantee about any particular frame,
 and they are copied verbatim onto the matching
 <a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.CameraBase" title="SpiriCamera.camera.CameraBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CameraBase</span></code></a> fields.</p>
 </div>
-<section id="id33">
-<h3><span class="section-number">6. </span>Attributes<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h3>
+<section id="id32">
+<h3><span class="section-number">10. </span>Attributes<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>max_supported_width<span class="classifier">int | None</span></dt><dd><p>Largest width the source can deliver, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it renders
 at whatever size it is asked for.</p>
@@ -1724,8 +1910,8 @@ itself.  Empty for a source that is the camera.</p>
 <p>This is the source-shaped half of the camera’s synced state: it
 travels over SpiriSynq so a remote peer can see what a camera is
 pointed at without having to parse the source string itself.</p>
-<section id="id34">
-<h3><span class="section-number">6. </span>Attributes<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h3>
+<section id="id33">
+<h3><span class="section-number">10. </span>Attributes<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>url<span class="classifier">str</span></dt><dd><p>The source string this description was resolved from.</p>
 </dd>
@@ -1768,8 +1954,8 @@ could not be resolved.</p>
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unresolved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceInfo.unresolved"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Build a description for a source string that could not be resolved.</p>
-<section id="id35">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h4>
+<section id="id34">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>url<span class="classifier">str</span></dt><dd><p>The offending source string.</p>
 </dd>
@@ -1777,8 +1963,8 @@ could not be resolved.</p>
 </dd>
 </dl>
 </section>
-<section id="id36">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h4>
+<section id="id35">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceInfo</dt><dd><p>A description carrying only <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code>.</p>
 </dd>
@@ -1805,8 +1991,8 @@ could not be resolved.</p>
 bindings and sync subscriptions attached to this instance
 survive a source change, and only the fields that actually
 changed are published.</p>
-<section id="id37">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h4>
+<section id="id36">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>other<span class="classifier">SourceInfo</span></dt><dd><p>The description to copy from.</p>
 </dd>
@@ -1841,8 +2027,8 @@ changed are published.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.</span></span><span class="sig-name descname"><span class="pre">SourceURL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceURL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A source string split into its scheme and target.</p>
-<section id="id38">
-<h3><span class="section-number">6. </span>Attributes<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h3>
+<section id="id37">
+<h3><span class="section-number">10. </span>Attributes<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>raw<span class="classifier">str</span></dt><dd><p>The original (stripped) source string.</p>
 </dd>
@@ -1871,22 +2057,22 @@ changed are published.</p>
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources/base.html#SourceURL.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Split a source string into scheme and target.</p>
-<section id="id39">
-<h4><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h4>
+<section id="id38">
+<h4><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>The source string to parse.</p>
 </dd>
 </dl>
 </section>
-<section id="id40">
-<h4><span class="section-number">6. </span>Returns<a class="headerlink" href="#id40" title="Link to this heading">¶</a></h4>
+<section id="id39">
+<h4><span class="section-number">10. </span>Returns<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceURL</dt><dd><p>The split representation.</p>
 </dd>
 </dl>
 </section>
-<section id="id41">
-<h4><span class="section-number">6. </span>Raises<a class="headerlink" href="#id41" title="Link to this heading">¶</a></h4>
+<section id="id40">
+<h4><span class="section-number">10. </span>Raises<a class="headerlink" href="#id40" title="Link to this heading">¶</a></h4>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source string is empty or whitespace only.</p>
 </dd>
@@ -1925,22 +2111,22 @@ changed are published.</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.</span></span><span class="sig-name descname"><span class="pre">describe_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#describe_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Resolve a source string and describe it without opening anything.</p>
-<section id="id42">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id42" title="Link to this heading">¶</a></h3>
+<section id="id41">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id41" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>The source string to inspect.</p>
 </dd>
 </dl>
 </section>
-<section id="id43">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id43" title="Link to this heading">¶</a></h3>
+<section id="id42">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id42" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceInfo</dt><dd><p>A network-transparent description of the resolved source.</p>
 </dd>
 </dl>
 </section>
-<section id="id44">
-<h3><span class="section-number">6. </span>Raises<a class="headerlink" href="#id44" title="Link to this heading">¶</a></h3>
+<section id="id43">
+<h3><span class="section-number">10. </span>Raises<a class="headerlink" href="#id43" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source string cannot be resolved.</p>
 </dd>
@@ -1960,8 +2146,8 @@ changed are published.</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.</span></span><span class="sig-name descname"><span class="pre">known_schemes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#known_schemes"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>List the URL schemes the registered handlers claim.</p>
-<section id="id45">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id45" title="Link to this heading">¶</a></h3>
+<section id="id44">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id44" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>list[str]</dt><dd><p>Sorted scheme names, formatted as <code class="docutils literal notranslate"><span class="pre">scheme://</span></code>.</p>
 </dd>
@@ -1978,8 +2164,8 @@ changed are published.</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.</span></span><span class="sig-name descname"><span class="pre">registered_sources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/sources.html#registered_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>List every concrete source handler currently importable.</p>
-<section id="id46">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id46" title="Link to this heading">¶</a></h3>
+<section id="id45">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id45" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>list[type[SourceBase]]</dt><dd><p>Concrete <code class="xref py py-class docutils literal notranslate"><span class="pre">SourceBase</span></code> subclasses, depth-first.</p>
 </dd>
@@ -1999,23 +2185,23 @@ changed are published.</p>
 <p>Handlers that claim the URL’s explicit scheme win over handlers that
 match schemeless strings, so <code class="docutils literal notranslate"><span class="pre">v4l://0</span></code> and <code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code> both
 land on the V4L2 handler without either rule shadowing the other.</p>
-<section id="id47">
-<h3><span class="section-number">6. </span>Parameters<a class="headerlink" href="#id47" title="Link to this heading">¶</a></h3>
+<section id="id46">
+<h3><span class="section-number">10. </span>Parameters<a class="headerlink" href="#id46" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>source_str<span class="classifier">str</span></dt><dd><p>Source string such as <code class="docutils literal notranslate"><span class="pre">/dev/video0</span></code>, <code class="docutils literal notranslate"><span class="pre">rtsp://host/stream</span></code>,
 or <code class="docutils literal notranslate"><span class="pre">testimage://pm5544</span></code>.</p>
 </dd>
 </dl>
 </section>
-<section id="id48">
-<h3><span class="section-number">6. </span>Returns<a class="headerlink" href="#id48" title="Link to this heading">¶</a></h3>
+<section id="id47">
+<h3><span class="section-number">10. </span>Returns<a class="headerlink" href="#id47" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceBase</dt><dd><p>A handler instance, not yet opened.</p>
 </dd>
 </dl>
 </section>
-<section id="id49">
-<h3><span class="section-number">6. </span>Raises<a class="headerlink" href="#id49" title="Link to this heading">¶</a></h3>
+<section id="id48">
+<h3><span class="section-number">10. </span>Raises<a class="headerlink" href="#id48" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>SourceError</dt><dd><p>If the source string is empty or malformed for its scheme.</p>
 </dd>
@@ -2035,21 +2221,23 @@ or <code class="docutils literal notranslate"><span class="pre">testimage://pm55
 
 </section>
 <section id="modules">
-<h2><span class="section-number">6.2. </span>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2. </span>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 </div>
 <ul class="simple">
-<li><p><a class="reference internal" href="SpiriCamera.camera.html"><span class="doc">SpiriCamera.camera</span></a> — capture lifecycle, encoding, and publication</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.exif.html"><span class="doc">SpiriCamera.exif</span></a> — frame metadata carried inside the encoded frame</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.overlay.html"><span class="doc">SpiriCamera.overlay</span></a> — SVG HUD overlays baked into frames before encoding</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.projection.html"><span class="doc">SpiriCamera.projection</span></a> — where a point in the world lands in a camera’s picture</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.sources.html"><span class="doc">SpiriCamera.sources</span></a> — source handler registry and resolution</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.webrtc.html"><span class="doc">SpiriCamera.webrtc</span></a> — WebRTC plumbing shared by every signaling path</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.whep.html"><span class="doc">SpiriCamera.whep</span></a> — WHEP (WebRTC-HTTP Egress Protocol) exposure for a single camera</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.ui.html"><span class="doc">SpiriCamera.ui</span></a> — NiceGUI debug UI</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.web.html"><span class="doc">SpiriCamera.web</span></a> — web UI entry point (optional SpiriConfig plugin)</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.cli.html"><span class="doc">SpiriCamera.cli</span></a> — command-line interface</p></li>
-<li><p><a class="reference internal" href="SpiriCamera.main.html"><span class="doc">SpiriCamera.main</span></a> — main entry point</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.camera.html"><span class="doc">SpiriCamera.camera</span></a>: capture lifecycle, encoding, and publication</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.transports.html"><span class="doc">SpiriCamera.transports</span></a>: the transport objects and their wire formats</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.video.html"><span class="doc">SpiriCamera.video</span></a>: the camera’s one H.264 encode and its rate control</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.rtsp.html"><span class="doc">SpiriCamera.rtsp</span></a>: the RTSP server</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.klv.html"><span class="doc">SpiriCamera.klv</span></a>: KLV metadata for each frame</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.exif.html"><span class="doc">SpiriCamera.exif</span></a>: frame metadata carried inside the encoded frame</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.overlay.html"><span class="doc">SpiriCamera.overlay</span></a>: SVG HUD overlays baked into frames before encoding</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.projection.html"><span class="doc">SpiriCamera.projection</span></a>: where a point in the world lands in a camera’s picture</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.sources.html"><span class="doc">SpiriCamera.sources</span></a>: source handler registry and resolution</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.ui.html"><span class="doc">SpiriCamera.ui</span></a>: NiceGUI debug UI</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.web.html"><span class="doc">SpiriCamera.web</span></a>: an unused stub; the debug UI is <code class="docutils literal notranslate"><span class="pre">SpiriCamera.ui</span></code></p></li>
+<li><p><a class="reference internal" href="SpiriCamera.cli.html"><span class="doc">SpiriCamera.cli</span></a>: command-line interface</p></li>
+<li><p><a class="reference internal" href="SpiriCamera.main.html"><span class="doc">SpiriCamera.main</span></a>: main entry point</p></li>
 </ul>
 </section>
 </section>
@@ -2064,7 +2252,7 @@ or <code class="docutils literal notranslate"><span class="pre">testimage://pm55
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">6.2.1. </span>SpiriCamera.camera</div>
+                <div class="title"><span class="section-number">10.2.1. </span>SpiriCamera.camera</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -2075,7 +2263,7 @@ or <code class="docutils literal notranslate"><span class="pre">testimage://pm55
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">5. </span>Tutorial: YOLO detection boxes as a live overlay</div>
+                <div class="title"><span class="section-number">9. </span>Tutorial: YOLO detection boxes as a live overlay</div>
                 
               </div>
             </a>
@@ -2109,9 +2297,9 @@ or <code class="docutils literal notranslate"><span class="pre">testimage://pm55
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">6. API Reference</a><ul>
-<li><a class="reference internal" href="#classes">6.1. Classes</a></li>
-<li><a class="reference internal" href="#modules">6.2. Modules</a></li>
+<li><a class="reference internal" href="#">10. API Reference</a><ul>
+<li><a class="reference internal" href="#classes">10.1. Classes</a></li>
+<li><a class="reference internal" href="#modules">10.2. Modules</a></li>
 </ul>
 </li>
 </ul>
@@ -2123,7 +2311,7 @@ or <code class="docutils literal notranslate"><span class="pre">testimage://pm55
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

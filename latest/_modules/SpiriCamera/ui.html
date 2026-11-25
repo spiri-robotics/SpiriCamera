@@ -247,22 +247,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -918,7 +924,7 @@
 <span class="c1">#: The frame object last counted by the meter, to recognise a re-serve.</span>
 <span class="c1">#:</span>
 <span class="c1">#: Compared by identity, not equality: the camera binds a fresh ``bytes``</span>
-<span class="c1">#: to ``image`` for every frame it captures, so two captures that happen</span>
+<span class="c1">#: to ``transport_jpeg.data`` for every frame it encodes, so two captures that happen</span>
 <span class="c1">#: to encode identically are still two frames, while the same object</span>
 <span class="c1">#: handed out twice is one.</span>
 <span class="n">_last_counted</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -933,6 +939,43 @@
 <span class="n">_last_counted_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
 
+<span class="c1">#: Seconds without a browser asking for a frame before the UI stops wanting</span>
+<span class="c1">#: them, so a closed tab lets the camera go idle.</span>
+<span class="n">FRAME_INTEREST_TIMEOUT</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+<span class="c1">#: When a browser last asked, and the thread watching for that to stop.</span>
+<span class="n">_last_frame_request</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">_interest_watch</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_interest_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_want_frames</span><span class="p">(</span><span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A browser is polling: want this camera's JPEG frames for a while yet."""</span>
+    <span class="k">global</span> <span class="n">_last_frame_request</span><span class="p">,</span> <span class="n">_interest_watch</span>
+    <span class="n">camera</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">_interest_lock</span><span class="p">:</span>
+        <span class="n">_last_frame_request</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_interest_watch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_interest_watch</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">_watch_frame_interest</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"ui-frame-interest"</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">_interest_watch</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_watch_frame_interest</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Unsubscribe once browsers stop polling, and let the next poll start over."""</span>
+    <span class="k">global</span> <span class="n">_interest_watch</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">FRAME_INTEREST_TIMEOUT</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">_interest_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">_last_frame_request</span> <span class="o">&gt;=</span> <span class="n">FRAME_INTEREST_TIMEOUT</span><span class="p">:</span>
+                <span class="n">_interest_watch</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">break</span>
+    <span class="c1"># Whichever camera is current: it may have been replaced since.</span>
+    <span class="k">if</span> <span class="n">_camera</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_camera</span><span class="o">.</span><span class="n">transport_jpeg_unsubscribe</span><span class="p">()</span>
+
+
 <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">FRAME_ROUTE</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serve_frame</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Serve the most recent frame as an image response.</span>
@@ -945,7 +988,8 @@
     <span class="k">global</span> <span class="n">_last_counted</span>
 
     <span class="n">camera</span> <span class="o">=</span> <span class="n">get_camera</span><span class="p">()</span>
-    <span class="n">frame</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">image</span>
+    <span class="n">_want_frames</span><span class="p">(</span><span class="n">camera</span><span class="p">)</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">frame</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">PLACEHOLDER</span>
 
@@ -961,7 +1005,7 @@
 
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">content</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
-        <span class="n">media_type</span><span class="o">=</span><span class="n">camera</span><span class="o">.</span><span class="n">mimetype</span><span class="p">,</span>
+        <span class="n">media_type</span><span class="o">=</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">mimetype</span><span class="p">,</span>
         <span class="c1"># force_reload() already cache-busts with a timestamp; this stops</span>
         <span class="c1"># any proxy in between from holding on to a frame.</span>
         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Cache-Control"</span><span class="p">:</span> <span class="s2">"no-store"</span><span class="p">},</span>
@@ -1131,9 +1175,9 @@
                 <span class="c1"># the one path that always works, so it is offered</span>
                 <span class="c1"># alongside the list rather than hidden behind it.</span>
                 <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
-                    <span class="n">topic_input</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
-                        <span class="s2">"Topic"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"hostname/spiricamera_testimage"</span>
-                    <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span>
+                    <span class="n">topic_input</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Topic"</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s2">"hostname/cameras/1/hud"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
+                        <span class="s2">"flex-1"</span>
+                    <span class="p">)</span>
                     <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">"Mirror"</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">mirror</span><span class="p">(</span><span class="n">topic_input</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
 
                 <span class="n">discovered</span> <span class="o">=</span> <span class="n">discover_cameras</span><span class="p">(</span><span class="n">cam</span><span class="p">)</span>
@@ -1164,18 +1208,18 @@
                 <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Image Settings"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"text-lg font-bold"</span><span class="p">)</span>
                 <span class="n">ui</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"Quality"</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2 flex-nowrap"</span><span class="p">):</span>
-                    <span class="n">ui</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"quality"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
-                        <span class="s2">"flex-1"</span>
-                    <span class="p">)</span>
-                    <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"quality"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
-                        <span class="s2">"w-20"</span>
-                    <span class="p">)</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span>
+                        <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="p">,</span> <span class="s2">"quality"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span>
+                    <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span>
+                        <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="p">,</span> <span class="s2">"quality"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-20"</span><span class="p">)</span>
                 <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Width"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_width"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
                 <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Height"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_height"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
                 <span class="n">ui</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="s2">"Max Framerate"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"max_framerate"</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span>
                     <span class="s2">"w-full"</span>
                 <span class="p">)</span>
-                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Mimetype"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"mimetype"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
+                <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s2">"Mimetype"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="p">,</span> <span class="s2">"mimetype"</span><span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full"</span><span class="p">)</span>
                 <span class="n">ui</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="s2">"Tag frames"</span><span class="p">)</span><span class="o">.</span><span class="n">bind_value</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="s2">"exif_enabled"</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">card</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">):</span>
@@ -1276,7 +1320,7 @@
             <span class="k">with</span> <span class="n">ui</span><span class="o">.</span><span class="n">row</span><span class="p">()</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"w-full items-center gap-2"</span><span class="p">):</span>
                 <span class="n">add_topic</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
                     <span class="s2">"Add widget by topic"</span><span class="p">,</span>
-                    <span class="n">placeholder</span><span class="o">=</span><span class="s2">"hostname/spiricamera_testimage_metrics"</span><span class="p">,</span>
+                    <span class="n">placeholder</span><span class="o">=</span><span class="s2">"hostname/cameras/1/hud_metrics"</span><span class="p">,</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">classes</span><span class="p">(</span><span class="s2">"flex-1"</span><span class="p">)</span>
                 <span class="n">ui</span><span class="o">.</span><span class="n">button</span><span class="p">(</span>
                     <span class="s2">"Add"</span><span class="p">,</span>
@@ -1582,8 +1626,8 @@
             <span class="c1"># Off the frame in hand, not off the rates: bytes-per-second</span>
             <span class="c1"># divided by frames-per-second is nothing at all once both are</span>
             <span class="c1"># zero, but the last frame is still exactly this big.</span>
-            <span class="k">if</span> <span class="n">cam</span><span class="o">.</span><span class="n">image</span><span class="p">:</span>
-                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">image</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> KiB/frame"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> KiB/frame"</span><span class="p">)</span>
 
             <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"requested </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">cam</span><span class="o">.</span><span class="n">max_framerate</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> fps"</span><span class="p">)</span>
 
@@ -1657,7 +1701,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

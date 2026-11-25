@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="3. Drawing on things in the world" href="world_overlays.html"><link rel="prev" title="1. Getting Started" href="getting_started.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="4. Drawing on things in the world" href="world_overlays.html"><link rel="prev" title="2. The camera’s data structure" href="data_model.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/exif.html">
         <link rel="prefetch" href="_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>2. Frame Metadata (EXIF) - SpiriCamera</title>
+        <title>3. Frame Metadata (EXIF) - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,43 +315,46 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="frame-metadata-exif">
-<h1><span class="section-number">2. </span>Frame Metadata (EXIF)<a class="headerlink" href="#frame-metadata-exif" title="Link to this heading">¶</a></h1>
-<p>Each captured frame is a JPEG with its own metadata baked into its EXIF:
-when it was taken, what took it, and anything you care to add — a GPS
+<h1><span class="section-number">3. </span>Frame Metadata (EXIF)<a class="headerlink" href="#frame-metadata-exif" title="Link to this heading">¶</a></h1>
+<p>Each captured frame carries its own metadata: in the EXIF of a JPEG, and in
+the zenoh attachment of a raw frame or video packet (see <a class="reference internal" href="data_model.html"><span class="doc">The camera’s data structure</span></a>).
+That metadata says when it was taken, what took it, and anything you care to add—a GPS
 fix, a mission name, a battery level. This page covers reading that
 metadata back, adding your own, and sharing the job between more than
-one piece of software. For the underlying module (<code class="docutils literal notranslate"><span class="pre">embed</span></code>, <code class="docutils literal notranslate"><span class="pre">extract</span></code>,
+one piece of software. RTSP doesn’t carry these tags: its KLV track only has the
+capture time (<a class="reference internal" href="rtsp.html"><span class="doc">Serving a camera over RTSP</span></a>). For the underlying module (<code class="docutils literal notranslate"><span class="pre">embed</span></code>, <code class="docutils literal notranslate"><span class="pre">extract</span></code>,
 <code class="docutils literal notranslate"><span class="pre">is_jpeg</span></code>, <code class="docutils literal notranslate"><span class="pre">image_size</span></code>) used directly on raw JPEG bytes, see
 <a class="reference internal" href="api/SpiriCamera.exif.html"><span class="doc">SpiriCamera.exif</span></a>.</p>
 <section id="reading-tags">
-<h2><span class="section-number">2.1. </span>Reading Tags<a class="headerlink" href="#reading-tags" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">3.1. </span>Reading Tags<a class="headerlink" href="#reading-tags" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"/dev/video0"</span><span class="p">)</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">exif_update</span><span class="p">(</span><span class="n">mission</span><span class="o">=</span><span class="s2">"probe-1"</span><span class="p">)</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>
 
 <span class="n">cam</span><span class="o">.</span><span class="n">exif_tags</span>  <span class="c1"># {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}</span>
-<span class="n">cam</span><span class="o">.</span><span class="n">exif_timestamp</span>  <span class="c1"># Unix timestamp of the frame currently in cam.image</span>
+<span class="n">cam</span><span class="o">.</span><span class="n">exif_timestamp</span>  <span class="c1"># Unix timestamp of the current frame</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">exif_tags</span></code> and <code class="docutils literal notranslate"><span class="pre">exif_timestamp</span></code> are read back <em>out of</em> <code class="docutils literal notranslate"><span class="pre">cam.image</span></code>, and
-so are <code class="docutils literal notranslate"><span class="pre">received_width</span></code>, <code class="docutils literal notranslate"><span class="pre">received_height</span></code> and <code class="docutils literal notranslate"><span class="pre">received_ratio</span></code>. None of
-them is sent over SpiriSynq — they are properties, not synced fields, so
-there is nothing there <em>to</em> send. That is on purpose: SpiriSynq publishes
-each field independently and promises nothing about two of them arriving
-together, so a timestamp sent beside an image is a timestamp a peer can
-read against the wrong image. Travelling inside the JPEG, they cannot
-come apart from it — a peer that receives a frame fills them in for
-itself, exactly:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mirror</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">frame</span>  <span class="c1"># the only thing that crossed the network</span>
+<p><code class="docutils literal notranslate"><span class="pre">exif_tags</span></code> and <code class="docutils literal notranslate"><span class="pre">exif_timestamp</span></code> are read back <em>out of</em> the current frame,
+and so are <code class="docutils literal notranslate"><span class="pre">received_width</span></code>, <code class="docutils literal notranslate"><span class="pre">received_height</span></code> and <code class="docutils literal notranslate"><span class="pre">received_ratio</span></code>. None
+of them is sent as a synced field—they are properties, so there is
+nothing there <em>to</em> send. That is on purpose: SpiriSynq publishes each
+field independently and promises nothing about two of them arriving
+together, so a timestamp sent apart from an image is a timestamp a
+peer can read against the wrong image. Travelling with the frame, they
+cannot come apart from it—a peer that receives a frame fills them in
+for itself, exactly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mirror</span><span class="o">.</span><span class="n">transport_jpeg_subscribe</span><span class="p">()</span>  <span class="c1"># frames are all that cross the network</span>
 <span class="n">mirror</span><span class="o">.</span><span class="n">exif_timestamp</span>  <span class="c1"># when the far end took it</span>
 <span class="n">mirror</span><span class="o">.</span><span class="n">received_width</span>  <span class="c1"># what it actually sent</span>
 </pre></div>
 </div>
 </section>
 <section id="multiple-tag-providers">
-<h2><span class="section-number">2.2. </span>Multiple Tag Providers<a class="headerlink" href="#multiple-tag-providers" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">3.2. </span>Multiple Tag Providers<a class="headerlink" href="#multiple-tag-providers" title="Link to this heading">¶</a></h2>
 <p>More than one piece of software may want to tag the same camera’s
-frames — a logger, a telemetry service, a human poking at the debug UI.
+frames—a logger, a telemetry service, a human poking at the debug UI.
 <code class="docutils literal notranslate"><span class="pre">exif_set_tags</span></code> gives each one its own namespace, so setting one never
 touches another’s:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span><span class="o">.</span><span class="n">exif_set_tags</span><span class="p">(</span><span class="s2">"telemetry"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"battery"</span><span class="p">:</span> <span class="s2">"88"</span><span class="p">})</span>
@@ -355,7 +364,7 @@ touches another’s:</p>
 </pre></div>
 </div>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">exif_set_tags</span></code> again for the same provider <em>replaces</em> that
-provider’s tags rather than merging into them — drop a key by leaving it
+provider’s tags rather than merging into them—drop a key by leaving it
 out next time. A value of <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> is kept rather than dropped, which is how
 a provider suppresses one of the built-in tags (say, omitting <code class="docutils literal notranslate"><span class="pre">source</span></code>
 from a frame headed somewhere public). Providers merge over the built-ins
@@ -364,7 +373,7 @@ registered first; two providers naming the <em>same</em> tag still resolve in
 that order, which is worth avoiding with a distinguishing prefix rather
 than relying on.</p>
 <p><code class="docutils literal notranslate"><span class="pre">exif_update(**tags)</span></code> is a shorthand for the common case of one caller
-adding a tag or two with no provider name of its own — it merges into a
+adding a tag or two with no provider name of its own—it merges into a
 shared default bucket, and a value of <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> there removes just that tag:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span><span class="o">.</span><span class="n">exif_update</span><span class="p">(</span><span class="n">mission</span><span class="o">=</span><span class="s2">"probe-1"</span><span class="p">)</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">exif_update</span><span class="p">(</span><span class="n">mission</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>  <span class="c1"># removes it; other tags untouched</span>
@@ -374,7 +383,7 @@ shared default bucket, and a value of <code class="docutils literal notranslate"
 bucket and can still overwrite each other; once that matters, give each
 one a provider name and use <code class="docutils literal notranslate"><span class="pre">exif_set_tags</span></code> instead.</p>
 <p>To attach something the camera itself can compute, override the method
-that builds the built-in tags — this still gets whatever providers have
+that builds the built-in tags—this still gets whatever providers have
 set merged on top:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SurveyCamera</span><span class="p">(</span><span class="n">Camera</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">exif_tags_for_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
@@ -384,15 +393,15 @@ set merged on top:</p>
 </pre></div>
 </div>
 <p>Tag names are free-form; the whole set round-trips through the EXIF
-<code class="docutils literal notranslate"><span class="pre">UserComment</span></code> field. Names that have a real EXIF equivalent — <code class="docutils literal notranslate"><span class="pre">make</span></code>,
-<code class="docutils literal notranslate"><span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">serial_number</span></code>, <code class="docutils literal notranslate"><span class="pre">software</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">datetime</span></code> — are
+<code class="docutils literal notranslate"><span class="pre">UserComment</span></code> field. Names that have a real EXIF equivalent—<code class="docutils literal notranslate"><span class="pre">make</span></code>,
+<code class="docutils literal notranslate"><span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">serial_number</span></code>, <code class="docutils literal notranslate"><span class="pre">software</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">datetime</span></code>—are
 also written to that tag, so ordinary image tools show something
 sensible.</p>
 <p>A camera fed by another camera (a <code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> source, see
 <a class="reference internal" href="getting_started.html"><span class="doc">Getting Started</span></a>) starts from the tags the upstream frame already
 carried, so a GPS fix added upstream is still there after the re-encode.
 Its own built-ins then replace the upstream’s <code class="docutils literal notranslate"><span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">topic</span></code> and
-<code class="docutils literal notranslate"><span class="pre">software</span></code> — those describe whoever produced <em>these</em> bytes — but the
+<code class="docutils literal notranslate"><span class="pre">software</span></code>—those describe whoever produced <em>these</em> bytes—but the
 upstream’s <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> is kept, since that is when the picture was
 actually taken. Providers merge on top of both, as usual.</p>
 <p>Because a tag records a capture time, two captures of an unchanging
@@ -401,11 +410,11 @@ byte-identical frames, which psygnal then suppresses rather than
 republishing.</p>
 </section>
 <section id="example-tagging-frames-with-gps">
-<h2><span class="section-number">2.3. </span>Example: Tagging Frames With GPS<a class="headerlink" href="#example-tagging-frames-with-gps" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">3.3. </span>Example: Tagging Frames With GPS<a class="headerlink" href="#example-tagging-frames-with-gps" title="Link to this heading">¶</a></h2>
 <p>A GPS fix is exactly the kind of thing that changes on its own schedule,
 independent of the frame rate, so the natural way to attach it is
-<code class="docutils literal notranslate"><span class="pre">exif_update</span></code> from whatever callback your GPS source already gives you
-— not something computed inside <code class="docutils literal notranslate"><span class="pre">Camera</span></code> itself, and not something worth
+<code class="docutils literal notranslate"><span class="pre">exif_update</span></code> from whatever callback your GPS source already gives you,
+not something computed inside <code class="docutils literal notranslate"><span class="pre">Camera</span></code> itself, and not something worth
 a subclass for:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="s2">"/dev/video0"</span><span class="p">)</span>
 <span class="n">cam</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -418,7 +427,7 @@ a subclass for:</p>
 <span class="n">gps</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">fix</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">on_gps_fix</span><span class="p">)</span>  <span class="c1"># or however your GPS source notifies you</span>
 </pre></div>
 </div>
-<p>Every frame captured after that carries the most recent fix — there is
+<p>Every frame captured after that carries the most recent fix—there is
 no need to re-call <code class="docutils literal notranslate"><span class="pre">exif_update</span></code> per frame, since <code class="docutils literal notranslate"><span class="pre">exif_tags_for_frame</span></code>
 re-merges whatever the default bucket currently holds into <em>every</em>
 frame it builds. A fix that goes stale (GPS lost) should be cleared the
@@ -427,8 +436,8 @@ position as if it were current:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cam</span><span class="o">.</span><span class="n">exif_update</span><span class="p">(</span><span class="n">gps_lat</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">gps_lon</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>  <span class="c1"># drop both; other tags untouched</span>
 </pre></div>
 </div>
-<p>If your GPS source lives inside the <code class="docutils literal notranslate"><span class="pre">Camera</span></code> subclass itself — an
-onboard receiver polled on the same cadence as capture, say — override
+<p>If your GPS source lives inside the <code class="docutils literal notranslate"><span class="pre">Camera</span></code> subclass itself—an
+onboard receiver polled on the same cadence as capture, say—override
 <code class="docutils literal notranslate"><span class="pre">exif_tags_for_frame</span></code> instead, so the fix is read fresh for the frame
 actually being encoded rather than from whatever <code class="docutils literal notranslate"><span class="pre">exif_update</span></code> last
 pushed:</p>
@@ -443,7 +452,7 @@ pushed:</p>
 </pre></div>
 </div>
 <p>Either way, <code class="docutils literal notranslate"><span class="pre">gps_lat</span></code>/<code class="docutils literal notranslate"><span class="pre">gps_lon</span></code> are free-form tag names, not a real EXIF
-GPS IFD entry — they round-trip through the <code class="docutils literal notranslate"><span class="pre">UserComment</span></code> JSON exactly
+GPS IFD entry—they round-trip through the <code class="docutils literal notranslate"><span class="pre">UserComment</span></code> JSON exactly
 like any other tag, but a tool that reads a JPEG’s <em>native</em> GPS fields
 (only <code class="docutils literal notranslate"><span class="pre">make</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">serial_number</span></code>, <code class="docutils literal notranslate"><span class="pre">software</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code> and
 <code class="docutils literal notranslate"><span class="pre">datetime</span></code> get written there; see <code class="docutils literal notranslate"><span class="pre">STANDARD_TAGS</span></code> in
@@ -452,19 +461,19 @@ like any other tag, but a tool that reads a JPEG’s <em>native</em> GPS fields
 bytes via <a class="reference internal" href="api/SpiriCamera.exif.html#module-SpiriCamera.exif" title="SpiriCamera.exif"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.exif</span></code></a>.</p>
 </section>
 <section id="reading-tags-from-raw-jpeg-bytes">
-<h2><span class="section-number">2.4. </span>Reading Tags From Raw JPEG Bytes<a class="headerlink" href="#reading-tags-from-raw-jpeg-bytes" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">3.4. </span>Reading Tags From Raw JPEG Bytes<a class="headerlink" href="#reading-tags-from-raw-jpeg-bytes" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">cam.exif_tags</span></code> is a convenience for when you already have a <code class="docutils literal notranslate"><span class="pre">Camera</span></code>.
-If all you have is JPEG bytes — a frame saved to disk, one pulled off an
-HTTP response, <code class="docutils literal notranslate"><span class="pre">mirror.image</span></code> read before you bothered to build a
-mirror at all — <a class="reference internal" href="api/SpiriCamera.exif.html#module-SpiriCamera.exif" title="SpiriCamera.exif"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.exif</span></code></a> reads and writes the same
+If all you have is JPEG bytes—a frame saved to disk, one pulled off an
+HTTP response, or a sample taken straight off <code class="docutils literal notranslate"><span class="pre">transport_jpeg/&#64;data</span></code> with
+no mirror at all—<a class="reference internal" href="api/SpiriCamera.exif.html#module-SpiriCamera.exif" title="SpiriCamera.exif"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.exif</span></code></a> reads and writes the same
 tags directly, with no <code class="docutils literal notranslate"><span class="pre">Camera</span></code> involved:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">exif</span>
 
 <span class="n">data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"frame.jpg"</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-<span class="n">exif</span><span class="o">.</span><span class="n">is_jpeg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># True — cheap check, just the magic bytes</span>
+<span class="n">exif</span><span class="o">.</span><span class="n">is_jpeg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># True—cheap check, just the magic bytes</span>
 <span class="n">exif</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># {'timestamp': '1789...', 'make': ..., 'mission': 'probe-1'}</span>
-<span class="n">exif</span><span class="o">.</span><span class="n">image_size</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># (1920, 1080) — read from the JPEG header, not decoded</span>
+<span class="n">exif</span><span class="o">.</span><span class="n">image_size</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># (1920, 1080); read from the JPEG header, not decoded</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">extract</span></code> never raises: bytes with no tags, damaged EXIF, or a format
@@ -472,7 +481,7 @@ that carries none all read back as <code class="docutils literal notranslate"><s
 whatever you happen to have. It reads the same <code class="docutils literal notranslate"><span class="pre">UserComment</span></code> JSON blob
 <code class="docutils literal notranslate"><span class="pre">Camera</span></code> writes, so an arbitrary tag name round-trips exactly; given a
 JPEG this package did not tag at all, it falls back to whatever
-standard EXIF fields (<code class="docutils literal notranslate"><span class="pre">Make</span></code>, <code class="docutils literal notranslate"><span class="pre">Model</span></code>, <code class="docutils literal notranslate"><span class="pre">DateTime</span></code>, …) the file
+standard EXIF fields (<code class="docutils literal notranslate"><span class="pre">Make</span></code>, <code class="docutils literal notranslate"><span class="pre">Model</span></code>, <code class="docutils literal notranslate"><span class="pre">DateTime</span></code>) the file
 happens to carry.</p>
 <p><code class="docutils literal notranslate"><span class="pre">embed</span></code> is the write side, and is what <code class="docutils literal notranslate"><span class="pre">Camera</span></code> calls internally on
 every captured frame:</p>
@@ -483,8 +492,7 @@ every captured frame:</p>
 happened: <code class="docutils literal notranslate"><span class="pre">embed</span></code> returns non-JPEG data unchanged rather than raising,
 and only raises <code class="docutils literal notranslate"><span class="pre">exif.ExifError</span></code> for a JPEG it could not tag. Calling
 it again replaces the EXIF wholesale rather than accumulating segments,
-so re-tagging a frame — or a mirror re-deriving its own tags from
-<code class="docutils literal notranslate"><span class="pre">image</span></code> — never leaves stale data behind.</p>
+so re-tagging a frame never leaves stale data behind.</p>
 </section>
 </section>
 
@@ -498,18 +506,18 @@ so re-tagging a frame — or a mirror re-deriving its own tags from
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">3. </span>Drawing on things in the world</div>
+                <div class="title"><span class="section-number">4. </span>Drawing on things in the world</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="getting_started.html">
+          <a class="prev-page" href="data_model.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">1. </span>Getting Started</div>
+                <div class="title"><span class="section-number">2. </span>The camera’s data structure</div>
                 
               </div>
             </a>
@@ -543,11 +551,11 @@ so re-tagging a frame — or a mirror re-deriving its own tags from
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">2. Frame Metadata (EXIF)</a><ul>
-<li><a class="reference internal" href="#reading-tags">2.1. Reading Tags</a></li>
-<li><a class="reference internal" href="#multiple-tag-providers">2.2. Multiple Tag Providers</a></li>
-<li><a class="reference internal" href="#example-tagging-frames-with-gps">2.3. Example: Tagging Frames With GPS</a></li>
-<li><a class="reference internal" href="#reading-tags-from-raw-jpeg-bytes">2.4. Reading Tags From Raw JPEG Bytes</a></li>
+<li><a class="reference internal" href="#">3. Frame Metadata (EXIF)</a><ul>
+<li><a class="reference internal" href="#reading-tags">3.1. Reading Tags</a></li>
+<li><a class="reference internal" href="#multiple-tag-providers">3.2. Multiple Tag Providers</a></li>
+<li><a class="reference internal" href="#example-tagging-frames-with-gps">3.3. Example: Tagging Frames With GPS</a></li>
+<li><a class="reference internal" href="#reading-tags-from-raw-jpeg-bytes">3.4. Reading Tags From Raw JPEG Bytes</a></li>
 </ul>
 </li>
 </ul>
@@ -559,7 +567,7 @@ so re-tagging a frame — or a mirror re-deriving its own tags from
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=1b390748"></script>
+</div><script src="_static/documentation_options.js?v=3b889da3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

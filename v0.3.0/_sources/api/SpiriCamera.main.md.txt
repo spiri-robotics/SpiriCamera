@@ -1,7 +1,7 @@
-# SpiriCamera.webrtc
+# SpiriCamera.main
 
 ```{eval-rst}
-.. automodule:: SpiriCamera.webrtc
+.. automodule:: SpiriCamera.main
    :members:
    :member-order: bysource
    :undoc-members: False

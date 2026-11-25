@@ -247,22 +247,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -337,10 +343,10 @@
 
 <span class="sd">A declared object is a whole :py:class:`~SpiriSynq.syncable_objects.SyncableObject`</span>
 <span class="sd">-- every one of its synced fields is available as ``objects.&lt;alias&gt;.&lt;field&gt;``,</span>
-<span class="sd">mirrored generically via</span>
-<span class="sd">:py:meth:`~SpiriSynq.session.Session.from_topic_untyped` (so the widget</span>
-<span class="sd">author needs no locally-importable class for it, and never sees its RPC</span>
-<span class="sd">methods -- ``from_topic_untyped`` only ever exposes synced attributes).</span>
+<span class="sd">a nested one too (``objects.cam.transport_jpeg.quality``).  It is mirrored</span>
+<span class="sd">generically via :py:meth:`~SpiriSynq.session.Session.from_topic_untyped`, so the</span>
+<span class="sd">widget author needs no locally-importable class for it, and never sees its RPC</span>
+<span class="sd">methods, only its synced fields.</span>
 <span class="sd">This is templated in :py:func:`resolve_objects`, which reads both halves</span>
 <span class="sd">of that same text -- MiniJinja's own static analysis</span>
 <span class="sd">(``undeclared_variables_in_str``) for what the render body actually</span>
@@ -348,6 +354,12 @@
 <span class="sd">and raises if a template reads an alias with no matching declaration,</span>
 <span class="sd">which is meant to be caught by whoever is authoring the widget, not</span>
 <span class="sd">silently ignored.</span>
+
+<span class="sd">.. note::</span>
+
+<span class="sd">   A generic mirror only follows changes to top-level fields.  A nested</span>
+<span class="sd">   field keeps the value it had when the mirror was made, so the</span>
+<span class="sd">   camera metrics widget's ``q=`` doesn't follow a change of quality.</span>
 
 <span class="sd">The declared topic is only a *default*. Whichever camera is actually</span>
 <span class="sd">rendering the widget can override it -- to point ``battery`` at a</span>
@@ -398,6 +410,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.parsers.expat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -1028,6 +1041,14 @@
             <span class="p">)</span>
         <span class="n">svg</span> <span class="o">=</span> <span class="n">_strip_percent_size</span><span class="p">(</span><span class="n">svg</span><span class="p">)</span>
 
+    <span class="c1"># thorvg's parser can crash the process on malformed XML rather than</span>
+    <span class="c1"># fail, as it did on a value with an unescaped "&lt;" in it, so it only</span>
+    <span class="c1"># ever sees well-formed XML.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xml</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">expat</span><span class="o">.</span><span class="n">ParserCreate</span><span class="p">()</span><span class="o">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">svg</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">xml</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">expat</span><span class="o">.</span><span class="n">ExpatError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OverlayError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"overlay SVG is not well-formed XML: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
     <span class="c1"># thorvg objects are native and never freed by Python's garbage</span>
     <span class="c1"># collector: whoever holds the returned picture must hand it to a</span>
     <span class="c1"># canvas (which then owns it) or release it with unref(True).</span>
@@ -1368,7 +1389,7 @@
 <span class="s2">&lt;svg xmlns="http://www.w3.org/2000/svg" width="260" height="52"&gt;</span>
 <span class="s2">  &lt;rect width="260" height="52" fill="black" fill-opacity="0.55"/&gt;</span>
 <span class="s2">  &lt;text x="8" y="20" font-family="</span><span class="si">{</span><span class="n">DEFAULT_FONT</span><span class="si">}</span><span class="s2">" font-size="16" fill="white"</span>
-<span class="s2">      &gt;</span><span class="se">{{{{</span><span class="s2"> frame.width </span><span class="se">}}}}</span><span class="s2">x</span><span class="se">{{{{</span><span class="s2"> frame.height </span><span class="se">}}}}</span><span class="s2"> </span><span class="se">{{{{</span><span class="s2"> frame.framerate </span><span class="se">}}}}</span><span class="s2">fps q=</span><span class="se">{{{{</span><span class="s2"> objects.cam.quality </span><span class="se">}}}}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">      &gt;</span><span class="se">{{{{</span><span class="s2"> frame.width </span><span class="se">}}}}</span><span class="s2">x</span><span class="se">{{{{</span><span class="s2"> frame.height </span><span class="se">}}}}</span><span class="s2"> </span><span class="se">{{{{</span><span class="s2"> frame.framerate </span><span class="se">}}}}</span><span class="s2">fps q=</span><span class="se">{{{{</span><span class="s2"> objects.cam.transport_jpeg.quality </span><span class="se">}}}}</span><span class="s2">&lt;/text&gt;</span>
 <span class="s2">  &lt;text x="8" y="40" font-family="</span><span class="si">{</span><span class="n">DEFAULT_FONT</span><span class="si">}</span><span class="s2">" font-size="16" fill="white"</span>
 <span class="s2">      &gt;</span><span class="se">{{{{</span><span class="s2"> exif.timestamp | default("untagged") </span><span class="se">}}}}</span><span class="s2">&lt;/text&gt;</span>
 <span class="s2">&lt;/svg&gt;"""</span>  <span class="c1"># noqa: E501 - SVG, and its text lines are clearer whole</span>
@@ -2049,12 +2070,13 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""A mirrored object's top-level synced fields, as a template reads them."""</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="n">field_name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">valid_sync_paths</span><span class="p">()</span>  <span class="c1"># type: ignore[attr-defined]</span>
-        <span class="k">if</span> <span class="s2">"/"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field_name</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="sd">"""A mirrored object's top-level synced fields, as a template reads them.</span>
+
+<span class="sd">    A nested object, such as a camera's ``transport_jpeg``, is one of them, so a</span>
+<span class="sd">    template reads ``objects.cam.transport_jpeg.quality``.</span>
+<span class="sd">    """</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">valid_sync_paths</span><span class="p">()}</span>  <span class="c1"># type: ignore[attr-defined]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)}</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -2112,7 +2134,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

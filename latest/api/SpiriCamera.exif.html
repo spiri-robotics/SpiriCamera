@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6.2.3. SpiriCamera.overlay" href="SpiriCamera.overlay.html"><link rel="prev" title="6.2.1. SpiriCamera.camera" href="SpiriCamera.camera.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10.2.7. SpiriCamera.overlay" href="SpiriCamera.overlay.html"><link rel="prev" title="10.2.5. SpiriCamera.klv" href="SpiriCamera.klv.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.exif.html">
         <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>6.2.2. SpiriCamera.exif - SpiriCamera</title>
+        <title>10.2.6. SpiriCamera.exif - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,7 +315,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="module-SpiriCamera.exif">
-<span id="spiricamera-exif"></span><h1><span class="section-number">6.2.2. </span>SpiriCamera.exif<a class="headerlink" href="#module-SpiriCamera.exif" title="Link to this heading">¶</a></h1>
+<span id="spiricamera-exif"></span><h1><span class="section-number">10.2.6. </span>SpiriCamera.exif<a class="headerlink" href="#module-SpiriCamera.exif" title="Link to this heading">¶</a></h1>
 <p>Frame metadata carried <em>inside</em> the encoded frame.</p>
 <p>Anything that describes a particular frame has to travel with that
 frame.  SpiriSynq publishes each field of a <code class="xref py py-class docutils literal notranslate"><span class="pre">SyncableObject</span></code>
@@ -376,7 +382,7 @@ accumulate segments.  Data that is not a JPEG is returned unchanged
 rather than raising: tagging is a best effort layered on top of
 whatever the camera was asked to encode.</p>
 <section id="parameters">
-<h2><span class="section-number">6.2.2. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>data<span class="classifier">bytes</span></dt><dd><p>Encoded image data.</p>
 </dd>
@@ -385,14 +391,14 @@ whatever the camera was asked to encode.</p>
 </dl>
 </section>
 <section id="returns">
-<h2><span class="section-number">6.2.2. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>bytes</dt><dd><p>The tagged image data.</p>
 </dd>
 </dl>
 </section>
 <section id="raises">
-<h2><span class="section-number">6.2.2. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>ExifError</dt><dd><p>If the data is a JPEG but could not be tagged.</p>
 </dd>
@@ -420,14 +426,14 @@ carries none all read as no tags.  A caller has an image either way,
 and refusing to show it because its metadata is malformed helps
 nobody.</p>
 <section id="id1">
-<h2><span class="section-number">6.2.2. </span>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>data<span class="classifier">bytes</span></dt><dd><p>Encoded image data.</p>
 </dd>
 </dl>
 </section>
 <section id="id2">
-<h2><span class="section-number">6.2.2. </span>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>dict[str, str]</dt><dd><p>The tags found, empty if there were none.</p>
 </dd>
@@ -451,14 +457,14 @@ nobody.</p>
 is the authoritative answer for what was actually encoded and costs a
 marker walk rather than a decode.</p>
 <section id="id3">
-<h2><span class="section-number">6.2.2. </span>Parameters<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Parameters<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>data<span class="classifier">bytes</span></dt><dd><p>Encoded image data.</p>
 </dd>
 </dl>
 </section>
 <section id="id4">
-<h2><span class="section-number">6.2.2. </span>Returns<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Returns<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>tuple[int, int] | None</dt><dd><p>Width and height, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the header could not be read.</p>
 </dd>
@@ -479,14 +485,14 @@ marker walk rather than a decode.</p>
 <span class="sig-prename descclassname"><span class="pre">SpiriCamera.exif.</span></span><span class="sig-name descname"><span class="pre">is_jpeg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/exif.html#is_jpeg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.exif.is_jpeg" title="Link to this definition">¶</a></dt>
 <dd><p>Whether image data is a JPEG, and so can carry EXIF.</p>
 <section id="id5">
-<h2><span class="section-number">6.2.2. </span>Parameters<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Parameters<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>data<span class="classifier">bytes</span></dt><dd><p>Encoded image data.</p>
 </dd>
 </dl>
 </section>
 <section id="id6">
-<h2><span class="section-number">6.2.2. </span>Returns<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.6. </span>Returns<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>bool</dt><dd><p>True if the data starts with the JPEG magic number.</p>
 </dd>
@@ -514,18 +520,18 @@ marker walk rather than a decode.</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">6.2.3. </span>SpiriCamera.overlay</div>
+                <div class="title"><span class="section-number">10.2.7. </span>SpiriCamera.overlay</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="SpiriCamera.camera.html">
+          <a class="prev-page" href="SpiriCamera.klv.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">6.2.1. </span>SpiriCamera.camera</div>
+                <div class="title"><span class="section-number">10.2.5. </span>SpiriCamera.klv</div>
                 
               </div>
             </a>
@@ -559,7 +565,7 @@ marker walk rather than a decode.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">6.2.2. SpiriCamera.exif</a><ul>
+<li><a class="reference internal" href="#">10.2.6. SpiriCamera.exif</a><ul>
 <li><a class="reference internal" href="#SpiriCamera.exif.DATETIME_TAG"><code class="docutils literal notranslate"><span class="pre">DATETIME_TAG</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.exif.STANDARD_TAGS"><code class="docutils literal notranslate"><span class="pre">STANDARD_TAGS</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.exif.TIMESTAMP_TAG"><code class="docutils literal notranslate"><span class="pre">TIMESTAMP_TAG</span></code></a></li>
@@ -579,7 +585,7 @@ marker walk rather than a decode.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

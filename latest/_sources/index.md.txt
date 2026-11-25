@@ -25,8 +25,12 @@ Work with Cameras in SpiriSynq
 :numbered:
 
 getting_started
+data_model
 exif
 world_overlays
+cpp_integration
+rtsp
+mediamtx
 architecture
 tutorials/yolo_overlay
 api/index

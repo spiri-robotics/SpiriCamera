@@ -1,0 +1,1113 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/_modules/SpiriCamera/transports.html">
+        <link rel="prefetch" href="../../_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="../../_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>SpiriCamera.transports - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="../../_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for SpiriCamera.transports</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""The ways a camera's frames leave it, each under its own topic.</span>
+
+<span class="sd">A transport's settings are ordinary synced fields, at</span>
+<span class="sd">``&lt;camera&gt;/transport_jpeg/quality``.  Its frames are not: they travel at</span>
+<span class="sd">``&lt;camera&gt;/transport_jpeg/@data``, and that ``@`` is the point.  A zenoh</span>
+<span class="sd">key chunk starting with ``@`` is *verbatim*: a wildcard never matches it,</span>
+<span class="sd">so the ``&lt;camera&gt;/**`` subscription every SpiriSynq mirror holds does not</span>
+<span class="sd">receive frames, and does not count as wanting them.</span>
+
+<span class="sd">That gives a mirror a choice and the camera a signal.  A mirror receives</span>
+<span class="sd">a transport's frames only by subscribing to that exact key, and a camera</span>
+<span class="sd">none of whose transports has a subscriber isn't running: its source is</span>
+<span class="sd">closed.  The transports depend on each other in one direction::</span>
+
+<span class="sd">    source -&gt; resize -&gt; widgets -&gt; transport_raw -&gt; transport_jpeg</span>
+<span class="sd">                                                 -&gt; transport_video</span>
+
+<span class="sd">so anything wanting JPEG or video also wants raw, and raw is what keeps</span>
+<span class="sd">the source open.  A ``spirisynq://`` source subscribes upstream only</span>
+<span class="sd">while its own camera is running, so demand travels up a chain of relays.</span>
+
+<span class="sd">A subscriber joining queries the transport's ``request_keyframe`` key, and</span>
+<span class="sd">the camera sends its current frame again on ``@data``, as an RTSP viewer's</span>
+<span class="sd">PLI gets it a keyframe.  A running camera sends new frames anyway, so this</span>
+<span class="sd">only matters for one whose frame isn't changing, which isn't republished.</span>
+
+<span class="sd">This module must not import :py:mod:`SpiriCamera.camera`:</span>
+<span class="sd">:py:mod:`SpiriCamera.sources` needs these names too.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zenoh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">psygnal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">SignalGroupDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.qos</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynqQoS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.session</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.syncable_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubSyncableDataclass</span><span class="p">,</span> <span class="n">WeakMethodProxy</span>
+
+<span class="c1">#: QoS of raw and JPEG frames: the lowest priority, below video and well below</span>
+<span class="c1">#: SpiriSynq's ordinary traffic, and dropped rather than queued.</span>
+<span class="n">QOS_BACKGROUND</span> <span class="o">=</span> <span class="n">SynqQoS</span><span class="p">(</span>
+    <span class="n">priority</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">Priority</span><span class="o">.</span><span class="n">BACKGROUND</span><span class="p">,</span> <span class="n">congestion_control</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">CongestionControl</span><span class="o">.</span><span class="n">DROP</span>
+<span class="p">)</span>
+
+<span class="c1">#: QoS of a video interframe: below SpiriSynq's ordinary traffic, and the first of</span>
+<span class="c1">#: the video to be shed.</span>
+<span class="n">QOS_INTERFRAME</span> <span class="o">=</span> <span class="n">SynqQoS</span><span class="p">(</span>
+    <span class="n">priority</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">Priority</span><span class="o">.</span><span class="n">DATA_LOW</span><span class="p">,</span> <span class="n">congestion_control</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">CongestionControl</span><span class="o">.</span><span class="n">DROP</span>
+<span class="p">)</span>
+
+<span class="c1">#: QoS of a video keyframe, the only way back after a loss.  Still dropped under</span>
+<span class="c1">#: congestion, since a block could stall the encoder on one dead link.</span>
+<span class="n">QOS_KEYFRAME</span> <span class="o">=</span> <span class="n">SynqQoS</span><span class="p">(</span>
+    <span class="n">priority</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">Priority</span><span class="o">.</span><span class="n">DATA_HIGH</span><span class="p">,</span> <span class="n">congestion_control</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">CongestionControl</span><span class="o">.</span><span class="n">DROP</span>
+<span class="p">)</span>
+
+<span class="c1">#: Where a camera's raw frames are published, relative to the camera.</span>
+<span class="n">TRANSPORT_RAW_DATA</span> <span class="o">=</span> <span class="s2">"transport_raw/@data"</span>
+
+<span class="c1">#: Where a camera's JPEG frames are published, relative to the camera.</span>
+<span class="n">TRANSPORT_JPEG_DATA</span> <span class="o">=</span> <span class="s2">"transport_jpeg/@data"</span>
+
+<span class="c1">#: Where a camera's video keyframes are published, relative to the camera.</span>
+<span class="n">TRANSPORT_VIDEO_KEYFRAME</span> <span class="o">=</span> <span class="s2">"transport_video/@data_keyframe"</span>
+
+<span class="c1">#: Where the rest of a camera's video is published, relative to the camera.</span>
+<span class="n">TRANSPORT_VIDEO_INTERFRAME</span> <span class="o">=</span> <span class="s2">"transport_video/@data_interframe"</span>
+
+<span class="c1">#: The queryable a video subscriber reports its loss on, relative to the camera.</span>
+<span class="n">TRANSPORT_VIDEO_REPORT</span> <span class="o">=</span> <span class="s2">"transport_video/report"</span>
+
+<span class="c1">#: Seconds between a video subscriber's reports.</span>
+<span class="n">REPORT_INTERVAL</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1">#: Least seconds between a video subscriber's requests for a keyframe.</span>
+<span class="n">KEYFRAME_RETRY</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1">#: The queryable a subscriber asks for the current frame on, relative to the</span>
+<span class="c1">#: transport.  The reply is only an acknowledgement: the frame goes on ``@data``.</span>
+<span class="n">REQUEST_KEYFRAME</span> <span class="o">=</span> <span class="s2">"request_keyframe"</span>
+
+<span class="c1">#: :py:attr:`RawFrame.array`'s pixel format, on the wire and off it.</span>
+<span class="n">RAW_FORMAT</span> <span class="o">=</span> <span class="s2">"bgr24"</span>
+
+
+<div class="viewcode-block" id="RawFrame">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eq</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RawFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One captured frame: resized, widgets drawn, not encoded.</span>
+
+<span class="sd">    Compares by identity, since pixels are not worth comparing: two</span>
+<span class="sd">    captures are two frames.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array : np.ndarray</span>
+<span class="sd">        The BGR pixels, read-only.  Every consumer of a frame shares this</span>
+<span class="sd">        one array, so one that wants to change it copies it first, as</span>
+<span class="sd">        widget blending does.</span>
+<span class="sd">    tags : Mapping[str, str]</span>
+<span class="sd">        The frame's tags, the same ones a JPEG of it carries in its EXIF.</span>
+<span class="sd">    """</span>
+
+    <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writeable</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="RawFrame.to_wire">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame.to_wire">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_wire</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The frame as a ``(payload, attachment)`` pair for zenoh.</span>
+
+<span class="sd">        The payload is the bare pixels and the attachment is JSON saying</span>
+<span class="sd">        how to read them, which is all a peer in another language needs.</span>
+<span class="sd">        """</span>
+        <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">attachment</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"width"</span><span class="p">:</span> <span class="n">width</span><span class="p">,</span>
+            <span class="s2">"height"</span><span class="p">:</span> <span class="n">height</span><span class="p">,</span>
+            <span class="s2">"format"</span><span class="p">:</span> <span class="n">RAW_FORMAT</span><span class="p">,</span>
+            <span class="s2">"tags"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(),</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">attachment</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RawFrame.from_wire">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.RawFrame.from_wire">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">attachment</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RawFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Rebuild a frame from :py:meth:`to_wire`'s pair.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the attachment doesn't describe the payload.</span>
+<span class="sd">        """</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">attachment</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">"format"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">RAW_FORMAT</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"raw frame is </span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">'format'</span><span class="p">]</span><span class="si">!r}</span><span class="s2">, not </span><span class="si">{</span><span class="n">RAW_FORMAT</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"height"</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"width"</span><span class="p">]),</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tags"</span><span class="p">,</span> <span class="p">{})))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="VideoPacket">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eq</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VideoPacket</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One encoded frame of a camera's video.</span>
+
+<span class="sd">    Compares by identity, as a :py:class:`RawFrame` does.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    payload : bytes</span>
+<span class="sd">        The encoded frame, opaque: Annex B H.264, and a keyframe carries its</span>
+<span class="sd">        SPS and PPS, so it can be decoded with no prior state.</span>
+<span class="sd">    keyframe : bool</span>
+<span class="sd">        Whether this is a keyframe, which is which key it travels on.</span>
+<span class="sd">    sequence : int</span>
+<span class="sd">        Counts up by one per packet, across both keys.</span>
+<span class="sd">    keyframe_sequence : int</span>
+<span class="sd">        The :py:attr:`sequence` of the keyframe this packet's chain starts at.</span>
+<span class="sd">    pts : int</span>
+<span class="sd">        Presentation time, at a 90 kHz clock.</span>
+<span class="sd">    width : int</span>
+<span class="sd">        Encoded width in pixels.</span>
+<span class="sd">    height : int</span>
+<span class="sd">        Encoded height in pixels.</span>
+<span class="sd">    codec : str</span>
+<span class="sd">        What :py:attr:`payload` is encoded as.</span>
+<span class="sd">    tags : Mapping[str, str]</span>
+<span class="sd">        The frame's tags, as on its :py:class:`RawFrame`.</span>
+<span class="sd">    """</span>
+
+    <span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span>
+    <span class="n">keyframe</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">sequence</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">keyframe_sequence</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">pts</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">codec</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"h264"</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VideoPacket.attachment">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.attachment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Everything but the payload, as JSON, for a zenoh attachment."""</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"sequence"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence</span><span class="p">,</span>
+                <span class="s2">"keyframe_sequence"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keyframe_sequence</span><span class="p">,</span>
+                <span class="s2">"pts"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pts</span><span class="p">,</span>
+                <span class="s2">"width"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                <span class="s2">"height"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+                <span class="s2">"codec"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">codec</span><span class="p">,</span>
+                <span class="s2">"tags"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VideoPacket.from_wire">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.VideoPacket.from_wire">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">attachment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keyframe</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VideoPacket</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Rebuild a packet from its payload and :py:meth:`attachment`.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError, KeyError</span>
+<span class="sd">            If the attachment isn't one.</span>
+<span class="sd">        """</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">attachment</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+            <span class="n">keyframe</span><span class="o">=</span><span class="n">keyframe</span><span class="p">,</span>
+            <span class="n">sequence</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"sequence"</span><span class="p">]),</span>
+            <span class="n">keyframe_sequence</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"keyframe_sequence"</span><span class="p">]),</span>
+            <span class="n">pts</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"pts"</span><span class="p">]),</span>
+            <span class="n">width</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"width"</span><span class="p">]),</span>
+            <span class="n">height</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"height"</span><span class="p">]),</span>
+            <span class="n">codec</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"codec"</span><span class="p">]),</span>
+            <span class="n">tags</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tags"</span><span class="p">,</span> <span class="p">{})),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="VideoSync">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VideoSync</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""What a video subscriber needs to know which packets it can decode.</span>
+
+<span class="sd">    The job an RTP stack would otherwise do.  An interframe is only</span>
+<span class="sd">    any use if everything back to its keyframe arrived, and the two keys can</span>
+<span class="sd">    be at different priorities, so a keyframe can overtake the interframes</span>
+<span class="sd">    before it:</span>
+
+<span class="sd">    * Until a keyframe arrives, nothing else can be decoded.</span>
+<span class="sd">    * An interframe from before the current keyframe is discarded.</span>
+<span class="sd">    * An interframe that isn't next in sequence means a gap: stop, and ask</span>
+<span class="sd">      for a keyframe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    keyframes_only : bool</span>
+<span class="sd">        Whether this subscriber only takes keyframes, so the sequence numbers</span>
+<span class="sd">        between them are not missing, just not for it.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keyframes_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyframes_only</span> <span class="o">=</span> <span class="n">keyframes_only</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_synced</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_sequence</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_received</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lost</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_request</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_report</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VideoSync.accept">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync.accept">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">:</span> <span class="n">VideoPacket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether ``packet`` can be decoded next, updating what's known."""</span>
+        <span class="k">if</span> <span class="n">packet</span><span class="o">.</span><span class="n">keyframe</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synced</span> <span class="ow">and</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keyframes_only</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_lost</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_received</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_synced</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="o">=</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_sequence</span> <span class="o">=</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synced</span> <span class="ow">or</span> <span class="n">packet</span><span class="o">.</span><span class="n">keyframe_sequence</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_sequence</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">packet</span><span class="o">.</span><span class="n">keyframe_sequence</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_sequence</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lost</span> <span class="o">+=</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="o">=</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_synced</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_received</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last</span> <span class="o">=</span> <span class="n">packet</span><span class="o">.</span><span class="n">sequence</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="VideoSync.keyframe_due">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync.keyframe_due">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">keyframe_due</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether to ask for a keyframe now, at most every :py:data:`KEYFRAME_RETRY`."""</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synced</span> <span class="ow">or</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_request</span> <span class="o">&lt;</span> <span class="n">KEYFRAME_RETRY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_request</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="VideoSync.take_report">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.VideoSync.take_report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The fraction lost since the last report, once per :py:data:`REPORT_INTERVAL`.</span>
+
+<span class="sd">        Never for a keyframes-only subscriber: with no sequence to check it</span>
+<span class="sd">        can't see loss, and shouldn't tell rate control the link is clean.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keyframes_only</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_report</span> <span class="o">&lt;</span> <span class="n">REPORT_INTERVAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_report</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_received</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lost</span>
+        <span class="n">lost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lost</span> <span class="o">/</span> <span class="n">expected</span> <span class="k">if</span> <span class="n">expected</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_received</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lost</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">lost</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Transport</span><span class="p">(</span><span class="n">SubSyncableDataclass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""What every transport has: the current frame, and a signal for a new one.</span>
+
+<span class="sd">    :py:attr:`data` is deliberately not a dataclass field.  A field would be</span>
+<span class="sd">    a psygnal signal relayed through the camera's whole event tree, once per</span>
+<span class="sd">    frame, only to be filtered out before publishing.  That filter has also</span>
+<span class="sd">    been seen to miss: a frame reached SpiriSynq's field publishing under</span>
+<span class="sd">    the bare path ``transport_raw``, and failed to serialize.</span>
+<span class="sd">    """</span>
+
+    <span class="n">data_changed</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Signal</span><span class="p">]</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="c1">#: Local to the sender, as SpiriSynq's ``&lt;field&gt;_qos`` is; set it on the</span>
+    <span class="c1">#: class or the instance.</span>
+    <span class="n">data_qos</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">SynqQoS</span><span class="p">]</span> <span class="o">=</span> <span class="n">QOS_BACKGROUND</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The most recent frame; see the subclasses for what that is."""</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_data"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty_data</span><span class="p">)</span>
+
+    <span class="nd">@data</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Drop the current frame without announcing it: it isn't news."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty_data</span>
+
+
+<div class="viewcode-block" id="TransportRaw">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.TransportRaw">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransportRaw</span><span class="p">(</span><span class="n">_Transport</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A camera's raw transport, which every other transport is built on.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : RawFrame | None</span>
+<span class="sd">        The most recent frame, or ``None`` while nothing wants frames.</span>
+<span class="sd">        Published at :py:data:`TRANSPORT_RAW_DATA` rather than synced as a</span>
+<span class="sd">        field, so it is not part of a rehydrate either.</span>
+<span class="sd">    data_changed : Signal</span>
+<span class="sd">        Emits each new :py:attr:`data`, wherever it came from.</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># Nothing to signal yet: raw has no settings, only data_changed.</span>
+    <span class="n">events</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">SignalGroupDescriptor</span><span class="p">]</span> <span class="o">=</span> <span class="n">SignalGroupDescriptor</span><span class="p">(</span><span class="n">warn_on_no_fields</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">_empty_data</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">RawFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="TransportJpeg">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.TransportJpeg">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransportJpeg</span><span class="p">(</span><span class="n">_Transport</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A camera's JPEG transport.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    quality : int</span>
+<span class="sd">        Encode quality, 1-100.  Live: takes effect on the next frame.</span>
+<span class="sd">    mimetype : str</span>
+<span class="sd">        What :py:attr:`data` is encoded as; see</span>
+<span class="sd">        :py:data:`SpiriCamera.camera.ENCODINGS`.</span>
+<span class="sd">    data : bytes</span>
+<span class="sd">        The most recent encoded frame, carrying that frame's tags in its</span>
+<span class="sd">        EXIF.  Empty until someone wants frames.  Published at</span>
+<span class="sd">        :py:data:`TRANSPORT_JPEG_DATA` rather than synced as a field, so it</span>
+<span class="sd">        is not part of a rehydrate either.</span>
+<span class="sd">    data_changed : Signal</span>
+<span class="sd">        Emits each new :py:attr:`data`, wherever it came from.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_empty_data</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">""</span>
+
+    <span class="n">quality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span>
+    <span class="n">mimetype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"image/jpeg"</span></div>
+
+
+
+<div class="viewcode-block" id="RateControl">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.RateControl">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RateControl</span><span class="p">(</span><span class="n">SubSyncableDataclass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""How the one encode suits itself to the worst subscriber's link.</span>
+
+<span class="sd">    All policy, and all live: see :py:class:`SpiriCamera.video.RateController`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start_bitrate : int</span>
+<span class="sd">        A new subscriber's estimate, and the target with no reports, in bps.</span>
+<span class="sd">    min_bitrate : int</span>
+<span class="sd">        The encoder target's floor, in bps.  Below it, frame rate drops instead.</span>
+<span class="sd">    max_bitrate : int</span>
+<span class="sd">        The encoder target's ceiling, in bps.</span>
+<span class="sd">    min_fps : float</span>
+<span class="sd">        The lowest frame rate to drop to.  The highest is the camera's</span>
+<span class="sd">        ``max_framerate``.</span>
+<span class="sd">    loss_high : float</span>
+<span class="sd">        Reported loss above which the estimate is cut.</span>
+<span class="sd">    loss_low : float</span>
+<span class="sd">        Reported loss below which the estimate grows.</span>
+<span class="sd">    growth : float</span>
+<span class="sd">        What a clean report multiplies the estimate by.</span>
+<span class="sd">    stall_timeout : float</span>
+<span class="sd">        Seconds without a report before the estimate is halved, repeatedly.</span>
+<span class="sd">    subscriber_timeout : float</span>
+<span class="sd">        Seconds without a report before a subscriber stops counting at all.</span>
+<span class="sd">    height_caps : list</span>
+<span class="sd">        ``[minimum target, frame height cap or null]`` pairs, first match wins:</span>
+<span class="sd">        a lower target is spent on fewer, cleaner pixels.  Empty never shrinks.</span>
+<span class="sd">    bitrate_restart_fraction : float</span>
+<span class="sd">        How far the target must move from the running encoder's bitrate to be</span>
+<span class="sd">        worth applying.  Applying one takes a new encoder, so a keyframe.</span>
+<span class="sd">    bitrate_restart_interval : float</span>
+<span class="sd">        Seconds without a keyframe before a change in target gets one of its</span>
+<span class="sd">        own.  Until then it waits for the next keyframe sent for any other</span>
+<span class="sd">        reason, so adapting costs no extra keyframes.</span>
+<span class="sd">    """</span>
+
+    <span class="n">start_bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+    <span class="n">min_bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500_000</span>
+    <span class="n">max_bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3_000_000</span>
+    <span class="c1"># float | int: SpiriSynq refuses an int for a plain float field, and someone</span>
+    <span class="c1"># setting these shouldn't have their "2" ignored for not being "2.0".</span>
+    <span class="n">min_fps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">loss_high</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.10</span>
+    <span class="n">loss_low</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.02</span>
+    <span class="n">growth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1.08</span>
+    <span class="n">stall_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">3.0</span>
+    <span class="n">subscriber_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">10.0</span>
+    <span class="n">bitrate_restart_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">bitrate_restart_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">10.0</span>
+    <span class="n">height_caps</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1_500_000</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="p">[</span><span class="mi">800_000</span><span class="p">,</span> <span class="mi">720</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">480</span><span class="p">]])</span></div>
+
+
+
+<div class="viewcode-block" id="TransportVideo">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.TransportVideo">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransportVideo</span><span class="p">(</span><span class="n">SubSyncableDataclass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A camera's video transport: its one encode, whoever is watching.</span>
+
+<span class="sd">    Keyframes and interframes travel on separate keys so each can have its</span>
+<span class="sd">    own QoS: a keyframe is the only way back after a loss, and the frames</span>
+<span class="sd">    between are the first thing to shed.  The QoS is SpiriSynq's own kind:</span>
+<span class="sd">    local to the sender, never synced or rehydrated, and set in code on the</span>
+<span class="sd">    class or the instance as ``data_keyframe_qos`` and ``data_interframe_qos``.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    codec : str</span>
+<span class="sd">        What is encoded.  Only ``h264``.</span>
+<span class="sd">    preset : str</span>
+<span class="sd">        libx264's preset; defaults to ``SPIRICAMERA_H264_PRESET``.</span>
+<span class="sd">    keyframe_interval : float</span>
+<span class="sd">        Seconds between keyframes, which bounds recovery from a loss.  Also</span>
+<span class="sd">        the frame interval of a keyframes-only subscriber.  0 sends them only</span>
+<span class="sd">        when asked for.</span>
+<span class="sd">    keyframe_min_interval : float</span>
+<span class="sd">        Least seconds between requested keyframes, so ten joiners or one</span>
+<span class="sd">        lossy link don't cause a storm.</span>
+<span class="sd">    target_bitrate : int</span>
+<span class="sd">        What the encoder is aiming at now, for the worst subscriber.  A</span>
+<span class="sd">        readout, set by the encoder: anything else written to it is overwritten.</span>
+<span class="sd">    encoded_fps : float</span>
+<span class="sd">        The frame rate being encoded now, also a readout: the camera's</span>
+<span class="sd">        ``max_framerate``, lower only when rate control says so.</span>
+<span class="sd">    encoded_width : int</span>
+<span class="sd">        The width being encoded now, also a readout.</span>
+<span class="sd">    encoded_height : int</span>
+<span class="sd">        The height being encoded now, also a readout: the camera's</span>
+<span class="sd">        ``max_height`` is the setting, and this is lower only when</span>
+<span class="sd">        ``rate_control.height_caps`` says so.</span>
+<span class="sd">    rate_control : RateControl</span>
+<span class="sd">        The policy behind those readouts.</span>
+<span class="sd">    packet_received : Signal</span>
+<span class="sd">        Emits each :py:class:`VideoPacket` in decodable order, in this process,</span>
+<span class="sd">        which is what RTSP and other endpoints read.</span>
+<span class="sd">    """</span>
+
+    <span class="n">packet_received</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Signal</span><span class="p">]</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">data_keyframe_qos</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">SynqQoS</span><span class="p">]</span> <span class="o">=</span> <span class="n">QOS_KEYFRAME</span>
+    <span class="n">data_interframe_qos</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">SynqQoS</span><span class="p">]</span> <span class="o">=</span> <span class="n">QOS_INTERFRAME</span>
+
+    <span class="n">codec</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"h264"</span>
+    <span class="n">preset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"veryfast"</span>
+    <span class="n">keyframe_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">keyframe_min_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.25</span>
+    <span class="n">target_bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">encoded_fps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">encoded_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">encoded_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rate_control</span><span class="p">:</span> <span class="n">RateControl</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">RateControl</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ignore_reply</span><span class="p">(</span><span class="n">reply</span><span class="p">:</span> <span class="n">zenoh</span><span class="o">.</span><span class="n">Reply</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A request's acknowledgement: what matters arrives on the ``@data`` keys."""</span>
+
+
+<div class="viewcode-block" id="DataChannel">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataChannel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The zenoh side of one ``@data`` key, and who wants it.</span>
+
+<span class="sd">    A camera wants a transport's frames for two kinds of consumer: a</span>
+<span class="sd">    subscriber somewhere on the network, which the key's publisher can</span>
+<span class="sd">    see, and something in this process, which *holds* the channel instead</span>
+<span class="sd">    so its frames are not sent through zenoh just to come back.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        The key, relative to the camera.</span>
+<span class="sd">    receive : Callable[[zenoh.Sample], None]</span>
+<span class="sd">        Bound method called with each frame from the network.</span>
+<span class="sd">    answers_keyframe_requests : bool</span>
+<span class="sd">        Whether this channel owns its transport's ``request_keyframe``</span>
+<span class="sd">        queryable.  A transport has one, however many keys it has.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">receive</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">zenoh</span><span class="o">.</span><span class="n">Sample</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">answers_keyframe_requests</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="c1"># Weak, like SpiriSynq's own callbacks: the channel must not keep</span>
+        <span class="c1"># its camera alive through a zenoh callback.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_receive</span> <span class="o">=</span> <span class="n">WeakMethodProxy</span><span class="p">(</span><span class="n">receive</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_answers_keyframe_requests</span> <span class="o">=</span> <span class="n">answers_keyframe_requests</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">:</span> <span class="n">Session</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_authoritive</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_publisher</span><span class="p">:</span> <span class="n">zenoh</span><span class="o">.</span><span class="n">Publisher</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_queryable</span><span class="p">:</span> <span class="n">zenoh</span><span class="o">.</span><span class="n">Queryable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subscriber</span><span class="p">:</span> <span class="n">zenoh</span><span class="o">.</span><span class="n">Subscriber</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transport_key</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_requested</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="DataChannel.declare">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.declare">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">declare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">camera_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">authoritive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Go live under ``camera_path``."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_authoritive</span> <span class="o">=</span> <span class="n">authoritive</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">camera_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transport_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_publisher</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">zenoh_session</span><span class="o">.</span><span class="n">declare_publisher</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">authoritive</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_answers_keyframe_requests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_queryable</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">zenoh_session</span><span class="o">.</span><span class="n">declare_queryable</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_key</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">REQUEST_KEYFRAME</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">WeakMethodProxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_keyframe_request</span><span class="p">),</span>
+            <span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">demanded</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether a subscriber on the network, or a hold here, wants frames."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_wanted</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wanted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether a frame should be produced for this channel's ``data``.</span>
+
+<span class="sd">        As :py:attr:`demanded`, and also before the channel has been declared:</span>
+<span class="sd">        a camera not on SpiriSynq has nobody to ask, and only local readers.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publisher</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">demanded</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remote_wanted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether a subscriber on the network would receive a frame sent now."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publisher</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publisher</span><span class="o">.</span><span class="n">matching_status</span><span class="o">.</span><span class="n">matching</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subscribed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether :py:meth:`subscribe` is in effect here."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed</span>
+
+<div class="viewcode-block" id="DataChannel.hold">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.hold">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hold</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Want this channel's frames for a consumer in this process."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.release">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.release">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Undo one :py:meth:`hold`."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.subscribe">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.subscribe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Receive frames here; subscribing again is a no-op.</span>
+
+<span class="sd">        The camera itself already has its own frames, so this only holds</span>
+<span class="sd">        the channel.  A mirror declares a subscriber, and asks for a keyframe</span>
+<span class="sd">        in case nothing new is coming.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_authoritive</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_subscriber</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">zenoh_session</span><span class="o">.</span><span class="n">declare_subscriber</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">WeakMethodProxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_sample</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_answers_keyframe_requests</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">request_keyframe</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.unsubscribe">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.unsubscribe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Stop receiving frames here.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Whether this undid a :py:meth:`subscribe`.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">subscriber</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscriber</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscriber</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holds</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">subscriber</span><span class="o">.</span><span class="n">undeclare</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.request_keyframe">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.request_keyframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_keyframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Ask the camera to send a keyframe on this transport."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">REQUEST_KEYFRAME</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.query">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.query">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Query one of this transport's queryables, not waiting for the reply."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">zenoh_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_transport_key</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">_ignore_reply</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.take_keyframe_request">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.take_keyframe_request">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take_keyframe_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether a subscriber has asked for a keyframe since this was last called."""</span>
+        <span class="n">requested</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_requested</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_requested</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">requested</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.put">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.put">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Publish a frame that started here, if anyone would receive it.</span>
+
+<span class="sd">        Through the session rather than the publisher, as SpiriSynq's own</span>
+<span class="sd">        field puts are: only a session put can set QoS per sample, which is</span>
+<span class="sd">        what lets it change live.  The publisher's id still names the sender.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_wanted</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">publisher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publisher</span>
+        <span class="k">assert</span> <span class="n">publisher</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">zenoh_session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">payload</span><span class="p">,</span>
+            <span class="n">source_info</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">source_info</span><span class="p">(</span><span class="n">source_id</span><span class="o">=</span><span class="n">publisher</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">options</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataChannel.close">
+<a class="viewcode-back" href="../../api/SpiriCamera.transports.html#SpiriCamera.transports.DataChannel.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Undeclare everything this channel declared."""</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"_subscriber"</span><span class="p">,</span> <span class="s2">"_request_queryable"</span><span class="p">,</span> <span class="s2">"_publisher"</span><span class="p">):</span>
+            <span class="n">entity</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">entity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">entity</span><span class="o">.</span><span class="n">undeclare</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">zenoh</span><span class="o">.</span><span class="n">Sample</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""A live frame; our own come back too, and are dropped."""</span>
+        <span class="n">publisher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publisher</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">source_info</span><span class="o">.</span><span class="n">source_id</span> <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">source_info</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">publisher</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">zid</span><span class="p">),</span> <span class="n">source</span><span class="o">.</span><span class="n">eid</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">publisher</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">zid</span><span class="p">),</span> <span class="n">publisher</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">eid</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">zenoh</span><span class="o">.</span><span class="n">SampleKind</span><span class="o">.</span><span class="n">PUT</span> <span class="ow">and</span> <span class="n">sample</span><span class="o">.</span><span class="n">payload</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receive</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_keyframe_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">zenoh</span><span class="o">.</span><span class="n">Query</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""A subscriber just joined; the camera acts on it at its next frame."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_requested</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">query</span><span class="o">.</span><span class="n">reply</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">key_expr</span><span class="p">,</span> <span class="sa">b</span><span class="s2">""</span><span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

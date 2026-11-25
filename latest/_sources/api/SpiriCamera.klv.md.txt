@@ -1,7 +1,7 @@
-# SpiriCamera.whep
+# SpiriCamera.klv
 
 ```{eval-rst}
-.. automodule:: SpiriCamera.whep
+.. automodule:: SpiriCamera.klv
    :members:
    :member-order: bysource
    :undoc-members: False

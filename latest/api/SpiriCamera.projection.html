@@ -3,13 +3,13 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="6.2.5. SpiriCamera.sources" href="SpiriCamera.sources.html"><link rel="prev" title="6.2.3. SpiriCamera.overlay" href="SpiriCamera.overlay.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10.2.9. SpiriCamera.sources" href="SpiriCamera.sources.html"><link rel="prev" title="10.2.7. SpiriCamera.overlay" href="SpiriCamera.overlay.html">
         <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.projection.html">
         <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
         <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
 
     <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
-        <title>6.2.4. SpiriCamera.projection - SpiriCamera</title>
+        <title>10.2.8. SpiriCamera.projection - SpiriCamera</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -248,22 +248,28 @@
 </script><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../exif.html">2. Frame Metadata (EXIF)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">3. Drawing on things in the world</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">4. Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">5. Tutorial: YOLO detection boxes as a live overlay</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">6. API Reference</a><input aria-label="Toggle navigation of 6. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">6.2.1. SpiriCamera.camera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">6.2.2. SpiriCamera.exif</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">6.2.3. SpiriCamera.overlay</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">6.2.4. SpiriCamera.projection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">6.2.5. SpiriCamera.sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.webrtc.html">6.2.6. SpiriCamera.webrtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.whep.html">6.2.7. SpiriCamera.whep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">6.2.8. SpiriCamera.ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">6.2.9. SpiriCamera.web</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">6.2.10. SpiriCamera.cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">6.2.11. SpiriCamera.main</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
 </ul>
 </li>
 </ul>
@@ -309,7 +315,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="module-SpiriCamera.projection">
-<span id="spiricamera-projection"></span><h1><span class="section-number">6.2.4. </span>SpiriCamera.projection<a class="headerlink" href="#module-SpiriCamera.projection" title="Link to this heading">¶</a></h1>
+<span id="spiricamera-projection"></span><h1><span class="section-number">10.2.8. </span>SpiriCamera.projection<a class="headerlink" href="#module-SpiriCamera.projection" title="Link to this heading">¶</a></h1>
 <p>Where a point in the world lands in a camera’s picture.</p>
 <p>The overlay uses this to put a widget on an object in SpiriSynq’s frame
 tree (see <a class="reference internal" href="../world_overlays.html#world-overlays"><span class="std std-ref">Drawing on things in the world</span></a>), so a widget’s template never does the
@@ -342,7 +348,7 @@ closer is treated as behind the camera.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A point as a camera sees it.</p>
 <section id="attributes">
-<h2><span class="section-number">6.2.4. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">10.2.8. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>x, y<span class="classifier">float</span></dt><dd><p>Its pixel, in the frame <a class="reference internal" href="#SpiriCamera.projection.project" title="SpiriCamera.projection.project"><code class="xref py py-func docutils literal notranslate"><span class="pre">project()</span></code></a> was given.  Off the
 frame when the point is in front of the camera but out of shot.</p>
@@ -486,7 +492,7 @@ orientation to look along.</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title"><span class="section-number">6.2.5. </span>SpiriCamera.sources</div>
+                <div class="title"><span class="section-number">10.2.9. </span>SpiriCamera.sources</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -497,7 +503,7 @@ orientation to look along.</p>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><span class="section-number">6.2.3. </span>SpiriCamera.overlay</div>
+                <div class="title"><span class="section-number">10.2.7. </span>SpiriCamera.overlay</div>
                 
               </div>
             </a>
@@ -531,7 +537,7 @@ orientation to look along.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">6.2.4. SpiriCamera.projection</a><ul>
+<li><a class="reference internal" href="#">10.2.8. SpiriCamera.projection</a><ul>
 <li><a class="reference internal" href="#SpiriCamera.projection.NEAR"><code class="docutils literal notranslate"><span class="pre">NEAR</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.projection.View"><code class="docutils literal notranslate"><span class="pre">View</span></code></a><ul>
 <li><a class="reference internal" href="#SpiriCamera.projection.View.x"><code class="docutils literal notranslate"><span class="pre">View.x</span></code></a></li>
@@ -556,7 +562,7 @@ orientation to look along.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=1b390748"></script>
+</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
