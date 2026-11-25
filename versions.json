@@ -1,6 +1,11 @@
 {
-  "latest": "v0.4.0",
+  "latest": "v0.4.1",
   "versions": [
+    {
+      "name": "v0.4.1",
+      "path": "v0.4.1/",
+      "pdf": "v0.4.1/SPIRI-SPIRICAMERA-001_rev0.3-DRAFT.pdf"
+    },
     {
       "name": "v0.4.0",
       "path": "v0.4.0/",

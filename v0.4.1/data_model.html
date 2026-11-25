@@ -1,0 +1,720 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="3. Frame Metadata (EXIF)" href="exif.html"><link rel="prev" title="1. Getting Started" href="getting_started.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/data_model.html">
+        <link rel="prefetch" href="_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>2. The camera’s data structure - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/data_model.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="the-camera-s-data-structure">
+<span id="data-model"></span><h1><span class="section-number">2. </span>The camera’s data structure<a class="headerlink" href="#the-camera-s-data-structure" title="Link to this heading">¶</a></h1>
+<p>A camera is one SpiriSynq object with three transports inside it. The YAML on this
+page is the whole of that object, as <code class="docutils literal notranslate"><span class="pre">myhost/cameras/1/raw</span></code>, with its default values. The
+structure and values come from a real camera’s rehydrate. The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> keys, RPCs and
+comments are added by hand, because those don’t appear in a rehydrate.</p>
+<section id="how-frames-get-to-you">
+<h2><span class="section-number">2.1. </span>How frames get to you<a class="headerlink" href="#how-frames-get-to-you" title="Link to this heading">¶</a></h2>
+<p>Every frame takes the same path, and each step runs only if something after it is
+wanted:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>source -&gt; resize -&gt; widgets -&gt; transport_raw -&gt; transport_jpeg
+                                             -&gt; transport_video
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Subscribing is what runs the camera.</strong> With no subscribers on any transport, it
+isn’t running and its source is closed. Nothing else switches it on.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">&#64;</span></code> keys are how you choose a transport.</strong> A wildcard never matches a key chunk
+starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>, so the <code class="docutils literal notranslate"><span class="pre">cameras/1/raw/**</span></code> subscription every mirror holds receives
+settings, not frames. To get frames, subscribe to the exact key.</p></li>
+<li><p><strong>Everything is built on raw.</strong> Resizing and widgets happen before raw, so every
+transport carries the same picture. For a feed without widgets, make a second
+camera.</p></li>
+</ul>
+</section>
+<section id="the-camera">
+<h2><span class="section-number">2.2. </span>The camera<a class="headerlink" href="#the-camera" title="Link to this heading">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Every key below is prefixed with myhost/cameras/1/raw/</span>
+<span class="c1">#</span>
+<span class="c1">#   FIELD     Synced. One topic per field, YAML payload, sent when the value changes.</span>
+<span class="c1">#             Reaches every mirror through its ** subscription, and is in the rehydrate.</span>
+<span class="c1">#   READOUT   A FIELD the camera sets. Anything written to it gets overwritten.</span>
+<span class="c1">#   VERBATIM  An @ key. Only explicit subscribers receive it. Opaque bytes, never in</span>
+<span class="c1">#             a rehydrate, and sent only if someone would receive it.</span>
+<span class="c1">#   RPC       A zenoh queryable: the caller does a get and receives a reply.</span>
+
+<span class="c1"># --- Identity and placement: FIELD -----------------------------------------------</span>
+<span class="nt">source_str</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testimage://</span><span class="w">          </span><span class="c1"># Writable; changing it retargets the camera.</span>
+<span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="kt">!SourceInfo</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="nv">testimage</span><span class="p p-Indicator">:</span><span class="nv">//</span><span class="p p-Indicator">,</span><span class="nt"> scheme</span><span class="p">:</span><span class="w"> </span><span class="nv">testimage</span><span class="p p-Indicator">,</span><span class="nt"> target</span><span class="p">:</span><span class="w"> </span><span class="nv">pm5544</span><span class="p p-Indicator">,</span>
+<span class="nt">                     handler</span><span class="p">:</span><span class="w"> </span><span class="nv">TestImageSource</span><span class="p p-Indicator">,</span><span class="nt"> error</span><span class="p">:</span><span class="w"> </span><span class="s">''</span><span class="p p-Indicator">}</span>
+<span class="nt">vendor</span><span class="p">:</span><span class="w"> </span><span class="s">''</span><span class="w">                        </span><span class="c1"># These and max_supported_* come from opening the</span>
+<span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="s">''</span><span class="w">                         </span><span class="c1"># source once at start(), so an idle camera still</span>
+<span class="nt">serial_number</span><span class="p">:</span><span class="w"> </span><span class="s">''</span><span class="w">                 </span><span class="c1"># describes itself. The source then closes.</span>
+<span class="nt">max_supported_width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">max_supported_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">max_supported_framerate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="nt">intrinsics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w">                  </span><span class="c1"># The lens: see set_intrinsics below.</span>
+<span class="nt">relative_to</span><span class="p">:</span><span class="w"> </span><span class="kt">!RootFrame</span><span class="w"> </span><span class="s">'unknown'</span><span class="w"> </span><span class="c1"># What the camera is mounted on.</span>
+<span class="nt">mount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w">                       </span><span class="c1"># How it's mounted there.</span>
+<span class="nt">pose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w">                        </span><span class="c1"># Where it is, and which way it looks.</span>
+<span class="nt">overlay_widgets</span><span class="p">:</span><span class="w"> </span><span class="kt">!EventedDict</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w">  </span><span class="c1"># {&lt;widget topic&gt;: {bindings: {alias: topic}, x: %, y: %}}</span>
+<span class="nt">overlay_client_render</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">      </span><span class="c1"># true: widgets aren't drawn into the frames.</span>
+
+<span class="c1"># --- State: READOUT --------------------------------------------------------------</span>
+<span class="nt">running</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">                    </span><span class="c1"># true while anything wants raw, JPEG or video.</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">'idle:</span><span class="nv"> </span><span class="s">no</span><span class="nv"> </span><span class="s">subscribers'</span><span class="w">    </span><span class="c1"># running | stopped | waiting for source: &lt;reason&gt; |</span>
+<span class="w">                                  </span><span class="c1"># capture failing: &lt;reason&gt;</span>
+
+<span class="c1"># --- Pipeline: FIELD, live, applying to every transport --------------------------</span>
+<span class="nt">max_width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1920</span><span class="w">                   </span><span class="c1"># The only size settings.</span>
+<span class="nt">max_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1080</span>
+<span class="nt">max_framerate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">                 </span><span class="c1"># The only frame rate setting.</span>
+<span class="nt">exif_enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">                </span><span class="c1"># false: frames carry no tags, on any transport.</span>
+
+<span class="c1"># --- Raw -------------------------------------------------------------------------</span>
+<span class="nt">transport_raw</span><span class="p">:</span><span class="w"> </span><span class="kt">!TransportRaw</span><span class="w">      </span><span class="c1"># FIELD: empty, because raw has no settings.</span>
+<span class="w">  </span><span class="s">"@data"</span><span class="p p-Indicator">:</span><span class="w">                        </span><span class="c1"># VERBATIM, BACKGROUND priority, dropped when congested.</span>
+<span class="w">    </span><span class="c1"># Sent:      Each capture tick with a new frame. An identical frame isn't resent.</span>
+<span class="w">    </span><span class="c1"># Subscribe: cam.transport_raw_subscribe(), or a spirisynq+raw:// source.</span>
+<span class="w">    </span><span class="c1"># Python:    .data (a read-only RawFrame), .data_changed (signal).</span>
+<span class="w">    </span><span class="nt">payload</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;height * width * 3 bytes, bgr24, tightly packed, top row first&gt;</span>
+<span class="w">    </span><span class="nt">attachment</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">width</span><span class="p">:</span><span class="w"> </span><span class="nv">1440</span><span class="p p-Indicator">,</span><span class="nt"> height</span><span class="p">:</span><span class="w"> </span><span class="nv">1080</span><span class="p p-Indicator">,</span><span class="nt"> format</span><span class="p">:</span><span class="w"> </span><span class="nv">bgr24</span><span class="p p-Indicator">,</span><span class="nt"> tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">timestamp</span><span class="p">:</span><span class="w"> </span><span class="s">"..."</span><span class="p p-Indicator">}}</span>
+<span class="w">  </span><span class="nt">request_keyframe</span><span class="p">:</span><span class="w">               </span><span class="c1"># RPC: empty reply; the current frame is resent on @data.</span>
+
+<span class="c1"># --- JPEG: encoded from raw, only if wanted --------------------------------------</span>
+<span class="nt">transport_jpeg</span><span class="p">:</span><span class="w"> </span><span class="kt">!TransportJpeg</span>
+<span class="w">  </span><span class="nt">quality</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w">                     </span><span class="c1"># FIELD, live.</span>
+<span class="w">  </span><span class="nt">mimetype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image/jpeg</span><span class="w">            </span><span class="c1"># FIELD, live.</span>
+<span class="w">  </span><span class="s">"@data"</span><span class="p p-Indicator">:</span><span class="w">                        </span><span class="c1"># VERBATIM, BACKGROUND priority, dropped when congested.</span>
+<span class="w">    </span><span class="c1"># Subscribe: cam.transport_jpeg_subscribe(), or a spirisynq:// or spirisynq+jpeg:// source.</span>
+<span class="w">    </span><span class="c1"># Python:    .data (bytes), .data_changed (signal).</span>
+<span class="w">    </span><span class="nt">payload</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;JPEG bytes, tags in the EXIF&gt;</span><span class="w">   </span><span class="c1"># zenoh encoding: image/jpeg</span>
+<span class="w">  </span><span class="nt">request_keyframe</span><span class="p">:</span><span class="w">               </span><span class="c1"># RPC: as for raw.</span>
+
+<span class="c1"># --- Video: the camera's one encode, from raw, only if wanted --------------------</span>
+<span class="nt">transport_video</span><span class="p">:</span><span class="w"> </span><span class="kt">!TransportVideo</span>
+<span class="w">  </span><span class="c1"># Settings: FIELD, live.</span>
+<span class="w">  </span><span class="nt">codec</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">h264</span><span class="w">                     </span><span class="c1"># The only one.</span>
+<span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">veryfast</span><span class="w">                </span><span class="c1"># x264's; default from SPIRICAMERA_H264_PRESET.</span>
+<span class="w">  </span><span class="nt">keyframe_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span><span class="w">          </span><span class="c1"># Seconds; bounds recovery. 0: only when asked for.</span>
+<span class="w">  </span><span class="nt">keyframe_min_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.25</span><span class="w">     </span><span class="c1"># Coalesces requests, so there are no keyframe storms.</span>
+
+<span class="w">  </span><span class="c1"># What the encoder is doing now: READOUT.</span>
+<span class="w">  </span><span class="nt">target_bitrate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">               </span><span class="c1"># For the worst subscriber.</span>
+<span class="w">  </span><span class="nt">encoded_fps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span><span class="w">                </span><span class="c1"># max_framerate, lower only when rate control says so.</span>
+<span class="w">  </span><span class="nt">encoded_width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">                </span><span class="c1"># The camera's size, lower only if height_caps says so.</span>
+<span class="w">  </span><span class="nt">encoded_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+
+<span class="w">  </span><span class="nt">rate_control</span><span class="p">:</span><span class="w"> </span><span class="kt">!RateControl</span><span class="w">      </span><span class="c1"># FIELD, live: how the encode suits the worst subscriber.</span>
+<span class="w">    </span><span class="nt">start_bitrate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000000</span><span class="w">        </span><span class="c1"># A new subscriber's estimate; the target with no reports.</span>
+<span class="w">    </span><span class="nt">min_bitrate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500000</span><span class="w">           </span><span class="c1"># Below this, frame rate drops instead.</span>
+<span class="w">    </span><span class="nt">max_bitrate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000000</span>
+<span class="w">    </span><span class="nt">min_fps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span><span class="w">                  </span><span class="c1"># The most frame rate can drop to.</span>
+<span class="w">    </span><span class="nt">loss_high</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span><span class="w">                </span><span class="c1"># Reported loss above this cuts the estimate.</span>
+<span class="w">    </span><span class="nt">loss_low</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.02</span><span class="w">                </span><span class="c1"># Below this, the estimate grows.</span>
+<span class="w">    </span><span class="nt">growth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.08</span><span class="w">                  </span><span class="c1"># Per clean report.</span>
+<span class="w">    </span><span class="nt">stall_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.0</span><span class="w">            </span><span class="c1"># Seconds silent, then the estimate halves, repeatedly.</span>
+<span class="w">    </span><span class="nt">subscriber_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">      </span><span class="c1"># Seconds silent, then it stops counting.</span>
+<span class="w">    </span><span class="nt">bitrate_restart_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span><span class="w"> </span><span class="c1"># How far the target must move to be worth applying.</span>
+<span class="w">    </span><span class="nt">bitrate_restart_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">  </span><span class="c1"># Seconds without a keyframe before it gets its own.</span>
+<span class="w">    </span><span class="nt">height_caps</span><span class="p">:</span><span class="w">                  </span><span class="c1"># Smaller video at lower bitrates. Each row is</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1500000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">null</span><span class="p p-Indicator">]</span><span class="w">           </span><span class="c1"># [minimum target, height cap]; the first row the</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">800000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">720</span><span class="p p-Indicator">]</span><span class="w">             </span><span class="c1"># target reaches applies. null: no cap. [] never</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">480</span><span class="p p-Indicator">]</span><span class="w">                  </span><span class="c1"># shrinks. Raw and JPEG stay full size.</span>
+
+<span class="w">  </span><span class="s">"@data_keyframe"</span><span class="p p-Indicator">:</span><span class="w">               </span><span class="c1"># VERBATIM, DATA_HIGH priority, dropped when congested.</span>
+<span class="w">    </span><span class="c1"># Sent:      Every keyframe_interval, on request, and on an encoder restart.</span>
+<span class="w">    </span><span class="c1"># Subscribe: cam.transport_video_subscribe(keyframes_only=True) for only this key.</span>
+<span class="w">    </span><span class="nt">payload</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Annex B H.264, SPS and PPS in-band, decodable alone&gt;</span><span class="w">   </span><span class="c1"># zenoh encoding: video/h264</span>
+<span class="w">    </span><span class="nt">attachment</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="nv">1020</span><span class="p p-Indicator">,</span><span class="nt"> keyframe_sequence</span><span class="p">:</span><span class="w"> </span><span class="nv">1020</span><span class="p p-Indicator">,</span><span class="nt"> pts</span><span class="p">:</span><span class="w"> </span><span class="nv">91800000</span><span class="p p-Indicator">,</span><span class="nt"> codec</span><span class="p">:</span><span class="w"> </span><span class="nv">h264</span><span class="p p-Indicator">,</span>
+<span class="nt">                 width</span><span class="p">:</span><span class="w"> </span><span class="nv">1280</span><span class="p p-Indicator">,</span><span class="nt"> height</span><span class="p">:</span><span class="w"> </span><span class="nv">720</span><span class="p p-Indicator">,</span><span class="nt"> tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">timestamp</span><span class="p">:</span><span class="w"> </span><span class="s">"..."</span><span class="p p-Indicator">}}</span>
+
+<span class="w">  </span><span class="s">"@data_interframe"</span><span class="p p-Indicator">:</span><span class="w">             </span><span class="c1"># VERBATIM, DATA_LOW priority, dropped when congested.</span>
+<span class="w">    </span><span class="c1"># Sent:      Every other frame. Not even encoded if nobody wants it.</span>
+<span class="w">    </span><span class="c1"># Subscribe: cam.transport_video_subscribe(), or a spirisynq+video:// source.</span>
+<span class="w">    </span><span class="nt">payload</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Annex B H.264, useless without its chain back to the keyframe&gt;</span>
+<span class="w">    </span><span class="nt">attachment</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="nv">1021</span><span class="p p-Indicator">,</span><span class="nt"> keyframe_sequence</span><span class="p">:</span><span class="w"> </span><span class="nv">1020</span><span class="p p-Indicator">,</span><span class="nt"> pts</span><span class="p">:</span><span class="w"> </span><span class="nv">91803000</span><span class="p p-Indicator">,</span><span class="nt"> codec</span><span class="p">:</span><span class="w"> </span><span class="nv">h264</span><span class="p p-Indicator">,</span>
+<span class="nt">                 width</span><span class="p">:</span><span class="w"> </span><span class="nv">1280</span><span class="p p-Indicator">,</span><span class="nt"> height</span><span class="p">:</span><span class="w"> </span><span class="nv">720</span><span class="p p-Indicator">,</span><span class="nt"> tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">timestamp</span><span class="p">:</span><span class="w"> </span><span class="s">"..."</span><span class="p p-Indicator">}}</span>
+
+<span class="w">  </span><span class="nt">request_keyframe</span><span class="p">:</span><span class="w">               </span><span class="c1"># RPC: empty reply. Does the job of RTCP PLI and FIR.</span>
+<span class="w">  </span><span class="nt">report</span><span class="p">:</span><span class="w">                         </span><span class="c1"># RPC: empty reply. Does the job of RTCP RR and REMB.</span>
+<span class="w">    </span><span class="c1"># Payload: {subscriber: &lt;id&gt;, fraction_lost: 0.03, max_bitrate: null}, about once a second.</span>
+<span class="w">    </span><span class="c1">#      or: {subscriber: &lt;id&gt;, left: true}</span>
+
+<span class="w">  </span><span class="c1"># Python, on the camera or a mirror:</span>
+<span class="w">  </span><span class="c1">#   .packet_received                  Signal: each VideoPacket, in decodable order.</span>
+<span class="w">  </span><span class="c1">#   cam.transport_video_subscribe() / _unsubscribe()</span>
+<span class="w">  </span><span class="c1">#   cam.transport_video_request_keyframe()</span>
+<span class="w">  </span><span class="c1"># Python, in the camera's own process, for an endpoint such as RTSP:</span>
+<span class="w">  </span><span class="c1">#   cam.transport_video_hold() / _release()</span>
+<span class="w">  </span><span class="c1">#   cam.transport_video_report(id, fraction_lost=, max_bitrate=) / _forget(id)</span>
+
+<span class="c1"># --- RPCs on the camera: authoritative only --------------------------------------</span>
+<span class="nt">sr_rehydrate</span><span class="p">:</span><span class="w">                     </span><span class="c1"># Everything above except @ keys and RPCs.</span>
+<span class="nt">sr_rehydrate_client</span><span class="p">:</span>
+<span class="nt">sr_metadata/&lt;tag&gt;</span><span class="p">:</span><span class="w">                </span><span class="c1"># Topic, classes, authoritive_node.</span>
+<span class="nt">sr_type_schema/&lt;tag&gt;</span><span class="p">:</span><span class="w">             </span><span class="c1"># JSON schema.</span>
+<span class="nt">set_intrinsics</span><span class="p">:</span><span class="w">                   </span><span class="c1"># origin, width, height, fx, fy, cx, cy, hfov, vfov.</span>
+<span class="nt">clear_intrinsics</span><span class="p">:</span><span class="w">                 </span><span class="c1"># origin.</span>
+
+<span class="c1"># --- Never on the wire -----------------------------------------------------------</span>
+<span class="c1"># received_width, received_height, received_ratio, received_framerate, exif_tags,</span>
+<span class="c1"># exif_timestamp: each node works these out from the frames it receives. A mirror</span>
+<span class="c1"># has none until it subscribes to something.</span>
+<span class="c1">#</span>
+<span class="c1"># data_qos, data_keyframe_qos, data_interframe_qos: the priorities above. Local to the</span>
+<span class="c1"># sender, as SpiriSynq's &lt;field&gt;_qos is, and set in code on the class or instance.</span>
+</pre></div>
+</div>
+<p>The priorities are defaults, meant to be tuned on the real link:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">zenoh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.qos</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynqQoS</span>
+
+<span class="n">cam</span><span class="o">.</span><span class="n">transport_video</span><span class="o">.</span><span class="n">data_interframe_qos</span> <span class="o">=</span> <span class="n">SynqQoS</span><span class="p">(</span>
+    <span class="n">priority</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">Priority</span><span class="o">.</span><span class="n">DATA</span><span class="p">,</span>
+    <span class="n">congestion_control</span><span class="o">=</span><span class="n">zenoh</span><span class="o">.</span><span class="n">CongestionControl</span><span class="o">.</span><span class="n">DROP</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="what-gets-sent-and-when">
+<h2><span class="section-number">2.3. </span>What gets sent, and when<a class="headerlink" href="#what-gets-sent-and-when" title="Link to this heading">¶</a></h2>
+<section id="a-raw-or-jpeg-subscriber">
+<h3><span class="section-number">2.3.1. </span>A raw or JPEG subscriber<a class="headerlink" href="#a-raw-or-jpeg-subscriber" title="Link to this heading">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mirror</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cam.transport_jpeg_subscribe()</span>
+<span class="w">  </span><span class="nt">wire</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">declare subscriber on transport_jpeg/@data</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get transport_jpeg/request_keyframe</span><span class="w">       </span><span class="c1"># In case the frame isn't changing.</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">camera, within 0.1 s</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">opens the source, publishes running and status</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">captures, resizes, draws widgets</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encodes JPEG, because something wants it; video stays unencoded</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">put transport_jpeg/@data, for each changed frame</span>
+<span class="w">  </span><span class="nt">mirror</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transport_jpeg.data updates, and data_changed fires</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">received_width, exif_tags and the rest are read out of the frame</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mirror</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cam.transport_jpeg_unsubscribe()</span>
+<span class="w">  </span><span class="nt">wire</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undeclare subscriber</span>
+<span class="w">  </span><span class="nt">camera</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stops encoding JPEG</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">closes the source, if nobody wants anything else</span>
+</pre></div>
+</div>
+</section>
+<section id="a-video-subscriber">
+<h3><span class="section-number">2.3.2. </span>A video subscriber<a class="headerlink" href="#a-video-subscriber" title="Link to this heading">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mirror</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cam.transport_video_subscribe()</span>
+<span class="w">  </span><span class="nt">wire</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">declare subscribers on @data_interframe and @data_keyframe</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get transport_video/request_keyframe</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">camera, within 0.1 s</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">opens the source, publishes running and status</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder sends a keyframe, then interframes</span>
+<span class="w">  </span><span class="nt">mirror</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">discards interframes until a keyframe arrives</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">packet_received fires for each decodable packet</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get transport_video/report, about once a second</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on a gap, when sequence jumps</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">mirror</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stops emitting, and discards until a keyframe arrives</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get transport_video/request_keyframe, at most every 0.5 s</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">counts the gap in its next report</span>
+<span class="w">    </span><span class="nt">camera</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">next frame is a keyframe, within keyframe_min_interval, for every subscriber</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mirror</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cam.transport_video_unsubscribe()</span>
+<span class="w">  </span><span class="nt">wire</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undeclare subscribers</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get transport_video/report {subscriber</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;id&gt;, left</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true}</span>
+<span class="w">  </span><span class="nt">camera</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">takes it out of rate control straight away</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stops encoding, if nobody else wants video</span>
+</pre></div>
+</div>
+</section>
+<section id="rate-control">
+<h3><span class="section-number">2.3.3. </span>Rate control<a class="headerlink" href="#rate-control" title="Link to this heading">¶</a></h3>
+<p>Each subscriber has its own estimate of what its link can carry, whichever way its
+reports arrive. The encoder takes the worst of them.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">reports</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">zenoh subscriber</span><span class="p">:</span><span class="w">                     </span><span class="c1"># Counts sequence gaps itself.</span>
+<span class="w">    </span><span class="nt">get transport_video/report</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">subscriber</span><span class="p">:</span><span class="w"> </span><span class="nv">&lt;id&gt;</span><span class="p p-Indicator">,</span><span class="nt"> fraction_lost</span><span class="p">:</span><span class="w"> </span><span class="nv">0.03</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">RTSP viewer on /&lt;camera&gt;</span><span class="p">:</span><span class="w">             </span><span class="c1"># SpiriCamera.rtsp's LossMeter, every second.</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">NACKs, receiver reports, or silence</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cam.transport_video_report("rtsp-&lt;id&gt;", fraction_lost=&lt;loss&gt;)</span>
+<span class="w">    </span><span class="nt">PLI or FIR</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">cam.transport_video_request_keyframe()</span>
+<span class="w">  </span><span class="nt">RTSP reader on /&lt;camera&gt;/relay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nothing</span><span class="w">  </span><span class="c1"># A relay on the same host has no say.</span>
+<span class="w">  </span><span class="nt">keyframes-only subscriber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nothing</span><span class="w">    </span><span class="c1"># It can't see loss, so it has no say.</span>
+<span class="w">  </span><span class="nt">subscriber that never reports</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nothing</span>
+
+<span class="l l-Scalar l-Scalar-Plain">each report moves that subscriber's estimate</span><span class="p p-Indicator">:</span>
+<span class="w">  </span><span class="nt">fraction_lost &gt; loss_high</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">estimate *= 1 - fraction_lost / 2</span>
+<span class="w">  </span><span class="nt">fraction_lost &lt; loss_low</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">estimate *= growth</span>
+<span class="w">  </span><span class="nt">otherwise</span><span class="p">:</span><span class="w">                     </span><span class="l l-Scalar l-Scalar-Plain">unchanged</span>
+<span class="w">  </span><span class="nt">max_bitrate</span><span class="p">:</span><span class="w">                   </span><span class="l l-Scalar l-Scalar-Plain">a ceiling on the estimate</span>
+<span class="w">  </span><span class="nt">silent for stall_timeout</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">estimate /= 2, repeatedly</span>
+<span class="w">  </span><span class="nt">silent for subscriber_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">forgotten</span>
+
+<span class="l l-Scalar l-Scalar-Plain">the encoder takes the lowest of everyone's</span><span class="p p-Indicator">:</span>
+<span class="w">  </span><span class="nt">target_bitrate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">estimate, held between min_bitrate and max_bitrate</span>
+<span class="w">                  </span><span class="l l-Scalar l-Scalar-Plain"># Applied at the next keyframe, or after bitrate_restart_interval,</span>
+<span class="w">                  </span><span class="l l-Scalar l-Scalar-Plain"># since changing it needs a new encoder, and so a keyframe.</span>
+<span class="w">  </span><span class="nt">encoded_fps</span><span class="p">:</span><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">max_framerate, scaled down once the estimate is below min_bitrate</span>
+<span class="w">                  </span><span class="l l-Scalar l-Scalar-Plain"># Applied immediately. Never below min_fps.</span>
+<span class="w">  </span><span class="nt">encoded_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the height_caps entry for the target</span>
+<span class="w">                  </span><span class="l l-Scalar l-Scalar-Plain"># Applied immediately, with a keyframe.</span>
+<span class="w">  </span><span class="nt">with no reports at all</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start_bitrate, at max_framerate, with no height cap.</span>
+</pre></div>
+</div>
+<p>The height cap is there because a low bitrate spread over a large frame gives each
+pixel too few bits, and the picture breaks up into blocks. Fewer pixels look better
+on the same link. With the defaults, a target of 1.5 Mbit/s or more has no cap, 0.8
+up to 1.5 Mbit/s caps video at 720 pixels high, and anything lower caps it at 480.
+A frame already shorter than its cap isn’t touched, and a shrunk frame keeps its
+aspect ratio, so 1920x1080 capped at 720 is encoded at 1280x720.</p>
+</section>
+<section id="a-chain-of-cameras">
+<h3><span class="section-number">2.3.4. </span>A chain of cameras<a class="headerlink" href="#a-chain-of-cameras" title="Link to this heading">¶</a></h3>
+<p>A camera with a <code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> source subscribes upstream only while it’s running
+itself, so demand travels up the chain.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">run</span></code> is one: its <code class="docutils literal notranslate"><span class="pre">hud</span></code> and <code class="docutils literal notranslate"><span class="pre">preview</span></code> cameras both relay <code class="docutils literal notranslate"><span class="pre">raw</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">myhost/cameras/1/hud</span><span class="p">:</span><span class="w">                   </span><span class="c1"># source: spirisynq+raw://./cameras/1/raw</span>
+<span class="w">  </span><span class="nt">viewer subscribes to hud/transport_jpeg/@data</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hud starts running, draws its own widgets, encodes its own JPEG</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hud's source subscribes to raw/transport_raw/@data</span>
+<span class="nt">myhost/cameras/1/raw</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw starts running; its JPEG and video stay unencoded</span>
+<span class="nt">viewer leaves</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hud stops, and its source unsubscribes</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw stops, and closes its source</span>
+</pre></div>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Source scheme</p></th>
+<th class="head"><p>Upstream transport</p></th>
+<th class="head"><p>Cost here</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code>, <code class="docutils literal notranslate"><span class="pre">spirisynq+jpeg://</span></code></p></td>
+<td><p>JPEG</p></td>
+<td><p>A JPEG decode per frame, and generation loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">spirisynq+raw://</span></code></p></td>
+<td><p>Raw</p></td>
+<td><p>No decode or loss, but large on the network</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spirisynq+video://</span></code></p></td>
+<td><p>Video</p></td>
+<td><p>An H.264 decode, and low network use; reports loss upstream</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="related-pages">
+<h2><span class="section-number">2.4. </span>Related pages<a class="headerlink" href="#related-pages" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="cpp_integration.html#cpp-integration"><span class="std std-ref">Using a camera from a C++ app</span></a> uses this structure from raw zenoh, with no Python.</p></li>
+<li><p><a class="reference internal" href="rtsp.html#rtsp"><span class="std std-ref">Serving a camera over RTSP</span></a> covers how RTSP viewers drive rate control.</p></li>
+<li><p><a class="reference internal" href="mediamtx.html#mediamtx"><span class="std std-ref">Serving a camera through MediaMTX</span></a> covers translating the camera’s RTSP stream for other readers.</p></li>
+<li><p><a class="reference internal" href="api/SpiriCamera.transports.html#module-SpiriCamera.transports" title="SpiriCamera.transports"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.transports</span></code></a> and <a class="reference internal" href="api/SpiriCamera.video.html#module-SpiriCamera.video" title="SpiriCamera.video"><code class="xref py py-mod docutils literal notranslate"><span class="pre">SpiriCamera.video</span></code></a> are the code.</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="exif.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">3. </span>Frame Metadata (EXIF)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="getting_started.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">1. </span>Getting Started</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">2. The camera’s data structure</a><ul>
+<li><a class="reference internal" href="#how-frames-get-to-you">2.1. How frames get to you</a></li>
+<li><a class="reference internal" href="#the-camera">2.2. The camera</a></li>
+<li><a class="reference internal" href="#what-gets-sent-and-when">2.3. What gets sent, and when</a><ul>
+<li><a class="reference internal" href="#a-raw-or-jpeg-subscriber">2.3.1. A raw or JPEG subscriber</a></li>
+<li><a class="reference internal" href="#a-video-subscriber">2.3.2. A video subscriber</a></li>
+<li><a class="reference internal" href="#rate-control">2.3.3. Rate control</a></li>
+<li><a class="reference internal" href="#a-chain-of-cameras">2.3.4. A chain of cameras</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#related-pages">2.4. Related pages</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=92c8e9c5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

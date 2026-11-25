@@ -517,6 +517,12 @@ metadata’s.  <code class="docutils literal notranslate"><span class="pre">0</s
 <dd><p><code class="docutils literal notranslate"><span class="pre">(video</span> <span class="pre">RTP,</span> <span class="pre">video</span> <span class="pre">RTCP,</span> <span class="pre">metadata</span> <span class="pre">RTP,</span> <span class="pre">metadata</span> <span class="pre">RTCP)</span></code> once started.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.dropped">
+<span class="sig-name descname"><span class="pre">dropped</span></span><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.dropped" title="Link to this definition">¶</a></dt>
+<dd><p>UDP packets dropped because the kernel’s send buffer was full.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.start">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtspServer.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.start" title="Link to this definition">¶</a></dt>
@@ -550,6 +556,10 @@ metadata’s.  <code class="docutils literal notranslate"><span class="pre">0</s
 <dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.send_datagram">
 <span class="sig-name descname"><span class="pre">send_datagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_rtcp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtspServer.send_datagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.send_datagram" title="Link to this definition">¶</a></dt>
 <dd><p>Send from the port a reader was told this track’s traffic comes from.</p>
+<p>A packet the kernel has no room for is dropped, not queued: a queue on a
+link that can’t keep up only grows the latency, and asyncio’s own queue
+for a UDP transport has no limit.  The reader NACKs what it missed, so a
+drop here counts as loss to rate control like any other.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -718,6 +728,7 @@ a keyframe request that names no stream of ours is taken to be for it.</p>
 </li>
 <li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer"><code class="docutils literal notranslate"><span class="pre">RtspServer</span></code></a><ul>
 <li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.udp_ports"><code class="docutils literal notranslate"><span class="pre">RtspServer.udp_ports</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.dropped"><code class="docutils literal notranslate"><span class="pre">RtspServer.dropped</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.start"><code class="docutils literal notranslate"><span class="pre">RtspServer.start()</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.stop"><code class="docutils literal notranslate"><span class="pre">RtspServer.stop()</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.send_datagram"><code class="docutils literal notranslate"><span class="pre">RtspServer.send_datagram()</span></code></a></li>

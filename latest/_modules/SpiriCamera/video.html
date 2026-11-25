@@ -352,6 +352,10 @@
 <span class="c1">#: Seconds between checks for a subscriber, while nothing wants video.</span>
 <span class="n">_IDLE_POLL_INTERVAL</span> <span class="o">=</span> <span class="mf">0.1</span>
 
+<span class="c1">#: Seconds of the target bitrate the encoder may run ahead by, as x264's VBV buffer:</span>
+<span class="c1">#: room for a keyframe, and the most a burst can put on the link at once.</span>
+<span class="n">_VBV_BUFFER_SECONDS</span> <span class="o">=</span> <span class="mf">1.0</span>
+
 
 <div class="viewcode-block" id="RateController">
 <a class="viewcode-back" href="../../api/SpiriCamera.video.html#SpiriCamera.video.RateController">[docs]</a>
@@ -652,8 +656,17 @@
             <span class="n">codec</span><span class="o">.</span><span class="n">framerate</span> <span class="o">=</span> <span class="n">fractions</span><span class="o">.</span><span class="n">Fraction</span><span class="p">(</span><span class="n">max_fps</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">codec</span><span class="o">.</span><span class="n">time_base</span> <span class="o">=</span> <span class="n">fractions</span><span class="o">.</span><span class="n">Fraction</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_fps</span><span class="p">)</span>
             <span class="c1"># A preset, because x264's default (medium) is far too slow for</span>
-            <span class="c1"># live video on a Pi.</span>
-            <span class="n">codec</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"level"</span><span class="p">:</span> <span class="s2">"31"</span><span class="p">,</span> <span class="s2">"tune"</span><span class="p">:</span> <span class="s2">"zerolatency"</span><span class="p">,</span> <span class="s2">"preset"</span><span class="p">:</span> <span class="n">transport</span><span class="o">.</span><span class="n">preset</span><span class="p">}</span>
+            <span class="c1"># live video on a Pi.  maxrate and bufsize put x264 under VBV: without</span>
+            <span class="c1"># them its ABR averages over the encoder's whole life, so bits a still</span>
+            <span class="c1"># scene left unspent are spent on the next movement, at 5x the target</span>
+            <span class="c1"># after a minute still and 12x after six.</span>
+            <span class="n">codec</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"level"</span><span class="p">:</span> <span class="s2">"31"</span><span class="p">,</span>
+                <span class="s2">"tune"</span><span class="p">:</span> <span class="s2">"zerolatency"</span><span class="p">,</span>
+                <span class="s2">"preset"</span><span class="p">:</span> <span class="n">transport</span><span class="o">.</span><span class="n">preset</span><span class="p">,</span>
+                <span class="s2">"maxrate"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">),</span>
+                <span class="s2">"bufsize"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">target</span> <span class="o">*</span> <span class="n">_VBV_BUFFER_SECONDS</span><span class="p">)),</span>
+            <span class="p">}</span>
             <span class="n">codec</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="s2">"Baseline"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_codec_preset</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">preset</span>
 
