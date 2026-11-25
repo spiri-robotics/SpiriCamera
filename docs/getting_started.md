@@ -366,7 +366,7 @@ SpiriCamera run /dev/video0
 | --- | --- |
 | `cameras/1/raw` | The source itself, within `SPIRICAMERA_FRAME_WIDTH` x `SPIRICAMERA_FRAME_HEIGHT`. |
 | `cameras/1/hud` | `raw`, with the widgets `SPIRICAMERA_HUD_WIDGETS` names, by topic, separated by spaces or commas. |
-| `cameras/1/preview` | `raw` at 240 pixels high and one frame a second, for picking a camera from a list. |
+| `cameras/1/preview` | `raw` at 96 pixels high, JPEG quality 70 and one frame a second, about 2.4 KB a frame: a thumbnail for picking a camera from a list or showing it on a map. |
 
 `hud` and `preview` take `raw`'s raw frames in the same process, so each runs, and runs
 `raw`, only while something subscribes to it. `SPIRICAMERA_CAMERA_NAME` replaces the

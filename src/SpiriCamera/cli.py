@@ -26,9 +26,14 @@ app = typer.Typer(
 
 SourceArgument = Annotated[str, typer.Argument(help="Camera source")]
 
-#: The preview camera's height in pixels, and its frames per second: a
-#: thumbnail for picking a camera, cheap enough to leave subscribed.
-PREVIEW_HEIGHT = 240
+#: The preview camera's height in pixels, JPEG quality and frames per second:
+#: a thumbnail for picking a camera or showing it on a map, cheap enough to
+#: leave subscribed for every camera, about 2.4 KB a frame. Each frame has
+#: about 1 KB that doesn't shrink with the picture (the JPEG tables and EXIF),
+#: so much below this saves little, and the picture data stops being most of
+#: the frame.
+PREVIEW_HEIGHT = 96
+PREVIEW_QUALITY = 70
 PREVIEW_FRAMERATE = 1
 
 
@@ -181,7 +186,7 @@ def run(source: SourceArgument = "") -> None:
         hud.overlay_widgets[widget] = {}
     preview = Camera(
         source=upstream,
-        quality=settings.quality,
+        quality=PREVIEW_QUALITY,
         # The height is what binds: raw is never wider than this.
         max_width=settings.frame_width,
         max_height=PREVIEW_HEIGHT,

@@ -97,7 +97,8 @@ class TestRun:
         assert made["cameras/1/raw"]["source"] == "testimage://"
         for relay in ("cameras/1/hud", "cameras/1/preview"):
             assert made[relay]["source"] == "spirisynq+raw://./cameras/1/raw"
-        assert made["cameras/1/preview"]["max_height"] == 240
+        assert made["cameras/1/preview"]["max_height"] == 96
+        assert made["cameras/1/preview"]["quality"] == 70
         assert made["cameras/1/preview"]["max_framerate"] == 1
 
     def test_hud_widgets_go_on_the_hud_only(self, monkeypatch: pytest.MonkeyPatch) -> None:
