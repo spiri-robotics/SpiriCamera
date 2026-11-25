@@ -401,6 +401,16 @@ subscriber, or a <code class="docutils literal notranslate"><span class="pre">ho
 the source once to publish what it is, then closes it until something
 wants frames. <code class="docutils literal notranslate"><span class="pre">start()</span></code> and <code class="docutils literal notranslate"><span class="pre">stop()</span></code> are local intent, so nothing remote
 can switch a camera off.</p>
+<p><strong>A live source is never left to queue.</strong> A network stream or a V4L2
+device sends frames whether or not they’re read, so frames read late wait
+in FFmpeg’s, the kernel’s or the driver’s buffers, and that wait is
+latency: a capture loop that paced its reads to <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code> fell
+behind a 30 fps RTSP camera by the whole of a UDP receive buffer, about
+three seconds. So a source with <code class="docutils literal notranslate"><span class="pre">live</span></code> set reads its device on a thread
+of its own, as fast as it delivers, and <code class="docutils literal notranslate"><span class="pre">read()</span></code> waits for and hands back
+only the newest frame, dropping any that come sooner than <code class="docutils literal notranslate"><span class="pre">max_framerate</span></code>
+allows. The capture loop doesn’t pace it as well. Files, test patterns and
+<code class="docutils literal notranslate"><span class="pre">spirisynq://</span></code> relays hand over a frame when asked, so the loop paces them.</p>
 <p><strong>Frame-derived fields never travel as their own field.</strong> <code class="docutils literal notranslate"><span class="pre">received_width</span></code>,
 <code class="docutils literal notranslate"><span class="pre">received_height</span></code>, <code class="docutils literal notranslate"><span class="pre">received_ratio</span></code>, and the EXIF-derived
 <code class="docutils literal notranslate"><span class="pre">exif_tags</span></code>/<code class="docutils literal notranslate"><span class="pre">exif_timestamp</span></code> all describe one specific frame. SpiriSynq
@@ -785,7 +795,7 @@ test protocol edge cases without racing a background thread.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=3b889da3"></script>
+</div><script src="_static/documentation_options.js?v=92c8e9c5"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -1,0 +1,746 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10.2.5. SpiriCamera.klv" href="SpiriCamera.klv.html"><link rel="prev" title="10.2.3. SpiriCamera.video" href="SpiriCamera.video.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/api/SpiriCamera.rtsp.html">
+        <link rel="prefetch" href="../_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="../_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>10.2.4. SpiriCamera.rtsp - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="../_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="../_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/SpiriCamera.rtsp.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-SpiriCamera.rtsp">
+<span id="spiricamera-rtsp"></span><h1><span class="section-number">10.2.4. </span>SpiriCamera.rtsp<a class="headerlink" href="#module-SpiriCamera.rtsp" title="Link to this heading">¶</a></h1>
+<p>The cameras’ RTSP server: each one’s H.264 encode and KLV metadata, over RTP.</p>
+<p>Each camera it serves, by name, has two mounts, for the two kinds of reader:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">/&lt;name&gt;</span></code></dt><dd><p>For a viewer across a link that needs protecting, such as QGroundControl.
+UDP only, because TCP hides loss.  The viewer’s RTCP drives that camera’s
+rate control, and it can ask for lost packets again.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">/&lt;name&gt;/relay</span></code></dt><dd><p>For a relay on the same host, such as MediaMTX, whose link has nothing to
+protect.  TCP only, and its RTCP has no say in rate control.</p>
+</dd>
+</dl>
+<p>What a viewer’s RTCP means to rate control is <a class="reference internal" href="#SpiriCamera.rtsp.LossMeter" title="SpiriCamera.rtsp.LossMeter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LossMeter</span></code></a>’s job.  A
+session holds the camera’s video while it plays, so the camera idles when
+nobody is watching.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RELAY_SUFFIX">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">RELAY_SUFFIX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'relay'</span></span><a class="headerlink" href="#SpiriCamera.rtsp.RELAY_SUFFIX" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">/&lt;name&gt;/relay</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>What a camera’s mount ends in for a relay on the same host</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RTCP_SILENCE">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">RTCP_SILENCE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8.0</span></span><a class="headerlink" href="#SpiriCamera.rtsp.RTCP_SILENCE" title="Link to this definition">¶</a></dt>
+<dd><p>Seconds without any RTCP before a viewer’s link is taken to be down.  GStreamer
+reports every 3 to 7.5 seconds on a clean link, so this has to be longer.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.LossMeter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">LossMeter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">silence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#LossMeter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.LossMeter" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Turns one viewer’s RTCP into a report to rate control every tick.</p>
+<p>Loss comes from NACKs when there are any: they say exactly what went missing,
+at once, and count loss that retransmission goes on to repair, which is meant
+to lower the bitrate because retransmitting adds load to the link.  Receiver
+reports are the fallback for a viewer on a clean link, or one that doesn’t NACK.
+A clean one vouches for all the time since the last sign of trouble, so it counts
+once for each second of that, as often as a SpiriSynq subscriber reports.</p>
+<p>A viewer that has gone quiet for <a class="reference internal" href="#SpiriCamera.rtsp.RTCP_SILENCE" title="SpiriCamera.rtsp.RTCP_SILENCE"><code class="xref py py-data docutils literal notranslate"><span class="pre">RTCP_SILENCE</span></code></a> has lost everything,
+as far as anyone can tell.  One that has never sent RTCP has no say at all.</p>
+<section id="parameters">
+<h2><span class="section-number">10.2.4. </span>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>silence<span class="classifier">float</span></dt><dd><p>Seconds without RTCP before the link is taken to be down.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.LossMeter.committed">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">committed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#SpiriCamera.rtsp.LossMeter.committed" title="Link to this definition">¶</a></dt>
+<dd><p>Whether this viewer has sent RTCP, which is what gives it a say.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.LossMeter.heard">
+<span class="sig-name descname"><span class="pre">heard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#LossMeter.heard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.LossMeter.heard" title="Link to this definition">¶</a></dt>
+<dd><p>Note that RTCP arrived, whatever was in it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>now</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.LossMeter.on_report">
+<span class="sig-name descname"><span class="pre">on_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fraction_lost</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#LossMeter.on_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.LossMeter.on_report" title="Link to this definition">¶</a></dt>
+<dd><p>Take a receiver report’s loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fraction_lost</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.LossMeter.on_nack">
+<span class="sig-name descname"><span class="pre">on_nack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequences</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#LossMeter.on_nack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.LossMeter.on_nack" title="Link to this definition">¶</a></dt>
+<dd><p>Take sequence numbers a NACK asked for again.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sequences</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.LossMeter.tick">
+<span class="sig-name descname"><span class="pre">tick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">packets_sent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#LossMeter.tick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.LossMeter.tick" title="Link to this definition">¶</a></dt>
+<dd><p>The reports to make for this tick, each a loss, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for just alive.</p>
+<section id="id1">
+<h3><span class="section-number">10.2.4. </span>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>now<span class="classifier">float</span></dt><dd><p>The current time, on the clock given to <a class="reference internal" href="#SpiriCamera.rtsp.LossMeter.heard" title="SpiriCamera.rtsp.LossMeter.heard"><code class="xref py py-meth docutils literal notranslate"><span class="pre">heard()</span></code></a>.</p>
+</dd>
+<dt>packets_sent<span class="classifier">int</span></dt><dd><p>Video packets sent since the last tick.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>now</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p></li>
+<li><p><strong>packets_sent</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)">float</a> | None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>silence</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtcpFeedback">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">RtcpFeedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyframe_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtcpFeedback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtcpFeedback" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>What one RTCP datagram says about the streams it mentions.</p>
+<section id="attributes">
+<h2><span class="section-number">10.2.4. </span>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>reports<span class="classifier">list[tuple[int, float]]</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">(ssrc,</span> <span class="pre">fraction_lost)</span></code> from each receiver report block.  GStreamer
+sends none alongside a NACK, so an empty list says nothing about loss.</p>
+</dd>
+<dt>nacks<span class="classifier">list[tuple[int, list[int]]]</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">(ssrc,</span> <span class="pre">sequence</span> <span class="pre">numbers)</span></code> asked for again.</p>
+</dd>
+<dt>keyframe_requests<span class="classifier">list[int]</span></dt><dd><p>The SSRC of each stream a PLI or FIR asks for a keyframe on.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtcpFeedback.reports">
+<span class="sig-name descname"><span class="pre">reports</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#SpiriCamera.rtsp.RtcpFeedback.reports" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtcpFeedback.nacks">
+<span class="sig-name descname"><span class="pre">nacks</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#SpiriCamera.rtsp.RtcpFeedback.nacks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtcpFeedback.keyframe_requests">
+<span class="sig-name descname"><span class="pre">keyframe_requests</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#SpiriCamera.rtsp.RtcpFeedback.keyframe_requests" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reports</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>]</em><em>]</em>)</p></li>
+<li><p><strong>nacks</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>]</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>keyframe_requests</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">RtspServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cameras</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.0.0.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8554</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">udp_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtspServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Serves cameras over RTSP from a thread of its own, until stopped.</p>
+<section id="id2">
+<h2><span class="section-number">10.2.4. </span>Parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>cameras<span class="classifier">Mapping[str, Camera]</span></dt><dd><p>The cameras to serve, in this process, by the name of their mount.  Each
+one’s readers share its one encode.</p>
+</dd>
+<dt>host<span class="classifier">str</span></dt><dd><p>The address to bind.</p>
+</dd>
+<dt>port<span class="classifier">int</span></dt><dd><p>The TCP port for RTSP.  <code class="docutils literal notranslate"><span class="pre">0</span></code> picks one, which <code class="xref py py-attr docutils literal notranslate"><span class="pre">port</span></code> then gives.</p>
+</dd>
+<dt>udp_port<span class="classifier">int</span></dt><dd><p>The first of four consecutive UDP ports: video’s RTP and RTCP, then
+metadata’s.  <code class="docutils literal notranslate"><span class="pre">0</span></code> picks any four, which <a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.udp_ports" title="SpiriCamera.rtsp.RtspServer.udp_ports"><code class="xref py py-attr docutils literal notranslate"><span class="pre">udp_ports</span></code></a> then gives.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.udp_ports">
+<span class="sig-name descname"><span class="pre">udp_ports</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.udp_ports" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(video</span> <span class="pre">RTP,</span> <span class="pre">video</span> <span class="pre">RTCP,</span> <span class="pre">metadata</span> <span class="pre">RTP,</span> <span class="pre">metadata</span> <span class="pre">RTCP)</span></code> once started.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtspServer.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.start" title="Link to this definition">¶</a></dt>
+<dd><p>Bind and start serving.</p>
+<section id="raises">
+<h3><span class="section-number">10.2.4. </span>Raises<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>OSError</dt><dd><p>If a port is taken.</p>
+</dd>
+</dl>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtspServer.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stop serving and end every session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.send_datagram">
+<span class="sig-name descname"><span class="pre">send_datagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_rtcp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtspServer.send_datagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.send_datagram" title="Link to this definition">¶</a></dt>
+<dd><p>Send from the port a reader was told this track’s traffic comes from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>payload_type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>is_rtcp</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>)</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><em>bytes</em></a>)</p></li>
+<li><p><strong>destination</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.RtspServer.handle_rtcp">
+<span class="sig-name descname"><span class="pre">handle_rtcp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#RtspServer.handle_rtcp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.RtspServer.handle_rtcp" title="Link to this definition">¶</a></dt>
+<dd><p>Act on RTCP from a reader, picked out by the SSRC it’s talking about.</p>
+<p><code class="docutils literal notranslate"><span class="pre">sender</span></code> is the session it came in on, when that’s known, as it is over TCP:
+a keyframe request that names no stream of ours is taken to be for it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><em>bytes</em></a>)</p></li>
+<li><p><strong>sender</strong> (<em>_Session</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cameras</strong> (<em>Mapping</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><a class="reference internal" href="SpiriCamera.camera.html#SpiriCamera.camera.Camera" title="SpiriCamera.camera.Camera"><em>Camera</em></a><em>]</em>)</p></li>
+<li><p><strong>host</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>udp_port</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.packetize_h264">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">packetize_h264</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#packetize_h264"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.packetize_h264" title="Link to this definition">¶</a></dt>
+<dd><p>One NAL unit as RTP payloads: whole if it fits, otherwise as FU-A fragments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><em>bytes</em></a>)</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)">bytes</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.parse_rtcp">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">parse_rtcp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#parse_rtcp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.parse_rtcp" title="Link to this definition">¶</a></dt>
+<dd><p>Read a compound RTCP datagram, stopping quietly at anything malformed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><em>bytes</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#SpiriCamera.rtsp.RtcpFeedback" title="SpiriCamera.rtsp.RtcpFeedback"><em>RtcpFeedback</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SpiriCamera.rtsp.split_annexb">
+<span class="sig-prename descclassname"><span class="pre">SpiriCamera.rtsp.</span></span><span class="sig-name descname"><span class="pre">split_annexb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/rtsp.html#split_annexb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.rtsp.split_annexb" title="Link to this definition">¶</a></dt>
+<dd><p>Split Annex B H.264 into its NAL units, without their start codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><em>bytes</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)">bytes</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="SpiriCamera.klv.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">10.2.5. </span>SpiriCamera.klv</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="SpiriCamera.video.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">10.2.3. </span>SpiriCamera.video</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">10.2.4. SpiriCamera.rtsp</a><ul>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RELAY_SUFFIX"><code class="docutils literal notranslate"><span class="pre">RELAY_SUFFIX</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RTCP_SILENCE"><code class="docutils literal notranslate"><span class="pre">RTCP_SILENCE</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.LossMeter"><code class="docutils literal notranslate"><span class="pre">LossMeter</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.LossMeter.committed"><code class="docutils literal notranslate"><span class="pre">LossMeter.committed</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.LossMeter.heard"><code class="docutils literal notranslate"><span class="pre">LossMeter.heard()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.LossMeter.on_report"><code class="docutils literal notranslate"><span class="pre">LossMeter.on_report()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.LossMeter.on_nack"><code class="docutils literal notranslate"><span class="pre">LossMeter.on_nack()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.LossMeter.tick"><code class="docutils literal notranslate"><span class="pre">LossMeter.tick()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtcpFeedback"><code class="docutils literal notranslate"><span class="pre">RtcpFeedback</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtcpFeedback.reports"><code class="docutils literal notranslate"><span class="pre">RtcpFeedback.reports</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtcpFeedback.nacks"><code class="docutils literal notranslate"><span class="pre">RtcpFeedback.nacks</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtcpFeedback.keyframe_requests"><code class="docutils literal notranslate"><span class="pre">RtcpFeedback.keyframe_requests</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer"><code class="docutils literal notranslate"><span class="pre">RtspServer</span></code></a><ul>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.udp_ports"><code class="docutils literal notranslate"><span class="pre">RtspServer.udp_ports</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.start"><code class="docutils literal notranslate"><span class="pre">RtspServer.start()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.stop"><code class="docutils literal notranslate"><span class="pre">RtspServer.stop()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.send_datagram"><code class="docutils literal notranslate"><span class="pre">RtspServer.send_datagram()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.RtspServer.handle_rtcp"><code class="docutils literal notranslate"><span class="pre">RtspServer.handle_rtcp()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.packetize_h264"><code class="docutils literal notranslate"><span class="pre">packetize_h264()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.parse_rtcp"><code class="docutils literal notranslate"><span class="pre">parse_rtcp()</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.rtsp.split_annexb"><code class="docutils literal notranslate"><span class="pre">split_annexb()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=92c8e9c5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

@@ -92,6 +92,17 @@ the source once to publish what it is, then closes it until something
 wants frames. `start()` and `stop()` are local intent, so nothing remote
 can switch a camera off.
 
+**A live source is never left to queue.** A network stream or a V4L2
+device sends frames whether or not they're read, so frames read late wait
+in FFmpeg's, the kernel's or the driver's buffers, and that wait is
+latency: a capture loop that paced its reads to `max_framerate` fell
+behind a 30 fps RTSP camera by the whole of a UDP receive buffer, about
+three seconds. So a source with `live` set reads its device on a thread
+of its own, as fast as it delivers, and `read()` waits for and hands back
+only the newest frame, dropping any that come sooner than `max_framerate`
+allows. The capture loop doesn't pace it as well. Files, test patterns and
+`spirisynq://` relays hand over a frame when asked, so the loop paces them.
+
 **Frame-derived fields never travel as their own field.** `received_width`,
 `received_height`, `received_ratio`, and the EXIF-derived
 `exif_tags`/`exif_timestamp` all describe one specific frame. SpiriSynq

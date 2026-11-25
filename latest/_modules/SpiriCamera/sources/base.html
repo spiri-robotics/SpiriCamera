@@ -755,9 +755,18 @@
 <span class="sd">    ----------</span>
 <span class="sd">    schemes : ClassVar[tuple[str, ...]]</span>
 <span class="sd">        URL schemes this handler claims, without the ``://`` separator.</span>
+<span class="sd">    live : ClassVar[bool]</span>
+<span class="sd">        Whether the source sends frames at its own rate, whether or not</span>
+<span class="sd">        anyone reads them -- a network stream or a camera, unlike a file</span>
+<span class="sd">        or a test pattern.  :py:meth:`read` on a live source waits for</span>
+<span class="sd">        its next frame, which is what paces the camera reading it, so</span>
+<span class="sd">        the camera doesn't pace it as well.  A live source keeps up with</span>
+<span class="sd">        its device on its own and hands back only the newest frame:</span>
+<span class="sd">        frames left waiting to be read are latency.</span>
 <span class="sd">    """</span>
 
     <span class="n">schemes</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">live</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="n">SourceURL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Create a handler for an already-parsed source URL.</span>
@@ -1002,7 +1011,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=3b889da3"></script>
+</div><script src="../../../_static/documentation_options.js?v=92c8e9c5"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -1538,10 +1538,23 @@ as a V4L2 device path) also overrides <code class="xref py py-meth docutils lite
 <dl class="simple">
 <dt>schemes<span class="classifier">ClassVar[tuple[str, …]]</span></dt><dd><p>URL schemes this handler claims, without the <code class="docutils literal notranslate"><span class="pre">://</span></code> separator.</p>
 </dd>
+<dt>live<span class="classifier">ClassVar[bool]</span></dt><dd><p>Whether the source sends frames at its own rate, whether or not
+anyone reads them – a network stream or a camera, unlike a file
+or a test pattern.  <code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code> on a live source waits for
+its next frame, which is what paces the camera reading it, so
+the camera doesn’t pace it as well.  A live source keeps up with
+its device on its own and hands back only the newest frame:
+frames left waiting to be read are latency.</p>
+</dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">schemes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.15)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">live</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.15)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2311,7 +2324,7 @@ or <code class="docutils literal notranslate"><span class="pre">testimage://pm55
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
+</div><script src="../_static/documentation_options.js?v=92c8e9c5"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -1,0 +1,1201 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+        <link rel="canonical" href="https://spiri-robotics.github.io/SpiriCamera/latest/_modules/SpiriCamera/rtsp.html">
+        <link rel="prefetch" href="../../_static/spiri-logo-light.svg" as="image">
+        <link rel="prefetch" href="../../_static/spiri-logo-dark.svg" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>SpiriCamera.rtsp - SpiriCamera</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=bde8c6b5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/spiri-safety-icon.css?v=01762096" />
+    <link rel="stylesheet" type="text/css" href="../../_static/spiri-safety.css?v=84605d0a" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">SpiriCamera</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/spiri-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/spiri-logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">SpiriCamera</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="spiri-versions" hidden>
+  <label class="spiri-versions__label" for="spiri-version">Version</label>
+  <select class="spiri-versions__select" id="spiri-version"></select>
+  <a class="spiri-versions__pdf" hidden>Download PDF</a>
+</div>
+<script>
+  (() => {
+    const box = document.currentScript.previousElementSibling;
+    // This version's root, and the site's root above it.
+    const root = new URL(document.documentElement.dataset.content_root || "./", location.href);
+    const site = new URL("../", root);
+    const current = root.href.slice(site.href.length).replace(/\/$/, "");
+    const page = location.pathname.slice(root.pathname.length);
+
+    fetch(new URL("versions.json", site))
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const name = current === "latest" ? data?.latest : current;
+        const here = data?.versions.find((v) => v.name === name);
+        if (!here) return;
+
+        const select = box.querySelector("select");
+        for (const v of data.versions) {
+          const label =
+            v.name === "dev" ? "dev (main)" : v.name === data.latest ? `${v.name} (latest)` : v.name;
+          select.add(new Option(label, v.name, false, v === here));
+        }
+        // The same page in the chosen version, or its front page if it has no such page.
+        select.addEventListener("change", async () => {
+          const chosen = data.versions.find((v) => v.name === select.value);
+          const front = new URL(chosen.path, site);
+          const same = new URL(page, front);
+          const exists = await fetch(same, { method: "HEAD" }).then((r) => r.ok, () => false);
+          location.href = (exists ? same : front).href;
+        });
+
+        if (here.pdf) {
+          const pdf = box.querySelector("a");
+          pdf.href = new URL(here.pdf, site).href;
+          pdf.hidden = false;
+        }
+        box.hidden = false;
+      })
+      .catch(() => {});
+  })();
+</script><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_model.html">2. The camera’s data structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exif.html">3. Frame Metadata (EXIF)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../world_overlays.html">4. Drawing on things in the world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp_integration.html">5. Using a camera from a C++ app</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rtsp.html">6. Serving a camera over RTSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mediamtx.html">7. Serving a camera through MediaMTX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">8. Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/yolo_overlay.html">9. Tutorial: YOLO detection boxes as a live overlay</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">10. API Reference</a><input aria-label="Toggle navigation of 10. API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.camera.html">10.2.1. SpiriCamera.camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.transports.html">10.2.2. SpiriCamera.transports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.video.html">10.2.3. SpiriCamera.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.rtsp.html">10.2.4. SpiriCamera.rtsp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.klv.html">10.2.5. SpiriCamera.klv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.exif.html">10.2.6. SpiriCamera.exif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.overlay.html">10.2.7. SpiriCamera.overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.projection.html">10.2.8. SpiriCamera.projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.sources.html">10.2.9. SpiriCamera.sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.ui.html">10.2.10. SpiriCamera.ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.web.html">10.2.11. SpiriCamera.web</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.cli.html">10.2.12. SpiriCamera.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/SpiriCamera.main.html">10.2.13. SpiriCamera.main</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Document control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../revisions.html">Revision history</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for SpiriCamera.rtsp</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""The cameras' RTSP server: each one's H.264 encode and KLV metadata, over RTP.</span>
+
+<span class="sd">Each camera it serves, by name, has two mounts, for the two kinds of reader:</span>
+
+<span class="sd">``/&lt;name&gt;``</span>
+<span class="sd">    For a viewer across a link that needs protecting, such as QGroundControl.</span>
+<span class="sd">    UDP only, because TCP hides loss.  The viewer's RTCP drives that camera's</span>
+<span class="sd">    rate control, and it can ask for lost packets again.</span>
+<span class="sd">``/&lt;name&gt;/relay``</span>
+<span class="sd">    For a relay on the same host, such as MediaMTX, whose link has nothing to</span>
+<span class="sd">    protect.  TCP only, and its RTCP has no say in rate control.</span>
+
+<span class="sd">What a viewer's RTCP means to rate control is :py:class:`LossMeter`'s job.  A</span>
+<span class="sd">session holds the camera's video while it plays, so the camera idles when</span>
+<span class="sd">nobody is watching.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">exif</span><span class="p">,</span> <span class="n">klv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.transports</span><span class="w"> </span><span class="kn">import</span> <span class="n">VideoPacket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.video</span><span class="w"> </span><span class="kn">import</span> <span class="n">VIDEO_CLOCK_RATE</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.camera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span>
+
+<span class="c1">#: What a camera's mount ends in for a relay on the same host: ``/&lt;name&gt;/relay``.</span>
+<span class="n">RELAY_SUFFIX</span> <span class="o">=</span> <span class="s2">"relay"</span>
+
+<span class="c1">#: Seconds without any RTCP before a viewer's link is taken to be down.  GStreamer</span>
+<span class="c1">#: reports every 3 to 7.5 seconds on a clean link, so this has to be longer.</span>
+<span class="n">RTCP_SILENCE</span> <span class="o">=</span> <span class="mf">8.0</span>
+
+<span class="c1">#: Seconds between sender reports, and between reports to rate control.</span>
+<span class="n">_TICK_INTERVAL</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1">#: Most bytes of H.264 or KLV in one RTP packet.</span>
+<span class="n">_RTP_PAYLOAD_SIZE</span> <span class="o">=</span> <span class="mi">1200</span>
+
+<span class="c1">#: Video packets kept for retransmission: over a second, at 3 Mbit/s.</span>
+<span class="n">_HISTORY_PACKETS</span> <span class="o">=</span> <span class="mi">1024</span>
+
+<span class="c1">#: Bytes queued for a TCP reader before it's given up on until the next keyframe.</span>
+<span class="n">_TCP_BUFFER_LIMIT</span> <span class="o">=</span> <span class="mi">4_000_000</span>
+
+<span class="n">_PAYLOAD_H264</span> <span class="o">=</span> <span class="mi">96</span>
+<span class="n">_PAYLOAD_KLV</span> <span class="o">=</span> <span class="mi">97</span>
+<span class="n">_PAYLOAD_RTX</span> <span class="o">=</span> <span class="mi">98</span>
+
+<span class="n">_RTCP_SR</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">_RTCP_RR</span> <span class="o">=</span> <span class="mi">201</span>
+<span class="n">_RTCP_SDES</span> <span class="o">=</span> <span class="mi">202</span>
+<span class="n">_RTCP_RTPFB</span> <span class="o">=</span> <span class="mi">205</span>
+<span class="n">_RTCP_PSFB</span> <span class="o">=</span> <span class="mi">206</span>
+<span class="n">_FMT_NACK</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">_FMT_PLI</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">_FMT_FIR</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1">#: Seconds between 1900, where NTP counts from, and 1970.</span>
+<span class="n">_NTP_EPOCH</span> <span class="o">=</span> <span class="mi">2_208_988_800</span>
+
+<span class="n">_TRACK_ID</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"/trackID=(\d+)"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="split_annexb">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.split_annexb">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">split_annexb</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Split Annex B H.264 into its NAL units, without their start codes."""</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\x00\x00\x01</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">+=</span> <span class="mi">3</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\x00\x00\x01</span><span class="s2">"</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">start</span><span class="p">:]</span> <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\x00</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">unit</span><span class="p">:</span>
+            <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">end</span>
+    <span class="k">return</span> <span class="n">units</span></div>
+
+
+
+<div class="viewcode-block" id="packetize_h264">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.packetize_h264">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">packetize_h264</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_RTP_PAYLOAD_SIZE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""One NAL unit as RTP payloads: whole if it fits, otherwise as FU-A fragments."""</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">unit</span><span class="p">]</span>
+    <span class="n">header</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="n">unit</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">unit</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">indicator</span> <span class="o">=</span> <span class="p">(</span><span class="n">header</span> <span class="o">&amp;</span> <span class="mh">0xE0</span><span class="p">)</span> <span class="o">|</span> <span class="mi">28</span>
+    <span class="n">payloads</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">),</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="n">header</span> <span class="o">&amp;</span> <span class="mh">0x1F</span>
+        <span class="k">if</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">flags</span> <span class="o">|=</span> <span class="mh">0x80</span>
+        <span class="k">if</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">size</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">):</span>
+            <span class="n">flags</span> <span class="o">|=</span> <span class="mh">0x40</span>
+        <span class="n">payloads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bytes</span><span class="p">([</span><span class="n">indicator</span><span class="p">,</span> <span class="n">flags</span><span class="p">])</span> <span class="o">+</span> <span class="n">body</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">size</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">payloads</span></div>
+
+
+
+<div class="viewcode-block" id="RtcpFeedback">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtcpFeedback">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RtcpFeedback</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""What one RTCP datagram says about the streams it mentions.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reports : list[tuple[int, float]]</span>
+<span class="sd">        ``(ssrc, fraction_lost)`` from each receiver report block.  GStreamer</span>
+<span class="sd">        sends none alongside a NACK, so an empty list says nothing about loss.</span>
+<span class="sd">    nacks : list[tuple[int, list[int]]]</span>
+<span class="sd">        ``(ssrc, sequence numbers)`` asked for again.</span>
+<span class="sd">    keyframe_requests : list[int]</span>
+<span class="sd">        The SSRC of each stream a PLI or FIR asks for a keyframe on.</span>
+<span class="sd">    """</span>
+
+    <span class="n">reports</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">nacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">keyframe_requests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parse_rtcp">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.parse_rtcp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_rtcp</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RtcpFeedback</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Read a compound RTCP datagram, stopping quietly at anything malformed."""</span>
+    <span class="n">feedback</span> <span class="o">=</span> <span class="n">RtcpFeedback</span><span class="p">()</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">first</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">words</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&gt;BBH"</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="n">words</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="n">first</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">first</span> <span class="o">&amp;</span> <span class="mh">0x1F</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="n">_RTCP_RR</span><span class="p">,</span> <span class="n">_RTCP_SR</span><span class="p">):</span>
+            <span class="n">blocks</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="mi">8</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">_RTCP_RR</span> <span class="k">else</span> <span class="mi">28</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                <span class="n">at</span> <span class="o">=</span> <span class="n">blocks</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">24</span>
+                <span class="k">if</span> <span class="n">at</span> <span class="o">+</span> <span class="mi">24</span> <span class="o">&gt;</span> <span class="n">end</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">ssrc</span><span class="p">,</span> <span class="n">lost</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&gt;IB"</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">at</span><span class="p">)</span>
+                <span class="n">feedback</span><span class="o">.</span><span class="n">reports</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ssrc</span><span class="p">,</span> <span class="n">lost</span> <span class="o">/</span> <span class="mi">256</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">_RTCP_RTPFB</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">==</span> <span class="n">_FMT_NACK</span> <span class="ow">and</span> <span class="n">end</span> <span class="o">-</span> <span class="n">offset</span> <span class="o">&gt;=</span> <span class="mi">16</span><span class="p">:</span>
+            <span class="n">ssrc</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&gt;I"</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">8</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">sequences</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">offset</span> <span class="o">+</span> <span class="mi">12</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+                <span class="n">first_lost</span><span class="p">,</span> <span class="n">following</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&gt;HH"</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">at</span><span class="p">)</span>
+                <span class="n">sequences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">first_lost</span><span class="p">)</span>
+                <span class="n">sequences</span> <span class="o">+=</span> <span class="p">[</span>
+                    <span class="p">(</span><span class="n">first_lost</span> <span class="o">+</span> <span class="n">bit</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="k">if</span> <span class="n">following</span> <span class="o">&gt;&gt;</span> <span class="n">bit</span> <span class="o">&amp;</span> <span class="mi">1</span>
+                <span class="p">]</span>
+            <span class="n">feedback</span><span class="o">.</span><span class="n">nacks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ssrc</span><span class="p">,</span> <span class="n">sequences</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">_RTCP_PSFB</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">==</span> <span class="n">_FMT_PLI</span> <span class="ow">and</span> <span class="n">end</span> <span class="o">-</span> <span class="n">offset</span> <span class="o">&gt;=</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="n">feedback</span><span class="o">.</span><span class="n">keyframe_requests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&gt;I"</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">8</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">_RTCP_PSFB</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">==</span> <span class="n">_FMT_FIR</span> <span class="ow">and</span> <span class="n">end</span> <span class="o">-</span> <span class="n">offset</span> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="c1"># FIR names its stream in its first entry, not the media SSRC field.</span>
+            <span class="n">feedback</span><span class="o">.</span><span class="n">keyframe_requests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&gt;I"</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">12</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">end</span>
+    <span class="k">return</span> <span class="n">feedback</span></div>
+
+
+
+<div class="viewcode-block" id="LossMeter">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LossMeter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Turns one viewer's RTCP into a report to rate control every tick.</span>
+
+<span class="sd">    Loss comes from NACKs when there are any: they say exactly what went missing,</span>
+<span class="sd">    at once, and count loss that retransmission goes on to repair, which is meant</span>
+<span class="sd">    to lower the bitrate because retransmitting adds load to the link.  Receiver</span>
+<span class="sd">    reports are the fallback for a viewer on a clean link, or one that doesn't NACK.</span>
+<span class="sd">    A clean one vouches for all the time since the last sign of trouble, so it counts</span>
+<span class="sd">    once for each second of that, as often as a SpiriSynq subscriber reports.</span>
+
+<span class="sd">    A viewer that has gone quiet for :py:data:`RTCP_SILENCE` has lost everything,</span>
+<span class="sd">    as far as anyone can tell.  One that has never sent RTCP has no say at all.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    silence : float</span>
+<span class="sd">        Seconds without RTCP before the link is taken to be down.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RTCP_SILENCE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_silence</span> <span class="o">=</span> <span class="n">silence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_rtcp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nacked</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reported</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_since</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">committed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether this viewer has sent RTCP, which is what gives it a say."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_rtcp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="LossMeter.heard">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.heard">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">heard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Note that RTCP arrived, whatever was in it."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_rtcp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clean_since</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_rtcp</span> <span class="o">=</span> <span class="n">now</span></div>
+
+
+<div class="viewcode-block" id="LossMeter.on_report">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.on_report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fraction_lost</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Take a receiver report's loss."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reported</span> <span class="o">=</span> <span class="n">fraction_lost</span></div>
+
+
+<div class="viewcode-block" id="LossMeter.on_nack">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.on_nack">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_nack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Take sequence numbers a NACK asked for again."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nacked</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sequences</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LossMeter.tick">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.LossMeter.tick">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">packets_sent</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The reports to make for this tick, each a loss, or ``None`` for just alive.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        now : float</span>
+<span class="sd">            The current time, on the clock given to :py:meth:`heard`.</span>
+<span class="sd">        packets_sent : int</span>
+<span class="sd">            Video packets sent since the last tick.</span>
+<span class="sd">        """</span>
+        <span class="n">nacked</span><span class="p">,</span> <span class="n">reported</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nacked</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reported</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nacked</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reported</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">nacked</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clean_since</span> <span class="o">=</span> <span class="n">now</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nacked</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">packets_sent</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_rtcp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_rtcp</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_silence</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clean_since</span> <span class="o">=</span> <span class="n">now</span>
+            <span class="k">return</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">reported</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">seconds</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_since</span><span class="p">))</span> <span class="k">if</span> <span class="n">reported</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_since</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">reported</span><span class="p">]</span> <span class="o">*</span> <span class="n">seconds</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Track</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One RTP stream of a session, to wherever it was set up to go."""</span>
+
+    <span class="n">payload_type</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">ssrc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">secrets</span><span class="o">.</span><span class="n">randbits</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span>
+    <span class="n">sequence</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">secrets</span><span class="o">.</span><span class="n">randbits</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>
+    <span class="n">packets</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">octets</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">last_timestamp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">last_sent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">is_set_up</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">rtp_destination</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">rtcp_destination</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Session</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One reader: its tracks, how far it has got, and what its RTCP has said."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">server</span><span class="p">:</span> <span class="n">RtspServer</span><span class="p">,</span>
+        <span class="n">writer</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamWriter</span><span class="p">,</span>
+        <span class="n">mount</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span>
+        <span class="n">is_relay</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">writer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mount</span> <span class="o">=</span> <span class="n">mount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_relay</span> <span class="o">=</span> <span class="n">is_relay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rtsp-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">video</span> <span class="o">=</span> <span class="n">_Track</span><span class="p">(</span><span class="n">_PAYLOAD_H264</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">_Track</span><span class="p">(</span><span class="n">_PAYLOAD_KLV</span><span class="p">)</span>
+        <span class="c1"># One origin for both tracks: a KLV packet shares its frame's RTP timestamp.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_origin</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">randbits</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">synced</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meter</span> <span class="o">=</span> <span class="n">LossMeter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">packets_at_last_tick</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtx_sequence</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">randbits</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtx_ssrc</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">randbits</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">_Track</span><span class="p">,</span> <span class="n">_Track</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_packet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">:</span> <span class="n">VideoPacket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Send one frame and its metadata, once this reader has a keyframe to start from."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">synced</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">packet</span><span class="o">.</span><span class="n">keyframe</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">synced</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamp_origin</span> <span class="o">+</span> <span class="n">packet</span><span class="o">.</span><span class="n">pts</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">is_set_up</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">captured</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">packet</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="n">exif</span><span class="o">.</span><span class="n">TIMESTAMP_TAG</span><span class="p">])</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="n">captured</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">local_set</span> <span class="o">=</span> <span class="n">klv</span><span class="o">.</span><span class="n">uas_local_set</span><span class="p">(</span><span class="n">captured</span><span class="p">)</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_set</span><span class="p">),</span> <span class="n">_RTP_PAYLOAD_SIZE</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+                <span class="n">last</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">_RTP_PAYLOAD_SIZE</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_set</span><span class="p">)</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">local_set</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">_RTP_PAYLOAD_SIZE</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_rtp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">last</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">is_set_up</span><span class="p">:</span>
+            <span class="n">payloads</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">payload</span> <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">split_annexb</span><span class="p">(</span><span class="n">packet</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span> <span class="k">for</span> <span class="n">payload</span> <span class="ow">in</span> <span class="n">packetize_h264</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">payload</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">payloads</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_rtp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">payloads</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_rtp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="n">_Track</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">marker</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">sequence</span> <span class="o">=</span> <span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">sequence</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">last_timestamp</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">last_sent</span> <span class="o">=</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">packets</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">octets</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">second_byte</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">payload_type</span> <span class="o">|</span> <span class="p">(</span><span class="mh">0x80</span> <span class="k">if</span> <span class="n">marker</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;BBHII"</span><span class="p">,</span> <span class="mh">0x80</span><span class="p">,</span> <span class="n">second_byte</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">sequence</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">ssrc</span><span class="p">)</span>
+        <span class="n">packet</span> <span class="o">=</span> <span class="n">header</span> <span class="o">+</span> <span class="n">payload</span>
+        <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">channel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_interleaved</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="n">packet</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">track</span><span class="o">.</span><span class="n">rtp_destination</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">track</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">track</span><span class="o">.</span><span class="n">sequence</span><span class="p">]</span> <span class="o">=</span> <span class="n">packet</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">pop</span><span class="p">((</span><span class="n">track</span><span class="o">.</span><span class="n">sequence</span> <span class="o">-</span> <span class="n">_HISTORY_PACKETS</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">send_datagram</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">payload_type</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">rtp_destination</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_interleaved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">is_closing</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">transport</span>
+        <span class="k">if</span> <span class="n">transport</span><span class="o">.</span><span class="n">get_write_buffer_size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">_TCP_BUFFER_LIMIT</span><span class="p">:</span>
+            <span class="c1"># TCP can't drop part of a frame for itself, so skip to the next keyframe.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">synced</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">synced</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_video_request_keyframe</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">"$"</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">channel</span><span class="p">])</span> <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;H"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">retransmit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Send packets again, as RFC 4588 says, for those still in the history."""</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">rtp_destination</span>
+        <span class="k">if</span> <span class="n">destination</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">sequence</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">:</span>
+            <span class="n">original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">original</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtx_sequence</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtx_sequence</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+            <span class="n">marker</span> <span class="o">=</span> <span class="n">original</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x80</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&gt;I"</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="mi">4</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span>
+                <span class="s2">"&gt;BBHII"</span><span class="p">,</span>
+                <span class="mh">0x80</span><span class="p">,</span>
+                <span class="n">_PAYLOAD_RTX</span> <span class="o">|</span> <span class="n">marker</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtx_sequence</span><span class="p">,</span>
+                <span class="n">timestamp</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtx_ssrc</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">packet</span> <span class="o">=</span> <span class="n">header</span> <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;H"</span><span class="p">,</span> <span class="n">sequence</span><span class="p">)</span> <span class="o">+</span> <span class="n">original</span><span class="p">[</span><span class="mi">12</span><span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">send_datagram</span><span class="p">(</span><span class="n">_PAYLOAD_H264</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_sender_reports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Send each track's clock, so a reader can line its tracks up."""</span>
+        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">is_set_up</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">last_sent</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">track</span><span class="o">.</span><span class="n">last_sent</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">last_timestamp</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsed</span> <span class="o">*</span> <span class="n">VIDEO_CLOCK_RATE</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span>
+            <span class="n">report</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span>
+                <span class="s2">"&gt;BBHIIIIII"</span><span class="p">,</span>
+                <span class="mh">0x80</span><span class="p">,</span>
+                <span class="n">_RTCP_SR</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">,</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">ssrc</span><span class="p">,</span>
+                <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">now</span><span class="p">)</span> <span class="o">+</span> <span class="n">_NTP_EPOCH</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">,</span>
+                <span class="nb">int</span><span class="p">((</span><span class="n">now</span> <span class="o">%</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">32</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">,</span>
+                <span class="n">timestamp</span><span class="p">,</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">packets</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">,</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">octets</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">packet</span> <span class="o">=</span> <span class="n">report</span> <span class="o">+</span> <span class="n">_source_description</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">ssrc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">channel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_interleaved</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">channel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">packet</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">track</span><span class="o">.</span><span class="n">rtcp_destination</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">send_datagram</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">payload_type</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">rtcp_destination</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tick_rate_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Tell rate control what this reader's RTCP has said since the last tick."""</span>
+        <span class="n">sent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">packets</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">packets_at_last_tick</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">packets_at_last_tick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">packets</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_relay</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">committed</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">fraction_lost</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">now</span><span class="p">,</span> <span class="n">sent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_video_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="p">,</span> <span class="n">fraction_lost</span><span class="o">=</span><span class="n">fraction_lost</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_source_description</span><span class="p">(</span><span class="n">ssrc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""An RTCP SDES packet naming ``ssrc``.</span>
+
+<span class="sd">    Each track gets a name of its own, because a shared one asks a reader to</span>
+<span class="sd">    synchronize them, and QGroundControl's GStreamer then never decodes a frame.</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"spiricamera-</span><span class="si">{</span><span class="n">ssrc</span><span class="si">:</span><span class="s2">08x</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)])</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\x00</span><span class="s2">"</span>
+    <span class="n">padded</span> <span class="o">=</span> <span class="n">item</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\x00</span><span class="s2">"</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">padded</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span>
+    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;BBHI"</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span> <span class="n">_RTCP_SDES</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">ssrc</span><span class="p">)</span> <span class="o">+</span> <span class="n">padded</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_RtcpEndpoint</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">DatagramProtocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Takes RTCP from UDP readers, who send it to the port they were told to."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">:</span> <span class="n">RtspServer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server</span> <span class="o">=</span> <span class="n">server</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">datagram_received</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">handle_rtcp</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RtspServer">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RtspServer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Serves cameras over RTSP from a thread of its own, until stopped.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cameras : Mapping[str, Camera]</span>
+<span class="sd">        The cameras to serve, in this process, by the name of their mount.  Each</span>
+<span class="sd">        one's readers share its one encode.</span>
+<span class="sd">    host : str</span>
+<span class="sd">        The address to bind.</span>
+<span class="sd">    port : int</span>
+<span class="sd">        The TCP port for RTSP.  ``0`` picks one, which :py:attr:`port` then gives.</span>
+<span class="sd">    udp_port : int</span>
+<span class="sd">        The first of four consecutive UDP ports: video's RTP and RTCP, then</span>
+<span class="sd">        metadata's.  ``0`` picks any four, which :py:attr:`udp_ports` then gives.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cameras</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Camera</span><span class="p">],</span>
+        <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"0.0.0.0"</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8554</span><span class="p">,</span>
+        <span class="n">udp_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cameras</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">"/"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">name</span> <span class="o">==</span> <span class="n">RELAY_SUFFIX</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"RTSP: </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> can't be a mount"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cameras</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cameras</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">udp_port</span> <span class="o">=</span> <span class="n">udp_port</span>
+        <span class="c1">#: ``(video RTP, video RTCP, metadata RTP, metadata RTCP)`` once started.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">udp_ports</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sessions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_Session</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sockets</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">DatagramTransport</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">AbstractEventLoop</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_deliverers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">VideoPacket</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="RtspServer.start">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Bind and start serving.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        OSError</span>
+<span class="sd">            If a port is taken.</span>
+<span class="sd">        """</span>
+        <span class="n">started</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_serve</span><span class="p">(</span><span class="n">started</span><span class="p">,</span> <span class="n">ready</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"rtsp"</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">started</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">started</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RtspServer.stop">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.stop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Stop serving and end every session."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">call_soon_threadsafe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">started</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">ready</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bind</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">started</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+            <span class="n">ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">camera</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cameras</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deliverers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deliverer</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">camera</span><span class="o">.</span><span class="n">transport_video</span><span class="o">.</span><span class="n">packet_received</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deliverers</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+        <span class="n">started</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="n">ticker</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tick</span><span class="p">())</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">ticker</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">camera</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cameras</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">camera</span><span class="o">.</span><span class="n">transport_video</span><span class="o">.</span><span class="n">packet_received</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deliverers</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sessions</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sockets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_bind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Server</span><span class="p">:</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+        <span class="n">ports</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">payload_type</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="n">_PAYLOAD_H264</span><span class="p">,</span> <span class="n">_PAYLOAD_KLV</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">is_rtcp</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="n">wanted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_port</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">is_rtcp</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_port</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="n">factory</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_RtcpEndpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="k">if</span> <span class="n">is_rtcp</span> <span class="k">else</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">DatagramProtocol</span>
+                <span class="n">socket</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">create_datagram_endpoint</span><span class="p">(</span>
+                    <span class="n">factory</span><span class="p">,</span> <span class="n">local_addr</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">wanted</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sockets</span><span class="p">[</span><span class="n">payload_type</span><span class="p">,</span> <span class="n">is_rtcp</span><span class="p">]</span> <span class="o">=</span> <span class="n">socket</span>
+                <span class="n">ports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">get_extra_info</span><span class="p">(</span><span class="s2">"sockname"</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">udp_ports</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ports</span><span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
+        <span class="n">server</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">start_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">sockets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">server</span>
+
+<div class="viewcode-block" id="RtspServer.send_datagram">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.send_datagram">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_datagram</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">payload_type</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">is_rtcp</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Send from the port a reader was told this track's traffic comes from."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sockets</span><span class="p">[</span><span class="n">payload_type</span><span class="p">,</span> <span class="n">is_rtcp</span><span class="p">]</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deliverer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">VideoPacket</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""What hands one camera's packets to its readers."""</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">deliver</span><span class="p">(</span><span class="n">packet</span><span class="p">:</span> <span class="n">VideoPacket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sessions</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">camera</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">cameras</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">send_packet</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">on_packet</span><span class="p">(</span><span class="n">packet</span><span class="p">:</span> <span class="n">VideoPacket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Called on the encoder's thread; sessions live on this server's loop.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">call_soon_threadsafe</span><span class="p">(</span><span class="n">deliver</span><span class="p">,</span> <span class="n">packet</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">on_packet</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">_TICK_INTERVAL</span><span class="p">)</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sessions</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">send_sender_reports</span><span class="p">()</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">tick_rate_control</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RtspServer.handle_rtcp">
+<a class="viewcode-back" href="../../api/SpiriCamera.rtsp.html#SpiriCamera.rtsp.RtspServer.handle_rtcp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_rtcp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">sender</span><span class="p">:</span> <span class="n">_Session</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Act on RTCP from a reader, picked out by the SSRC it's talking about.</span>
+
+<span class="sd">        ``sender`` is the session it came in on, when that's known, as it is over TCP:</span>
+<span class="sd">        a keyframe request that names no stream of ours is taken to be for it.</span>
+<span class="sd">        """</span>
+        <span class="n">feedback</span> <span class="o">=</span> <span class="n">parse_rtcp</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ssrc</span><span class="p">,</span> <span class="n">fraction_lost</span> <span class="ow">in</span> <span class="n">feedback</span><span class="o">.</span><span class="n">reports</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_for</span><span class="p">(</span><span class="n">ssrc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">heard</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">on_report</span><span class="p">(</span><span class="n">fraction_lost</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ssrc</span><span class="p">,</span> <span class="n">sequences</span> <span class="ow">in</span> <span class="n">feedback</span><span class="o">.</span><span class="n">nacks</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_for</span><span class="p">(</span><span class="n">ssrc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">heard</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">on_nack</span><span class="p">(</span><span class="n">sequences</span><span class="p">)</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">retransmit</span><span class="p">(</span><span class="n">sequences</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ssrc</span> <span class="ow">in</span> <span class="n">feedback</span><span class="o">.</span><span class="n">keyframe_requests</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_for</span><span class="p">(</span><span class="n">ssrc</span><span class="p">)</span> <span class="ow">or</span> <span class="n">sender</span>
+            <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_video_request_keyframe</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_session_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssrc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Session</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">ssrc</span> <span class="o">==</span> <span class="n">ssrc</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">session</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">_Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_video_hold</span><span class="p">()</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_video_request_keyframe</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"RTSP: </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="si">}</span><span class="s2"> session </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> playing"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">_Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_video_release</span><span class="p">()</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">transport_video_forget</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">subscriber</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"RTSP: </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="si">}</span><span class="s2"> session </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> ended"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Camera</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The camera a request's path is for, and whether it's that camera's relay mount."""</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">_TRACK_ID</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+        <span class="n">camera</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cameras</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">camera</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">rest</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">RELAY_SUFFIX</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">camera</span><span class="p">,</span> <span class="n">rest</span> <span class="o">==</span> <span class="n">RELAY_SUFFIX</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_relay</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The SDP for a mount.  Only a viewer's mount offers retransmission, which needs AVPF."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_relay</span><span class="p">:</span>
+            <span class="n">media</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"m=video 0 RTP/AVPF </span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">_PAYLOAD_RTX</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=rtpmap:</span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2"> H264/</span><span class="si">{</span><span class="n">VIDEO_CLOCK_RATE</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=fmtp:</span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2"> packetization-mode=1</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=rtcp-fb:</span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2"> nack</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=rtcp-fb:</span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2"> nack pli</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=rtpmap:</span><span class="si">{</span><span class="n">_PAYLOAD_RTX</span><span class="si">}</span><span class="s2"> rtx/</span><span class="si">{</span><span class="n">VIDEO_CLOCK_RATE</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=fmtp:</span><span class="si">{</span><span class="n">_PAYLOAD_RTX</span><span class="si">}</span><span class="s2"> apt=</span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2">;rtx-time=1000</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">media</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"m=video 0 RTP/AVP </span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=rtpmap:</span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2"> H264/</span><span class="si">{</span><span class="n">VIDEO_CLOCK_RATE</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"a=fmtp:</span><span class="si">{</span><span class="n">_PAYLOAD_H264</span><span class="si">}</span><span class="s2"> packetization-mode=1</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">"v=0</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"o=- 0 0 IN IP4 0.0.0.0</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"s=SpiriCamera</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"c=IN IP4 0.0.0.0</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"t=0 0</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"a=control:*</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">media</span><span class="si">}</span><span class="s2">"</span>
+            <span class="s2">"a=control:trackID=0</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"m=application 0 RTP/AVP </span><span class="si">{</span><span class="n">_PAYLOAD_KLV</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"a=rtpmap:</span><span class="si">{</span><span class="n">_PAYLOAD_KLV</span><span class="si">}</span><span class="s2"> smpte336m/</span><span class="si">{</span><span class="n">VIDEO_CLOCK_RATE</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"a=control:trackID=1</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamWriter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""One RTSP connection, which is one session: when it closes, the session ends."""</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">_Session</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">first</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readexactly</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">first</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">"$"</span><span class="p">:</span>
+                    <span class="n">channel</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">"&gt;BH"</span><span class="p">,</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readexactly</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readexactly</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">channel</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">handle_rtcp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">raw</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readuntil</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\r\n\r\n</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">separator</span><span class="p">:</span>
+                        <span class="n">headers</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s2">"content-length"</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readexactly</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">headers</span><span class="p">[</span><span class="s2">"content-length"</span><span class="p">]))</span>
+                <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">headers</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">writer</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">IncompleteReadError</span><span class="p">,</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">LimitOverrunError</span><span class="p">,</span>
+            <span class="ne">ConnectionError</span><span class="p">,</span>
+            <span class="ne">ValueError</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request_line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">writer</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamWriter</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">_Session</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Session</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Answer one request, returning the connection's session afterwards."""</span>
+        <span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">request_line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">cseq</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cseq"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"//"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"?"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mount</span> <span class="o">=</span> <span class="n">_TRACK_ID</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mount</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">respond</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">extra</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Content-Length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span> <span class="k">if</span> <span class="n">body</span> <span class="k">else</span> <span class="s2">""</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"RTSP/1.0 </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">CSeq: </span><span class="si">{</span><span class="n">cseq</span><span class="si">}</span><span class="se">\r\n</span><span class="si">{</span><span class="n">extra</span><span class="si">}{</span><span class="n">length</span><span class="si">}</span><span class="se">\r\n</span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+
+        <span class="n">session_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Session: </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">;timeout=60</span><span class="se">\r\n</span><span class="s2">"</span> <span class="k">if</span> <span class="n">session</span> <span class="k">else</span> <span class="s2">""</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"OPTIONS"</span><span class="p">:</span>
+            <span class="n">respond</span><span class="p">(</span><span class="s2">"200 OK"</span><span class="p">,</span> <span class="s2">"Public: OPTIONS, DESCRIBE, SETUP, PLAY, GET_PARAMETER, TEARDOWN</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"DESCRIBE"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">found</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">respond</span><span class="p">(</span><span class="s2">"404 Not Found"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">respond</span><span class="p">(</span>
+                    <span class="s2">"200 OK"</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Content-Type: application/sdp</span><span class="se">\r\n</span><span class="s2">Content-Base: </span><span class="si">{</span><span class="n">url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_describe</span><span class="p">(</span><span class="n">found</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SETUP"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">found</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">respond</span><span class="p">(</span><span class="s2">"404 Not Found"</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">session</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="o">*</span><span class="n">found</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">respond</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"PLAY"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">respond</span><span class="p">(</span><span class="s2">"454 Session Not Found"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span><span class="si">}</span><span class="s2">/trackID=</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">;seq=</span><span class="si">{</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">sequence</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xFFFF</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_set_up</span>
+                <span class="p">)</span>
+                <span class="c1"># Holding first, so a reader told it's playing already counts as demand.</span>
+                <span class="c1"># No await between them, so no frame can overtake this response.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_play</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+                <span class="n">respond</span><span class="p">(</span><span class="s2">"200 OK"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">session_header</span><span class="si">}</span><span class="s2">RTP-Info: </span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"GET_PARAMETER"</span><span class="p">:</span>
+            <span class="n">respond</span><span class="p">(</span><span class="s2">"200 OK"</span><span class="p">,</span> <span class="n">session_header</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TEARDOWN"</span><span class="p">:</span>
+            <span class="n">respond</span><span class="p">(</span><span class="s2">"200 OK"</span><span class="p">,</span> <span class="n">session_header</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">respond</span><span class="p">(</span><span class="s2">"501 Not Implemented"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">session</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mount</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">camera</span><span class="p">:</span> <span class="n">Camera</span><span class="p">,</span>
+        <span class="n">is_relay</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">writer</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamWriter</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">_Session</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">respond</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Session</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set up one track, over the only transport its mount allows."""</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"transport"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">";"</span><span class="p">)</span>
+        <span class="n">is_tcp</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"/TCP"</span><span class="p">)</span>
+        <span class="n">client_ports</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">o</span><span class="p">[</span><span class="mi">12</span><span class="p">:]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">options</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"client_port="</span><span class="p">)),</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="n">wanted_track</span> <span class="o">=</span> <span class="n">_TRACK_ID</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_tcp</span> <span class="o">!=</span> <span class="n">is_relay</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">wanted_track</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_tcp</span> <span class="ow">or</span> <span class="n">client_ports</span><span class="p">):</span>
+            <span class="n">respond</span><span class="p">(</span><span class="s2">"461 Unsupported Transport"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">session</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">mount</span> <span class="o">!=</span> <span class="n">mount</span><span class="p">:</span>
+            <span class="n">respond</span><span class="p">(</span><span class="s2">"459 Aggregate Operation Not Allowed"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">session</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">_Session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="n">is_relay</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sessions</span><span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wanted_track</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">tracks</span><span class="p">):</span>
+            <span class="n">respond</span><span class="p">(</span><span class="s2">"404 Not Found"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">session</span>
+        <span class="n">track</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">is_set_up</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">is_tcp</span><span class="p">:</span>
+            <span class="n">track</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"RTP/AVP/TCP;unicast;interleaved=</span><span class="si">{</span><span class="n">track</span><span class="o">.</span><span class="n">channel</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">track</span><span class="o">.</span><span class="n">channel</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">;"</span>
+                <span class="sa">f</span><span class="s2">"ssrc=</span><span class="si">{</span><span class="n">track</span><span class="o">.</span><span class="n">ssrc</span><span class="si">:</span><span class="s2">08x</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">low</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">client_ports</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span>
+            <span class="c1"># Only ever to whoever asked, so this can't aim traffic at someone else.</span>
+            <span class="n">peer</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">get_extra_info</span><span class="p">(</span><span class="s2">"peername"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">track</span><span class="o">.</span><span class="n">rtp_destination</span> <span class="o">=</span> <span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">low</span><span class="p">))</span>
+            <span class="n">track</span><span class="o">.</span><span class="n">rtcp_destination</span> <span class="o">=</span> <span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">low</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">server_rtp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_ports</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">server_rtcp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_ports</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">;unicast;client_port=</span><span class="si">{</span><span class="n">low</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">track</span><span class="o">.</span><span class="n">rtcp_destination</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">;"</span>
+                <span class="sa">f</span><span class="s2">"server_port=</span><span class="si">{</span><span class="n">server_rtp</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">server_rtcp</span><span class="si">}</span><span class="s2">;ssrc=</span><span class="si">{</span><span class="n">track</span><span class="o">.</span><span class="n">ssrc</span><span class="si">:</span><span class="s2">08x</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="n">respond</span><span class="p">(</span><span class="s2">"200 OK"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Transport: </span><span class="si">{</span><span class="n">reply</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">Session: </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">;timeout=60</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">session</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"RELAY_SUFFIX"</span><span class="p">,</span>
+    <span class="s2">"RTCP_SILENCE"</span><span class="p">,</span>
+    <span class="s2">"LossMeter"</span><span class="p">,</span>
+    <span class="s2">"RtcpFeedback"</span><span class="p">,</span>
+    <span class="s2">"RtspServer"</span><span class="p">,</span>
+    <span class="s2">"packetize_h264"</span><span class="p">,</span>
+    <span class="s2">"parse_rtcp"</span><span class="p">,</span>
+    <span class="s2">"split_annexb"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Alex Davies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=92c8e9c5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
