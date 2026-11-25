@@ -10,6 +10,9 @@
   six minutes at 12 times. On a radio link that burst was lost, and rate control cut the
   bitrate, resolution and frame rate for it. The encoder now runs under VBV, `maxrate` at the
   target with a one-second buffer, and holds the target whatever came before.
+- The RTSP server drops a UDP packet the kernel has no room for, instead of queuing it in
+  memory without limit, where a link that couldn't keep up turned into growing latency. The
+  viewer NACKs what it missed, so rate control still sees the loss.
 
 ## 0.4.0 (2026-11-25)
 

@@ -112,6 +112,22 @@ class TestParseRtcp:
         assert not feedback.reports and not feedback.nacks and not feedback.keyframe_requests
 
 
+class _FullSocket:
+    """A UDP socket whose kernel send buffer is full."""
+
+    def sendto(self, data: bytes, destination: tuple[str, int]) -> int:
+        raise BlockingIOError
+
+
+class TestSendDatagram:
+    def test_drops_a_packet_the_kernel_has_no_room_for(self) -> None:
+        server = RtspServer({})
+        server._sockets[96, False] = _FullSocket()  # type: ignore[assignment]
+        server.send_datagram(96, False, b"packet", ("127.0.0.1", 9))
+        server.send_datagram(96, False, b"packet", ("127.0.0.1", 9))
+        assert server.dropped == 2
+
+
 class TestLossMeter:
     def test_has_no_say_until_it_hears_rtcp(self) -> None:
         meter = LossMeter()

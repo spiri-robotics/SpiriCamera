@@ -20,6 +20,7 @@ from __future__ import annotations
 import asyncio
 import re
 import secrets
+import socket
 import struct
 import threading
 import time
@@ -454,7 +455,10 @@ class RtspServer:
         #: ``(video RTP, video RTCP, metadata RTP, metadata RTCP)`` once started.
         self.udp_ports: tuple[int, int, int, int] = (0, 0, 0, 0)
         self._sessions: dict[str, _Session] = {}
-        self._sockets: dict[tuple[int, bool], asyncio.DatagramTransport] = {}
+        self._sockets: dict[tuple[int, bool], socket.socket] = {}
+        self._udp_transports: list[asyncio.DatagramTransport] = []
+        #: UDP packets dropped because the kernel's send buffer was full.
+        self.dropped = 0
         self._loop: asyncio.AbstractEventLoop | None = None
         self._thread: threading.Thread | None = None
         self._stopping: asyncio.Event | None = None
@@ -511,8 +515,8 @@ class RtspServer:
             self._end(session)
             session.writer.close()
         server.close()
-        for socket in self._sockets.values():
-            socket.close()
+        for transport in self._udp_transports:
+            transport.close()
 
     async def _bind(self) -> asyncio.Server:
         loop = asyncio.get_running_loop()
@@ -521,11 +525,21 @@ class RtspServer:
             for is_rtcp in (False, True):
                 wanted = self.udp_port + index * 2 + is_rtcp if self.udp_port else 0
                 factory = (lambda: _RtcpEndpoint(self)) if is_rtcp else asyncio.DatagramProtocol
-                socket, _ = await loop.create_datagram_endpoint(
-                    factory, local_addr=(self.host, wanted)
-                )
-                self._sockets[payload_type, is_rtcp] = socket
-                ports.append(socket.get_extra_info("sockname")[1])
+                family, kind, proto, _, address = socket.getaddrinfo(
+                    self.host, wanted, type=socket.SOCK_DGRAM
+                )[0]
+                udp = socket.socket(family, kind, proto)
+                try:
+                    udp.bind(address)
+                except OSError:
+                    udp.close()
+                    raise
+                # asyncio reads RTCP from it; sends go straight to the socket, see
+                # send_datagram.
+                transport, _ = await loop.create_datagram_endpoint(factory, sock=udp)
+                self._udp_transports.append(transport)
+                self._sockets[payload_type, is_rtcp] = udp
+                ports.append(udp.getsockname()[1])
         self.udp_ports = tuple(ports)  # type: ignore[assignment]
         server = await asyncio.start_server(self._client, self.host, self.port)
         self.port = server.sockets[0].getsockname()[1]
@@ -534,8 +548,17 @@ class RtspServer:
     def send_datagram(
         self, payload_type: int, is_rtcp: bool, data: bytes, destination: tuple[str, int]
     ) -> None:
-        """Send from the port a reader was told this track's traffic comes from."""
-        self._sockets[payload_type, is_rtcp].sendto(data, destination)
+        """Send from the port a reader was told this track's traffic comes from.
+
+        A packet the kernel has no room for is dropped, not queued: a queue on a
+        link that can't keep up only grows the latency, and asyncio's own queue
+        for a UDP transport has no limit.  The reader NACKs what it missed, so a
+        drop here counts as loss to rate control like any other.
+        """
+        try:
+            self._sockets[payload_type, is_rtcp].sendto(data, destination)
+        except BlockingIOError:
+            self.dropped += 1
 
     def _deliverer(self, name: str) -> Callable[[VideoPacket], None]:
         """What hands one camera's packets to its readers."""
