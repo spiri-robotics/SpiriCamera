@@ -407,9 +407,18 @@ class SourceBase(abc.ABC):
     ----------
     schemes : ClassVar[tuple[str, ...]]
         URL schemes this handler claims, without the ``://`` separator.
+    live : ClassVar[bool]
+        Whether the source sends frames at its own rate, whether or not
+        anyone reads them -- a network stream or a camera, unlike a file
+        or a test pattern.  :py:meth:`read` on a live source waits for
+        its next frame, which is what paces the camera reading it, so
+        the camera doesn't pace it as well.  A live source keeps up with
+        its device on its own and hands back only the newest frame:
+        frames left waiting to be read are latency.
     """
 
     schemes: ClassVar[tuple[str, ...]] = ()
+    live: ClassVar[bool] = False
 
     def __init__(self, url: SourceURL) -> None:
         """Create a handler for an already-parsed source URL.

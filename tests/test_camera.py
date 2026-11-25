@@ -365,6 +365,98 @@ class TestReading:
             cam.read()
 
 
+class _StreamingCapture:
+    """A stream that sends 30 fps whether or not it's read, as RTSP does.
+
+    Frames nobody has read yet queue, like a socket's receive buffer;
+    :py:meth:`read` hands back the oldest, waiting for it if it hasn't
+    been sent.  Each frame carries its number in its first two pixels.
+    """
+
+    FPS = 30
+
+    def __init__(self, *_args: object, **_kwargs: object) -> None:
+        self.started = time.monotonic()
+        self.reads = 0
+        self.released = False
+
+    def isOpened(self) -> bool:  # noqa: N802 - cv2.VideoCapture's name
+        return not self.released
+
+    def set(self, prop: int, value: float) -> bool:
+        return True
+
+    def get(self, prop: int) -> float:
+        return {cv2.CAP_PROP_FRAME_WIDTH: 8.0, cv2.CAP_PROP_FRAME_HEIGHT: 8.0}.get(prop, 0.0)
+
+    def sent_at(self, number: int) -> float:
+        return self.started + number / self.FPS
+
+    def read(self) -> tuple[bool, np.ndarray]:
+        number = self.reads
+        self.reads += 1
+        time.sleep(max(0.0, self.sent_at(number) - time.monotonic()))
+        frame = np.zeros((8, 8, 3), np.uint8)
+        frame[0, 0, 0], frame[0, 1, 0] = number % 256, number // 256
+        return True, frame
+
+    def release(self) -> None:
+        self.released = True
+
+
+class TestLiveSource:
+    """A camera reading a stream must keep up with it, however slow its passes."""
+
+    def test_a_slow_pass_does_not_leave_frames_queueing(
+        self, camera: CameraFactory, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The drone's 3 s of latency: passes longer than a frame, behind a 30 fps stream.
+
+        A loop paced to max_framerate then read 20 frames a second off a
+        stream sending 30, and the rest queued until the buffer was full.
+        """
+        streams: list[_StreamingCapture] = []
+
+        def open_stream(*args: object, **kwargs: object) -> _StreamingCapture:
+            streams.append(_StreamingCapture())
+            return streams[-1]
+
+        monkeypatch.setattr("SpiriCamera.sources.capture.cv2.VideoCapture", open_stream)
+        cam = camera("rtsp://10.0.0.5/stream", max_framerate=30)
+        ages: list[float] = []
+
+        def slow_pass(frame: np.ndarray) -> np.ndarray:
+            time.sleep(0.05)  # a frame and a half
+            number = int(frame[0, 0, 0]) + 256 * int(frame[0, 1, 0])
+            ages.append(time.monotonic() - streams[-1].sent_at(number))
+            return frame
+
+        monkeypatch.setattr(cam, "_render_overlays", slow_pass)
+        cam.start()
+        time.sleep(1.5)
+        cam.stop()
+
+        assert len(ages) > 10
+        # Paced, the last frame was half a second old, and getting older.
+        assert max(ages[-5:]) < 0.1
+
+    def test_does_not_go_faster_than_max_framerate(
+        self, camera: CameraFactory, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Unpaced, the loop still publishes no more than max_framerate."""
+        monkeypatch.setattr("SpiriCamera.sources.capture.cv2.VideoCapture", _StreamingCapture)
+        cam = camera("rtsp://10.0.0.5/stream", max_framerate=10)
+        published: list[float] = []
+        cam.transport_raw.data_changed.connect(lambda _frame: published.append(time.monotonic()))
+
+        cam.start()
+        time.sleep(1.5)
+        cam.stop()
+
+        rate = (len(published) - 1) / (published[-1] - published[0])
+        assert 8 <= rate <= 11
+
+
 class TestReceivedDimensions:
     """Reporting the frame that actually arrived."""
 

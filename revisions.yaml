@@ -33,3 +33,8 @@ revisions:
     summary: Replaced WHEP with RTSP and rewrote the MediaMTX guide. Corrected the overlay examples and CLI commands. Previews are now 96 pixels high.
     author: Alex Davies
     draft: true
+  - revision: "0.3"
+    date: 2026-11-25
+    summary: Network streams and V4L2 cameras are read on a thread of their own, so frames never queue in front of the camera.
+    author: Alex Davies
+    draft: true

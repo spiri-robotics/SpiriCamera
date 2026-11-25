@@ -1,5 +1,29 @@
 # Changes
 
+## Unreleased
+
+### Fixes
+
+- A camera reading an RTSP stream no longer falls seconds behind it. The capture loop paced
+  its reads to `max_framerate`, so the first pass that ran longer than a frame left it reading
+  slower than the stream sent, never to catch up, and the rest queued in the UDP receive buffer
+  until it overflowed: about 3 seconds of latency, and smeared frames from the packets dropped,
+  on a Raspberry Pi 5 behind a 30 fps gimbal camera. Network streams and V4L2 cameras are now
+  read on a thread of their own as fast as they send, the camera takes only the newest frame,
+  and `max_framerate` drops the frames it doesn't want instead of leaving them to wait.
+
+### Improvements
+
+- Network streams open with `fflags;nobuffer`, and RTSP streams also with `max_delay;0` and a
+  256 KB `buffer_size`, so a lost packet is skipped instead of waited for and a decoder that
+  falls behind can't queue seconds of video. Options set in `OPENCV_FFMPEG_CAPTURE_OPTIONS`
+  still win, key by key.
+
+### Tests
+
+- A 30 fps stream that queues what isn't read, behind passes longer than a frame: the
+  published frame stays current. It was over half a second old, and getting older, before.
+
 ## 0.3.0 (2026-11-25)
 
 ### Features

@@ -103,6 +103,7 @@ class FakeCapture:
         height: int = 480,
         framerate: int = 30,
         frames: list[np.ndarray | None] | None = None,
+        delay: float = 0.001,
     ) -> None:
         """Create a fake capture.
 
@@ -119,6 +120,9 @@ class FakeCapture:
             Frames to return from successive reads.  ``None`` entries
             become a failed read.  Exhausting the list repeats the last
             entry.  Defaults to an endless supply of blank frames.
+        delay : float
+            How long each read blocks, as a device does until its next
+            frame.  Long enough that a live source's grabber doesn't spin.
         """
         self.target = target
         self.opened = opened
@@ -129,6 +133,7 @@ class FakeCapture:
         self.released = False
         self._frames = frames if frames is not None else [np.zeros((height, width, 3), np.uint8)]
         self._reads = 0
+        self.delay = delay
 
     def isOpened(self) -> bool:  # noqa: N802 - cv2.VideoCapture's name
         """Whether the device is open."""
@@ -150,7 +155,10 @@ class FakeCapture:
         }.get(prop, 0.0)
 
     def read(self) -> tuple[bool, np.ndarray | None]:
-        """Return the next scripted frame."""
+        """Return the next scripted frame, after ``delay``."""
+        import time
+
+        time.sleep(self.delay)
         index = min(self._reads, len(self._frames) - 1)
         self._reads += 1
         frame = self._frames[index]
@@ -176,16 +184,30 @@ class CaptureHolder:
 
 
 @pytest.fixture
-def fake_capture(monkeypatch: pytest.MonkeyPatch) -> Callable[..., CaptureHolder]:
+def fake_capture(monkeypatch: pytest.MonkeyPatch) -> Iterator[Callable[..., CaptureHolder]]:
     """Patch ``cv2.VideoCapture`` with a scripted fake.
 
-    Returns
-    -------
+    Live sources still open at the end of the test are closed.
+
+    Yields
+    ------
     Callable[..., CaptureHolder]
         Call with :py:class:`FakeCapture` keyword arguments to install
         the behaviour.  The returned holder's ``capture`` attribute is
         populated once the source under test opens one.
     """
+
+    from SpiriCamera.sources.capture import OpenCVSource
+
+    # A live source a test leaves open would keep its grabber reading.
+    opened: list[OpenCVSource] = []
+    start_grabber = OpenCVSource._start_grabber
+
+    def tracked(self: OpenCVSource, capture: object) -> None:
+        opened.append(self)
+        start_grabber(self, capture)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(OpenCVSource, "_start_grabber", tracked)
 
     def install(**kwargs: object) -> CaptureHolder:
         holder = CaptureHolder()
@@ -202,7 +224,9 @@ def fake_capture(monkeypatch: pytest.MonkeyPatch) -> Callable[..., CaptureHolder
         )
         return holder
 
-    return install
+    yield install
+    for source in opened:
+        source.close()
 
 
 @pytest.fixture

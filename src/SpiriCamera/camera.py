@@ -1415,6 +1415,11 @@ class Camera(CameraBase):
         Settings are re-read every iteration, so a live change to the
         framerate applies without restarting the camera.
 
+        Reads are paced to ``max_framerate``, except a
+        :py:attr:`~SpiriCamera.sources.base.SourceBase.live` source's: it
+        sends at its own rate, and a loop paced as well falls behind it
+        the moment one pass runs long, never to catch up.
+
         A source that is not open and is needed -- because something wants
         frames, or because this camera has yet to describe itself -- is
         opened here, every :py:data:`_SOURCE_RETRY_INTERVAL` until it works.
@@ -1445,6 +1450,12 @@ class Camera(CameraBase):
                 self._capture(encode=self._jpeg.wanted)
                 self._set_status_if_active(STATUS_RUNNING)
                 failures = 0
+                handler = self._handler
+                if handler is not None and handler.live:
+                    # Its read waited for the frame, and holds to
+                    # max_framerate. Pausing as well would read it slower
+                    # than it sends; see SourceBase.live.
+                    continue
             except FrameUnavailableError as exc:
                 # Not a failure: a relay's upstream takes a moment to answer.
                 self._set_status_if_active(f"{STATUS_WAITING}: {exc}")

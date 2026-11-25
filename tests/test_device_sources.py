@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
+import os
+import time
 from collections.abc import Callable
 from pathlib import Path
 
@@ -11,6 +14,7 @@ import pytest
 
 from SpiriCamera.sources import resolve_source
 from SpiriCamera.sources.base import CaptureSettings, SourceError, SourceURL
+from SpiriCamera.sources.capture import FFMPEG_OPTIONS_ENV, merge_ffmpeg_options
 from SpiriCamera.sources.v4l import V4LSource
 
 from .conftest import CaptureHolder
@@ -348,9 +352,7 @@ class TestNetworkSource:
         holder = fake_capture(frames=[None])
         source = resolve_source("rtsp://10.0.0.5/stream")
         source.open(SETTINGS)
-        clock = iter([100.0, 106.0])
-        monkeypatch.setattr("SpiriCamera.sources.network.time.monotonic", lambda: next(clock))
-        source._last_frame_at = 100.0  # type: ignore[attr-defined]
+        source._last_frame_at = time.monotonic() - 6  # type: ignore[attr-defined]
 
         with pytest.raises(SourceError, match="no frame for 6s"):
             source.read(SETTINGS)
@@ -362,12 +364,193 @@ class TestNetworkSource:
     ) -> None:
         """After the server drops the session, FFmpeg still hands back a
         few buffered frames, each only after the full read timeout."""
-        fake_capture()
+        monkeypatch.setattr("SpiriCamera.sources.network._STALL_TIMEOUT", 0.02)
+        fake_capture(delay=0.05)
         source = resolve_source("rtsp://10.0.0.5/stream")
         source.open(SETTINGS)
-        clock = iter([100.0, 105.0])
-        monkeypatch.setattr("SpiriCamera.sources.network.time.monotonic", lambda: next(clock))
-        source._last_frame_at = 100.0  # type: ignore[attr-defined]
+        source._last_frame_at = time.monotonic() - 1  # type: ignore[attr-defined]
 
         with pytest.raises(SourceError, match="reconnecting"):
             source.read(SETTINGS)
+
+
+class TestFFmpegOptions:
+    """A stream opens with low-latency FFmpeg options, under the deployment's."""
+
+    @pytest.fixture
+    def seen(self, monkeypatch: pytest.MonkeyPatch) -> list[str | None]:
+        """What OPENCV_FFMPEG_CAPTURE_OPTIONS said at each open."""
+        seen: list[str | None] = []
+
+        def factory(target: object, *args: object) -> object:
+            seen.append(os.environ.get(FFMPEG_OPTIONS_ENV))
+            from .conftest import FakeCapture
+
+            return FakeCapture(target)
+
+        monkeypatch.setattr("SpiriCamera.sources.capture.cv2.VideoCapture", factory)
+        return seen
+
+    def test_rtsp_opens_with_low_latency_options(
+        self, seen: list[str | None], monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Nothing configured: the source's own, and the variable left unset after."""
+        monkeypatch.delenv(FFMPEG_OPTIONS_ENV, raising=False)
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(SETTINGS)
+        source.close()
+
+        assert seen == ["fflags;nobuffer|max_delay;0|buffer_size;262144"]
+        assert FFMPEG_OPTIONS_ENV not in os.environ
+
+    def test_the_deployment_s_options_win(
+        self, seen: list[str | None], monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The drone's ``rtsp_transport;udp`` is kept, and its own buffer size too."""
+        monkeypatch.setenv(FFMPEG_OPTIONS_ENV, "rtsp_transport;udp|buffer_size;1000000")
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(SETTINGS)
+        source.close()
+
+        options = dict(entry.split(";") for entry in (seen[0] or "").split("|"))
+        assert options == {
+            "fflags": "nobuffer",
+            "max_delay": "0",
+            "buffer_size": "1000000",
+            "rtsp_transport": "udp",
+        }
+        assert os.environ[FFMPEG_OPTIONS_ENV] == "rtsp_transport;udp|buffer_size;1000000"
+
+    def test_other_streams_get_no_rtsp_options(self, seen: list[str | None]) -> None:
+        """An HTTP stream has no RTP to reorder or UDP buffer to size."""
+        source = resolve_source("http://host/feed.mjpg")
+        source.open(SETTINGS)
+        source.close()
+
+        assert seen[0] is not None and seen[0].startswith("fflags;nobuffer")
+        assert "max_delay" not in seen[0]
+
+    def test_a_file_gets_none(self, seen: list[str | None], tmp_path: Path) -> None:
+        """A file isn't a stream: whatever the deployment set reaches it untouched."""
+        video = tmp_path / "clip.mp4"
+        video.write_bytes(b"")
+        source = resolve_source(f"file://{video}")
+        with contextlib.suppress(SourceError):
+            source.open(SETTINGS)
+        source.close()
+
+        assert all(options is None or "nobuffer" not in options for options in seen)
+
+    def test_entries_without_a_value_are_kept(self) -> None:
+        """OpenCV's format is the deployment's to use as it likes."""
+        assert merge_ffmpeg_options({"a": "1"}, "odd|b;2") == "a;1|b;2|odd"
+
+
+class TestLiveSources:
+    """A live source keeps up with its device, so frames never queue."""
+
+    def test_only_streams_and_cameras_are_live(self, tmp_path: Path) -> None:
+        """A file or test pattern is read when asked, so the camera paces it."""
+        assert resolve_source("rtsp://10.0.0.5/stream").live
+        assert resolve_source("v4l:///dev/video0").live
+        image = tmp_path / "still.png"
+        cv2.imwrite(str(image), np.zeros((8, 8, 3), np.uint8))
+        assert not resolve_source(f"file://{image}").live
+        assert not resolve_source("testimage://").live
+
+    def test_hands_back_the_newest_frame_not_the_oldest(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """Frames the reader didn't get to are dropped, not queued for later."""
+        frames = [np.full((4, 4, 3), n, np.uint8) for n in range(256)]
+        fake_capture(frames=frames)
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(CaptureSettings(max_framerate=0))
+        time.sleep(0.1)
+
+        frame = source.read(CaptureSettings(max_framerate=0))
+
+        assert frame is not None
+        # About a hundred grabs in 0.1 s; a queue would hand back the first.
+        assert frame[0, 0, 0] > 20
+
+    def test_a_slow_reader_does_not_fall_behind(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """The regression: a reader slower than the device gets ever-older frames."""
+        frames = [np.full((4, 4, 3), n % 256, np.uint8) for n in range(100_000)]
+        holder = fake_capture(frames=frames, delay=0.01)
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        settings = CaptureSettings(max_framerate=0)
+        source.open(settings)
+        assert holder.capture is not None
+
+        for _ in range(10):
+            source.read(settings)
+            time.sleep(0.03)  # a pass three frames long
+        source.read(settings)
+
+        # Handed back the frame the device just sent, not the 11th.
+        assert holder.capture._reads - source._last_grab.seq <= 2  # type: ignore[union-attr]
+
+    def test_holds_to_max_framerate_by_dropping_frames(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """A 100 fps device read at max_framerate=20 gives 20 frames a second."""
+        frames = [np.full((4, 4, 3), n % 256, np.uint8) for n in range(100_000)]
+        fake_capture(frames=frames, delay=0.01)
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        settings = CaptureSettings(max_framerate=20)
+        source.open(settings)
+
+        started = time.monotonic()
+        count = 0
+        while time.monotonic() - started < 1.0:
+            if source.read(settings) is not None:
+                count += 1
+
+        assert 17 <= count <= 22
+
+    def test_keeps_a_matching_framerate_despite_jitter(
+        self, fake_capture: Callable[..., CaptureHolder]
+    ) -> None:
+        """A device at exactly max_framerate loses no frames for arriving a little early."""
+        fake_capture(delay=0.02)
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        settings = CaptureSettings(max_framerate=50)
+        source.open(settings)
+
+        started = time.monotonic()
+        count = 0
+        while time.monotonic() - started < 1.0:
+            if source.read(settings) is not None:
+                count += 1
+
+        # The fake's 20 ms reads run a little long, so a little under 50.
+        assert count >= 40
+
+    def test_close_stops_the_grabber(self, fake_capture: Callable[..., CaptureHolder]) -> None:
+        """The capture is released only once nothing is reading it."""
+        holder = fake_capture()
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(SETTINGS)
+        grabber = source._grabber  # type: ignore[attr-defined]
+        assert grabber is not None and grabber.is_alive()
+
+        source.close()
+
+        assert not grabber.is_alive()
+        assert holder.capture is not None and holder.capture.released
+
+    def test_a_quiet_stream_returns_none_after_a_short_wait(
+        self, fake_capture: Callable[..., CaptureHolder], monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """So a camera that's stopping isn't held up by a stream that sends nothing."""
+        monkeypatch.setattr("SpiriCamera.sources.capture._LIVE_READ_WAIT", 0.05)
+        fake_capture(delay=1.0)
+        source = resolve_source("rtsp://10.0.0.5/stream")
+        source.open(SETTINGS)
+
+        started = time.monotonic()
+        assert source.read(SETTINGS) is None
+        assert time.monotonic() - started < 0.5

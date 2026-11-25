@@ -39,6 +39,9 @@ class V4LSource(OpenCVSource):
     """
 
     schemes = ("v4l", "v4l2")
+    #: A camera fills its driver's buffers whether or not it's read, and
+    #: frames waiting there are latency.
+    live = True
 
     @classmethod
     def handles(cls, url: SourceURL) -> bool:
