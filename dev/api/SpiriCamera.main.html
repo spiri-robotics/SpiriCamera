@@ -359,8 +359,10 @@ host’s base topic.  A second camera on the host needs another name.</p>
 </dd>
 <dt>hud_widgets<span class="classifier">str</span></dt><dd><p>The overlay widgets <code class="docutils literal notranslate"><span class="pre">SpiriCamera</span> <span class="pre">run</span></code> draws on <code class="docutils literal notranslate"><span class="pre">cameras/&lt;name&gt;/hud</span></code>,
 by SpiriSynq topic, separated by spaces or commas
-(<code class="docutils literal notranslate"><span class="pre">mu-1/hud/widgets/horizon</span> <span class="pre">mu-1/robot_home_hud</span></code>).  A widget shows
-once its publisher has published it.  Empty draws none.</p>
+(<code class="docutils literal notranslate"><span class="pre">mu-1/hud/widgets/horizon</span> <span class="pre">mu-1/robot_home_hud</span></code>).  A leading
+<code class="docutils literal notranslate"><span class="pre">./</span></code> is this host’s base topic, so <code class="docutils literal notranslate"><span class="pre">./hud/widgets/horizon</span></code>
+names this robot’s own.  A widget shows once its publisher has
+published it.  Empty draws none.</p>
 </dd>
 <dt>topic<span class="classifier">str</span></dt><dd><p>Overrides <code class="docutils literal notranslate"><span class="pre">cameras/&lt;camera_name&gt;</span></code>, the topic the three cameras sit
 under; empty uses it.</p>
@@ -383,7 +385,8 @@ under; empty uses it.</p>
 <dt>calibration_width, calibration_height<span class="classifier">int</span></dt><dd><p>The image size <code class="docutils literal notranslate"><span class="pre">fx</span></code>… were measured at.</p>
 </dd>
 <dt>relative_to<span class="classifier">str</span></dt><dd><p>The SpiriSynq topic of what the camera is mounted on, a gimbal’s
-(<code class="docutils literal notranslate"><span class="pre">mu-1/robot_gimbal1</span></code>), so the camera has a pose and looks
+(<code class="docutils literal notranslate"><span class="pre">mu-1/robot_gimbal1</span></code>, or <code class="docutils literal notranslate"><span class="pre">./robot_gimbal1</span></code> for this host’s),
+so the camera has a pose and looks
 where it does.  Mounted with no offset and the same axes; set
 <code class="docutils literal notranslate"><span class="pre">mount</span></code> over SpiriSynq for any other mounting.  Empty leaves
 the camera unplaced, unless its source places it (a
@@ -763,7 +766,7 @@ as <code class="docutils literal notranslate"><span class="pre">/&lt;camera&gt;/
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=3b889da3"></script>
+</div><script src="../_static/documentation_options.js?v=92c8e9c5"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

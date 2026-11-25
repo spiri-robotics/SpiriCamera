@@ -310,15 +310,26 @@
           <h1>Source code for SpiriCamera.sources.capture</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Shared ``cv2.VideoCapture`` plumbing for device-backed sources.</span>
 
-<span class="sd">Both the local V4L2 handler and the network stream handler are thin</span>
-<span class="sd">wrappers around OpenCV's capture object.  Everything they have in</span>
-<span class="sd">common — opening, applying requested settings, reading back what the</span>
-<span class="sd">device negotiated, and grabbing frames — lives here.</span>
+<span class="sd">The local V4L2 handler, the network stream handler, and the file</span>
+<span class="sd">handler are thin wrappers around OpenCV's capture object.  Everything</span>
+<span class="sd">they have in common — opening, applying requested settings, reading</span>
+<span class="sd">back what the device negotiated, and grabbing frames — lives here.</span>
+
+<span class="sd">A live source (see :py:attr:`SourceBase.live`) is read on a thread of</span>
+<span class="sd">its own, as fast as the device delivers, and :py:meth:`OpenCVSource.read`</span>
+<span class="sd">hands back the newest frame.  Without it, a camera that reads a little</span>
+<span class="sd">slower than the device sends leaves frames queueing in front of it: in</span>
+<span class="sd">FFmpeg's and the kernel's buffers for a network stream, where seconds of</span>
+<span class="sd">video can wait before overflowing, and in the driver's for a V4L2 device.</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -330,6 +341,66 @@
     <span class="n">SourceCapabilities</span><span class="p">,</span>
     <span class="n">SourceError</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="c1">#: How long :py:meth:`OpenCVSource.read` on a live source waits for a new</span>
+<span class="c1">#: frame before returning ``None``, so a camera that is stopping isn't</span>
+<span class="c1">#: kept waiting on a stream that has gone quiet.</span>
+<span class="n">_LIVE_READ_WAIT</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1">#: How early, as a fraction of the frame interval, a live source's frame</span>
+<span class="c1">#: may arrive and still count, so a frame a little early on a device</span>
+<span class="c1">#: running at exactly ``max_framerate`` isn't dropped for its jitter.</span>
+<span class="n">_FRAMERATE_SLACK</span> <span class="o">=</span> <span class="mf">0.25</span>
+
+
+<span class="c1">#: Where OpenCV takes FFmpeg's options from, as ``key;value|key;value``.</span>
+<span class="c1">#: It is the only way in, and is read at every open.</span>
+<span class="n">FFMPEG_OPTIONS_ENV</span> <span class="o">=</span> <span class="s2">"OPENCV_FFMPEG_CAPTURE_OPTIONS"</span>
+
+<span class="c1">#: Serialises opens that set :py:data:`FFMPEG_OPTIONS_ENV`, so one</span>
+<span class="c1">#: source's options never reach another's capture.</span>
+<span class="n">_ENV_LOCK</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">merge_ffmpeg_options</span><span class="p">(</span><span class="n">defaults</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">configured</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""``defaults`` under the options a deployment set, in OpenCV's format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    defaults : dict[str, str]</span>
+<span class="sd">        A source's own options.</span>
+<span class="sd">    configured : str</span>
+<span class="sd">        :py:data:`FFMPEG_OPTIONS_ENV` as the deployment set it, which</span>
+<span class="sd">        wins key by key.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        ``key;value`` pairs joined by ``|``.</span>
+<span class="sd">    """</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+    <span class="n">extra</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">configured</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"|"</span><span class="p">)):</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">";"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sep</span><span class="p">:</span>
+            <span class="n">options</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">extra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span> <span class="o">+</span> <span class="n">extra</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Grab</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One read of the device, by the grabber thread."""</span>
+
+    <span class="c1">#: Counts grabs, so a reader can tell a new one from one it has seen.</span>
+    <span class="n">seq</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="c1">#: The frame, or ``None`` for a failed read.</span>
+    <span class="n">frame</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="c1">#: When the read returned.</span>
+    <span class="n">arrived</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="c1">#: How long the read blocked for.</span>
+    <span class="n">took</span><span class="p">:</span> <span class="nb">float</span>
 
 
 <div class="viewcode-block" id="OpenCVSource">
@@ -348,6 +419,27 @@
         <span class="c1">#: Settings last pushed onto the device, so :py:meth:`read` can</span>
         <span class="c1">#: tell a live change from a repeat of the same request.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span><span class="p">:</span> <span class="n">CaptureSettings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#: What :py:meth:`open` negotiated, so a live source's capture</span>
+        <span class="c1">#: isn't queried while its grabber is reading it.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">:</span> <span class="n">SourceCapabilities</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># A live source's grabber, and what it shares with read(), all</span>
+        <span class="c1"># under _grabbed.  Only the grabber touches the capture once it</span>
+        <span class="c1"># runs: read() leaves settings in _wanted for it to apply.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wanted</span><span class="p">:</span> <span class="n">CaptureSettings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#: The grabber's newest read, and its newest that got a frame.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest</span><span class="p">:</span> <span class="n">_Grab</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_frame</span><span class="p">:</span> <span class="n">_Grab</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#: The newest grab read() has handed back or passed over.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seen_seq</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1">#: When the next frame is due, at ``max_framerate``.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_due</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1">#: The grab read() last handed back, so a subclass can see how</span>
+        <span class="c1">#: long the device took to produce it.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_grab</span><span class="p">:</span> <span class="n">_Grab</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Subclass hooks</span>
@@ -399,6 +491,45 @@
         <span class="k">return</span> <span class="p">[]</span></div>
 
 
+<div class="viewcode-block" id="OpenCVSource.ffmpeg_options">
+<a class="viewcode-back" href="../../../api/SpiriCamera.sources.html#SpiriCamera.sources.OpenCVSource.ffmpeg_options">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ffmpeg_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return FFmpeg options this source opens with by default.</span>
+
+<span class="sd">        Any the deployment sets in :py:data:`FFMPEG_OPTIONS_ENV` win,</span>
+<span class="sd">        key by key, and the variable is put back once the source opens.</span>
+<span class="sd">        The default implementation adds none.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, str]</span>
+<span class="sd">            FFmpeg option names and values.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_open_capture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""``cv2.VideoCapture`` on ``target``, with this source's FFmpeg options."""</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">open_it</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CAP_ANY</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffmpeg_options</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">defaults</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">open_it</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">_ENV_LOCK</span><span class="p">:</span>
+            <span class="n">configured</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">FFMPEG_OPTIONS_ENV</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">FFMPEG_OPTIONS_ENV</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_ffmpeg_options</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">configured</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">open_it</span><span class="p">()</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">configured</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">FFMPEG_OPTIONS_ENV</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">FFMPEG_OPTIONS_ENV</span><span class="p">]</span> <span class="o">=</span> <span class="n">configured</span>
+
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Lifecycle</span>
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -430,15 +561,14 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_open</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> already open, re-reporting capabilities"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_negotiated_capabilities</span><span class="p">()</span>
 
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">capture_target</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> opening capture target </span><span class="si">{</span><span class="n">target</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">capture_params</span><span class="p">()</span>
-        <span class="n">capture</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CAP_ANY</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">params</span> <span class="k">else</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">capture</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_capture</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">capture_params</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">capture</span><span class="o">.</span><span class="n">isOpened</span><span class="p">():</span>
             <span class="n">capture</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">SourceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to open capture source: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">raw</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
@@ -448,22 +578,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span> <span class="o">=</span> <span class="n">settings</span>
 
         <span class="n">capabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_negotiated_capabilities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="n">capabilities</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> opened | "</span>
             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">capabilities</span><span class="o">.</span><span class="n">max_supported_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">capabilities</span><span class="o">.</span><span class="n">max_supported_height</span><span class="si">}</span><span class="s2"> "</span>
             <span class="sa">f</span><span class="s2">"@ </span><span class="si">{</span><span class="n">capabilities</span><span class="o">.</span><span class="n">max_supported_framerate</span><span class="si">}</span><span class="s2">fps"</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_grabber</span><span class="p">(</span><span class="n">capture</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">capabilities</span></div>
 
 
 <div class="viewcode-block" id="OpenCVSource.close">
 <a class="viewcode-back" href="../../../api/SpiriCamera.sources.html#SpiriCamera.sources.OpenCVSource.close">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Release the capture device."""</span>
+<span class="w">        </span><span class="sd">"""Release the capture device.</span>
+
+<span class="sd">        A live source's grabber is stopped first, which can take as long</span>
+<span class="sd">        as the read it is blocked in: the capture can't be released</span>
+<span class="sd">        under it.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_grabber</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> closed"</span><span class="p">)</span></div>
 
 
@@ -479,6 +619,12 @@
 <span class="sd">        mid-stream; one that does not simply keeps delivering its</span>
 <span class="sd">        current size, which :py:attr:`CameraBase.received_width` and</span>
 <span class="sd">        friends will still report correctly.</span>
+
+<span class="sd">        A live source hands back the newest frame its grabber has read</span>
+<span class="sd">        that this method hasn't, waiting up to :py:data:`_LIVE_READ_WAIT`</span>
+<span class="sd">        for one, and passes over frames that arrive sooner than</span>
+<span class="sd">        ``max_framerate`` allows.  Frames in between are dropped: only</span>
+<span class="sd">        the newest is worth showing.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -498,6 +644,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">SourceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> is not open; call open() before read()"</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_live</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">settings</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> re-applying </span><span class="si">{</span><span class="n">settings</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
@@ -510,18 +659,127 @@
 
 
     <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Live sources</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_start_grabber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture</span><span class="p">:</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Start reading ``capture`` on a thread of its own."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_latest</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_latest_frame</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_seen_seq</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_due</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wanted</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_grab</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># An event per grabber, so one being stopped can't be restarted</span>
+        <span class="c1"># by a reopen that races it.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_grab_loop</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">capture</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"grab </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">raw</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stop_grabber</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Stop the grabber and wait for its read to return."""</span>
+        <span class="n">grabber</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">grabber</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopping</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+        <span class="n">grabber</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grab_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture</span><span class="p">:</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">,</span> <span class="n">stopping</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Read ``capture`` as fast as it delivers, keeping only the newest frame."""</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">stopping</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="p">:</span>
+                <span class="n">wanted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wanted</span>
+            <span class="k">if</span> <span class="n">wanted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">wanted</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> re-applying </span><span class="si">{</span><span class="n">wanted</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">wanted</span><span class="p">,</span> <span class="n">capture</span><span class="p">)</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span> <span class="o">=</span> <span class="n">wanted</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+
+            <span class="n">started</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ok</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">capture</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">cv2</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> read failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="n">ok</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">arrived</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+            <span class="n">seq</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">grab</span> <span class="o">=</span> <span class="n">_Grab</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">frame</span> <span class="k">if</span> <span class="n">ok</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">arrived</span><span class="p">,</span> <span class="n">arrived</span> <span class="o">-</span> <span class="n">started</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_latest</span> <span class="o">=</span> <span class="n">grab</span>
+                <span class="k">if</span> <span class="n">grab</span><span class="o">.</span><span class="n">frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_latest_frame</span> <span class="o">=</span> <span class="n">grab</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">grab</span><span class="o">.</span><span class="n">frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># A device that has gone away fails every read at once;</span>
+                <span class="c1"># don't spin on it while read() notices.</span>
+                <span class="n">stopping</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2"> grabber stopped"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_live</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">CaptureSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The newest frame the grabber has read, at most ``max_framerate``."""</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_framerate</span> <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_framerate</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">slack</span> <span class="o">=</span> <span class="n">interval</span> <span class="o">*</span> <span class="n">_FRAMERATE_SLACK</span>
+        <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">_LIVE_READ_WAIT</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">settings</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_wanted</span> <span class="o">=</span> <span class="n">settings</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grabber</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">grab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unseen</span><span class="p">()</span>
+                <span class="c1"># Settings asked for are on the device before read() returns.</span>
+                <span class="k">if</span> <span class="n">grab</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_applied</span> <span class="o">==</span> <span class="n">settings</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_seen_seq</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seen_seq</span><span class="p">,</span> <span class="n">grab</span><span class="o">.</span><span class="n">seq</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">grab</span><span class="o">.</span><span class="n">frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">None</span>
+                    <span class="k">if</span> <span class="n">grab</span><span class="o">.</span><span class="n">arrived</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_due</span> <span class="o">-</span> <span class="n">slack</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_next_due</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_next_due</span> <span class="o">+</span> <span class="n">interval</span><span class="p">,</span> <span class="n">grab</span><span class="o">.</span><span class="n">arrived</span> <span class="o">+</span> <span class="n">interval</span> <span class="o">-</span> <span class="n">slack</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_last_grab</span> <span class="o">=</span> <span class="n">grab</span>
+                        <span class="k">return</span> <span class="n">grab</span><span class="o">.</span><span class="n">frame</span>
+                    <span class="c1"># Too soon for max_framerate: wait for the next one.</span>
+                <span class="n">remaining</span> <span class="o">=</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_grabbed</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unseen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Grab</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The grab read() should look at next, if there is one; holds ``_grabbed``.</span>
+
+<span class="sd">        The newest frame not yet seen, or else the newest failed read,</span>
+<span class="sd">        which read() reports as a dropped frame.</span>
+<span class="sd">        """</span>
+        <span class="n">latest</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_latest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_latest_frame</span>
+        <span class="k">if</span> <span class="n">frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">frame</span><span class="o">.</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seen_seq</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">frame</span>
+        <span class="k">if</span> <span class="n">latest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">latest</span><span class="o">.</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seen_seq</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">latest</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Internals</span>
     <span class="c1"># ------------------------------------------------------------------</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">CaptureSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">CaptureSettings</span><span class="p">,</span> <span class="n">capture</span><span class="p">:</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Push requested settings onto the device, which may clamp them."""</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">capture</span> <span class="o">=</span> <span class="n">capture</span> <span class="k">if</span> <span class="n">capture</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span>
+        <span class="k">assert</span> <span class="n">capture</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_width</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">CAP_PROP_FRAME_WIDTH</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_width</span><span class="p">)</span>
+            <span class="n">capture</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">CAP_PROP_FRAME_WIDTH</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_width</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_height</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">CAP_PROP_FRAME_HEIGHT</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_height</span><span class="p">)</span>
+            <span class="n">capture</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">CAP_PROP_FRAME_HEIGHT</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_height</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_framerate</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_capture</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">CAP_PROP_FPS</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_framerate</span><span class="p">)</span>
+            <span class="n">capture</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">CAP_PROP_FPS</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">max_framerate</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_negotiated_capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceCapabilities</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read back what the device settled on, plus device identity."""</span>
@@ -572,7 +830,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=3b889da3"></script>
+</div><script src="../../../_static/documentation_options.js?v=92c8e9c5"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -369,8 +369,10 @@
 <span class="sd">    hud_widgets : str</span>
 <span class="sd">        The overlay widgets ``SpiriCamera run`` draws on ``cameras/&lt;name&gt;/hud``,</span>
 <span class="sd">        by SpiriSynq topic, separated by spaces or commas</span>
-<span class="sd">        (``mu-1/hud/widgets/horizon mu-1/robot_home_hud``).  A widget shows</span>
-<span class="sd">        once its publisher has published it.  Empty draws none.</span>
+<span class="sd">        (``mu-1/hud/widgets/horizon mu-1/robot_home_hud``).  A leading</span>
+<span class="sd">        ``./`` is this host's base topic, so ``./hud/widgets/horizon``</span>
+<span class="sd">        names this robot's own.  A widget shows once its publisher has</span>
+<span class="sd">        published it.  Empty draws none.</span>
 <span class="sd">    topic : str</span>
 <span class="sd">        Overrides ``cameras/&lt;camera_name&gt;``, the topic the three cameras sit</span>
 <span class="sd">        under; empty uses it.</span>
@@ -393,7 +395,8 @@
 <span class="sd">        The image size ``fx``... were measured at.</span>
 <span class="sd">    relative_to : str</span>
 <span class="sd">        The SpiriSynq topic of what the camera is mounted on, a gimbal's</span>
-<span class="sd">        (``mu-1/robot_gimbal1``), so the camera has a pose and looks</span>
+<span class="sd">        (``mu-1/robot_gimbal1``, or ``./robot_gimbal1`` for this host's),</span>
+<span class="sd">        so the camera has a pose and looks</span>
 <span class="sd">        where it does.  Mounted with no offset and the same axes; set</span>
 <span class="sd">        ``mount`` over SpiriSynq for any other mounting.  Empty leaves</span>
 <span class="sd">        the camera unplaced, unless its source places it (a</span>
@@ -559,7 +562,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
+</div><script src="../../_static/documentation_options.js?v=92c8e9c5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

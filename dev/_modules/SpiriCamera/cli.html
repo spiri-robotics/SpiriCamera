@@ -321,6 +321,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.example_types.position</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.link</span><span class="w"> </span><span class="kn">import</span> <span class="n">Link</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">SpiriSynq.session</span><span class="w"> </span><span class="kn">import</span> <span class="n">current_session</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.camera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">CameraError</span>
@@ -336,9 +337,14 @@
 
 <span class="n">SourceArgument</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">"Camera source"</span><span class="p">)]</span>
 
-<span class="c1">#: The preview camera's height in pixels, and its frames per second: a</span>
-<span class="c1">#: thumbnail for picking a camera, cheap enough to leave subscribed.</span>
-<span class="n">PREVIEW_HEIGHT</span> <span class="o">=</span> <span class="mi">240</span>
+<span class="c1">#: The preview camera's height in pixels, JPEG quality and frames per second:</span>
+<span class="c1">#: a thumbnail for picking a camera or showing it on a map, cheap enough to</span>
+<span class="c1">#: leave subscribed for every camera, about 2.4 KB a frame. Each frame has</span>
+<span class="c1">#: about 1 KB that doesn't shrink with the picture (the JPEG tables and EXIF),</span>
+<span class="c1">#: so much below this saves little, and the picture data stops being most of</span>
+<span class="c1">#: the frame.</span>
+<span class="n">PREVIEW_HEIGHT</span> <span class="o">=</span> <span class="mi">96</span>
+<span class="n">PREVIEW_QUALITY</span> <span class="o">=</span> <span class="mi">70</span>
 <span class="n">PREVIEW_FRAMERATE</span> <span class="o">=</span> <span class="mi">1</span>
 
 
@@ -387,13 +393,28 @@
         <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_on_this_host</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""``topic``, with a leading ``./`` made this host's base topic.</span>
+
+<span class="sd">    So one setting (``./robot_gimbal1``) serves every robot. Expanded here,</span>
+<span class="sd">    once: a link must be absolute, and a widget's topic is synced as it is</span>
+<span class="sd">    written, so a peer would read ``./`` as its own host.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``topic`` has ``.`` or ``..`` anywhere else.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">current_session</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">resolve_topic</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_set_mount</span><span class="p">(</span><span class="n">cam</span><span class="p">:</span> <span class="n">Camera</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Mount the camera on what its settings name, or exit if that isn't a topic."""</span>
     <span class="n">relative_to</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span><span class="o">.</span><span class="n">relative_to</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">relative_to</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">cam</span><span class="o">.</span><span class="n">relative_to</span><span class="p">,</span> <span class="n">cam</span><span class="o">.</span><span class="n">mount</span> <span class="o">=</span> <span class="n">Link</span><span class="p">(</span><span class="n">relative_to</span><span class="p">),</span> <span class="n">Pose</span><span class="p">()</span>
+        <span class="n">cam</span><span class="o">.</span><span class="n">relative_to</span><span class="p">,</span> <span class="n">cam</span><span class="o">.</span><span class="n">mount</span> <span class="o">=</span> <span class="n">Link</span><span class="p">(</span><span class="n">_on_this_host</span><span class="p">(</span><span class="n">relative_to</span><span class="p">)),</span> <span class="n">Pose</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: SPIRICAMERA_RELATIVE_TO: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
@@ -502,10 +523,14 @@
     <span class="p">)</span>
     <span class="c1"># A new camera has no widgets, so the HUD's are named on it at each start.</span>
     <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">hud_widgets</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
-        <span class="n">hud</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">widget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hud</span><span class="o">.</span><span class="n">overlay_widgets</span><span class="p">[</span><span class="n">_on_this_host</span><span class="p">(</span><span class="n">widget</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: SPIRICAMERA_HUD_WIDGETS: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
     <span class="n">preview</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
         <span class="n">source</span><span class="o">=</span><span class="n">upstream</span><span class="p">,</span>
-        <span class="n">quality</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
+        <span class="n">quality</span><span class="o">=</span><span class="n">PREVIEW_QUALITY</span><span class="p">,</span>
         <span class="c1"># The height is what binds: raw is never wider than this.</span>
         <span class="n">max_width</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="p">,</span>
         <span class="n">max_height</span><span class="o">=</span><span class="n">PREVIEW_HEIGHT</span><span class="p">,</span>
@@ -656,7 +681,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=3b889da3"></script>
+</div><script src="../../_static/documentation_options.js?v=92c8e9c5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
