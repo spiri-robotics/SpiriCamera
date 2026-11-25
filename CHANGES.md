@@ -1,5 +1,16 @@
 # Changes
 
+## Unreleased
+
+### Fixes
+
+- Video no longer turns to mush on movement after the camera has been still. x264 ran in plain
+  ABR, averaging over the encoder's whole life, so bits a still scene left unspent went on the
+  next movement: a fast pan after a minute still was sent at 5 times the target bitrate, after
+  six minutes at 12 times. On a radio link that burst was lost, and rate control cut the
+  bitrate, resolution and frame rate for it. The encoder now runs under VBV, `maxrate` at the
+  target with a one-second buffer, and holds the target whatever came before.
+
 ## 0.4.0 (2026-11-25)
 
 ### Features

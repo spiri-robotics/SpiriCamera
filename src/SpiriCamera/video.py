@@ -42,6 +42,10 @@ VIDEO_CLOCK_RATE = 90_000
 #: Seconds between checks for a subscriber, while nothing wants video.
 _IDLE_POLL_INTERVAL = 0.1
 
+#: Seconds of the target bitrate the encoder may run ahead by, as x264's VBV buffer:
+#: room for a keyframe, and the most a burst can put on the link at once.
+_VBV_BUFFER_SECONDS = 1.0
+
 
 class RateController:
     """One subscriber's estimate of what its link will carry.
@@ -319,8 +323,17 @@ class VideoEncoder:
             codec.framerate = fractions.Fraction(max_fps, 1)
             codec.time_base = fractions.Fraction(1, max_fps)
             # A preset, because x264's default (medium) is far too slow for
-            # live video on a Pi.
-            codec.options = {"level": "31", "tune": "zerolatency", "preset": transport.preset}
+            # live video on a Pi.  maxrate and bufsize put x264 under VBV: without
+            # them its ABR averages over the encoder's whole life, so bits a still
+            # scene left unspent are spent on the next movement, at 5x the target
+            # after a minute still and 12x after six.
+            codec.options = {
+                "level": "31",
+                "tune": "zerolatency",
+                "preset": transport.preset,
+                "maxrate": str(target),
+                "bufsize": str(int(target * _VBV_BUFFER_SECONDS)),
+            }
             codec.profile = "Baseline"
             self._codec_preset = transport.preset
 
