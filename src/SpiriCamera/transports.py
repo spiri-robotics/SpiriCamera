@@ -454,6 +454,11 @@ class TransportVideo(SubSyncableDataclass):
         What is encoded.  Only ``h264``.
     preset : str
         libx264's preset; defaults to ``SPIRICAMERA_H264_PRESET``.
+    slice_max_size : int
+        libx264's ``slice-max-size``: the most bytes in one slice of a frame,
+        or 0 for no limit.  At 1100, the default, from
+        ``SPIRICAMERA_H264_SLICE_MAX_SIZE``, each slice fits one RTP packet,
+        so a lost packet costs a strip of one frame instead of all of it.
     keyframe_interval : float
         Seconds between keyframes, which bounds recovery from a loss.  Also
         the frame interval of a keyframes-only subscriber.  0 sends them only
@@ -486,6 +491,7 @@ class TransportVideo(SubSyncableDataclass):
 
     codec: str = "h264"
     preset: str = "veryfast"
+    slice_max_size: int = 1100
     keyframe_interval: float | int = 2.0
     keyframe_min_interval: float | int = 0.25
     target_bitrate: int = 0

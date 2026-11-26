@@ -1,5 +1,16 @@
 # Changes
 
+## Unreleased
+
+### Fixes
+
+- A packet lost on the way to an RTSP viewer no longer costs the whole frame and smears the
+  picture until the next keyframe. x264 wrote each frame as slices of up to 12 KB, ten RTP
+  packets each, and a depayloader drops a slice missing any of them. Slices are now held to
+  1100 bytes, one RTP packet, so a loss costs one strip of one frame, for under 0.5% more
+  bitrate. `SPIRICAMERA_H264_SLICE_MAX_SIZE` and `transport_video.slice_max_size` set it; 0
+  is no limit.
+
 ## 0.4.1 (2026-11-25)
 
 ### Fixes

@@ -90,6 +90,8 @@ transport_video: !TransportVideo
   # Settings: FIELD, live.
   codec: h264                     # The only one.
   preset: veryfast                # x264's; default from SPIRICAMERA_H264_PRESET.
+  slice_max_size: 1100            # Bytes per slice, one RTP packet's worth; 0: no limit.
+                                  # Default from SPIRICAMERA_H264_SLICE_MAX_SIZE.
   keyframe_interval: 2.0          # Seconds; bounds recovery. 0: only when asked for.
   keyframe_min_interval: 0.25     # Coalesces requests, so there are no keyframe storms.
 

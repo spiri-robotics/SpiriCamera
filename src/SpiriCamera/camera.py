@@ -466,7 +466,10 @@ class Camera(CameraBase):
         if not is_rehydrate and "transport_video" not in rehydrated:
             from SpiriCamera.main import get_settings  # local: main imports this module
 
-            rehydrated["transport_video"] = TransportVideo(preset=get_settings().h264_preset)
+            settings = get_settings()
+            rehydrated["transport_video"] = TransportVideo(
+                preset=settings.h264_preset, slice_max_size=settings.h264_slice_max_size
+            )
         synq_topic = str(rehydrated.pop("synq_topic", synq_topic))
 
         if synq_authoritive is None:

@@ -6,6 +6,7 @@ import sys
 from typing import Literal
 
 from loguru import logger
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from SpiriCamera import __version__
@@ -96,6 +97,11 @@ class Settings(BaseSettings):
         same bitrate: at 720p30 on a Raspberry Pi 4, ``veryfast`` takes
         about 90% of a core, ``ultrafast`` 50%, and x264's own default
         ``medium`` over 200%.
+    h264_slice_max_size : int
+        x264's ``slice-max-size`` for that encode, in bytes (default 1100), or 0
+        for no limit.  Each slice then fits one RTP packet, so a lost packet costs
+        a strip of one frame, not all of it.  Keep it under the 1200 bytes of
+        H.264 in one RTP packet.
     rtsp_port : int
         ``SpiriCamera run`` serves its cameras over RTSP on this TCP port
         (default 8554), as ``/raw``, ``/hud`` and ``/preview``, and each
@@ -142,6 +148,7 @@ class Settings(BaseSettings):
 
     # The default preset of the camera's one encode; see SpiriCamera.video.
     h264_preset: H264Preset = "veryfast"
+    h264_slice_max_size: int = Field(default=1100, ge=0)
     rtsp_port: int = 8554
     rtsp_udp_port: int = 8000
 

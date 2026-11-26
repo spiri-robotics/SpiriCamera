@@ -142,7 +142,7 @@ class VideoEncoder:
         self._rates: dict[str, RateController] = {}
         self._keyframe_requested = True
         self._codec: av.CodecContext | None = None
-        self._codec_preset = ""
+        self._codec_x264: tuple[str, int] = ("", 0)
         self._frames = 0
         self._sequence = 0
         self._keyframe_sequence = 0
@@ -300,6 +300,7 @@ class VideoEncoder:
         codec = self._codec
         max_fps = max(1, int(self._max_fps()))
         settings = transport.rate_control
+        x264 = (str(transport.preset), max(0, int(transport.slice_max_size)))
         if (
             codec is None
             or (codec.width, codec.height) != (width, height)
@@ -308,7 +309,7 @@ class VideoEncoder:
                 > float(settings.bitrate_restart_fraction)
                 and (keyframe or since_keyframe >= float(settings.bitrate_restart_interval))
             )
-            or self._codec_preset != transport.preset
+            or self._codec_x264 != x264
             or codec.framerate != fractions.Fraction(max_fps, 1)
         ):
             # A new encoder, for a new size or a changed bitrate; its first
@@ -327,15 +328,21 @@ class VideoEncoder:
             # them its ABR averages over the encoder's whole life, so bits a still
             # scene left unspent are spent on the next movement, at 5x the target
             # after a minute still and 12x after six.
-            codec.options = {
+            preset, slice_max_size = x264
+            options = {
                 "level": "31",
                 "tune": "zerolatency",
-                "preset": transport.preset,
+                "preset": preset,
                 "maxrate": str(target),
                 "bufsize": str(int(target * _VBV_BUFFER_SECONDS)),
             }
+            if slice_max_size:
+                # Slices small enough for one RTP packet each, so a lost packet
+                # costs a strip of one frame rather than the whole frame.
+                options["x264-params"] = f"slice-max-size={slice_max_size}"
+            codec.options = options
             codec.profile = "Baseline"
-            self._codec_preset = transport.preset
+            self._codec_x264 = x264
 
         frame = VideoFrame.from_ndarray(array, format="bgr24")
         # Counted, not timed: see the framerate above.

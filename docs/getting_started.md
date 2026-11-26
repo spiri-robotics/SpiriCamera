@@ -314,6 +314,7 @@ export SPIRICAMERA_FRAMERATE=30     # Capture framerate
 export SPIRICAMERA_RTSP_PORT=8554   # `run` serves RTSP on this TCP port (0: off)
 export SPIRICAMERA_RTSP_UDP_PORT=8000 # ...and the first of four UDP ports
 export SPIRICAMERA_H264_PRESET=veryfast # x264 preset of the camera's one video encode
+export SPIRICAMERA_H264_SLICE_MAX_SIZE=1100 # Most bytes in a slice of it, so one fits an RTP packet
 ```
 
 However many video subscribers and RTSP viewers a camera has, it is
