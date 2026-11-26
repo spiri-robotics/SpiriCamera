@@ -603,6 +603,8 @@ templating rules, including why <code class="docutils literal notranslate"><span
 <span class="go">export SPIRICAMERA_QUALITY=90      # JPEG quality [1-100]</span>
 <span class="go">export SPIRICAMERA_FRAME_WIDTH=1280 # Most pixels wide a published frame is</span>
 <span class="go">export SPIRICAMERA_FRAME_HEIGHT=720 # ...and high; bigger frames are shrunk to fit</span>
+<span class="go">export SPIRICAMERA_HUD_FRAME_WIDTH=0  # `run`'s hud only, smaller still; 0 is raw's</span>
+<span class="go">export SPIRICAMERA_HUD_FRAME_HEIGHT=480</span>
 <span class="go">export SPIRICAMERA_FRAMERATE=30     # Capture framerate</span>
 <span class="go">export SPIRICAMERA_RTSP_PORT=8554   # `run` serves RTSP on this TCP port (0: off)</span>
 <span class="go">export SPIRICAMERA_RTSP_UDP_PORT=8000 # ...and the first of four UDP ports</span>
@@ -658,7 +660,7 @@ serve it over <a class="reference internal" href="rtsp.html"><span class="doc">R
 <td><p>The source itself, within <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_FRAME_WIDTH</span></code> x <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_FRAME_HEIGHT</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cameras/1/hud</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">raw</span></code>, with the widgets <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_HUD_WIDGETS</span></code> names, by topic, separated by spaces or commas.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">raw</span></code>, with the widgets <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_HUD_WIDGETS</span></code> names, by topic, separated by spaces or commas, within <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_HUD_FRAME_WIDTH</span></code> x <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_HUD_FRAME_HEIGHT</span></code> (0 is raw’s).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cameras/1/preview</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">raw</span></code> at 96 pixels high, JPEG quality 70 and one frame a second, about 2.4 KB a frame: a thumbnail for picking a camera from a list or showing it on a map.</p></td>

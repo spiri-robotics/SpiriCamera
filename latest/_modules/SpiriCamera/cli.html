@@ -494,9 +494,12 @@
     <span class="n">source</span> <span class="o">=</span> <span class="n">_resolve_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
 
+    <span class="n">hud_width</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">hud_frame_width</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span>
+    <span class="n">hud_height</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">hud_frame_height</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">"Starting camera: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> | quality=</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="si">}</span><span class="s2"> | "</span>
-        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="si">}</span><span class="s2">fps"</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="si">}</span><span class="s2">fps, "</span>
+        <span class="sa">f</span><span class="s2">"hud </span><span class="si">{</span><span class="n">hud_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">hud_height</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
 
     <span class="n">base</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">topic</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"cameras/</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">camera_name</span><span class="si">}</span><span class="s2">"</span>
@@ -516,8 +519,9 @@
     <span class="n">hud</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span>
         <span class="n">source</span><span class="o">=</span><span class="n">upstream</span><span class="p">,</span>
         <span class="n">quality</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
-        <span class="n">max_width</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_width</span><span class="p">,</span>
-        <span class="n">max_height</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">frame_height</span><span class="p">,</span>
+        <span class="c1"># Only the hud: raw stays at frame_width x frame_height.</span>
+        <span class="n">max_width</span><span class="o">=</span><span class="n">hud_width</span><span class="p">,</span>
+        <span class="n">max_height</span><span class="o">=</span><span class="n">hud_height</span><span class="p">,</span>
         <span class="n">max_framerate</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">framerate</span><span class="p">,</span>
         <span class="n">synq_topic</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">/hud"</span><span class="p">,</span>
     <span class="p">)</span>
