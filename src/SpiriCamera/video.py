@@ -46,6 +46,22 @@ _IDLE_POLL_INTERVAL = 0.1
 #: room for a keyframe, and the most a burst can put on the link at once.
 _VBV_BUFFER_SECONDS = 1.0
 
+#: A target this far under the running encoder's VBV ceiling gets a new encoder.
+_VBV_RETIGHTEN = 0.5
+
+#: H.264's NAL unit type for a slice of an IDR picture.
+_NAL_IDR = 5
+
+
+def _has_idr(payload: bytes) -> bool:
+    """Whether an Annex B access unit holds an IDR slice, so decodes on its own."""
+    start = payload.find(b"\x00\x00\x01")
+    while 0 <= start < len(payload) - 3:
+        if payload[start + 3] & 0x1F == _NAL_IDR:
+            return True
+        start = payload.find(b"\x00\x00\x01", start + 3)
+    return False
+
 
 class RateController:
     """One subscriber's estimate of what its link will carry.
@@ -142,7 +158,8 @@ class VideoEncoder:
         self._rates: dict[str, RateController] = {}
         self._keyframe_requested = True
         self._codec: av.CodecContext | None = None
-        self._codec_x264: tuple[str, int] = ("", 0)
+        self._codec_x264: tuple[str, int, int] = ("", 0, 0)
+        self._codec_maxrate = 0
         self._frames = 0
         self._sequence = 0
         self._keyframe_sequence = 0
@@ -248,12 +265,19 @@ class VideoEncoder:
         if camera._video_keyframe.take_keyframe_request():
             self._keyframe_requested = True
         since_keyframe = now - self._last_keyframe
+        interframes = camera._video_interframes_demanded()
+        # With intra-refresh, x264 repairs the picture a band at a time, and the
+        # only keyframes are asked for: a joiner's, a PLI's, a restart's.  With
+        # only keyframes-only subscribers, keyframes are all there is to send.
+        periodic = (not transport.intra_refresh or not interframes) and (
+            0 < float(transport.keyframe_interval) <= since_keyframe
+        )
         keyframe = (
             self._keyframe_requested and since_keyframe >= float(transport.keyframe_min_interval)
-        ) or (0 < float(transport.keyframe_interval) <= since_keyframe)
+        ) or periodic
         changed = raw is not self._last_raw
         # With only keyframe subscribers, the frames between are for nobody.
-        if not keyframe and not (changed and camera._video_interframes_demanded()):
+        if not keyframe and not (changed and interframes):
             return
 
         self._last_raw = raw
@@ -300,13 +324,23 @@ class VideoEncoder:
         codec = self._codec
         max_fps = max(1, int(self._max_fps()))
         settings = transport.rate_control
-        x264 = (str(transport.preset), max(0, int(transport.slice_max_size)))
+        fraction = float(settings.bitrate_restart_fraction)
+        refresh_frames = round(float(transport.keyframe_interval) * max_fps)
+        x264 = (
+            str(transport.preset),
+            max(0, int(transport.slice_max_size)),
+            bool(transport.intra_refresh) and refresh_frames,
+        )
+        maxrate = self._codec_maxrate
+        # Retargeting a running encoder can't raise its VBV ceiling, and a target
+        # far under it leaves bursts the link no longer carries: both take a new
+        # encoder, when a keyframe would be due anyway.
+        beyond_vbv = target > maxrate * (1 + fraction) or target < maxrate * _VBV_RETIGHTEN
         if (
             codec is None
             or (codec.width, codec.height) != (width, height)
             or (
-                abs(target - codec.bit_rate) / codec.bit_rate
-                > float(settings.bitrate_restart_fraction)
+                beyond_vbv
                 and (keyframe or since_keyframe >= float(settings.bitrate_restart_interval))
             )
             or self._codec_x264 != x264
@@ -328,7 +362,7 @@ class VideoEncoder:
             # them its ABR averages over the encoder's whole life, so bits a still
             # scene left unspent are spent on the next movement, at 5x the target
             # after a minute still and 12x after six.
-            preset, slice_max_size = x264
+            preset, slice_max_size, intra_refresh = x264
             options = {
                 "level": "31",
                 "tune": "zerolatency",
@@ -336,23 +370,36 @@ class VideoEncoder:
                 "maxrate": str(target),
                 "bufsize": str(int(target * _VBV_BUFFER_SECONDS)),
             }
+            params = []
             if slice_max_size:
                 # Slices small enough for one RTP packet each, so a lost packet
                 # costs a strip of one frame rather than the whole frame.
-                options["x264-params"] = f"slice-max-size={slice_max_size}"
+                params.append(f"slice-max-size={slice_max_size}")
+            if intra_refresh:
+                # A band of intra blocks sweeps the picture every keyframe_interval
+                # (in frames at max_fps), instead of a keyframe: loss heals within
+                # one sweep, and there's no keyframe to burst onto the link.
+                params += ["intra-refresh=1", f"keyint={intra_refresh}"]
+            if params:
+                options["x264-params"] = ":".join(params)
             codec.options = options
             codec.profile = "Baseline"
             self._codec_x264 = x264
+            self._codec_maxrate = target
+        elif abs(target - codec.bit_rate) / codec.bit_rate > fraction and not beyond_vbv:
+            # Within the VBV ceiling, a running encoder takes a new target as is:
+            # no new encoder, so no keyframe.
+            codec.bit_rate = min(target, self._codec_maxrate)
 
         frame = VideoFrame.from_ndarray(array, format="bgr24")
         # Counted, not timed: see the framerate above.
         frame.pts = self._frames
         self._frames += 1
         frame.pict_type = PictureType.I if keyframe else PictureType.NONE
-        return [
-            (bytes(packet), bool(packet.is_keyframe), width, height)
-            for packet in codec.encode(frame)
-        ]
+        # libav flags the start of each intra-refresh sweep as a keyframe too, but
+        # only an IDR decodes on its own, which is what a keyframe promises.
+        packets = [bytes(packet) for packet in codec.encode(frame)]
+        return [(payload, _has_idr(payload), width, height) for payload in packets]
 
 
 __all__ = ["VIDEO_CLOCK_RATE", "RateController", "VideoEncoder"]

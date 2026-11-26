@@ -459,10 +459,20 @@ class TransportVideo(SubSyncableDataclass):
         or 0 for no limit.  At 1100, the default, from
         ``SPIRICAMERA_H264_SLICE_MAX_SIZE``, each slice fits one RTP packet,
         so a lost packet costs a strip of one frame instead of all of it.
+    intra_refresh : bool
+        Repair the picture with libx264's intra-refresh, a band of intra blocks
+        that sweeps it once every ``keyframe_interval``, instead of a keyframe
+        every ``keyframe_interval``.  Loss heals within a sweep with no
+        keyframe to burst onto the link, and keyframes come only when asked
+        for.  Defaults to ``SPIRICAMERA_H264_INTRA_REFRESH``, off, because
+        QGroundControl shows no video from it (on the Spiri test drone, 2026-11-26).  A
+        keyframes-only subscriber still gets one every ``keyframe_interval``
+        while nothing else is watching, and otherwise only when one is asked for.
     keyframe_interval : float
-        Seconds between keyframes, which bounds recovery from a loss.  Also
-        the frame interval of a keyframes-only subscriber.  0 sends them only
-        when asked for.
+        Seconds between keyframes, or for one intra-refresh sweep, which bounds
+        recovery from a loss.  Also the frame interval of a keyframes-only
+        subscriber.  0 sends keyframes only when asked for, and with
+        intra-refresh, never sweeps.
     keyframe_min_interval : float
         Least seconds between requested keyframes, so ten joiners or one
         lossy link don't cause a storm.
@@ -492,6 +502,7 @@ class TransportVideo(SubSyncableDataclass):
     codec: str = "h264"
     preset: str = "veryfast"
     slice_max_size: int = 1100
+    intra_refresh: bool = False
     keyframe_interval: float | int = 2.0
     keyframe_min_interval: float | int = 0.25
     target_bitrate: int = 0

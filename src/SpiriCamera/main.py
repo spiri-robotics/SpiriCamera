@@ -102,6 +102,11 @@ class Settings(BaseSettings):
         for no limit.  Each slice then fits one RTP packet, so a lost packet costs
         a strip of one frame, not all of it.  Keep it under the 1200 bytes of
         H.264 in one RTP packet.
+    h264_intra_refresh : bool
+        Repair that encode with x264's intra-refresh, a band that sweeps the
+        picture every ``keyframe_interval``, instead of periodic keyframes:
+        loss heals as fast, without a keyframe bursting onto the link every
+        interval.  Off by default, because QGroundControl shows no video from it.
     rtsp_port : int
         ``SpiriCamera run`` serves its cameras over RTSP on this TCP port
         (default 8554), as ``/raw``, ``/hud`` and ``/preview``, and each
@@ -149,6 +154,7 @@ class Settings(BaseSettings):
     # The default preset of the camera's one encode; see SpiriCamera.video.
     h264_preset: H264Preset = "veryfast"
     h264_slice_max_size: int = Field(default=1100, ge=0)
+    h264_intra_refresh: bool = False
     rtsp_port: int = 8554
     rtsp_udp_port: int = 8000
 

@@ -468,7 +468,9 @@ class Camera(CameraBase):
 
             settings = get_settings()
             rehydrated["transport_video"] = TransportVideo(
-                preset=settings.h264_preset, slice_max_size=settings.h264_slice_max_size
+                preset=settings.h264_preset,
+                slice_max_size=settings.h264_slice_max_size,
+                intra_refresh=settings.h264_intra_refresh,
             )
         synq_topic = str(rehydrated.pop("synq_topic", synq_topic))
 

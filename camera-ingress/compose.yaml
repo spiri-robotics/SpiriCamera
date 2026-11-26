@@ -39,6 +39,10 @@ services:
       # The most bytes in one slice of the H.264 encode, so each fits one RTP
       # packet and a lost packet costs a strip of a frame; 0 for no limit.
       - SPIRICAMERA_H264_SLICE_MAX_SIZE=${H264_SLICE_MAX_SIZE:-1100}
+      # Repair the picture with a sweeping band of intra blocks, not keyframes,
+      # so no keyframe bursts onto the link every couple of seconds. Off:
+      # QGroundControl shows no video from it.
+      - SPIRICAMERA_H264_INTRA_REFRESH=${H264_INTRA_REFRESH:-false}
       # The lens, if known (0 is unset): a field of view in degrees from
       # the datasheet, or a calibration, OpenCV's camera matrix at the
       # image size it was made at. Outranks what the source or MAVLink says.

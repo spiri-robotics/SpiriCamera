@@ -10,6 +10,23 @@
   1100 bytes, one RTP packet, so a loss costs one strip of one frame, for under 0.5% more
   bitrate. `SPIRICAMERA_H264_SLICE_MAX_SIZE` and `transport_video.slice_max_size` set it; 0
   is no limit.
+- A bitrate cut applies at once, to the running encoder, instead of waiting for the next
+  keyframe or for `bitrate_restart_interval`, so on a failing link the encode drops as soon as
+  rate control says to. Rising above the encoder's VBV ceiling, or falling below half of it,
+  still takes a new encoder, and so a keyframe.
+- Only a frame holding an IDR is published as a keyframe. libav also flags the start of each
+  intra-refresh sweep, which doesn't decode on its own.
+
+### Features
+
+- `SPIRICAMERA_H264_INTRA_REFRESH` (`transport_video.intra_refresh`) heals the picture with
+  x264's intra-refresh, a band of intra blocks sweeping it once every `keyframe_interval`,
+  instead of a keyframe every `keyframe_interval`. At 480p and 1 Mbit/s a keyframe is about
+  66 KB, half a second of the link at once; with intra-refresh no frame was over 8.8 KB in the
+  same test, and keyframes are sent only when asked for. Off by default, because
+  QGroundControl shows no video from it. A keyframes-only subscriber still gets one every
+  `keyframe_interval` while nothing else is watching; alongside viewers, only when one is
+  asked for.
 
 ## 0.4.1 (2026-11-25)
 
