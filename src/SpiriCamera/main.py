@@ -68,9 +68,15 @@ class Settings(BaseSettings):
     quality : int
         JPEG encoding quality for captured frames [1-100].
     frame_width : int
-        User-requested capture width (default 1920).
+        User-requested capture width (default 1920): the most pixels wide
+        the raw camera's frames are, and what a sized source is asked for.
     frame_height : int
-        User-requested capture height (default 1080).
+        User-requested capture height (default 1080), likewise.
+    hud_frame_width, hud_frame_height : int
+        The most pixels wide and high ``SpiriCamera run``'s hud camera draws
+        on, which bounds nothing else: raw keeps ``frame_width`` x
+        ``frame_height`` and preview its own thumbnail size.  0 (the default)
+        is raw's.
     framerate : int
         User-requested capture framerate (default 30).
     hfov, vfov : float
@@ -136,6 +142,8 @@ class Settings(BaseSettings):
     quality: int = 80
     frame_width: int = 1920
     frame_height: int = 1080
+    hud_frame_width: int = Field(default=0, ge=0)
+    hud_frame_height: int = Field(default=0, ge=0)
     framerate: int = 30
 
     # The lens, when someone knows it; see Camera.set_intrinsics.

@@ -33,8 +33,12 @@ services:
       # gimbal is ./robot_gimbal1. Empty leaves it unplaced.
       - SPIRICAMERA_RELATIVE_TO=${RELATIVE_TO:-}
       - SPIRICAMERA_QUALITY=${QUALITY:-80}
+      # The most pixels raw has; a bigger source is shrunk to fit.
       - SPIRICAMERA_FRAME_WIDTH=${FRAME_WIDTH:-1920}
       - SPIRICAMERA_FRAME_HEIGHT=${FRAME_HEIGHT:-1080}
+      # The most the hud draws on, and nothing else; 0 is raw's.
+      - SPIRICAMERA_HUD_FRAME_WIDTH=${HUD_FRAME_WIDTH:-0}
+      - SPIRICAMERA_HUD_FRAME_HEIGHT=${HUD_FRAME_HEIGHT:-0}
       - SPIRICAMERA_FRAMERATE=${FRAMERATE:-30}
       # The most bytes in one slice of the H.264 encode, so each fits one RTP
       # packet and a lost packet costs a strip of a frame; 0 for no limit.

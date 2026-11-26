@@ -170,9 +170,12 @@ def run(source: SourceArgument = "") -> None:
     source = _resolve_source(source)
     settings = get_settings()
 
+    hud_width = settings.hud_frame_width or settings.frame_width
+    hud_height = settings.hud_frame_height or settings.frame_height
     logger.info(
         f"Starting camera: {source} | quality={settings.quality} | "
-        f"{settings.frame_width}x{settings.frame_height} @ {settings.framerate}fps"
+        f"{settings.frame_width}x{settings.frame_height} @ {settings.framerate}fps, "
+        f"hud {hud_width}x{hud_height}"
     )
 
     base = settings.topic or f"cameras/{settings.camera_name}"
@@ -192,8 +195,9 @@ def run(source: SourceArgument = "") -> None:
     hud = Camera(
         source=upstream,
         quality=settings.quality,
-        max_width=settings.frame_width,
-        max_height=settings.frame_height,
+        # Only the hud: raw stays at frame_width x frame_height.
+        max_width=hud_width,
+        max_height=hud_height,
         max_framerate=settings.framerate,
         synq_topic=f"{base}/hud",
     )

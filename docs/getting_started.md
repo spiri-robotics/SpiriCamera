@@ -310,6 +310,8 @@ export SPIRICAMERA_SOURCE="rtsp://host/stream"
 export SPIRICAMERA_QUALITY=90      # JPEG quality [1-100]
 export SPIRICAMERA_FRAME_WIDTH=1280 # Most pixels wide a published frame is
 export SPIRICAMERA_FRAME_HEIGHT=720 # ...and high; bigger frames are shrunk to fit
+export SPIRICAMERA_HUD_FRAME_WIDTH=0  # `run`'s hud only, smaller still; 0 is raw's
+export SPIRICAMERA_HUD_FRAME_HEIGHT=480
 export SPIRICAMERA_FRAMERATE=30     # Capture framerate
 export SPIRICAMERA_RTSP_PORT=8554   # `run` serves RTSP on this TCP port (0: off)
 export SPIRICAMERA_RTSP_UDP_PORT=8000 # ...and the first of four UDP ports
@@ -367,7 +369,7 @@ SpiriCamera run /dev/video0
 | Topic | What it is |
 | --- | --- |
 | `cameras/1/raw` | The source itself, within `SPIRICAMERA_FRAME_WIDTH` x `SPIRICAMERA_FRAME_HEIGHT`. |
-| `cameras/1/hud` | `raw`, with the widgets `SPIRICAMERA_HUD_WIDGETS` names, by topic, separated by spaces or commas. |
+| `cameras/1/hud` | `raw`, with the widgets `SPIRICAMERA_HUD_WIDGETS` names, by topic, separated by spaces or commas, within `SPIRICAMERA_HUD_FRAME_WIDTH` x `SPIRICAMERA_HUD_FRAME_HEIGHT` (0 is raw's). |
 | `cameras/1/preview` | `raw` at 96 pixels high, JPEG quality 70 and one frame a second, about 2.4 KB a frame: a thumbnail for picking a camera from a list or showing it on a map. |
 
 `hud` and `preview` take `raw`'s raw frames in the same process, so each runs, and runs

@@ -101,6 +101,28 @@ class TestRun:
         assert made["cameras/1/preview"]["quality"] == 70
         assert made["cameras/1/preview"]["max_framerate"] == 1
 
+    def test_hud_frame_size_is_the_hud_only(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """SPIRICAMERA_HUD_FRAME_* shrink the hud, never raw or preview."""
+        monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)
+        monkeypatch.delenv("SPIRICAMERA_CAMERA_NAME", raising=False)
+        monkeypatch.setenv("SPIRICAMERA_FRAME_WIDTH", "3840")
+        monkeypatch.setenv("SPIRICAMERA_FRAME_HEIGHT", "2160")
+        monkeypatch.setenv("SPIRICAMERA_HUD_FRAME_HEIGHT", "480")
+        made = self._topics(monkeypatch)
+        hud, raw, preview = (made[f"cameras/1/{name}"] for name in ("hud", "raw", "preview"))
+        assert (hud["max_width"], hud["max_height"]) == (3840, 480)
+        assert (raw["max_width"], raw["max_height"]) == (3840, 2160)
+        assert (preview["max_width"], preview["max_height"]) == (3840, 96)
+
+    def test_hud_frame_size_defaults_to_raws(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)
+        monkeypatch.delenv("SPIRICAMERA_CAMERA_NAME", raising=False)
+        for name in ("FRAME_WIDTH", "FRAME_HEIGHT", "HUD_FRAME_WIDTH", "HUD_FRAME_HEIGHT"):
+            monkeypatch.delenv(f"SPIRICAMERA_{name}", raising=False)
+        made = self._topics(monkeypatch)
+        hud = made["cameras/1/hud"]
+        assert (hud["max_width"], hud["max_height"]) == (1920, 1080)
+
     def test_hud_widgets_go_on_the_hud_only(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """SPIRICAMERA_HUD_WIDGETS names widgets by topic, by spaces or commas."""
         monkeypatch.delenv("SPIRICAMERA_TOPIC", raising=False)

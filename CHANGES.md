@@ -27,6 +27,10 @@
   QGroundControl shows no video from it. A keyframes-only subscriber still gets one every
   `keyframe_interval` while nothing else is watching; alongside viewers, only when one is
   asked for.
+- `SPIRICAMERA_HUD_FRAME_WIDTH` and `SPIRICAMERA_HUD_FRAME_HEIGHT` bound `run`'s hud camera
+  alone, so the hud can be drawn on a smaller picture while raw stays at the source's size.
+  `SPIRICAMERA_FRAME_WIDTH` and `SPIRICAMERA_FRAME_HEIGHT` still bound raw, and preview keeps
+  its 96 px thumbnail. 0, the default, is raw's, as before.
 
 ## 0.4.1 (2026-11-25)
 
