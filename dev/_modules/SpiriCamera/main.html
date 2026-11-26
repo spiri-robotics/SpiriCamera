@@ -380,9 +380,15 @@
 <span class="sd">    quality : int</span>
 <span class="sd">        JPEG encoding quality for captured frames [1-100].</span>
 <span class="sd">    frame_width : int</span>
-<span class="sd">        User-requested capture width (default 1920).</span>
+<span class="sd">        User-requested capture width (default 1920): the most pixels wide</span>
+<span class="sd">        the raw camera's frames are, and what a sized source is asked for.</span>
 <span class="sd">    frame_height : int</span>
-<span class="sd">        User-requested capture height (default 1080).</span>
+<span class="sd">        User-requested capture height (default 1080), likewise.</span>
+<span class="sd">    hud_frame_width, hud_frame_height : int</span>
+<span class="sd">        The most pixels wide and high ``SpiriCamera run``'s hud camera draws</span>
+<span class="sd">        on, which bounds nothing else: raw keeps ``frame_width`` x</span>
+<span class="sd">        ``frame_height`` and preview its own thumbnail size.  0 (the default)</span>
+<span class="sd">        is raw's.</span>
 <span class="sd">    framerate : int</span>
 <span class="sd">        User-requested capture framerate (default 30).</span>
 <span class="sd">    hfov, vfov : float</span>
@@ -448,6 +454,8 @@
     <span class="n">quality</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span>
     <span class="n">frame_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1920</span>
     <span class="n">frame_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1080</span>
+    <span class="n">hud_frame_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">hud_frame_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">framerate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
 
     <span class="c1"># The lens, when someone knows it; see Camera.set_intrinsics.</span>
