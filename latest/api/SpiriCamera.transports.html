@@ -886,7 +886,7 @@ reason, so adapting costs no extra keyframes.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="SpiriCamera.transports.TransportVideo">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.transports.</span></span><span class="sig-name descname"><span class="pre">TransportVideo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h264'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'veryfast'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyframe_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyframe_min_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_bitrate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/transports.html#TransportVideo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.transports.TransportVideo" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">SpiriCamera.transports.</span></span><span class="sig-name descname"><span class="pre">TransportVideo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h264'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'veryfast'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_max_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intra_refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyframe_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyframe_min_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_bitrate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/SpiriCamera/transports.html#TransportVideo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SpiriCamera.transports.TransportVideo" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SubSyncableDataclass</span></code></p>
 <p>A camera’s video transport: its one encode, whoever is watching.</p>
 <p>Keyframes and interframes travel on separate keys so each can have its
@@ -901,9 +901,24 @@ class or the instance as <code class="docutils literal notranslate"><span class=
 </dd>
 <dt>preset<span class="classifier">str</span></dt><dd><p>libx264’s preset; defaults to <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_H264_PRESET</span></code>.</p>
 </dd>
-<dt>keyframe_interval<span class="classifier">float</span></dt><dd><p>Seconds between keyframes, which bounds recovery from a loss.  Also
-the frame interval of a keyframes-only subscriber.  0 sends them only
-when asked for.</p>
+<dt>slice_max_size<span class="classifier">int</span></dt><dd><p>libx264’s <code class="docutils literal notranslate"><span class="pre">slice-max-size</span></code>: the most bytes in one slice of a frame,
+or 0 for no limit.  At 1100, the default, from
+<code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_H264_SLICE_MAX_SIZE</span></code>, each slice fits one RTP packet,
+so a lost packet costs a strip of one frame instead of all of it.</p>
+</dd>
+<dt>intra_refresh<span class="classifier">bool</span></dt><dd><p>Repair the picture with libx264’s intra-refresh, a band of intra blocks
+that sweeps it once every <code class="docutils literal notranslate"><span class="pre">keyframe_interval</span></code>, instead of a keyframe
+every <code class="docutils literal notranslate"><span class="pre">keyframe_interval</span></code>.  Loss heals within a sweep with no
+keyframe to burst onto the link, and keyframes come only when asked
+for.  Defaults to <code class="docutils literal notranslate"><span class="pre">SPIRICAMERA_H264_INTRA_REFRESH</span></code>, off, because
+QGroundControl shows no video from it (on the Spiri test drone, 2026-11-26).  A
+keyframes-only subscriber still gets one every <code class="docutils literal notranslate"><span class="pre">keyframe_interval</span></code>
+while nothing else is watching, and otherwise only when one is asked for.</p>
+</dd>
+<dt>keyframe_interval<span class="classifier">float</span></dt><dd><p>Seconds between keyframes, or for one intra-refresh sweep, which bounds
+recovery from a loss.  Also the frame interval of a keyframes-only
+subscriber.  0 sends keyframes only when asked for, and with
+intra-refresh, never sweeps.</p>
 </dd>
 <dt>keyframe_min_interval<span class="classifier">float</span></dt><dd><p>Least seconds between requested keyframes, so ten joiners or one
 lossy link don’t cause a storm.</p>
@@ -952,6 +967,16 @@ which is what RTSP and other endpoints read.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.transports.TransportVideo.slice_max_size">
+<span class="sig-name descname"><span class="pre">slice_max_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1100</span></span><a class="headerlink" href="#SpiriCamera.transports.TransportVideo.slice_max_size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SpiriCamera.transports.TransportVideo.intra_refresh">
+<span class="sig-name descname"><span class="pre">intra_refresh</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#SpiriCamera.transports.TransportVideo.intra_refresh" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="SpiriCamera.transports.TransportVideo.keyframe_interval">
 <span class="sig-name descname"><span class="pre">keyframe_interval</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.0</span></span><a class="headerlink" href="#SpiriCamera.transports.TransportVideo.keyframe_interval" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -992,6 +1017,8 @@ which is what RTSP and other endpoints read.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codec</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
 <li><p><strong>preset</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>slice_max_size</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
+<li><p><strong>intra_refresh</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>)</p></li>
 <li><p><strong>keyframe_interval</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
 <li><p><strong>keyframe_min_interval</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
 <li><p><strong>target_bitrate</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>)</p></li>
@@ -1331,6 +1358,8 @@ what lets it change live.  The publisher’s id still names the sender.</p>
 <li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.data_interframe_qos"><code class="docutils literal notranslate"><span class="pre">TransportVideo.data_interframe_qos</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.codec"><code class="docutils literal notranslate"><span class="pre">TransportVideo.codec</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.preset"><code class="docutils literal notranslate"><span class="pre">TransportVideo.preset</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.slice_max_size"><code class="docutils literal notranslate"><span class="pre">TransportVideo.slice_max_size</span></code></a></li>
+<li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.intra_refresh"><code class="docutils literal notranslate"><span class="pre">TransportVideo.intra_refresh</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.keyframe_interval"><code class="docutils literal notranslate"><span class="pre">TransportVideo.keyframe_interval</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.keyframe_min_interval"><code class="docutils literal notranslate"><span class="pre">TransportVideo.keyframe_min_interval</span></code></a></li>
 <li><a class="reference internal" href="#SpiriCamera.transports.TransportVideo.target_bitrate"><code class="docutils literal notranslate"><span class="pre">TransportVideo.target_bitrate</span></code></a></li>

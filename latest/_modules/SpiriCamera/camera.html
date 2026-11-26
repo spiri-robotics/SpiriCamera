@@ -793,7 +793,12 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_rehydrate</span> <span class="ow">and</span> <span class="s2">"transport_video"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rehydrated</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">SpiriCamera.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_settings</span>  <span class="c1"># local: main imports this module</span>
 
-            <span class="n">rehydrated</span><span class="p">[</span><span class="s2">"transport_video"</span><span class="p">]</span> <span class="o">=</span> <span class="n">TransportVideo</span><span class="p">(</span><span class="n">preset</span><span class="o">=</span><span class="n">get_settings</span><span class="p">()</span><span class="o">.</span><span class="n">h264_preset</span><span class="p">)</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
+            <span class="n">rehydrated</span><span class="p">[</span><span class="s2">"transport_video"</span><span class="p">]</span> <span class="o">=</span> <span class="n">TransportVideo</span><span class="p">(</span>
+                <span class="n">preset</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">h264_preset</span><span class="p">,</span>
+                <span class="n">slice_max_size</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">h264_slice_max_size</span><span class="p">,</span>
+                <span class="n">intra_refresh</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">h264_intra_refresh</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">synq_topic</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rehydrated</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"synq_topic"</span><span class="p">,</span> <span class="n">synq_topic</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">synq_authoritive</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

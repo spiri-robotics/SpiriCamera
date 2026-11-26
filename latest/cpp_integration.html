@@ -646,6 +646,9 @@ seconds (<code class="docutils literal notranslate"><span class="pre">subscriber
 frame every <code class="docutils literal notranslate"><span class="pre">keyframe_interval</span></code> seconds, with no interframes encoded for you if
 nobody else wants them. Every keyframe decodes on its own. Sequence numbers will
 skip, which isn’t loss, so don’t report.</p>
+<p>While anyone else is watching, a camera with <code class="docutils literal notranslate"><span class="pre">intra_refresh</span></code> turned on sends
+keyframes only when one is asked for, so you may wait longer. Call
+<code class="docutils literal notranslate"><span class="pre">request_keyframe</span></code> for one now.</p>
 </section>
 </section>
 <section id="build">

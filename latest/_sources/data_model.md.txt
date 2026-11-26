@@ -90,7 +90,13 @@ transport_video: !TransportVideo
   # Settings: FIELD, live.
   codec: h264                     # The only one.
   preset: veryfast                # x264's; default from SPIRICAMERA_H264_PRESET.
-  keyframe_interval: 2.0          # Seconds; bounds recovery. 0: only when asked for.
+  slice_max_size: 1100            # Bytes per slice, one RTP packet's worth; 0: no limit.
+                                  # Default from SPIRICAMERA_H264_SLICE_MAX_SIZE.
+  intra_refresh: false            # Heal with a band sweeping the picture, not keyframes.
+                                  # Default from SPIRICAMERA_H264_INTRA_REFRESH. QGC
+                                  # shows no video from it.
+  keyframe_interval: 2.0          # Seconds per keyframe, or per sweep; bounds recovery.
+                                  # 0: keyframes only when asked for, and no sweep.
   keyframe_min_interval: 0.25     # Coalesces requests, so there are no keyframe storms.
 
   # What the encoder is doing now: READOUT.
@@ -117,7 +123,8 @@ transport_video: !TransportVideo
       - [0, 480]                  # shrinks. Raw and JPEG stay full size.
 
   "@data_keyframe":               # VERBATIM, DATA_HIGH priority, dropped when congested.
-    # Sent:      Every keyframe_interval, on request, and on an encoder restart.
+    # Sent:      On request and on an encoder restart. Also every keyframe_interval
+    #            without intra_refresh, or while only keyframes-only subscribers watch.
     # Subscribe: cam.transport_video_subscribe(keyframes_only=True) for only this key.
     payload: <Annex B H.264, SPS and PPS in-band, decodable alone>   # zenoh encoding: video/h264
     attachment: {sequence: 1020, keyframe_sequence: 1020, pts: 91800000, codec: h264,

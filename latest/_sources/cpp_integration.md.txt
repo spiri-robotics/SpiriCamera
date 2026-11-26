@@ -117,6 +117,10 @@ frame every `keyframe_interval` seconds, with no interframes encoded for you if
 nobody else wants them. Every keyframe decodes on its own. Sequence numbers will
 skip, which isn't loss, so don't report.
 
+While anyone else is watching, a camera with `intra_refresh` turned on sends
+keyframes only when one is asked for, so you may wait longer. Call
+`request_keyframe` for one now.
+
 ## Build
 
 zenoh-cpp is header-only and needs the zenoh-c library:

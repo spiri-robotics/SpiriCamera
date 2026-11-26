@@ -356,6 +356,22 @@
 <span class="c1">#: room for a keyframe, and the most a burst can put on the link at once.</span>
 <span class="n">_VBV_BUFFER_SECONDS</span> <span class="o">=</span> <span class="mf">1.0</span>
 
+<span class="c1">#: A target this far under the running encoder's VBV ceiling gets a new encoder.</span>
+<span class="n">_VBV_RETIGHTEN</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1">#: H.264's NAL unit type for a slice of an IDR picture.</span>
+<span class="n">_NAL_IDR</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_has_idr</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether an Annex B access unit holds an IDR slice, so decodes on its own."""</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\x00\x00\x01</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">while</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">payload</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x1F</span> <span class="o">==</span> <span class="n">_NAL_IDR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\x00\x00\x01</span><span class="s2">"</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
 
 <div class="viewcode-block" id="RateController">
 <a class="viewcode-back" href="../../api/SpiriCamera.video.html#SpiriCamera.video.RateController">[docs]</a>
@@ -463,7 +479,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_rates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RateController</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_requested</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_codec</span><span class="p">:</span> <span class="n">av</span><span class="o">.</span><span class="n">CodecContext</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_codec_preset</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_codec_x264</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_codec_maxrate</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_frames</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sequence</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_sequence</span> <span class="o">=</span> <span class="mi">0</span>
@@ -581,12 +598,19 @@
         <span class="k">if</span> <span class="n">camera</span><span class="o">.</span><span class="n">_video_keyframe</span><span class="o">.</span><span class="n">take_keyframe_request</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_requested</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">since_keyframe</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_keyframe</span>
+        <span class="n">interframes</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">_video_interframes_demanded</span><span class="p">()</span>
+        <span class="c1"># With intra-refresh, x264 repairs the picture a band at a time, and the</span>
+        <span class="c1"># only keyframes are asked for: a joiner's, a PLI's, a restart's.  With</span>
+        <span class="c1"># only keyframes-only subscribers, keyframes are all there is to send.</span>
+        <span class="n">periodic</span> <span class="o">=</span> <span class="p">(</span><span class="ow">not</span> <span class="n">transport</span><span class="o">.</span><span class="n">intra_refresh</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">interframes</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="mi">0</span> <span class="o">&lt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">transport</span><span class="o">.</span><span class="n">keyframe_interval</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">since_keyframe</span>
+        <span class="p">)</span>
         <span class="n">keyframe</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_keyframe_requested</span> <span class="ow">and</span> <span class="n">since_keyframe</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">transport</span><span class="o">.</span><span class="n">keyframe_min_interval</span><span class="p">)</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">transport</span><span class="o">.</span><span class="n">keyframe_interval</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">since_keyframe</span><span class="p">)</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="n">periodic</span>
         <span class="n">changed</span> <span class="o">=</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_raw</span>
         <span class="c1"># With only keyframe subscribers, the frames between are for nobody.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">keyframe</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">changed</span> <span class="ow">and</span> <span class="n">camera</span><span class="o">.</span><span class="n">_video_interframes_demanded</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keyframe</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">changed</span> <span class="ow">and</span> <span class="n">interframes</span><span class="p">):</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_raw</span> <span class="o">=</span> <span class="n">raw</span>
@@ -633,15 +657,26 @@
         <span class="n">codec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec</span>
         <span class="n">max_fps</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_fps</span><span class="p">()))</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">rate_control</span>
+        <span class="n">fraction</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">bitrate_restart_fraction</span><span class="p">)</span>
+        <span class="n">refresh_frames</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">transport</span><span class="o">.</span><span class="n">keyframe_interval</span><span class="p">)</span> <span class="o">*</span> <span class="n">max_fps</span><span class="p">)</span>
+        <span class="n">x264</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">transport</span><span class="o">.</span><span class="n">preset</span><span class="p">),</span>
+            <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">transport</span><span class="o">.</span><span class="n">slice_max_size</span><span class="p">)),</span>
+            <span class="nb">bool</span><span class="p">(</span><span class="n">transport</span><span class="o">.</span><span class="n">intra_refresh</span><span class="p">)</span> <span class="ow">and</span> <span class="n">refresh_frames</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">maxrate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_maxrate</span>
+        <span class="c1"># Retargeting a running encoder can't raise its VBV ceiling, and a target</span>
+        <span class="c1"># far under it leaves bursts the link no longer carries: both take a new</span>
+        <span class="c1"># encoder, when a keyframe would be due anyway.</span>
+        <span class="n">beyond_vbv</span> <span class="o">=</span> <span class="n">target</span> <span class="o">&gt;</span> <span class="n">maxrate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">fraction</span><span class="p">)</span> <span class="ow">or</span> <span class="n">target</span> <span class="o">&lt;</span> <span class="n">maxrate</span> <span class="o">*</span> <span class="n">_VBV_RETIGHTEN</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">codec</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="ow">or</span> <span class="p">(</span><span class="n">codec</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">codec</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
             <span class="ow">or</span> <span class="p">(</span>
-                <span class="nb">abs</span><span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">codec</span><span class="o">.</span><span class="n">bit_rate</span><span class="p">)</span> <span class="o">/</span> <span class="n">codec</span><span class="o">.</span><span class="n">bit_rate</span>
-                <span class="o">&gt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">bitrate_restart_fraction</span><span class="p">)</span>
+                <span class="n">beyond_vbv</span>
                 <span class="ow">and</span> <span class="p">(</span><span class="n">keyframe</span> <span class="ow">or</span> <span class="n">since_keyframe</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">bitrate_restart_interval</span><span class="p">))</span>
             <span class="p">)</span>
-            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_preset</span> <span class="o">!=</span> <span class="n">transport</span><span class="o">.</span><span class="n">preset</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_x264</span> <span class="o">!=</span> <span class="n">x264</span>
             <span class="ow">or</span> <span class="n">codec</span><span class="o">.</span><span class="n">framerate</span> <span class="o">!=</span> <span class="n">fractions</span><span class="o">.</span><span class="n">Fraction</span><span class="p">(</span><span class="n">max_fps</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="c1"># A new encoder, for a new size or a changed bitrate; its first</span>
@@ -660,25 +695,44 @@
             <span class="c1"># them its ABR averages over the encoder's whole life, so bits a still</span>
             <span class="c1"># scene left unspent are spent on the next movement, at 5x the target</span>
             <span class="c1"># after a minute still and 12x after six.</span>
-            <span class="n">codec</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">preset</span><span class="p">,</span> <span class="n">slice_max_size</span><span class="p">,</span> <span class="n">intra_refresh</span> <span class="o">=</span> <span class="n">x264</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">"level"</span><span class="p">:</span> <span class="s2">"31"</span><span class="p">,</span>
                 <span class="s2">"tune"</span><span class="p">:</span> <span class="s2">"zerolatency"</span><span class="p">,</span>
-                <span class="s2">"preset"</span><span class="p">:</span> <span class="n">transport</span><span class="o">.</span><span class="n">preset</span><span class="p">,</span>
+                <span class="s2">"preset"</span><span class="p">:</span> <span class="n">preset</span><span class="p">,</span>
                 <span class="s2">"maxrate"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">),</span>
                 <span class="s2">"bufsize"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">target</span> <span class="o">*</span> <span class="n">_VBV_BUFFER_SECONDS</span><span class="p">)),</span>
             <span class="p">}</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">slice_max_size</span><span class="p">:</span>
+                <span class="c1"># Slices small enough for one RTP packet each, so a lost packet</span>
+                <span class="c1"># costs a strip of one frame rather than the whole frame.</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"slice-max-size=</span><span class="si">{</span><span class="n">slice_max_size</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">intra_refresh</span><span class="p">:</span>
+                <span class="c1"># A band of intra blocks sweeps the picture every keyframe_interval</span>
+                <span class="c1"># (in frames at max_fps), instead of a keyframe: loss heals within</span>
+                <span class="c1"># one sweep, and there's no keyframe to burst onto the link.</span>
+                <span class="n">params</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"intra-refresh=1"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"keyint=</span><span class="si">{</span><span class="n">intra_refresh</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
+                <span class="n">options</span><span class="p">[</span><span class="s2">"x264-params"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">":"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">codec</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
             <span class="n">codec</span><span class="o">.</span><span class="n">profile</span> <span class="o">=</span> <span class="s2">"Baseline"</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_codec_preset</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">preset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_codec_x264</span> <span class="o">=</span> <span class="n">x264</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_codec_maxrate</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">codec</span><span class="o">.</span><span class="n">bit_rate</span><span class="p">)</span> <span class="o">/</span> <span class="n">codec</span><span class="o">.</span><span class="n">bit_rate</span> <span class="o">&gt;</span> <span class="n">fraction</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">beyond_vbv</span><span class="p">:</span>
+            <span class="c1"># Within the VBV ceiling, a running encoder takes a new target as is:</span>
+            <span class="c1"># no new encoder, so no keyframe.</span>
+            <span class="n">codec</span><span class="o">.</span><span class="n">bit_rate</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codec_maxrate</span><span class="p">)</span>
 
         <span class="n">frame</span> <span class="o">=</span> <span class="n">VideoFrame</span><span class="o">.</span><span class="n">from_ndarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"bgr24"</span><span class="p">)</span>
         <span class="c1"># Counted, not timed: see the framerate above.</span>
         <span class="n">frame</span><span class="o">.</span><span class="n">pts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frames</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_frames</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">frame</span><span class="o">.</span><span class="n">pict_type</span> <span class="o">=</span> <span class="n">PictureType</span><span class="o">.</span><span class="n">I</span> <span class="k">if</span> <span class="n">keyframe</span> <span class="k">else</span> <span class="n">PictureType</span><span class="o">.</span><span class="n">NONE</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">packet</span><span class="p">),</span> <span class="nb">bool</span><span class="p">(</span><span class="n">packet</span><span class="o">.</span><span class="n">is_keyframe</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">packet</span> <span class="ow">in</span> <span class="n">codec</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-        <span class="p">]</span></div>
+        <span class="c1"># libav flags the start of each intra-refresh sweep as a keyframe too, but</span>
+        <span class="c1"># only an IDR decodes on its own, which is what a keyframe promises.</span>
+        <span class="n">packets</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bytes</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span> <span class="k">for</span> <span class="n">packet</span> <span class="ow">in</span> <span class="n">codec</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">frame</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">payload</span><span class="p">,</span> <span class="n">_has_idr</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="k">for</span> <span class="n">payload</span> <span class="ow">in</span> <span class="n">packets</span><span class="p">]</span></div>
 
 
 
