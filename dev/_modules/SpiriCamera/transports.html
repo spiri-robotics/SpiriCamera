@@ -805,10 +805,25 @@
 <span class="sd">        What is encoded.  Only ``h264``.</span>
 <span class="sd">    preset : str</span>
 <span class="sd">        libx264's preset; defaults to ``SPIRICAMERA_H264_PRESET``.</span>
+<span class="sd">    slice_max_size : int</span>
+<span class="sd">        libx264's ``slice-max-size``: the most bytes in one slice of a frame,</span>
+<span class="sd">        or 0 for no limit.  At 1100, the default, from</span>
+<span class="sd">        ``SPIRICAMERA_H264_SLICE_MAX_SIZE``, each slice fits one RTP packet,</span>
+<span class="sd">        so a lost packet costs a strip of one frame instead of all of it.</span>
+<span class="sd">    intra_refresh : bool</span>
+<span class="sd">        Repair the picture with libx264's intra-refresh, a band of intra blocks</span>
+<span class="sd">        that sweeps it once every ``keyframe_interval``, instead of a keyframe</span>
+<span class="sd">        every ``keyframe_interval``.  Loss heals within a sweep with no</span>
+<span class="sd">        keyframe to burst onto the link, and keyframes come only when asked</span>
+<span class="sd">        for.  Defaults to ``SPIRICAMERA_H264_INTRA_REFRESH``, off, because</span>
+<span class="sd">        QGroundControl shows no video from it (on the Spiri test drone, 2026-11-26).  A</span>
+<span class="sd">        keyframes-only subscriber still gets one every ``keyframe_interval``</span>
+<span class="sd">        while nothing else is watching, and otherwise only when one is asked for.</span>
 <span class="sd">    keyframe_interval : float</span>
-<span class="sd">        Seconds between keyframes, which bounds recovery from a loss.  Also</span>
-<span class="sd">        the frame interval of a keyframes-only subscriber.  0 sends them only</span>
-<span class="sd">        when asked for.</span>
+<span class="sd">        Seconds between keyframes, or for one intra-refresh sweep, which bounds</span>
+<span class="sd">        recovery from a loss.  Also the frame interval of a keyframes-only</span>
+<span class="sd">        subscriber.  0 sends keyframes only when asked for, and with</span>
+<span class="sd">        intra-refresh, never sweeps.</span>
 <span class="sd">    keyframe_min_interval : float</span>
 <span class="sd">        Least seconds between requested keyframes, so ten joiners or one</span>
 <span class="sd">        lossy link don't cause a storm.</span>
@@ -837,6 +852,8 @@
 
     <span class="n">codec</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"h264"</span>
     <span class="n">preset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"veryfast"</span>
+    <span class="n">slice_max_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1100</span>
+    <span class="n">intra_refresh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">keyframe_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">2.0</span>
     <span class="n">keyframe_min_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.25</span>
     <span class="n">target_bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>

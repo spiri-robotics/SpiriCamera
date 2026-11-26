@@ -403,7 +403,13 @@ camera.</p></li>
 <span class="w">  </span><span class="c1"># Settings: FIELD, live.</span>
 <span class="w">  </span><span class="nt">codec</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">h264</span><span class="w">                     </span><span class="c1"># The only one.</span>
 <span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">veryfast</span><span class="w">                </span><span class="c1"># x264's; default from SPIRICAMERA_H264_PRESET.</span>
-<span class="w">  </span><span class="nt">keyframe_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span><span class="w">          </span><span class="c1"># Seconds; bounds recovery. 0: only when asked for.</span>
+<span class="w">  </span><span class="nt">slice_max_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1100</span><span class="w">            </span><span class="c1"># Bytes per slice, one RTP packet's worth; 0: no limit.</span>
+<span class="w">                                  </span><span class="c1"># Default from SPIRICAMERA_H264_SLICE_MAX_SIZE.</span>
+<span class="w">  </span><span class="nt">intra_refresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">            </span><span class="c1"># Heal with a band sweeping the picture, not keyframes.</span>
+<span class="w">                                  </span><span class="c1"># Default from SPIRICAMERA_H264_INTRA_REFRESH. QGC</span>
+<span class="w">                                  </span><span class="c1"># shows no video from it.</span>
+<span class="w">  </span><span class="nt">keyframe_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span><span class="w">          </span><span class="c1"># Seconds per keyframe, or per sweep; bounds recovery.</span>
+<span class="w">                                  </span><span class="c1"># 0: keyframes only when asked for, and no sweep.</span>
 <span class="w">  </span><span class="nt">keyframe_min_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.25</span><span class="w">     </span><span class="c1"># Coalesces requests, so there are no keyframe storms.</span>
 
 <span class="w">  </span><span class="c1"># What the encoder is doing now: READOUT.</span>
@@ -430,7 +436,8 @@ camera.</p></li>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">480</span><span class="p p-Indicator">]</span><span class="w">                  </span><span class="c1"># shrinks. Raw and JPEG stay full size.</span>
 
 <span class="w">  </span><span class="s">"@data_keyframe"</span><span class="p p-Indicator">:</span><span class="w">               </span><span class="c1"># VERBATIM, DATA_HIGH priority, dropped when congested.</span>
-<span class="w">    </span><span class="c1"># Sent:      Every keyframe_interval, on request, and on an encoder restart.</span>
+<span class="w">    </span><span class="c1"># Sent:      On request and on an encoder restart. Also every keyframe_interval</span>
+<span class="w">    </span><span class="c1">#            without intra_refresh, or while only keyframes-only subscribers watch.</span>
 <span class="w">    </span><span class="c1"># Subscribe: cam.transport_video_subscribe(keyframes_only=True) for only this key.</span>
 <span class="w">    </span><span class="nt">payload</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Annex B H.264, SPS and PPS in-band, decodable alone&gt;</span><span class="w">   </span><span class="c1"># zenoh encoding: video/h264</span>
 <span class="w">    </span><span class="nt">attachment</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">sequence</span><span class="p">:</span><span class="w"> </span><span class="nv">1020</span><span class="p p-Indicator">,</span><span class="nt"> keyframe_sequence</span><span class="p">:</span><span class="w"> </span><span class="nv">1020</span><span class="p p-Indicator">,</span><span class="nt"> pts</span><span class="p">:</span><span class="w"> </span><span class="nv">91800000</span><span class="p p-Indicator">,</span><span class="nt"> codec</span><span class="p">:</span><span class="w"> </span><span class="nv">h264</span><span class="p p-Indicator">,</span>

@@ -607,6 +607,8 @@ templating rules, including why <code class="docutils literal notranslate"><span
 <span class="go">export SPIRICAMERA_RTSP_PORT=8554   # `run` serves RTSP on this TCP port (0: off)</span>
 <span class="go">export SPIRICAMERA_RTSP_UDP_PORT=8000 # ...and the first of four UDP ports</span>
 <span class="go">export SPIRICAMERA_H264_PRESET=veryfast # x264 preset of the camera's one video encode</span>
+<span class="go">export SPIRICAMERA_H264_SLICE_MAX_SIZE=1100 # Most bytes in a slice of it, so one fits an RTP packet</span>
+<span class="go">export SPIRICAMERA_H264_INTRA_REFRESH=false # Heal loss with a sweeping band, not keyframes; not for QGC</span>
 </pre></div>
 </div>
 <p>However many video subscribers and RTSP viewers a camera has, it is
